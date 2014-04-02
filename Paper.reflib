@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library>
+<manage_target braces="false" utf8="false">file:///home/gav/Documents/Paper/Biblio.bib</manage_target>
+<library_folder monitor="false"></library_folder>
+<taglist>
+</taglist>
+<doclist>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>ballance1989</key>
+    <notes></notes>
+    <bib_type>PhdThesis</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Syntactic and Semantic Checking in Language-Based Editing Systems</bib_title>
+    <bib_authors>Ballance, R.</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages></bib_pages>
+    <bib_year>1989</bib_year>
+    <bib_extra key="Note">(also technical report UCB/CSD89/548)</bib_extra>
+    <bib_extra key="School">University of California, Berkeley</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>bahlke1986</key>
+    <notes></notes>
+    <bib_type>Article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>The PSG System: From Formal Language Definition to Interactive Programming Environments</bib_title>
+    <bib_authors>Bahlke, R. and Snelting, G.</bib_authors>
+    <bib_journal>toplas</bib_journal>
+    <bib_volume>8</bib_volume>
+    <bib_number>4</bib_number>
+    <bib_pages>547-576</bib_pages>
+    <bib_year>1986</bib_year>
+    <bib_extra key="Month">oct</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>grosch1990</key>
+    <notes></notes>
+    <bib_type>InProceedings</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Inference-Based Overloading Resolution for ADA</bib_title>
+    <bib_authors>Grosch, F. and Snelting, G.</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages>30-44</bib_pages>
+    <bib_year>1990</bib_year>
+    <bib_extra key="BookTitle">Programming Language Implementations and Logic Programming</bib_extra>
+    <bib_extra key="Editor">Deransart, P. and Maluszyn´nski, J.</bib_extra>
+    <bib_extra key="Note">LNCS 456</bib_extra>
+    <bib_extra key="Publisher">SpringerVerlag</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>snelting1991</key>
+    <notes></notes>
+    <bib_type>Article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>The calculus of context relations</bib_title>
+    <bib_authors>Snelting, G.</bib_authors>
+    <bib_journal>acta</bib_journal>
+    <bib_volume>28</bib_volume>
+    <bib_number>5</bib_number>
+    <bib_pages>411-445</bib_pages>
+    <bib_year>1991</bib_year>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>gkahn1983</key>
+    <notes></notes>
+    <bib_type>Article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Metal: A formalism to specify formalisms</bib_title>
+    <bib_authors>Morcos, E. and Melésè, B. and Lang, B. and Kahn, G.</bib_authors>
+    <bib_journal>ScienceOfComputerProgramming</bib_journal>
+    <bib_volume>3</bib_volume>
+    <bib_number>2</bib_number>
+    <bib_pages>151-188</bib_pages>
+    <bib_year>1983</bib_year>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>birsan2005</key>
+    <notes></notes>
+    <bib_type>Article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>On Plug-ins and Extensible Architectures</bib_title>
+    <bib_authors>Birsan, D.</bib_authors>
+    <bib_journal>Queue</bib_journal>
+    <bib_volume>3</bib_volume>
+    <bib_number>2</bib_number>
+    <bib_pages>40-46</bib_pages>
+    <bib_year>2005</bib_year>
+    <bib_extra key="Address">New York, NY, USA</bib_extra>
+    <bib_extra key="Bdsk-file-1">YnBsaXN0MDDUAQIDBAUGCQpYJHZlcnNpb25UJHRvcFkkYXJjaGl2ZXJYJG9iamVjdHMSAAGGoNEHCFRyb290gAFfEA9OU0tleWVkQXJjaGl2ZXKoCwwXGBkdJCVVJG51bGzTDQ4PEBEUViRjbGFzc1dOUy5rZXlzWk5TLm9iamVjdHOAB6ISE4ACgAOiFRaABIAGWWFsaWFzRGF0YVxyZWxhdGl2ZVBhdGjSDRobHFdOUy5kYXRhgAVPEQFaAAAAAAFaAAIAAANNYWMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADE0cfCSCsAAAACwm8OcDQwLWJpcnNhbi5wZGYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7m6cYzSsUAAAAAAAAAAAACAAIAAAkgAAAAAAAAAAAAAAAAAAAACURvd25sb2FkcwAAEAAIAADE0bmyAAAAEQAIAADGMzy1AAAAAQAMAALCbwACwlUAAHmOAAIAJk1hYzpVc2VyczpnYXY6RG93bmxvYWRzOnA0MC1iaXJzYW4ucGRmAA4AHgAOAHAANAAwAC0AYgBpAHIAcwBhAG4ALgBwAGQAZgAPAAgAAwBNAGEAYwASACJVc2Vycy9nYXYvRG93bmxvYWRzL3A0MC1iaXJzYW4ucGRmABMAAS8AABUAAgAK//8AANIeHyAhWCRjbGFzc2VzWiRjbGFzc25hbWWjISIjXU5TTXV0YWJsZURhdGFWTlNEYXRhWE5TT2JqZWN0XxAeLi4vLi4vRG93bmxvYWRzL3A0MC1iaXJzYW4ucGRm0h4fJieiJyNcTlNEaWN0aW9uYXJ5AAgAEQAaAB8AKQAyADcAOgA/AEEAUwBcAGIAaQBwAHgAgwCFAIgAigCMAI8AkQCTAJ0AqgCvALcAuQIXAhwCJQIwAjQCQgJJAlICcwJ4AnsAAAAAAAACAQAAAAAAAAAoAAAAAAAAAAAAAAAAAAACiA==</bib_extra>
+    <bib_extra key="Date-added">2009-05-15 16:38:29 +0100</bib_extra>
+    <bib_extra key="Date-modified">2009-05-15 16:39:33 +0100</bib_extra>
+    <bib_extra key="Doi">http://doi.acm.org/10.1145/1053331.1053345</bib_extra>
+    <bib_extra key="Issn">1542-7730</bib_extra>
+    <bib_extra key="Publisher">ACM</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>ko2004</key>
+    <notes></notes>
+    <bib_type>Article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Designing a Flexible and Supportive Direct-Manipulation Programming Environment</bib_title>
+    <bib_authors>Ko, A. J.</bib_authors>
+    <bib_journal>Visual Languages - Human Centric Computing</bib_journal>
+    <bib_volume>0</bib_volume>
+    <bib_number></bib_number>
+    <bib_pages>277-278</bib_pages>
+    <bib_year>2004</bib_year>
+    <bib_extra key="Address">Los Alamitos, CA, USA</bib_extra>
+    <bib_extra key="Doi">http://doi.ieeecomputersociety.org/10.1109/VLHCC.2004.18</bib_extra>
+    <bib_extra key="Isbn">0-7803-8696-5</bib_extra>
+    <bib_extra key="Publisher">IEEE Computer Society</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>chomsky1956</key>
+    <notes></notes>
+    <bib_type>Article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Three Models for the Description of Language</bib_title>
+    <bib_authors>N. Chomsky,</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages></bib_pages>
+    <bib_year>1956</bib_year>
+    <bib_extra key="Author">N. Chomsky</bib_extra>
+    <bib_extra key="Bdsk-file-1">YnBsaXN0MDDUAQIDBAUGCQpYJHZlcnNpb25UJHRvcFkkYXJjaGl2ZXJYJG9iamVjdHMSAAGGoNEHCFRyb290gAFfEA9OU0tleWVkQXJjaGl2ZXKoCwwXGBkdJCVVJG51bGzTDQ4PEBEUViRjbGFzc1dOUy5rZXlzWk5TLm9iamVjdHOAB6ISE4ACgAOiFRaABIAGWWFsaWFzRGF0YVxyZWxhdGl2ZVBhdGjSDRobHFdOUy5kYXRhgAVPEQFSAAAAAAFSAAIAAANNYWMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADE0cfCSCsAAAACwm8MMTk1NjA5LS0ucGRmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7mrcYzQ4oAAAAAAAAAAAACAAIAAAkgAAAAAAAAAAAAAAAAAAAACURvd25sb2FkcwAAEAAIAADE0bmyAAAAEQAIAADGMzV6AAAAAQAMAALCbwACwlUAAHmOAAIAJE1hYzpVc2VyczpnYXY6RG93bmxvYWRzOjE5NTYwOS0tLnBkZgAOABoADAAxADkANQA2ADAAOQAtAC0ALgBwAGQAZgAPAAgAAwBNAGEAYwASACBVc2Vycy9nYXYvRG93bmxvYWRzLzE5NTYwOS0tLnBkZgATAAEvAAAVAAIACv//AADSHh8gIVgkY2xhc3Nlc1okY2xhc3NuYW1loyEiI11OU011dGFibGVEYXRhVk5TRGF0YVhOU09iamVjdF8QHC4uLy4uL0Rvd25sb2Fkcy8xOTU2MDktLS5wZGbSHh8mJ6InI1xOU0RpY3Rpb25hcnkACAARABoAHwApADIANwA6AD8AQQBTAFwAYgBpAHAAeACDAIUAiACKAIwAjwCRAJMAnQCqAK8AtwC5Ag8CFAIdAigCLAI6AkECSgJpAm4CcQAAAAAAAAIBAAAAAAAAACgAAAAAAAAAAAAAAAAAAAJ+</bib_extra>
+    <bib_extra key="Date-added">2009-05-15 16:13:43 +0100</bib_extra>
+    <bib_extra key="Date-modified">2009-05-15 16:15:53 +0100</bib_extra>
+    <bib_extra key="Journal">IRE Transactions on Information Theory 2</bib_extra>
+    <bib_extra key="Pages">113–123</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>harrison1978</key>
+    <notes></notes>
+    <bib_type>Book</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Introduction to Formal Language Theory</bib_title>
+    <bib_authors>Harrison, M. A.</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number>0201029553</bib_number>
+    <bib_pages></bib_pages>
+    <bib_year>1978</bib_year>
+    <bib_extra key="Address">Reading, Mass.</bib_extra>
+    <bib_extra key="Date-added">2009-05-15 16:01:24 +0100</bib_extra>
+    <bib_extra key="Date-modified">2009-05-15 16:04:04 +0100</bib_extra>
+    <bib_extra key="Publisher">Addison-Wesley </bib_extra>
+    <bib_extra key="Series"></bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>bucci1995</key>
+    <notes></notes>
+    <bib_type>InProceedings</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>A Program Editor to Promote Reuse</bib_title>
+    <bib_authors>Bucci, P.</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages></bib_pages>
+    <bib_year>1995</bib_year>
+    <bib_extra key="BookTitle">Proceedings of the Seventh Workshop on Software Reuse</bib_extra>
+    <bib_extra key="Month">sep</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>edwards2005</key>
+    <notes></notes>
+    <bib_type>InProceedings</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Subtext: uncovering the simplicity of programming</bib_title>
+    <bib_authors>Edwards, J.</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages>505-518</bib_pages>
+    <bib_year>2005</bib_year>
+    <bib_extra key="Address">New York, NY, USA</bib_extra>
+    <bib_extra key="BookTitle">OOPSLA ’05: Proceedings of the 20th annual ACM SIGPLAN conference on Object-oriented programming, systems, languages, and applications</bib_extra>
+    <bib_extra key="Doi">http://doi.acm.org/10.1145/1094811.1094851</bib_extra>
+    <bib_extra key="Isbn">1-59593-031-0</bib_extra>
+    <bib_extra key="Location">San Diego, CA, USA</bib_extra>
+    <bib_extra key="Publisher">ACM</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>maletic2002</key>
+    <notes></notes>
+    <bib_type>Article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Source Code Files as Structured Documents</bib_title>
+    <bib_authors>Maletic, J. I. and Collard, M. L. and Marcus, A.</bib_authors>
+    <bib_journal>International Conference on Program Comprehension</bib_journal>
+    <bib_volume>0</bib_volume>
+    <bib_number></bib_number>
+    <bib_pages>289</bib_pages>
+    <bib_year>2002</bib_year>
+    <bib_extra key="Address">Los Alamitos, CA, USA</bib_extra>
+    <bib_extra key="Doi">http://doi.ieeecomputersociety.org/10.1109/WPC.2002.1021351</bib_extra>
+    <bib_extra key="Issn">1092-8138</bib_extra>
+    <bib_extra key="Publisher">IEEE Computer Society</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>shneiderman1981</key>
+    <notes></notes>
+    <bib_type>InProceedings</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Direct manipulation: A step beyond programming languages (abstract only)</bib_title>
+    <bib_authors>Shneiderman, B.</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages>143</bib_pages>
+    <bib_year>1981</bib_year>
+    <bib_extra key="Address">New York, NY, USA</bib_extra>
+    <bib_extra key="BookTitle">Proceedings of the joint conference on Easier and more productive use of computer systems. (Part - II)</bib_extra>
+    <bib_extra key="Doi">http://doi.acm.org/10.1145/800276.810991</bib_extra>
+    <bib_extra key="Isbn">0-89791-064-8</bib_extra>
+    <bib_extra key="Location">Ann Arbor, MI</bib_extra>
+    <bib_extra key="Publisher">ACM</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>dmitriev2005</key>
+    <notes></notes>
+    <bib_type>Article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Language Oriented Programming: The Next Programming Paradigm</bib_title>
+    <bib_authors>Dmitriev, S.</bib_authors>
+    <bib_journal>OnBoard, Online Magazine</bib_journal>
+    <bib_volume>Issue 2</bib_volume>
+    <bib_number></bib_number>
+    <bib_pages></bib_pages>
+    <bib_year>2005</bib_year>
+    <bib_extra key="Month">feb</bib_extra>
+    <bib_extra key="Url">www.onboard.jetbrains.com/is1/articles/04/10/lop/</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>winograd1979</key>
+    <notes></notes>
+    <bib_type>Article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Beyond programming languages</bib_title>
+    <bib_authors>Winograd, T.</bib_authors>
+    <bib_journal>Commun. ACM</bib_journal>
+    <bib_volume>22</bib_volume>
+    <bib_number>7</bib_number>
+    <bib_pages>391-401</bib_pages>
+    <bib_year>1979</bib_year>
+    <bib_extra key="Address">New York, NY, USA</bib_extra>
+    <bib_extra key="Doi">http://doi.acm.org/10.1145/359131.359133</bib_extra>
+    <bib_extra key="Issn">0001-0782</bib_extra>
+    <bib_extra key="Publisher">ACM</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>weinreich1997</key>
+    <notes></notes>
+    <bib_type>Article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>A Component Framework for Direct-Manipulation Editors</bib_title>
+    <bib_authors>Weinreich, R.</bib_authors>
+    <bib_journal>Technology of Object-Oriented Languages, International Conference on</bib_journal>
+    <bib_volume>0</bib_volume>
+    <bib_number></bib_number>
+    <bib_pages>99</bib_pages>
+    <bib_year>1997</bib_year>
+    <bib_extra key="Address">Los Alamitos, CA, USA</bib_extra>
+    <bib_extra key="Doi">http://doi.ieeecomputersociety.org/10.1109/TOOLS.1997.681864</bib_extra>
+    <bib_extra key="Isbn">0-8186-8485-2</bib_extra>
+    <bib_extra key="Publisher">IEEE Computer Society</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>ward1994</key>
+    <notes></notes>
+    <bib_type>Article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Language Oriented Programming</bib_title>
+    <bib_authors>Ward, M.</bib_authors>
+    <bib_journal>Software—Concepts and Tools</bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number>15</bib_number>
+    <bib_pages>147-161</bib_pages>
+    <bib_year>1994</bib_year>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>agrawal2003</key>
+    <notes></notes>
+    <bib_type>InProceedings</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>An end-to-end domain-driven software development framework</bib_title>
+    <bib_authors>Agrawal, A. and Karsai, G. and Ledeczi, A.</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages>8-15</bib_pages>
+    <bib_year>2003</bib_year>
+    <bib_extra key="Address">New York, NY, USA</bib_extra>
+    <bib_extra key="BookTitle">OOPSLA ’03: Companion of the 18th annual ACM SIGPLAN conference on Object-oriented programming, systems, languages, and applications</bib_extra>
+    <bib_extra key="Doi">http://doi.acm.org/10.1145/949344.949347</bib_extra>
+    <bib_extra key="Isbn">1-58113-751-6</bib_extra>
+    <bib_extra key="Location">Anaheim, CA, USA</bib_extra>
+    <bib_extra key="Publisher">ACM</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>teitelbaum1981</key>
+    <notes></notes>
+    <bib_type>Article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>The Cornell program synthesizer: a syntax-directed programming environment</bib_title>
+    <bib_authors>Teitelbaum, T. and Reps, T.</bib_authors>
+    <bib_journal>Commun. ACM</bib_journal>
+    <bib_volume>24</bib_volume>
+    <bib_number>9</bib_number>
+    <bib_pages>563-573</bib_pages>
+    <bib_year>1981</bib_year>
+    <bib_extra key="Address">New York, NY, USA</bib_extra>
+    <bib_extra key="Doi">http://doi.acm.org/10.1145/358746.358755</bib_extra>
+    <bib_extra key="Issn">0001-0782</bib_extra>
+    <bib_extra key="Publisher">ACM</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>birnbaum2005</key>
+    <notes></notes>
+    <bib_type>InProceedings</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Achieving Flexibility in Direct-Manipulation Programming Environments by Relaxing the Edit-Time Grammar</bib_title>
+    <bib_authors>Birnbaum, B. E. and Goldman, K. J.</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages>259-266</bib_pages>
+    <bib_year>2005</bib_year>
+    <bib_extra key="Address">Washington, DC, USA</bib_extra>
+    <bib_extra key="BookTitle">VLHCC ’05: Proceedings of the 2005 IEEE Symposium on Visual Languages and Human-Centric Computing</bib_extra>
+    <bib_extra key="Doi">http://dx.doi.org/10.1109/VLHCC.2005.15</bib_extra>
+    <bib_extra key="Isbn">0-7695-2443-5</bib_extra>
+    <bib_extra key="Publisher">IEEE Computer Society</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>ward2005</key>
+    <notes></notes>
+    <bib_type>InProceedings</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>MetaWSL and Meta-Transformations in the FermaT Transformation System</bib_title>
+    <bib_authors>Ward, M. and Zedan, H.</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages>233-238</bib_pages>
+    <bib_year>2005</bib_year>
+    <bib_extra key="Address">Washington, DC, USA</bib_extra>
+    <bib_extra key="BookTitle">COMPSAC ’05: Proceedings of the 29th Annual International Computer Software and Applications Conference</bib_extra>
+    <bib_extra key="Doi">http://dx.doi.org/10.1109/COMPSAC.2005.107</bib_extra>
+    <bib_extra key="Isbn">0-7695-2413-3</bib_extra>
+    <bib_extra key="Publisher">IEEE Computer Society</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>simonyi2006</key>
+    <notes></notes>
+    <bib_type>Article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Intentional software</bib_title>
+    <bib_authors>Simonyi, C. and Christerson, M. and Clifford, S.</bib_authors>
+    <bib_journal>SIGPLAN Not.</bib_journal>
+    <bib_volume>41</bib_volume>
+    <bib_number>10</bib_number>
+    <bib_pages>451-464</bib_pages>
+    <bib_year>2006</bib_year>
+    <bib_extra key="Address">New York, NY, USA</bib_extra>
+    <bib_extra key="Doi">http://doi.acm.org/10.1145/1167515.1167511</bib_extra>
+    <bib_extra key="Issn">0362-1340</bib_extra>
+    <bib_extra key="Publisher">ACM</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>goldman2004</key>
+    <notes></notes>
+    <bib_type>Article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>An interactive environment for beginning Java programmers</bib_title>
+    <bib_authors>Goldman, K. J.</bib_authors>
+    <bib_journal>Science of Computer Programming</bib_journal>
+    <bib_volume>53</bib_volume>
+    <bib_number>1</bib_number>
+    <bib_pages>3-24</bib_pages>
+    <bib_year>2004</bib_year>
+    <bib_extra key="Publisher">Elsevier</bib_extra>
+  </doc>
+  <doc>
+    <filename>file:///home/gav/Martta%20Papers/Stratego%20XT%200.17.%20A%20language%20and%20toolset%20for%20program%20transformation.pdf</filename>
+    <relative_filename></relative_filename>
+    <key>bravenboer2008</key>
+    <notes></notes>
+    <bib_type>article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Stratego/XT 0.17. A language and toolset for program transformation</bib_title>
+    <bib_authors>Bravenboer, M. and Kalleberg, K. T. and Vermaas, R. and Visser, E.</bib_authors>
+    <bib_journal>Science of Computer Programming</bib_journal>
+    <bib_volume>72</bib_volume>
+    <bib_number>1-2</bib_number>
+    <bib_pages>52-70</bib_pages>
+    <bib_year>2008</bib_year>
+    <bib_extra key="Publisher">Elsevier</bib_extra>
+  </doc>
+  <doc>
+    <filename>file:///home/gav/Downloads/qt-creator-1.3-whitepaper</filename>
+    <relative_filename></relative_filename>
+    <key>nokia2009</key>
+    <notes></notes>
+    <bib_type>techreport</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Qt Creator</bib_title>
+    <bib_authors>Nokia Corporation</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages></bib_pages>
+    <bib_year>2009</bib_year>
+    <bib_extra key="institution">Nokia Corporation</bib_extra>
+    <bib_extra key="url">http://qt.nokia.com/files/pdf/qt-creator-1.3-whitepaper</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>sim2002</key>
+    <notes></notes>
+    <bib_type>article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>On using a benchmark to evaluate C++ extractors</bib_title>
+    <bib_authors>Sim, S. E. and Holt, R. C. and Easterbrook, S.</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages>114-123</bib_pages>
+    <bib_year>2002</bib_year>
+    <bib_extra key="Booktitle">Proceedings of the 10th International Workshop on Program Comprehension</bib_extra>
+    <bib_extra key="Organization">IEEE Computer Society</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>meyer1988</key>
+    <notes></notes>
+    <bib_type>article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Cepage: Toward computer-aided design of software.</bib_title>
+    <bib_authors>Meyer, B.</bib_authors>
+    <bib_journal>Journal of Systems and Software</bib_journal>
+    <bib_volume>8</bib_volume>
+    <bib_number>5</bib_number>
+    <bib_pages>419-429</bib_pages>
+    <bib_year>1988</bib_year>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>hart2004windows</key>
+    <notes></notes>
+    <bib_type>Book</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Windows system programming</bib_title>
+    <bib_authors>Hart, J. M.</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages></bib_pages>
+    <bib_year>2004</bib_year>
+    <bib_extra key="Publisher">Addison-Wesley Professional</bib_extra>
+    <bib_extra key="Series"></bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>hillegass2008cocoa</key>
+    <notes></notes>
+    <bib_type>Article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Cocoa¯ programming for mac¯ os x</bib_title>
+    <bib_authors>Hillegass, A.</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages></bib_pages>
+    <bib_year>2008</bib_year>
+    <bib_extra key="Publisher">Addison-Wesley Professional</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>peterson1998linux</key>
+    <notes></notes>
+    <bib_type>Article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Linux Programmer’s Reference</bib_title>
+    <bib_authors>Peterson, R.</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages></bib_pages>
+    <bib_year>1998</bib_year>
+    <bib_extra key="Publisher">Osborne/McGraw-Hill Berkeley, CA, USA</bib_extra>
+  </doc>
+</doclist>
+</library>
