@@ -324,10 +324,10 @@ Originally, with no accesses taken place, the highest accessed index of memory $
 
 \subsubsection{Execution Environment}
 
-In addition to the system state $\mathbb{S}$, there are several pieces of important, immutable, information used in the execution environment that the execution agent must provide:
+In addition to the system state $\mathbb{S}$, and the remaining gas for computation $g$, there are several pieces of important information used in the execution environment that the execution agent must provide:
 
 \begin{itemize}
-\item $a$, the address of the account which own the code that is executing.
+\item $a$, the address of the account which owns the code that is executing.
 \item $o$, the sender address of the transaction that originated this execution.
 \item $p$, the price of gas in the transaction that originated this execution.
 \item $D$, the byte array that is the input data to this execution; if the execution agent is a transaction, this would be the transaction data.
@@ -338,13 +338,28 @@ In addition to the system state $\mathbb{S}$, there are several pieces of import
 \item $n$, the block number of the current block.
 \end{itemize}
 
-The execution model defines the function $X$, which can compute the resultant state $\mathbb{S}'$, given the required information:
+These are assumed to be defined as such throughout. The execution model defines the function $X$, which can compute the resultant state $\mathbb{S}'$ and the remaining gas $g'$, given these definitions:
 
 \begin{equation}
-\mathbb{S}' \equiv X(\mathbb{S}, a, o, p, D, s, v, H, H', n)
+(\mathbb{S}', g') \equiv \Xi(\mathbb{S}, g)
 \end{equation}
 
 \subsubsection{Execution Overview}
+
+
+
+\begin{eqnarray}
+\Xi(\mathbb{S}, g) & \equiv & X(\mathbb{S}, \mathbb{M}) \\
+\mathbb{M}_g & \equiv & g \\
+\mathbb{M}_P & \equiv & 0 \\
+\mathbb{M}_M & \equiv & [0, 0,...] \\
+\mathbb{M}_i & \equiv & -1 \\
+\mathbb{M}_T & \equiv & [] \\
+X(\mathbb{S}, \mathbb{M}) & \equiv & \begin{cases}
+(\mathbb{S}, \mathbb{M}) & \text{if} \quad term(\mathbb{S}, \mathbb{M})\\
+X(O(\mathbb{S}, \mathbb{M})) & \text{otherwise}\\
+\end{cases}
+\end{eqnarray}
 
 
 
