@@ -77,6 +77,10 @@ Since the system is decentralised and all parties have an opportunity to create 
 
 \subsection{Blocks, State and Transactions} \label{ch:bst}
 
+\subsubsection{Currency}
+
+Ether, wei.
+
 \subsubsection{World State} \label{ch:state}
 
 The world-state (\textit{state}, see Appendix \ref{app:state}), is a mapping between addresses (160-bit identifiers) and account states (a data structure serialised as RLP). Though not stored on the block chain, it is assumed that the implementation will maintain this mapping in a modified Merkle Patricia tree (\textit{trie}, see Appendix \ref{app:trie}). The trie requires a simple database back-end that maintains a mapping of bytearrays to bytearrays; we name this underlaying database the state database. This has a number of benefits; firstly the root node of this structure is cryptographically dependent on all internal data and as such its hash can be used as a secure identity for the entire system state. Secondly, being an immutable data structure, it allows any previous state (whose root hash is known) to be recalled by simply altering the root hash accordingly. Since we store all such root hashes in the block chain, we are able to trivially revert to old states.
@@ -147,7 +151,7 @@ d' - \frac{d'}{1024} & \quad \text{otherwise}\\
 \end{cases}
 \end{equation}
 
-Where $d'$ is the previous block's difficulty, $t'$ is the prvious block's timestamp and $t$ is the current block's timestamp.
+Where $d'$ is the previous block's difficulty, $t'$ is the prvious block's timestamp and $t$ is the current block's timestamp. This results in an expected period between blocks of roughly 60 seconds.
 
 The nonce, $n$, must satisfy:
 
@@ -181,11 +185,11 @@ The execution of a transaction is the most complex part of the Ethereum protocol
 where:
 
 \begin{eqnarray}
-i \equiv & \begin{cases}
+i & \equiv & \begin{cases}
   |\mathbf{d}|.G_{data} + G_{call} & \quad \text{call} \\
   (|\mathbf{i}| + |\mathbf{b}|).G_{data} + G_{create} & \quad \text{create} \\
 \end{cases} \\
-c \equiv & l.p + v
+c & \equiv & l.p + v
 \end{eqnarray}
 
 where $|\mathbf{d}|$, $|\mathbf{i}|$ and $|\mathbf{b}|$ are the sizes, in bytes, of the transaction's associated data, initialisation \& body EVM-code and $G$ is defined in Appendix \ref{app:fees}.
@@ -201,8 +205,8 @@ There are number of intrinsic parameters used when creating a contract: sender (
 The address of the new contract is defined as being the leftmost 160 bits of the SHA3 hash of RLP encoding of the structure \texttt{[ sender, nonce ]}. In in the unlikely event that the addresses is already in use, it is treated as a big-endian integer and incremented by one until an unused address is arrived at, thus:
 
 \begin{eqnarray}
-a' := \mathcal{L}_{160}(\mathcal{S}(\mathcal{R}([s, o])))\\
-a := \arg \min_x : x \geq a' \wedge \mathbb{S}[x] = \emptyset
+a' & \equiv & \mathcal{L}_{160}(\mathcal{S}(\mathcal{R}([s, o])))\\
+a & \equiv & \arg \min_x : x \geq a' \wedge \mathbb{S}[x] = \emptyset
 \end{eqnarray}
 
 where $\mathcal{S}$ is the SHA3 256-bit hash function, $\mathcal{R}$ is the RLP encoding function, $\mathcal{L}_y(X)$ evaluates to the leftmost $y$ bits of the binary data $X$ and $\mathbb{S}[x]$ is the address state of $x$ or $\emptyset$ if none exists.
@@ -230,7 +234,6 @@ In executing a message call, the account balance of the recipient is increased b
 In the case that the recipient contains code to be executed (i.e. that the account is a contract), then the contract's body code, to be found in the state database with key $\mathbb{S}[r]_{code}$, is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts due to an exhausted gas supply, then no gas is refunded to the caller and the state is reverted to the point immediately prior to code execution. Unlike with contract creation, 
 
 \subsection{Execution Model} \label{ch:model}
-
 
 The original caller (i.e. the original transaction's txsender) pre-pays for a specific amount of 'GAS'. What was baseFee now describes the ETH -> GAS price. Gas is the internal currency of the transaction. Execution operations deplete the GAS supply, as per the original ratios. Once the transaction is finished, any remaining GAS is reconverted back to ETH and refunded.
 
@@ -383,12 +386,75 @@ LEFT\_BYTES(A, n) returns the array bytes comprising the first (leftmost) n byte
 
 
 
+\subsection{Block-tree to Block-chain} \label{ch:ghost}
+
+The canonical block chain is a path from root to leaf through the entire block tree. In order to have consensus over which path it is, conceptually we identify the path that has had the most computation done upon it, or, the \textit{heaviest} path. Clearly one factor that helps determine the heaviest path is the block number of the leaf, equivalent to the number of blocks, not counting the unmined genesis block, in the path. The longer the path, the greater the total mining effort that must have been done in order to arrive at the leaf. This is akin to existing schemes, such as that employed in Bitcoin-derived protocols.
+
+This scheme notably ignores so-called \textit{stale} blocks: valid, mined blocks, which were propogated too late into the network and thus were beaten to network consensus by a sibling block (one with the same parent). Such blocks become more common as the network propogation time approaches the ideal inter-block time. However, by counting the computation work of stale block headers, we are able to do better: we can utilise this otherwise wasted computation and put it to use in helping to butress the more popular block-chain making it a stronger choice over less popular (though potentially longer) competitors.
+
+This increases overall network security by making it much harder for an adversary to silently mine a canonical block chain (which, it is assumed, would contain different transactions to the current consensus) and dump it on the network with the effect of reversing existing blocks and the transactions within.
+
+In order to validate the extra computation, a given block $B$ may include the block headers from any known uncle blocks (i.e. blocks whose parent is equivalent to the grandparent of $B$). Since a block header includes the nonce, a proof-of-work, then the header alone is enough to validate the computation done. Any such blocks contribute toward the total computation or \textit{total difficulty} of a chain that includes them. To incentivise computation and inclusion, a reward is given both to the miner of the stale block and the miner of the block that references it.
+
+Thus we define the total difficulty of block $B$ recursively as:
+
+\begin{eqnarray}
+B_{td} & \equiv & P_{td} + B_d + \sum\limits_{U \in B_\mathbb{U}} U_d \\
+P & \equiv & B_P
+\end{eqnarray}
+
+As such given a block $B$, $B_td$ is its total difficulty, $B_P$ is its parent block, $B_d$ is its difficulty and $B_\mathbb{U}$ is its set of uncle blocks.
+
 \subsection{Block Finalisation} \label{ch:finalisation}
+
+Validate uncles.
+
+Reward everything.
+
+Compute proof-of-work.
 
 \subsection{Mining Proof-of-Work} \label{ch:pow}
 
-\subsection{Block-tree to Block-chain} \label{ch:ghost}
+The mining proof-of-work (PoW) exists as a cryptographically secure nonce that proves beyond reasonable doubt that a particular amount of computation has been expended in the determination of some token value $n$. It is utilised to enforce the block chain security by giving meaning and credence to the notion of difficulty (and, by extension, total difficulty). However, since mining new blocks comes with an attached reward, the proof-of-work not only functions as a method of securing confidence that the blockchain will remain canonical into the future, but also as a wealth distribution mechanism.
 
+For both reasons, there are two important goals of the proof-of-work function; firstly, it should be as accessible as possible to as many people as possible. The requirement of or reward from specialised and uncommon hardware should be minimised. This makes the distribution model as open as possible, and, ideally, makes the act of mining a simple swap from electricity to ether at roughly the same rate for anyone around the world.
+
+Secondly, it should not be possible to make super-linear profits, and especially not so with a high initial barrier. Such a mechanism allows a well-funded adversary to gain a troublesome amount of the network's total mining power and as such gives them a super-linear reward (thus skewing distribution in their favour) as well as reducing the network security.
+
+One plague of the Bitcoin world is ASICs. These are specialised pieces of compute hardware that exist only to do a single task. In Bitcoin's case the task is the SHA256 hash function. While ASICs exist for a proof-of-work function, both goals are placed in jeopardy. Because of this, a proof-of-work function that is ASIC-resistant (i.e. difficult or economically inefficient to implement in specialised compute hardware) has been identified as the proverbial silver bullet.
+
+Two directions exist for ASIC resistance; firstly make it sequential memory-hard, i.e. engineer the function such that the determination of the nonce requires a lot of memory and that the memory cannot be used in parallel to discover multiple nonces simultaneously. The second is to make the type of computation it would need to do general-purpose; the meaning of ``specialised hardware''  for a general-purose task set is, naturally, general purpose hardware and as such commodity desktop computers are likely to be pretty close to ``specialised hardware'' for the task. 
+
+More formally, the proof-of-work function takes the form of $\mathcal{P}$:
+
+\begin{equation}
+\mathcal{P}(H, n) < \frac{H_d}{2^{256}}
+\end{equation}
+
+Where $H$ is the new block's header \textit{without} the nonce entry; $H_d$ is the difficulty value (i.e. the block difficulty from section \ref{ch:ghost}).
+
+As of the proof-of-concept (PoC) series of the Ethereum software, the proof-of-work function is simplistic and does not attempt to secure these goals. It will be described here for completeness.
+
+\subsubsection{PoC Series}
+
+For the proof-of-concept series, we use a simplified proof-of-work. This is not ASIC resistant and is meant merely as a placeholder.
+
+It is defined as $\mathcal{P}$:
+
+\begin{equation}
+\mathcal{P}(H, n) \equiv \mathcal{B}(\mathcal{S}(\mathcal{S}(\mathcal{R}(H)) \bigoplus n))
+\end{equation}
+
+where:
+$\mathcal{R}(H)$ is the RLP encoding of the $H$;
+$\mathcal{S}$ is the SHA3 hash function accepting an arbitrary length series of bytes and evaluating to a series of 32 bytes (i.e. 256-bit);
+$n$ is the nonce, a series of 32 bytes;
+$\bigoplus$ is the series concatenation operator;
+$\mathcal{B}(X)$ evaluates to the value equal to X when interpreted as a big-endian-encoded integer.
+
+\subsubsection{Release Series}
+
+For the release series, we use a more complex proof-of-work. This has yet to be formally defined, but involves two components; firstly, 
 
 \section{User Interface}
 
