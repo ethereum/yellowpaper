@@ -15,15 +15,20 @@
 \usepackage{natbib}
 \usepackage{float}
 \usepackage{pdflscape}
+\usepackage{mathtools}
 
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
 \newcommand*\eg{e.g.\@\xspace}
 \newcommand*\Eg{e.g.\@\xspace}
 \newcommand*\ie{i.e.\@\xspace}
 %\renewcommand{\itemhook}{\setlength{\topsep}{0pt}  \setlength{\itemsep}{0pt}\setlength{\leftmargin}{15pt}}
 
 \title{Ethereum: A Secure Decentralised Compute Platform}
-\author{Gavin Wood, Vitalik Buterin}
-
+\author{
+    Gavin Wood\\
+    CTO, Ethereum Project\\
+    gavin@ethereum.org
+}
 \begin{document}
 
 \begin{abstract}
@@ -53,19 +58,19 @@ E language. Smart contracts. Bitcoin, namecoin \&c. Mastercoin.
 
 \section{Proposal} \label{ch:proposal}
 
-\subsection{Overview} \label{ch:overview}
+\subsection{The Block Chain Paradigm} \label{ch:overview}
 
-Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. Formally:
+Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissable. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg be things such as reducing an account balance without an equal and opposite increase elsewhere. We define a valid state transitions as one which comes about through a transaction. Formally:
 
 \begin{equation}
-S_{t+1} := f(S_t, T)
+S_{t+1} \equiv f(S_t, T)
 \end{equation}
 
 and $f$ is the Ethereum state transition function. In Ethereum, $f$, together with $S$ are considerably more powerful then any existing comparable system; $f$ allows components to carry out arbitrary computation to be done, while $S$ allows components to store arbitrary state between transactions.
 
 Transactions are collated into blocks; we then chain blocks together using a cryptographic hash as a means of reference. Blocks function as a journal, recording a series of transactions together with the previous block and an identifier for the final state (though do not store the final state itself---that would be far too big). They also punctuate the transaction series with incentives for nodes to \textit{mine}. This incentivisation takes places as a state-transition function, adding value to a nominated account.
 
-Mining is the process of dedicating effort (working) to bolster one series of transactions (a block) over any other through a cryptographically secure proof. This scheme is known as a proof-of-work and is discussed in detail in section \ref{ch:pow}.
+Mining is the process of dedicating effort (working) to bolster one series of transactions (a block) over any other potential competitor block. It is achieved thanks to a cryptographically secure proof. This scheme is known as a proof-of-work and is discussed in detail in section \ref{ch:pow}.
 
 Formally, we expand to:
 
@@ -76,6 +81,8 @@ F(S, \mathbb{T}) & \equiv & g(f(f(S, T_0), T_1) ...)
 \end{eqnarray}
 
 Where $g$ is the block-finalisation state transition function (a function that rewards a nominated party); $\mathbb{T}$ is the series of transactions included in this block; and $F$ is the block-level state-transition function.
+
+This is the basis of the block-chain paradigm, a model that forms the backbone of Ethereum.
 
 \subsubsection{Value}
 
@@ -90,7 +97,7 @@ Multiplier & Name \\
 $10^0$ & Wei \\
 $10^{12}$ & Szabo \\
 $10^{15}$ & Finney \\
-$10^{18}$ & Turing \\
+$10^{18}$ & Ether \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -200,9 +207,9 @@ The other two components in the block are simply a list of the transactions (as 
 
 In order to avoid issues of network abuse and to sidestep the inevitable questions stemming from Turing completeness, all programmable computation in Ethereum is subject to fees. The fee schedule is specified in units of \textit{gas} (see Appendix \ref{app:fees} for the fees associated with various computation). Thus any given fragment of programmable computation (this includes creating contracts, making message calls, utilising and accessing contract storage and executing operations on the virtual machine) has a universally agreed cost in terms of gas.
 
-Every transaction has a specific amount of gas associated with it: \textbf{gasLimit}. This is the amount of gas which is implicitly purchased from the sender's account balance. The purchase happens at the according \textbf{gasPrice}, also specified in the transaction. The transaction is considered invalid if the account balance cannot support such a purchase. It is named \textbf{gasLimit} since any unused gas at the end of the transaction is refunded (at the same rate of purchase) to the sender account. Gas does not exist outside of the execution of a transaction. Thus for trusted contracts, a relatively high gas limit may be set and left alone.
+Every transaction has a specific amount of gas associated with it: \textbf{gasLimit}. This is the amount of gas which is implicitly purchased from the sender's account balance. The purchase happens at the according \textbf{gasPrice}, also specified in the transaction. The transaction is considered invalid if the account balance cannot support such a purchase. It is named \textbf{gasLimit} since any unused gas at the end of the transaction is refunded (at the same rate of purchase) to the sender's account. Gas does not exist outside of the execution of a transaction. Thus for trusted contracts, a relatively high gas limit may be set and left alone.
 
-Any ether paid for gas by the sender that is not refunded is delivered to the miner. Transactors are free to specify any \textbf{gasPrice} that they wish, however miners are free to ignore transactions as they choose. A higher gas price on a transaction will therefore cost the sender more in terms of ether and deliver a greater value to the miner and thus will more likely be selected for inclusion by more miners. Miners, in general, will choose to advertise the minimum gas price for which they will execute transactions and transactors will be free to canvas these prices in determining what gas price to offer. Since there will be a (weighted) distribution of minimum acceptable gas prices, transactors will necessarily have a trade-off to make between lowering the gas price and maximising the chance that their transaction will be mined in a timely manner.
+Any ether used to purchase gas that is not refunded is delivered to the \textit{coinbase} address, the address of an account typically under control of the miner. Transactors are free to specify any \textbf{gasPrice} that they wish, however miners are free to ignore transactions as they choose. A higher gas price on a transaction will therefore cost the sender more in terms of Ether and deliver a greater value to the miner and thus will more likely be selected for inclusion by more miners. Miners, in general, will choose to advertise the minimum gas price for which they will execute transactions and transactors will be free to canvas these prices in determining what gas price to offer. Since there will be a (weighted) distribution of minimum acceptable gas prices, transactors will necessarily have a trade-off to make between lowering the gas price and maximising the chance that their transaction will be mined in a timely manner.
 
 %\subsubsection{Determining Computation Costs}
 
@@ -270,23 +277,27 @@ In the case that the recipient contains code to be executed (i.e. that the accou
 
 \subsection{Execution Model} \label{ch:model}
 
-The original caller (i.e. the original transaction's txsender) pre-pays for a specific amount of 'GAS'. What was baseFee now describes the ETH -> GAS price. Gas is the internal currency of the transaction. Execution operations deplete the GAS supply, as per the original ratios. Once the transaction is finished, any remaining GAS is reconverted back to ETH and refunded.
+The execution model specifies how the system state is altered given a series of bytecode instructions and a small tuple of environmental data. This is specified through a formal model of a virtual state machine, known as the Ethereum Virtual Machine (EVM). It is a \textit{quasi-}Turing-complete machine; the \textit{quasi} qualification comes from the fact that the computation is intrinsically bounded through a parameter, \textit{gas}, which limits the total amount of computation done.
 
-Storage remains 256-bit address, 256-bit data.
+\subsubsection{Basics}
 
-Word size: 256-bit (i.e. stack item size 256-bit).
+The EVM is a simple stack-based architecture. The word size of the machine (and thus size of stack item) is 256-bit. This was chosen to facilitate the SHA3-256 hash scheme. The memory model is a simple word-addressed byte array. The stack has an unlimited size. The machine also has an independent storage model; this is similar in concept to the memory but rather than a byte array, it is a word-addressable word array. Unlike memory, which is volatile, storage is non volatile and is maintained as part of the system state in the state database.
 
-Memory is byte array (256-bit address, 8-bit data); memoryFee is proportional to greatest index that has ever been referenced in this instance and thus it's highly unlikely addresses will ever go above 32-bit. Whenever a higher memory index is used, the fee difference to take it to the higher usage from the original (lower) usage is charged. MEMSIZE is initially just the size of the input data. Note: MSTORE and MLOAD increase the highest-accessed index to their target index + 31.
+The machine can have exceptional execution for several reasons, including stack underflows, invalid instructions and divides by zero. These unambiguously and validly result in immediate halting of the machine with all state changes left intact. The one piece of exceptional execution that does not leave state changes intact is the out-of-gas (OOG) exception. Here, the machine halts immediately and reports the issue to the execution agent (either the transaction processor or, recursively, the spawning execution environment) and which will deal with it separately.
 
+\subsubsection{Fees Overview}
 
-Given an instruction, it is possible to calculate the gas cost of executing it as follows:
+Fees (denominated in gas) are charged under three distinct circumstances, all three as prerequisite to the execution of an operation. The first and most common is the fee intrinsic to the computation of the operation. Most operations require a single gas fee to be paid for their execution; exceptions include \textsc{SSTORE}, \textsc{SLOAD}, \textsc{CALL}, \textsc{CREATE}, \textsc{BALANCE} and \textsc{SHA3}. Secondly, gas may be deducted in order to form the payment for a subordinate message call or contract creation; this forms part of the payment for \textsc{CREATE} and \textsc{CALL}. Finally, gas may be paid due to an increase in the usage of the memory.
+
+Over a contract's execution, the total fee for memory usage payable is proportional to smallest multiple of 32 bytes that are required such that all memory indices (whether for read or write) are included in the range. This is paid for on a just-in-time basis; as such, referencing an area of memory at least 32 bytes greater than any previously indexed memory will certainly result is an addition memory usage fee.
+
+More formally, given an instruction, it is possible to calculate the gas cost of executing it as follows:
 
 \begin{itemize}
-\item Unless covered by another rule below, an operation costs < STEPGAS > gas
 \item SHA3 costs $G_{sha3}$ gas
 \item SLOAD costs $G_{sload}$ gas
 \item BALANCE costs $G_{balance}$ gas
-\item SSTORE costs $d.G{sstore}$ gas where:
+\item SSTORE costs $d.G_{sstore}$ gas where:
 \begin{itemize}
 \item $d = 2$ if the new value of the storage is non-zero and the old is zero;
 \item $d = 0$ if the new value of the storage is zero and the old is non-zero;
@@ -294,8 +305,18 @@ Given an instruction, it is possible to calculate the gas cost of executing it a
 \end{itemize}
 \item CALL costs $G_{call} + g$, where $g$ is the quantity of gas provided; some gas may later be refunded.
 \item CREATE costs $G_{create} + g$ gas, where $g$ is the quantity of gas provided.
-\item When you read or write memory with MSTORE, MLOAD, RETURN, SHA3, CALLDATA or CALL, enlarge the memory so that all bytes now fit in it (memory must always be a whole number of 32-byte words). Suppose that the highest previously accessed memory index is $m$, and the new index is $n$. If $(n + 31) / 32 > (m + 31) / 32$, add an additional $((n + 31) / 32 - (m + 31) / 32) * G_{memory}$ gas to the cost.
+\item All other operations cost $G_{step}$ gas.
 \end{itemize}
+
+Additionally, when memory is accessed with MSTORE, MLOAD, RETURN, SHA3, CALLDATA or CALL, enlarge the memory so that all bytes now fit in it (memory must always be a whole number of 32-byte words). Suppose that the highest previously accessed memory index is $i$, and the new index is $i'$; an additional $a$ gas must be paid:
+
+\begin{equation}
+a \equiv \max(0, \ceil[\Bigg]{\frac{i'+1}{32}} - \ceil[\Bigg]{\frac{i+1}{32}}) G_{memory}
+\end{equation}
+
+Originally, memory being empty, the highest accessed index, $i$, is defined as $-1$.
+
+memoryFee is proportional to greatest index that has ever been referenced in this instance and thus it's highly unlikely addresses will ever go above 32-bit. Whenever a higher memory index is used, the fee difference to take it to the higher usage from the original (lower) usage is charged. MEMSIZE is initially just 0. Notably, because \textsc{MSTORE} and \textsc{MLOAD} operate on word lengths, they increase the highest-accessed index to 32 greater than their target index.
 
 \begin{enumerate}
 \item Let $\mathbb{S}' := \mathbb{S}$, the current state.
