@@ -281,42 +281,72 @@ The execution model specifies how the system state is altered given a series of 
 
 \subsubsection{Basics}
 
-The EVM is a simple stack-based architecture. The word size of the machine (and thus size of stack item) is 256-bit. This was chosen to facilitate the SHA3-256 hash scheme. The memory model is a simple word-addressed byte array. The stack has an unlimited size. The machine also has an independent storage model; this is similar in concept to the memory but rather than a byte array, it is a word-addressable word array. Unlike memory, which is volatile, storage is non volatile and is maintained as part of the system state in the state database.
+The EVM is a simple stack-based architecture. The word size of the machine (and thus size of stack item) is 256-bit. This was chosen to facilitate the SHA3-256 hash scheme. The memory model is a simple word-addressed byte array. The stack has an unlimited size. The machine also has an independent storage model; this is similar in concept to the memory but rather than a byte array, it is a word-addressable word array. Unlike memory, which is volatile, storage is non volatile and is maintained as part of the system state in the state database. All locations in both storage and memory are well-defined initially as zero.
+
+The machine does not follow the standard von Neumann architecture. Rather than storing program code in memory or storage, it is stored separately in a virtual ROM. It cannot be read directly; instead it exists only as a model for determining the next instruction to execute.
 
 The machine can have exceptional execution for several reasons, including stack underflows, invalid instructions and divides by zero. These unambiguously and validly result in immediate halting of the machine with all state changes left intact. The one piece of exceptional execution that does not leave state changes intact is the out-of-gas (OOG) exception. Here, the machine halts immediately and reports the issue to the execution agent (either the transaction processor or, recursively, the spawning execution environment) and which will deal with it separately.
 
 \subsubsection{Fees Overview}
 
-Fees (denominated in gas) are charged under three distinct circumstances, all three as prerequisite to the execution of an operation. The first and most common is the fee intrinsic to the computation of the operation. Most operations require a single gas fee to be paid for their execution; exceptions include \textsc{SSTORE}, \textsc{SLOAD}, \textsc{CALL}, \textsc{CREATE}, \textsc{BALANCE} and \textsc{SHA3}. Secondly, gas may be deducted in order to form the payment for a subordinate message call or contract creation; this forms part of the payment for \textsc{CREATE} and \textsc{CALL}. Finally, gas may be paid due to an increase in the usage of the memory.
+Fees (denominated in gas) are charged under three distinct circumstances, all three as prerequisite to the execution of an operation. The first and most common is the fee intrinsic to the computation of the operation. Most operations require a single gas fee to be paid for their execution; exceptions include {\small SSTORE}, {\small SLOAD}, {\small CALL}, {\small CREATE}, {\small BALANCE} and {\small SHA3}. Secondly, gas may be deducted in order to form the payment for a subordinate message call or contract creation; this forms part of the payment for {\small CREATE} and {\small CALL}. Finally, gas may be paid due to an increase in the usage of the memory.
 
-Over a contract's execution, the total fee for memory usage payable is proportional to smallest multiple of 32 bytes that are required such that all memory indices (whether for read or write) are included in the range. This is paid for on a just-in-time basis; as such, referencing an area of memory at least 32 bytes greater than any previously indexed memory will certainly result is an addition memory usage fee.
+Over a contract's execution, the total fee for memory-usage payable is proportional to smallest multiple of 32 bytes that are required such that all memory indices (whether for read or write) are included in the range. This is paid for on a just-in-time basis; as such, referencing an area of memory at least 32 bytes greater than any previously indexed memory will certainly result is an addition memory usage fee. Due to this fee it's highly unlikely addresses will ever go above 32-bit bounds since at the present price of ether and default gas price, that would cost around US\$20M for the memory fee alone.
+
+Storage fees have a slightly nuanced behaviour---to incentivise contracts to minimise storage use (which corresponds directly to a larger state database on all nodes), the execution fee for an operation that clears an entry in the storage is waived; in fact, it is effectively paid up-front since the initial usage of a storage location costs twice as much as the normal usage.
 
 More formally, given an instruction, it is possible to calculate the gas cost of executing it as follows:
 
 \begin{itemize}
-\item SHA3 costs $G_{sha3}$ gas
-\item SLOAD costs $G_{sload}$ gas
-\item BALANCE costs $G_{balance}$ gas
-\item SSTORE costs $d.G_{sstore}$ gas where:
+\item {\small SHA3} costs $G_{sha3}$ gas
+\item {\small SLOAD} costs $G_{sload}$ gas
+\item {\small BALANCE} costs $G_{balance}$ gas
+\item {\small SSTORE} costs $d.G_{sstore}$ gas where:
 \begin{itemize}
 \item $d = 2$ if the new value of the storage is non-zero and the old is zero;
 \item $d = 0$ if the new value of the storage is zero and the old is non-zero;
 \item $d = 1$ otherwise.
 \end{itemize}
-\item CALL costs $G_{call} + g$, where $g$ is the quantity of gas provided; some gas may later be refunded.
-\item CREATE costs $G_{create} + g$ gas, where $g$ is the quantity of gas provided.
+\item {\small CALL} costs $G_{call} + g$, where $g$ is the quantity of gas provided; some gas may later be refunded.
+\item {\small CREATE} costs $G_{create} + g$ gas, where $g$ is the quantity of gas provided.
 \item All other operations cost $G_{step}$ gas.
 \end{itemize}
 
-Additionally, when memory is accessed with MSTORE, MLOAD, RETURN, SHA3, CALLDATA or CALL, enlarge the memory so that all bytes now fit in it (memory must always be a whole number of 32-byte words). Suppose that the highest previously accessed memory index is $i$, and the new index is $i'$; an additional $a$ gas must be paid:
+Additionally, when memory is accessed with {\small MSTORE}, {\small MLOAD}, {\small RETURN}, {\small SHA3}, {\small CALLDATA} or {\small CALL}, the memory should be enlarged to the smallest multiple of words such that all addressed bytes now fit in it. The memory size must always be a whole number of 32-byte words. Suppose that the highest previously accessed memory index is $i$, and the new index is $i'$; an additional $G_{m}(i, i')$ gas must be paid:
 
 \begin{equation}
-a \equiv \max(0, \ceil[\Bigg]{\frac{i'+1}{32}} - \ceil[\Bigg]{\frac{i+1}{32}}) G_{memory}
+G_{m}(i, i') \equiv \max(0, \ceil[\Bigg]{\frac{i'+1}{32}} - \ceil[\Bigg]{\frac{i+1}{32}}) G_{memory}
 \end{equation}
 
-Originally, memory being empty, the highest accessed index, $i$, is defined as $-1$.
+Originally, with no accesses taken place, the highest accessed index of memory $i$ is defined as $-1$.
 
-memoryFee is proportional to greatest index that has ever been referenced in this instance and thus it's highly unlikely addresses will ever go above 32-bit. Whenever a higher memory index is used, the fee difference to take it to the higher usage from the original (lower) usage is charged. MEMSIZE is initially just 0. Notably, because \textsc{MSTORE} and \textsc{MLOAD} operate on word lengths, they increase the highest-accessed index to 32 greater than their target index.
+%Whenever a higher memory index is referenced, the fee difference to take it to the higher usage from the original (lower) usage is charged. Notably, because {\small MSTORE} and {\small MLOAD} operate on word lengths, they implicitly increase the highest-accessed index to 31 greater than their target index.
+
+\subsubsection{Execution Environment}
+
+In addition to the system state $\mathbb{S}$, there are several pieces of important, immutable, information used in the execution environment that the execution agent must provide:
+
+\begin{itemize}
+\item $a$, the address of the account which own the code that is executing.
+\item $o$, the sender address of the transaction that originated this execution.
+\item $p$, the price of gas in the transaction that originated this execution.
+\item $D$, the byte array that is the input data to this execution; if the execution agent is a transaction, this would be the transaction data.
+\item $s$, the address of the account which caused the code to be executing; if the execution agent is a transaction, this would be the transaction sender.
+\item $v$, the value passed to this account as part of the same procedure as execution; if the execution agent is a transaction, this would be the transaction value.
+\item $H$, the block header of the previous block.
+\item $H'$, the block header of the current block.
+\item $n$, the block number of the current block.
+\end{itemize}
+
+The execution model defines the function $X$, which can compute the resultant state $\mathbb{S}'$, given the required information:
+
+\begin{equation}
+\mathbb{S}' \equiv X(\mathbb{S}, a, o, p, D, s, v, H, H', n)
+\end{equation}
+
+\subsubsection{Execution Overview}
+
+
 
 \begin{enumerate}
 \item Let $\mathbb{S}' := \mathbb{S}$, the current state.
