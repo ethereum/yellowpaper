@@ -55,31 +55,60 @@ E language. Smart contracts. Bitcoin, namecoin \&c. Mastercoin.
 
 \subsection{Overview} \label{ch:overview}
 
-Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. Mathematically:
+Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. Formally:
 
 \begin{equation}
 S_{t+1} := f(S_t, T)
 \end{equation}
 
-and $f$ is the Ethereum state transition function. In Ethereum, $f$, together with $S$ are considerably more powerful then any existing comparable system; $f$ allows components to carry out arbitrary computation to be done while $S$ allows components to store arbitrary state between transactions.
+and $f$ is the Ethereum state transition function. In Ethereum, $f$, together with $S$ are considerably more powerful then any existing comparable system; $f$ allows components to carry out arbitrary computation to be done, while $S$ allows components to store arbitrary state between transactions.
 
-%where
+Transactions are collated into blocks; we then chain blocks together using a cryptographic hash as a means of reference. Blocks function as a journal, recording a series of transactions together with the previous block and an identifier for the final state (though do not store the final state itself---that would be far too big). They also punctuate the transaction series with incentives for nodes to \textit{mine}. This incentivisation takes places as a state-transition function, adding value to a nominated account.
 
-%\begin{eqnarray}
-%S_{t+1} := F(S_t, \mathbb{T}) \\
-%\mathbb{T} = [ T_0, T_1, ... ] \\
-%F(S, \mathbb{T}) := g(f(f(S, T_0), T_1) ...)
-%\end{eqnarray}
+Mining is the process of dedicating effort (working) to bolster one series of transactions (a block) over any other through a cryptographically secure proof. This scheme is known as a proof-of-work and is discussed in detail in section \ref{ch:pow}.
 
-Transactions are collated into blocks; we then chain blocks together using a cryptographic hash as a means of reference. Blocks function as a journal, recording a series of transactions together with the previous block and an identifier for the final state (though do not store the final state itself---that would be far too big).
+Formally, we expand to:
 
-Since the system is decentralised and all parties have an opportunity to create a new block on some older pre-existing block, there must be a method of selecting a single block-chain from the block-tree that results. If there is ever a disagreement between parties as to which root-to-leaf path down the block-tree is the `best', then a \textit{fork} occurs and there is a co-existance of multiple states of the system; this is to be avoided at all costs. In order to generate consensus we specify an algorithm to determine the canonical `best' block-chain given the block-tree; we use a simplified version of the GHOST algorithm \cite{ghost}.
+\begin{eqnarray}
+S_{t+1} & \equiv & F(S_t, \mathbb{T}) \\
+\mathbb{T} & \equiv & [ T_0, T_1, ... ] \\
+F(S, \mathbb{T}) & \equiv & g(f(f(S, T_0), T_1) ...)
+\end{eqnarray}
+
+Where $g$ is the block-finalisation state transition function (a function that rewards a nominated party); $\mathbb{T}$ is the series of transactions included in this block; and $F$ is the block-level state-transition function.
+
+\subsubsection{Value}
+
+In order to incentivise computation within the network, there needs to be an agreed method for transmitting value. To address this issue, Ethereum has an intrinsic currency, Ether, known also as ETH. The smallest subdenomination of Ether, and thus the one in which all integer values of the currency are counted is the Wei. One Ether is defined as being $10^{18}$ Wei. There exist other subdenominations of Ether:
+
+\par\bigskip
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+Multiplier & Name \\
+\midrule
+$10^0$ & Wei \\
+$10^{12}$ & Szabo \\
+$10^{15}$ & Finney \\
+$10^{18}$ & Turing \\
+\bottomrule
+\end{tabular}
+\end{center}
+\par
+
+Throughout the document, any reference to value, in the context of Ether, currency, a balance or a payment, should assumed to be counted in Wei. 
+
+\subsubsection{Which History?}
+
+Since the system is decentralised and all parties have an opportunity to create a new block on some older pre-existing block the resultant structure is necessarily a tree of blocks. In order to form a consensus as to which path, from root (the genesis block) to leaf (the block containing the most recent transactions) through this tree structure, known as the block-chain, there must be an agreed-upon scheme. If there is ever a disagreement between nodes as to which root-to-leaf path down the block-tree is the `best' block-chain, then a \textit{fork} occurs.
+
+This would mean that past a given point in time (block), there is a temporal co-existance of multiple states of the system: some nodes believing one block to contain the canonical transactions, other nodes believing some other block to be canonical, potentially containing radically different or incompatible transactions. This is to be avoided at all costs as the uncertainty that would ensue would likely kill all confidence in the entire system.
+
+The scheme we use in order to generate consensus is a simplified version of the GHOST algorithm \cite{ghost}. This process is described in detail in section \ref{ch:ghost}.
 
 \subsection{Blocks, State and Transactions} \label{ch:bst}
 
-\subsubsection{Currency}
-
-Ether, wei.
+Having introduced the basic concepts behind Ethereum, we will discuss the meaning of a transaction, a block and the state in more detail.
 
 \subsubsection{World State} \label{ch:state}
 
@@ -437,9 +466,9 @@ As of the proof-of-concept (PoC) series of the Ethereum software, the proof-of-w
 
 \subsubsection{PoC Series}
 
-For the proof-of-concept series, we use a simplified proof-of-work. This is not ASIC resistant and is meant merely as a placeholder.
+For the proof-of-concept series, we use a simplified proof-of-work. This is not ASIC resistant and is meant merely as a placeholder. It utilises the SHA3 hash function to 
 
-It is defined as $\mathcal{P}$:
+It is formally defined as $\mathcal{P}$:
 
 \begin{equation}
 \mathcal{P}(H, n) \equiv \mathcal{B}(\mathcal{S}(\mathcal{S}(\mathcal{R}(H)) \bigoplus n))
