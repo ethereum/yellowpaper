@@ -170,25 +170,31 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[nonce] A 256-bit hash which proves that a sufficient amount of computation has been carried out on this block.
 \end{description}
 
-The difficulty, $d$, is defined as:
+The difficulty of a block $H$, is defined as $H_d$:
 
 \begin{equation}
-d' :=  \begin{cases}
+H_d :=  \begin{cases}
 2^{22} & \quad \text{if genesis block}\\
-d' + \frac{d'}{1024} & \quad \text{if $t' < t + 42$}\\
-d' - \frac{d'}{1024} & \quad \text{otherwise}\\
+H'_d + \frac{H'_d}{1024} & \quad \text{if $H_t < H'_t + 42$}\\
+H'_d - \frac{H'_d}{1024} & \quad \text{otherwise}\\
 \end{cases}
 \end{equation}
 
-Where $d'$ is the previous block's difficulty, $t'$ is the prvious block's timestamp and $t$ is the current block's timestamp. This results in an expected period between blocks of roughly 60 seconds.
+Where $H'$ is the previous block, $H_t$ is the timestamp of block $H$.
 
-The nonce, $n$, must satisfy:
+This mechanism enforces a homeostasis in terms of the time between blocks; a smaller period between the last two blocks results in an increase in the difficulty level and thus additional computation required, lengthening the likely next period. Conversely, is the period is too large the difficulty, and expected time to the next block, is reduced.
+
+The nonce, $n$, must satisfy the relation:
 
 \begin{equation}
-\mathcal{P}(n) < \frac{d}{2^{256}}
+\mathcal{P}(H, n) < \frac{2^{256}}{H_d}
 \end{equation}
 
-Where $\mathcal{P}$ is the proof-of-work function (see section \ref{ch:pow}). The other two parts to a block are simply a list of the transactions (as defined previously) and a list of uncle headers (of the same format as above).
+Where $\mathcal{P}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an pseudo-random number cryptographically dependent on the parameters $H$ and $n$. Given an approximately uniform distribution in the range $[0, 2^{256})$, then the expected time to find a solution is proportional to the difficulty, $H_d$.
+
+This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propogate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because satisfaction of this requirement both depends on the contents of the block and 
+
+The other two components in the block are simply a list of the transactions (as defined previously) and a list of uncle headers (of the same format as above).
 
 \subsection{Gas and Payment} \label{ch:payment}
 
@@ -457,7 +463,7 @@ Two directions exist for ASIC resistance; firstly make it sequential memory-hard
 More formally, the proof-of-work function takes the form of $\mathcal{P}$:
 
 \begin{equation}
-\mathcal{P}(H, n) < \frac{H_d}{2^{256}}
+\mathcal{P}(H, n) < \frac{2^{256}}{H_d}
 \end{equation}
 
 Where $H$ is the new block's header \textit{without} the nonce entry; $H_d$ is the difficulty value (i.e. the block difficulty from section \ref{ch:ghost}).
@@ -466,7 +472,7 @@ As of the proof-of-concept (PoC) series of the Ethereum software, the proof-of-w
 
 \subsubsection{PoC Series}
 
-For the proof-of-concept series, we use a simplified proof-of-work. This is not ASIC resistant and is meant merely as a placeholder. It utilises the SHA3 hash function to 
+For the PoC series, we use a simplified proof-of-work. This is not ASIC resistant and is meant merely as a placeholder. It utilises the SHA3 hash function to 
 
 It is formally defined as $\mathcal{P}$:
 
@@ -487,7 +493,33 @@ For the release series, we use a more complex proof-of-work. This has yet to be 
 
 \section{User Interface}
 
-TODO 
+Browser-style.
+
+Displays ETH balance (i.e. functions as a wallet).
+
+Tabs or perhaps MacOS style app icons.
+
+Display taken up with a single app.
+
+Extensible \eg should be able to display the balances of other currencies hosted on Etheruem alongside ETH.
+
+Should be able to trust certain apps with creation of transactions (and thus sending of ETH \& payment of gas).
+
+Preconfigured with home app that is the Eth app store.
+
+Eth app store comes preloaded with high trust for ethereum.org; apps have identity and WoT reputation.
+
+\section{Implementing Contracts}
+
+\subsection{Data Feeds}
+
+External server runs node. Creates \& signs a transaction every minute containing new data. Sends to contract which knows to accept data only from this address. Allows polling of data from all other contracts (possibly for a microfee).
+
+\subsection{Random Numbers}
+
+Hash the block timestamp; for a series of pseudorandoms, take the previous, add some constant and hash the result.
+
+For a more secure pseudo-random offering both parties agree on a number of random data feed contracts; these are concatenated along with the block timestamp and hashed to produce the first number in the series.
 
 \section{Discussion} \label{ch:discussion}
 
