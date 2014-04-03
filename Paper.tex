@@ -23,7 +23,7 @@
 \newcommand*\ie{i.e.\@\xspace}
 %\renewcommand{\itemhook}{\setlength{\topsep}{0pt}  \setlength{\itemsep}{0pt}\setlength{\leftmargin}{15pt}}
 
-\title{Ethereum: A Secure Decentralised Compute Platform}
+\title{Ethereum: A Secure Decentralised Transaction Progression Platform}
 \author{
     Gavin Wood\\
     CTO, Ethereum Project\\
@@ -324,148 +324,117 @@ Originally, with no accesses taken place, the highest accessed index of memory $
 
 \subsubsection{Execution Environment}
 
-In addition to the system state $\mathbb{S}$, and the remaining gas for computation $g$, there are several pieces of important information used in the execution environment that the execution agent must provide:
+In addition to the system state $\mathbb{S}$, and the remaining gas for computation $g$, there are several pieces of important information used in the execution environment that the execution agent must provide; these are contained in the tuple $I$:
 
 \begin{itemize}
-\item $a$, the address of the account which owns the code that is executing.
-\item $o$, the sender address of the transaction that originated this execution.
-\item $p$, the price of gas in the transaction that originated this execution.
-\item $D$, the byte array that is the input data to this execution; if the execution agent is a transaction, this would be the transaction data.
-\item $s$, the address of the account which caused the code to be executing; if the execution agent is a transaction, this would be the transaction sender.
-\item $v$, the value passed to this account as part of the same procedure as execution; if the execution agent is a transaction, this would be the transaction value.
-\item $H$, the block header of the previous block.
-\item $H'$, the block header of the current block.
-\item $n$, the block number of the current block.
+\item $I_a$, the address of the account which owns the code that is executing.
+\item $I_o$, the sender address of the transaction that originated this execution.
+\item $I_p$, the price of gas in the transaction that originated this execution.
+\item $I_D$, the byte array that is the input data to this execution; if the execution agent is a transaction, this would be the transaction data.
+\item $I_s$, the address of the account which caused the code to be executing; if the execution agent is a transaction, this would be the transaction sender.
+\item $I_v$, the value passed to this account as part of the same procedure as execution; if the execution agent is a transaction, this would be the transaction value.
+\item $I_H$, the block header of the previous block.
+\item $I_{H'}$, the block header of the current block.
+\item $I_n$, the block number of the current block.
+\item $I_C$, the byte array that is the machine code to be executed.
 \end{itemize}
 
-These are assumed to be defined as such throughout. The execution model defines the function $X$, which can compute the resultant state $\mathbb{S}'$ and the remaining gas $g'$, given these definitions:
+The execution model defines the function $X$, which can compute the resultant state $\mathbb{S}'$ and the remaining gas $g'$, given these definitions:
 
 \begin{equation}
-(\mathbb{S}', g') \equiv \Xi(\mathbb{S}, g)
+(\mathbb{S}', g') \equiv \Xi(\mathbb{S}, g, I)
 \end{equation}
 
 \subsubsection{Execution Overview}
 
-
+We must now define the $\Xi$ function. In most practical implementations this will be modelled as an iterative progression of the pair comprising the full system state, $\mathbb{S}$ and the machine state, $\mathbb{M}$. Formally, we define it recursively with a function $X$. This uses an iterator function $O$ (which defines the result of a single cycle of the state machine) together with functions $Z$ which determines if the present state is an exceptional halting state of the machine and $H$, specifying if the present state is a normal halting state of the machine:
 
 \begin{eqnarray}
-\Xi(\mathbb{S}, g) & \equiv & X(\mathbb{S}, \mathbb{M}) \\
+\Xi(\mathbb{S}, g, I) & \equiv & X(\mathbb{S}, \mathbb{M}, I) \\
 \mathbb{M}_g & \equiv & g \\
-\mathbb{M}_P & \equiv & 0 \\
-\mathbb{M}_M & \equiv & [0, 0,...] \\
+\mathbb{M}_{pc} & \equiv & 0 \\
+\mathbb{M}_M & \equiv & [0, 0, ...] \\
 \mathbb{M}_i & \equiv & -1 \\
 \mathbb{M}_T & \equiv & [] \\
-X(\mathbb{S}, \mathbb{M}) & \equiv & \begin{cases}
-(\mathbb{S}, \mathbb{M}) & \text{if} \quad term(\mathbb{S}, \mathbb{M})\\
-X(O(\mathbb{S}, \mathbb{M})) & \text{otherwise}\\
+X(\mathbb{S}, \mathbb{M}, I) & \equiv & \begin{cases}
+(\mathbb{S}, \mathbb{M}, I) & \text{if} \quad Z(\mathbb{S}, \mathbb{M}, I)\\
+O(\mathbb{S}, \mathbb{M}, I) & \text{if} \quad H(\mathbb{S}, \mathbb{M}, I)\\
+X(O(\mathbb{S}, \mathbb{M}, I)) & \text{otherwise}\\
 \end{cases}
 \end{eqnarray}
 
+The machine state $\mathbb{M}$ is defined as the tuple $(g, pc, M, i, T)$ which are the gas available, the program counter, the memory contents, the highest used memory index, and the stack contents. The memory contents $\mathbb{M}_M$ are a series of zeroes of size $2^{256}$.
 
+For the ease of reading, the instruction mnemonics, written in smallcaps (\eg {\small ADD}), should be interpreted as their numeric equivalents; the full table of instructions and their specifics is given in Appendix \ref{app:vm}.
 
-\begin{enumerate}
-\item Let $\mathbb{S}' := \mathbb{S}$, the current state.
-\item Let $PC := 0$, the program counter.
-Let it be known that all storage operations operate on TO's state.
-Note that the memory is empty, thus (last used index + 1) = 0.
-\item Set TXDATA to the first INSIZE bytes of memory starting from INOFFSET in the caller memory.
-\item Repeat
-\begin{itemize}
-\item Calculate the cost of the current instruction (see below), set to $C$.
-\item If the instruction is invalid or STOP, goto step 6.
-\item If $GAS < C$ then $GAS := 0$; $S := ROLLBACK$ and evaluation finishes, returning false. 
-\item $GAS := GAS - C$
-\item Apply the instruction.
-\end{itemize}
-Until an operation execution error has occured or the instruction is STOP, RETURN or SUICIDE.
-\item If the output data of the call (R) is specified (through RETURN), then let the OUTSIZE bytes of caller memory beginning at OUTOFFSET.
-\item Returns true.
-\end{enumerate}
+\subsubsection{Exceptional Halting}
 
+For the purposes of defining $H$ and $O$, we define $o$ as the current operation to be executed:
 
+\begin{equation}
+o \equiv \begin{cases} I_C[\mathbb{M}_{pc}] & \text{if} \quad \mathbb{M}_{pc} < \lVert I_C \rVert \\
+\text{\small STOP} & \text{otherwise}
+\end{cases}
+\end{equation}
 
-When a contract address receives a transaction, a virtual machine is initiated with the contract's state.
+We also assume the fixed amounts of $\mathbf{\delta}$ and $\mathbf{\alpha}$, specifying the stack movement items removed and added, both subscriptable on the instruction and an instruction cost function $C$ evaluating to the full cost, in gas, of executing the given instruction. We also institute a function
+
+For calculating the exceptional halting function $Z$, we assume a secondary, instruction-specific halting function $Y$, which identifies edge cases specific to particular instructions (such as the division by zero or initiating a message call with insufficient funds). Thus $Z$ is defined as:
+
+\begin{equation}
+\begin{array} {lll}
+Z(\mathbb{S}, \mathbb{M}, I) & \equiv & Y(\mathbb{S}, \mathbb{M}, I) \\
+& & \vee \quad \mathbb{M}_g < C(\mathbb{S}, \mathbb{M}, I) \\
+& & \vee \quad \lVert\mathbb{M}_T\rVert < \mathbf{\delta}_o
+\end{array}
+\end{equation}
+
+This states that the execution is in an exceptional halting state if there is an instruction-specific issue, if there is insufficient gas or if there are insufficient stack items.
+
+\subsubsection{The Execution Cycle}
+
+Stack items are added or removed from the left-most, lower-indexed portion of the series; all other items remain unchanged:
+
+\begin{eqnarray}
+O(\mathbb{S}, \mathbb{M}, I) & \equiv & (\mathbb{S}', \mathbb{M}', I) \\
+\Delta & \equiv & \mathbf{\alpha}_o - \mathbf{\delta}_o \\
+\lVert\mathbb{M}'_{T}\rVert & \equiv & \lVert\mathbb{M}_{T}\rVert + \Delta \\
+\quad \forall i \in [\mathbf{\alpha}_o, \lVert\mathbb{M}'_T\rVert): \mathbb{M}'_{T_i} & \equiv & \mathbb{M}_{T_{i+\Delta}}
+\end{eqnarray}
+
+The gas is reduced by the instruction's gas cost and for most instructions, the program counter increments on each cycle, for the three exceptions, we assume a function $J$ which evaluates to the according value:
+
+\begin{eqnarray}
+\mathbb{M}'_{g} \equiv \mathbb{M}_{g} - C(\mathbb{S}, \mathbb{M}, I) \\
+\mathbb{M}'_{pc} \equiv \begin{cases}
+J(\mathbb{M}) & \text{if} \quad o \in \{ \text{\small JUMP, JUMPI} \} \\
+\mathbb{M}_{pc} + p & \text{if} \quad o \in [\text{\small PUSH1}, \text{\small PUSH32}] \\
+\mathbb{M}_{pc} + 1 & \text{otherwise}
+\end{cases}
+\end{eqnarray}
+
+where $p$ is the byte size of the push instruction, defined as:
+
+\begin{equation}
+p \equiv o - \text{\small PUSH1} + 2
+\end{equation}
+
+In general, we assume the memory and system state don't change:
+
+\begin{eqnarray}
+\mathbb{M}'_M & \equiv & \mathbb{M}_M \\
+\mathbb{M}'_i & \equiv & \mathbb{M}_i \\
+\mathbb{S}' & \equiv & \mathbb{S}
+\end{eqnarray}
+
+Certain instructions do; alter them---such changes are noted in Appendix \ref{app:vm}.
 
 \subsubsection{Terms}
-
-There exists a stack of variable size that stores 256-bit values at each location. (Note: most instructions operate solely on the stack altering its state in some way.)
-
-T'[i] is the ith item counting down from the top of the pre-stack (i.e. the stack immediately after instruction execution), with the top of the stack corresponding to i == 0.
-
-T[i] is the ith item counting down from the top of the post-stack (i.e. the stack immediately prior to instruction execution), with the top of the stack corresponding to i == 0.
-
-
-The exists a permanent store addressable by a 256-bit value that stores 256-bit values at each location.
-
-S'[i] is the permanent store (sometimes refered to as 'state' or 'store') of the VM at index i counting from zero PRIOR to instruction execution.
-
-S[i] is the permanent store (sometimes refered to as 'state' or 'store') of the VM at index i counting from zero AFTER to instruction execution.
-
-
-The exists a temporary store addressable by a 256-bit value that stores 256-bit values at each location.
-
-M'[i] is the temporary store (sometimes refered to as 'memory') of the VM at index i counting from zero PRIOR to instruction execution.
-
-M[i] is the temporary store (sometimes refered to as 'memory') of the VM at index i counting from zero AFTER instruction execution.
-
-C is the code, a byte sequence.
-
-PC' is the program counter PRIOR to instruction execution.
-
-PC is the program counter AFTER instruction execution.
-
-
-FEE(I, S', P', D) is the fee associated with the execution of instruction I with a machine of stack S', permanent store P' and which has already completed D operations.
-
-It is defined as F where:
-
-TODO: No it's not!
-
-IF I == SSTORE AND P[ S'[0] ] != 0 AND S'[1] == 0 THEN
-    F = S + dataFee - memoryFee
-IF I == SSTORE AND P[ S'[0] ] == 0 AND S'[1] != 0 THEN
-    F = S + dataFee + memoryFee
-IF I == SLOAD
-    F = S + dataFee
-IF I == EXTRO OR I == BALANCE
-    F = S + extroFee
-IF I == MKTX
-    F = S + txFee
-IF I == SHA256 OR I == SHA3 OR I == RIPEMD160 OR I == ECMUL OR I == ECADD
-    OR I == ECSIGN OR I == ECRECOVER OR I == ECVALID THEN
-    F = S + cryptoFee 
-
-Where:
-
-B[ A ] is the balance of the address given by A, with A interpreted as an address.
-
-ADDRESS is the address of the present contract.
-
-
-10. b. Initial Operation
-
-STEPSDONE := 0
-PC' := 0
-FOR ALL i: M' is initialised to the empty byte sequence.
-T' is initialised such that its cardinality is zero (i.e. the stack starts empty).
-S' must be equal to the value of P when the previous execution halted.
-
-
-10. c. General Operation
-
-The given steps are looped:
-1. Execution halts if B[ ADDRESS ] < F( C[PC'], S', P', STEPSDONE )
-2. B[ ADDRESS ] := B[ ADDRESS ] - F( P'[PC'], S', P', STEPSDONE )
-3. The operation given by P'[PC'] determines PC, P, T, S.
-4. PC' := PC; P' := P; T' := T; S' := S; STEPSDONE := STEPSDONE + 1
-
-
-10. d. VM Operations
 
 Summary line:
 <Op-code>: <Mnemonic> -<R> +<A>
 
-If PC is not defined explicitly, then it must be assumed PC := PC' + 1. Exceptions are PUSH, JUMP and JUMPI.
+If PC is not defined explicitly, then it must be assumed PC := PC' + 1. Exceptions are .
 
 The cardinality of T (i.e. size of the stack) is altered by A - R between T \& T', by adding or removing items as necessary from the front.
 
