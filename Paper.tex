@@ -16,6 +16,10 @@
 \usepackage{float}
 \usepackage{pdflscape}
 \usepackage{mathtools}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{afterpage}
+
+\definecolor{lightyellow}{rgb}{1,0.98,0.9}
 
 \DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
 \newcommand*\eg{e.g.\@\xspace}
@@ -23,13 +27,15 @@
 \newcommand*\ie{i.e.\@\xspace}
 %\renewcommand{\itemhook}{\setlength{\topsep}{0pt}  \setlength{\itemsep}{0pt}\setlength{\leftmargin}{15pt}}
 
-\title{Ethereum: A Secure Decentralised Transaction Progression Platform}
+\title{Ethereum: A Secure Decentralised Generalised Transaction Ledger}
 \author{
-    Gavin Wood\\
+    Dr. Gavin Wood\\
     CTO, Ethereum Project\\
     gavin@ethereum.org
 }
 \begin{document}
+
+\pagecolor{lightyellow}
 
 \begin{abstract}
 The block-chain paradigm when coupled with cryptographically-secured transactions has demonstrated its utility through a number of projects, not least Bitcoin. Each such project can be seen as a simple application on a decentralised, but singleton, compute resource. We can call this paradigm a transactional singleton machine with shared-state.
@@ -180,7 +186,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 The difficulty of a block $H$, is defined as $H_d$:
 
 \begin{equation}
-H_d :=  \begin{cases}
+H_d \equiv  \begin{cases}
 2^{22} & \quad \text{if genesis block}\\
 H'_d + \frac{H'_d}{1024} & \quad \text{if $H_t < H'_t + 42$}\\
 H'_d - \frac{H'_d}{1024} & \quad \text{otherwise}\\
@@ -248,15 +254,15 @@ The address of the new contract is defined as being the leftmost 160 bits of the
 
 \begin{eqnarray}
 a' & \equiv & \mathcal{L}_{160}(\mathcal{S}(\mathcal{R}([s, o])))\\
-a & \equiv & \arg \min_x : x \geq a' \wedge \mathbb{S}[x] = \emptyset
+a & \equiv & \arg \min_x : x \geq a' \wedge \mathbb{S}[x] = \varnothing
 \end{eqnarray}
 
-where $\mathcal{S}$ is the SHA3 256-bit hash function, $\mathcal{R}$ is the RLP encoding function, $\mathcal{L}_y(X)$ evaluates to the leftmost $y$ bits of the binary data $X$ and $\mathbb{S}[x]$ is the address state of $x$ or $\emptyset$ if none exists.
+where $\mathcal{S}$ is the SHA3 256-bit hash function, $\mathcal{R}$ is the RLP encoding function, $\mathcal{L}_y(X)$ evaluates to the leftmost $y$ bits of the binary data $X$ and $\mathbb{S}[x]$ is the address state of $x$ or $\varnothing$ if none exists.
 
 The account's nonce is initially defined as zero, the balance as the value passed, the storage as empty and the code hash as the SHA3 256-bit hash of the code, thus the new state becomes $\mathbb{S}'$:
 
 \begin{equation}
-\mathbb{S}'[r] := ( 0, v, \empty, \mathcal{S}(\mathbf{b}) )
+\mathbb{S}'[r] \equiv ( 0, v, \varnothing, \mathcal{S}(\mathbf{b}) )
 \end{equation}
 
 The state database is altered to include the pair $(\mathcal{S}(\mathbf{b}), \mathbf{b})$. Finally, the contract is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the contract's storage can be altered, further contracts can be created and further message calls can be made.
@@ -270,7 +276,7 @@ In the case of executing a message call, several parameters are required: sender
 In executing a message call, the account balance of the recipient is increased by the value passed, thus $\mathbb{S}$ becomes replaced with $\mathbb{S}'$:
 
 \begin{equation}
-\mathbb{S}'[r]_{balance} := \mathbb{S}[r]_{balance} + v
+\mathbb{S}'[r]_{balance} \equiv \mathbb{S}[r]_{balance} + v
 \end{equation}
 
 In the case that the recipient contains code to be executed (i.e. that the account is a contract), then the contract's body code, to be found in the state database with key $\mathbb{S}[r]_{code}$, is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts due to an exhausted gas supply, then no gas is refunded to the caller and the state is reverted to the point immediately prior to code execution. Unlike with contract creation, 
@@ -334,7 +340,6 @@ In addition to the system state $\mathbb{S}$, and the remaining gas for computat
 \item $I_s$, the address of the account which caused the code to be executing; if the execution agent is a transaction, this would be the transaction sender.
 \item $I_v$, the value passed to this account as part of the same procedure as execution; if the execution agent is a transaction, this would be the transaction value.
 \item $I_H$, the block header of the previous block.
-\item $I_{H'}$, the block header of the current block.
 \item $I_n$, the block number of the current block.
 \item $I_C$, the byte array that is the machine code to be executed.
 \end{itemize}
@@ -427,34 +432,7 @@ In general, we assume the memory and system state don't change:
 \mathbb{S}' & \equiv & \mathbb{S}
 \end{eqnarray}
 
-Certain instructions do; alter them---such changes are noted in Appendix \ref{app:vm}.
-
-\subsubsection{Terms}
-
-Summary line:
-<Op-code>: <Mnemonic> -<R> +<A>
-
-If PC is not defined explicitly, then it must be assumed PC := PC' + 1. Exceptions are .
-
-The cardinality of T (i.e. size of the stack) is altered by A - R between T \& T', by adding or removing items as necessary from the front.
-
-Where:
-R: The minimal cardinality of the stack for this instruction to proceed. If this is not achieved then the machine halts with a stack underflow exception. (Note: In some cases of some implementations, this is also the number of values "popped" from the implementation's stack during the course of instruction execution.)
-(A - R): The net change in cardinality of the stack over the course of instruction execution.
-
-$\forall$ i: if T[i] is not defined explicitly, then it must be assumed T[i] := T'[i + R - A] where i + R >= A.
-$\forall$ i: if M[i] is not defined explicitly, then it must be assumed M[i] := M'[i].
-$\forall$ i: if S[i] is not defined explicitly, then it must be assumed S[i] := S'[i].
-
-The expression (COND ? ONE : ZERO), where COND is an expression and ONE and ZERO are both value placeholders, evaluates to ONE if COND is true, and ZERO if COND is false. This is similar to the C-style ternary operator.
-
-When a 32-byte machine datum is interpreted as a 160-bit address or hash, the rightwards 20 bytes are taken (i.e. the low-order bytes when interpreting the data as Big-Endian).
-
-++ is the concatenation operator; all operands are byte arrays (mostly 32-byte arrays here, since that's the size of the VM's data \& address types).
-
-LEFT\_BYTES(A, n) returns the array bytes comprising the first (leftmost) n bytes of the 32 byte array A, which can be considered equivalent to a single value in the VM.
-
-
+However, instructions do typically alter one or several components of these values. Altered components, on an listed by instruction are noted in Appendix \ref{app:vm}.
 
 \subsection{Block-tree to Block-chain} \label{ch:ghost}
 
@@ -493,7 +471,7 @@ Secondly, it should not be possible to make super-linear profits, and especially
 
 One plague of the Bitcoin world is ASICs. These are specialised pieces of compute hardware that exist only to do a single task. In Bitcoin's case the task is the SHA256 hash function. While ASICs exist for a proof-of-work function, both goals are placed in jeopardy. Because of this, a proof-of-work function that is ASIC-resistant (i.e. difficult or economically inefficient to implement in specialised compute hardware) has been identified as the proverbial silver bullet.
 
-Two directions exist for ASIC resistance; firstly make it sequential memory-hard, i.e. engineer the function such that the determination of the nonce requires a lot of memory and that the memory cannot be used in parallel to discover multiple nonces simultaneously. The second is to make the type of computation it would need to do general-purpose; the meaning of ``specialised hardware''  for a general-purose task set is, naturally, general purpose hardware and as such commodity desktop computers are likely to be pretty close to ``specialised hardware'' for the task. 
+Two directions exist for ASIC resistance; firstly make it sequential memory-hard, i.e. engineer the function such that the determination of the nonce requires a lot of memory and that the memory cannot be used in parallel to discover multiple nonces simultaneously. The second is to make the type of computation it would need to do general-purpose; the meaning of ``specialised hardware''  for a general-purpose task set is, naturally, general purpose hardware and as such commodity desktop computers are likely to be pretty close to ``specialised hardware'' for the task. 
 
 More formally, the proof-of-work function takes the form of $\mathcal{P}$:
 
@@ -512,19 +490,23 @@ For the PoC series, we use a simplified proof-of-work. This is not ASIC resistan
 It is formally defined as $\mathcal{P}$:
 
 \begin{equation}
-\mathcal{P}(H, n) \equiv \mathcal{B}(\mathcal{S}(\mathcal{S}(\mathcal{R}(H)) \bigoplus n))
+\mathcal{P}(H, n) \equiv \mathcal{B}(\mathcal{S}(\mathcal{S}(\mathcal{R}(H)) \circ n))
 \end{equation}
 
 where:
 $\mathcal{R}(H)$ is the RLP encoding of the $H$;
 $\mathcal{S}$ is the SHA3 hash function accepting an arbitrary length series of bytes and evaluating to a series of 32 bytes (i.e. 256-bit);
 $n$ is the nonce, a series of 32 bytes;
-$\bigoplus$ is the series concatenation operator;
+$\circ$ is the series concatenation operator;
 $\mathcal{B}(X)$ evaluates to the value equal to X when interpreted as a big-endian-encoded integer.
 
 \subsubsection{Release Series}
 
-For the release series, we use a more complex proof-of-work. This has yet to be formally defined, but involves two components; firstly, 
+For the release series, we use a more complex proof-of-work. This has yet to be formally defined, but involves two components; firstly that it concerns contract processing, and by extension the evaluation of programs on the EVM. Secondly that it concerns the utilisation of either the block-chain or the full state trie.
+
+As an overview, the output of the function is based upon the system state, defined as the hash of the root node of the state trie. A set of transactions, pseudo-randomly determined from the nonce value and selected from the last $N$ blocks is taken. $N$ is large enough and the selection criteria are such that execution of the transactions requires some non-negligable amount of processing by the EVM. Whenever code is executed on the EVM, it is pseudo-randomly (seeded again by the nonce) corrupted before alteration. Corruption could involve switching addresses with other transactions or rotating them through in the state trie (perhaps to the next address with the same order of magnitude of funds), rotating through instructions that have equivalent stack behaviour (e.g. swapping {\small ADD} for {\small SUB} or {\small GT} for {\small EQ}), or more destructive techniques such as randomly changing opcodes. This results in a problem that both require generalised computation hardware and is sequentially memory (and perhaps even disk) hard.
+
+Any specialised hardware to perform this task could also be leveraged to speed up (and thus drive down costs) of general Ethereum transaction processing.
 
 \section{User Interface}
 
@@ -556,16 +538,14 @@ Hash the block timestamp; for a series of pseudorandoms, take the previous, add 
 
 For a more secure pseudo-random offering both parties agree on a number of random data feed contracts; these are concatenated along with the block timestamp and hashed to produce the first number in the series.
 
-\section{Discussion} \label{ch:discussion}
-
-\subsection{Examples} \label{ch:examples}
-
 \section{Conclusion} \label{ch:conclusion}
 
-\subsection{Further Work} \label{ch:further}
+This paper has introduced, discussed and formally defined the protocol of Ethereum.
 
 \bibliography{Biblio}
 \bibliographystyle{plainnat}
+
+\end{multicols}
 
 \appendix
 
@@ -607,6 +587,26 @@ For a more secure pseudo-random offering both parties agree on a number of rando
 \item[LLL] The Lisp-like Low-level Language, a human-writable language used for authoring simple contracts.
 
 \end{description}
+
+\section{Fee Schedule}\label{app:fees}
+
+\begin{tabular*}{\columnwidth}[h]{rll}
+\toprule
+Name & Value & Description* \\
+\midrule
+$G_{step}$ & 1 & Default amount of gas to pay for execution cycle. \\
+$G_{stop}$ & 0 & Nothing paid for the {\small STOP} operation. \\
+$G_{sha3}$ & 20 & Paid for a {\small SHA3} operation. \\
+$G_{sload}$ & 20 & Paid for a {\small SLOAD} operation. \\
+$G_{sstore}$ & 100 & Paid for a normal {\small SSTORE} operation (doubled of waived sometimes). \\
+$G_{balance}$ & 20 & Paid for a {\small BALANCE} operation. \\
+$G_{create}$ & 100 & Paid for a {\small CREATE} operation and for a contract creation transaction. \\
+$G_{call}$ & 20 & Paid for a {\small CALL} operation and for a message call transaction. \\
+$G_{memory}$ & 1 & Paid for every additional word when expanding memory. \\
+$G_{txdata}$ & 5 & Paid for every byte of data or code for a transaction. \\
+\bottomrule
+\end{tabular*}
+
 
 \section{Recursive Length Prefix}\label{app:rlp}
 
@@ -718,205 +718,269 @@ Uncle-blocks contain only the uncle's header.
 
 \section{Virtual Machine Specification}\label{app:vm}
 
-0s: arithmetic operations
+As previously specified in section \ref{ch:model}, these definitions take place in the final context there. In particular we assume $O$ is the EVM state-progression function and define the terms pertaining to the next cycle's state $\mathbb{S}'$ $\mathbb{M}'$ such that:
 
-0x00: STOP -0 +0
-Halts execution.
-Any gas left over gets returned to caller (or in the case of the top-level call, the sender converted back to ETH).
-0x01: ADD -2 +1
-S[0] := S'[0] + S'[1]
-0x02: MUL -2 +1
-S[0] := S'[0] * S'[1]
-0x03: SUB -2 +1
-S[0] := S'[0] - S'[1]
-0x04: DIV -2 +1
-S[0] := S'[0] / S'[1]
-0x05: SDIV -2 +1
-S[0] := S'[0] / S'[1]
-S'[0] \& S'[1] are interpreted as signed 256-bit values for the purposes of this operation.
-0x06: MOD -2 +1
-S[0] := S'[0] % S'[1]
-0x07: SMOD -2 +1
-S[0] := S'[0] % S'[1]
-S'[0] \& S'[1] are interpreted as signed 256-bit values for the purposes of this operation.
-0x08: EXP -2 +1
-S[0] := S'[0] + S'[1]
-0x09: NEG -1 +1
-S[0] := -S'[0]
-0x0a: LT -2 +1
-S[0] := S'[0] < S'[1] ? 1 : 0
-0x0b: GT -2 +1
-S[0] := S'[0] > S'[1] ? 1 : 0
-0x0c: EQ -2 +1
-S[0] := S'[0] == S'[1] ? 1 : 0
-0x0d: NOT -1 +1
-S[0] := S'[0] == 0 ? 1 : 0
+\begin{equation}
+O(\mathbb{S}, \mathbb{M}, I) \equiv (\mathbb{S}', \mathbb{M}', I)
+\end{equation}
 
-10s: bit operations
+When interpreting 256-bit binary values as integers the representation is big-endian.
 
-0x10: AND -2 +1
-S[0] := S'[0] AND S'[1]
-0x11: OR -2 +1
-S[0] := S'[0] OR S'[1]
-0x12: XOR -2 +1
-S[0] := S'[0] XOR S'[1]
-0x13: BYTE -2 +1
-S[0] := S'[0]th byte of S'[1]
-if S'[0] < 32
-S[0] := 0
-otherwise
-for Xth byte, we count from left - 0th is therefore the leftmost (most significant in BE) byte.
+When a 32-byte machine datum is converted to and from as a 160-bit address or hash, the leftwards (high-order for BE) 20 bytes are used and the right most 12 are discarded or filled with zeroes.
 
-20s: crypto opcodes
+TODO: Specify minimum memory limits for a general cost definition.
 
-0x20: SHA3 -2 +1
-S[0] := SHA3( T'[ S'[0] ++ ... ++ (S'[0] + S'[1]) ])
+\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\toprule
+\multicolumn{5}{c}{\textbf{0s: Stop and Arithmetic Operations}} \\
+\multicolumn{5}{l}{All arithmetic is modulo $2^{256}$.} \vspace{5pt} \\
+\textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
+0x00 & {\small STOP} & 0 & 0 & Halts execution. \\
+&&&& $\mathbb{M}'_R = []$ \\
+\midrule
+0x01 & {\small ADD} & 2 & 1 & Addition operation. \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_T[0] + \mathbb{M}_T[1]$ \\
+\midrule
+0x02 & {\small MUL} & 2 & 1 & Multiplication operation. \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_T[0] \times \mathbb{M}_T[1]$ \\
+\midrule
+0x03 & {\small SUB} & 2 & 1 & Subtraction operation. \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_T[0] - \mathbb{M}_T[1]$ \\
+\midrule
+0x04 & {\small DIV} & 2 & 1 & Integer division operation. \\
+&&&& $\mathbb{M}'_T[0] \equiv \lfloor\mathbb{M}_T[0] \div \mathbb{M}_T[1]\rfloor$ \\
+\midrule
+0x05 & {\small SDIV} & 2 & 1 & Signed integer division operation. \\
+&&&& $\mathbb{M}'_T[0] \equiv \lfloor\mathbb{M}_T[0] \div \mathbb{M}_T[1]\rfloor$ \\
+&&&& Where all values are treated as signed 256-bit integers for the purposes of this operation. \\
+\midrule
+0x06 & {\small MOD} & 2 & 1 & Modulo remainder operation. \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_T[0] \mod{ \mathbb{M}_T[1] }$ \\
+\midrule
+0x07 & {\small SMOD} & 2 & 1 & Modulo remainder operation. \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_T[0] \mod{ \mathbb{M}_T[1] }$ \\
+&&&& Where all values are treated as signed 256-bit integers for the purposes of this operation. \\
+\midrule
+0x08 & {\small EXP} & 2 & 1 & Exponential operation. \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_T[0] ^ {\mathbb{M}_T[1] }$ \\
+\midrule
+0x09 & {\small NEG} & 1 & 1 & Negation operation. \\
+&&&& $\mathbb{M}'_T[0] \equiv -\mathbb{M}_T[0]$ \\
+&&&& Where all values are treated as signed 256-bit integers for the purposes of this operation. \\
+\midrule
+0x0a & {\small LT} & 2 & 1 & Less-than comparision. \\
+&&&& $\mathbb{M}'_T[0] \equiv \begin{cases} 1 & \text{if} \quad \mathbb{M}_T[0] < \mathbb{M}_T[1] \\ 0 & \text{otherwise} \end{cases}$ \\
+\midrule
+0x0b & {\small GT} & 2 & 1 & Greater-than comparision. \\
+&&&& $\mathbb{M}'_T[0] \equiv \begin{cases} 1 & \text{if} \quad \mathbb{M}_T[0] > \mathbb{M}_T[1] \\ 0 & \text{otherwise} \end{cases}$ \\
+\midrule
+0x0c & {\small EQ} & 2 & 1 & Equality comparision. \\
+&&&& $\mathbb{M}'_T[0] \equiv \begin{cases} 1 & \text{if} \quad \mathbb{M}_T[0] = \mathbb{M}_T[1] \\ 0 & \text{otherwise} \end{cases}$ \\
+\midrule
+0x0d & {\small NOT} & 1 & 1 & Simple not operator. \\
+&&&& $\mathbb{M}'_T[0] \equiv \begin{cases} 1 & \text{if} \quad \mathbb{M}_T[0] = 0 \\ 0 & \text{otherwise} \end{cases}$ \\
+\end{tabular*}
 
-30s: closure state opcodes
+\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\toprule
+\multicolumn{5}{c}{\textbf{10s: Bitwise Logic Operations}} \\
+\multicolumn{5}{l}{$\mathbb{M}_T[0]_i$ gives the $i$th bit (counting from zero) of $\mathbb{M}_T[0]$} \vspace{5pt} \\
+\textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
+0x10 & {\small AND} & 2 & 1 & Bitwise AND operation. \\
+&&&& $\forall i \in [0..255]: \mathbb{M}'_T[0]_i \equiv \mathbb{M}_T[0]_i \wedge \mathbb{M}_T[1]_i$ \\
+\midrule
+0x11 & {\small OR} & 2 & 1 & Bitwise OR operation. \\
+&&&& $\forall i \in [0..255]: \mathbb{M}'_T[0]_i \equiv \mathbb{M}_T[0]_i \vee \mathbb{M}_T[1]_i$ \\
+\midrule
+0x12 & {\small XOR} & 2 & 1 & Bitwise XOR operation. \\
+&&&& $\forall i \in [0..255]: \mathbb{M}'_T[0]_i \equiv \mathbb{M}_T[0]_i \oplus \mathbb{M}_T[1]_i$ \\
+\midrule
+0x13 & {\small BYTE} & 2 & 1 & Retrieve single byte from word. \\
+&&&& $\forall i \in [0..7]: \mathbb{M}'_T[0]_i \equiv \begin{cases} \mathbb{M}_T[1]_{(i + 8\mathbb{M}_T[0])} & \text{if} \quad \mathbb{M}_T[0] < 32 \\ 0 & \text{otherwise} \end{cases} $\\
+&&&& For Nth byte, we count from the left (i.e. N=0 would be the most significant in big endian). \\
+\bottomrule
+\end{tabular*}
 
-0x30: ADDRESS -0 +1
-S[0] := ADDRESS
-i.e. the address of this closure.
-0x31: BALANCE -1 +1
-S[0] := B[ S'[0] ]
-i.e. the balance of this closure.
-0x32: ORIGIN -0 +1
-S[0] := A
-Where A is the address of the account that made the original transaction leading to the current closure and is paying the fees
-0x33: CALLER -0 +1
-S[0] := A
-Where A is the address of the object that made this call.
-0x34: CALLVALUE -0 +1
-S[0] := V
-Where V is the value attached to this call.
-0x35: CALLDATALOAD -1 +0
-S[0] := D[ S'[0] ... (S'[0] + 31) ]
-Where D is the data attached to this call (as a byte array).
-Any bytes that are out of bounds of the data are defined as zero.
-0x36: CALLDATASIZE -0 +1
-S[0] := DS
-Where DS is the number of bytes of data attached to this call.
-0x37: GASPRICE -0 +1
-S[0] := V
-Where V is the current gas price (né fee multiplier).
+\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\toprule
+\multicolumn{5}{c}{\textbf{20s: SHA3}} \vspace{5pt} \\
+\textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
+0x20 & {\small SHA3} & 2 & 1 & Compute SHA3-256 hash. \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathcal{S}(\mathbb{M}_M[ \mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + \mathbb{M}_S[1] - 1) ])$ \\
+\bottomrule
+\end{tabular*}
 
-40s: block operations
+\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\toprule
+\multicolumn{5}{c}{\textbf{30s: Environmental Information}} \vspace{5pt} \\
+\textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
+0x30 & {\small ADDRESS} & 0 & 1 & Get address of currently executing account. \\
+&&&& $\mathbb{M}'_T[0] \equiv I_a$ \\
+\midrule
+0x31 & {\small BALANCE} & 0 & 1 & Get balance of currently executing account. \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{S}[I_a]_balance$ \\
+\midrule
+0x32 & {\small ORIGIN} & 0 & 1 & Get execution origination address. \\
+&&&& $\mathbb{M}'_T[0] \equiv I_o$ \\
+&&&& This is the sender of original transaction; it's never a contract. \\
+\midrule
+0x33 & {\small CALLER} & 0 & 1 & Get caller address. \\
+&&&& $\mathbb{M}'_T[0] \equiv I_c$ \\
+&&&& This is the address of the account that is directly responsible for this execution. \\
+\midrule
+0x34 & {\small CALLVALUE} & 0 & 1 & Get deposited value by the instruction/transaction responsible for this execution. \\
+&&&& $\mathbb{M}'_T[0] \equiv I_v$ \\
+\midrule
+0x35 & {\small CALLDATALOAD} & 1 & 1 & Get input data of current environment. \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathcal{I}_D[ \mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + 31) ]$ \\
+&&&& This pertains to the input data passed with the message call instruction or transaction. \\
+\midrule
+0x36 & {\small CALLDATASIZE} & 0 & 1 & Get size of input data in current environment. \\
+&&&& $\mathbb{M}'_T[0] \equiv \lVert \mathcal{I}_D \rVert$ \\
+&&&& This pertains to the input data passed with the message call instruction or transaction. \\
+\midrule
+0x37 & {\small GASPRICE} & 0 & 1 & Get price of gas in current environment. \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathcal{I}_p$ \\
+&&&& This is gas price specified by the originating transaction.\\
+\bottomrule
+\end{tabular*}
 
-0x40: PREVHASH -0 +1
-S[0] := H
-Where H is the SHA3 hash of the previous block.
-0x41: COINBASE -0 +1
-S[0] := A
-Where A is the coinbase address of the current block.
-0x42: TIMESTAMP -0 +1
-S[0] := T
-Where T is the timestamp of the current block (given as the Unix time\_t when this block began its existence).
-0x43: NUMBER -0 +1
-S[0] := N
-Where N is the block number of the current block (counting upwards from genesis block which has N == 0).
-0x44: DIFFICULTY -0 +1
-S[0] := D
-Where D is the difficulty of the current block.
-0x45: GASLIMIT -0 +1
-S[0] := L
-Where L is the total gas limit of the current block. Always $10^6$.
+\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\toprule
+\multicolumn{5}{c}{\textbf{40s: Block Information}} \vspace{5pt} \\
+\textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
+0x40 & {\small PREVHASH} & 0 & 1 & Get hash of most recent complete block. \\
+&&&& $\mathbb{M}'_T[0] \equiv I_{H_{prevHash}}$ \\
+&&&& $I_{H_{prevHash}}$ is the previous block's hash. \\
+\midrule
+0x41 & {\small COINBASE} & 0 & 1 & Get the block's coinbase address. \\
+&&&& $\mathbb{M}'_T[0] \equiv I_{H_{coinbase}}$ \\
+\midrule
+0x42 & {\small TIMESTAMP} & 0 & 1 & Get the block's timestamp. \\
+&&&& $\mathbb{M}'_T[0] \equiv I_{H_{timestamp}}$ \\
+\midrule
+0x43 & {\small NUMBER} & 0 & 1 & Get the block's number. \\
+&&&& $\mathbb{M}'_T[0] \equiv I_{H_{number}}$ \\
+&&&& $I_{H_{number}}$ is the total number of ancestor blocks of the current block. \\
+\midrule
+0x44 & {\small DIFFICULTY} & 0 & 1 & Get the block's difficulty. \\
+&&&& $\mathbb{M}'_T[0] \equiv I_{H_{difficulty}}$ \\
+\midrule
+0x45 & {\small GASLIMIT} & 0 & 1 & Get the block's gas limit. \\
+&&&& $\mathbb{M}'_T[0] \equiv 10^6$ \\
+&&&& Presently, the gas limit is hard-coded in the protocol. \\
+\bottomrule
+\end{tabular*}
 
-50s: stack, memory, storage and execution path operations
+\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\toprule
+\multicolumn{5}{c}{\textbf{50s: Stack, Memory, Storage and Flow Operations}} \vspace{5pt} \\
+\textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
+0x50 & {\small POP} & 1 & 0 & Remove item from stack. \\
+\midrule
+0x51 & {\small DUP} & 1 & 2 & Duplicate stack item. \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_T[0]$ \\
+\midrule
+0x52 & {\small SWAP} & 2 & 2 & Exchange stack items. \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_T[1]$ \\
+&&&& $\mathbb{M}'_T[1] \equiv \mathbb{M}_T[0]$ \\
+\midrule
+0x53 & {\small MLOAD} & 1 & 1 & Load word from memory. \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_M[\mathbb{M}_T[0] \dots (\mathbb{M}_T[0] + 31) ]$ \\
+\midrule
+0x54 & {\small MSTORE} & 2 & 0 & Save word to memory. \\
+&&&& $\mathbb{M}'_M[ \mathbb{M}_T[0] \dots (\mathbb{M}_T[0] + 31) ] \equiv \mathbb{M}_T[1]$ \\
+\midrule
+0x55 & {\small MSTORE8} & 2 & 0 & Save byte to memory. \\
+&&&& $\mathbb{M}'_M[ \mathbb{M}_T[0] ] \equiv (\mathbb{M}_T[1] \mod 256) $ \\
+\midrule
+0x56 & {\small SLOAD} & 1 & 1 & Load word from storage. \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_S[\mathbb{M}_T[0]]$ \\
+\midrule
+0x57 & {\small SSTORE} & 2 & 0 & Save word to storage. \\
+&&&& $\mathbb{M}'_S[ \mathbb{M}_T[0] ] \equiv \mathbb{M}_T[1] $ \\
+\midrule
+0x58 & {\small JUMP} & 1 & 0 & Alter the program counter. \\
+&&&& $J(\mathbb{M}) \equiv \mathbb{M}_T[0] $ \\
+&&&& This has the effect of writing said value to $\mathbb{M}_{pc}$ \\
+\midrule
+0x59 & {\small JUMPI} & 2 & 0 & Conditionally alter the program counter. \\
+&&&& $J(\mathbb{M}) \equiv \begin{cases} \mathbb{M}_T[0] & \text{if} \quad \mathbb{M}_T[0] = 0 \\ \mathbb{M}_{pc} + 1 & \text{otherwise} \end{cases} $ \\
+&&&& This has the effect of writing said value to $\mathbb{M}_{pc}$ \\
+\midrule
+0x5a & {\small PC} & 0 & 1 & Get the program counter. \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_{pc}$ \\
+\midrule
+0x5b & {\small MSIZE} & 0 & 1 & Get the size of active memory. \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_{i}$ \\
+\midrule
+0x5c & {\small GAS} & 0 & 1 & Get the amount of available gas. \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_{g}$ \\
+\bottomrule
+\end{tabular*}
 
-0x51: POP -1 +0
-0x52: DUP -1 +2
-S[0] := S'[0]
-0x53: SWAP -2 +2
-S[0] := S'[1]
-S[1] := S'[0]
-0x54: MLOAD -1 +1
-S[0] := T'[ S'[0] ... S'[0] + 31 ]
-0x55: MSTORE -2 +0
-T[ S'[0] ... S'[0] + 31 ] := S'[1]
-0x56: MSTORE8 -2 +0
-T[ S'[0] ... S'[0] + 31 ] := S'[1] \& 0xff
-0x57: SLOAD -1 +1
-S[0] := P'[ S'[0] ]
-0x58: SSTORE -2 +0
-P[ S'[0] ] := S'[1]
-0x59: JUMP -1 +0
-PC := S'[0]
-0x5a: JUMPI -2 +0
-PC := S'[1] == 0 ? PC' : S'[0]
-0x:5b PC -0 +1
-S[0] := PC
-0x5c: MSIZE -0 +1
-S[0] = sizeof(T)
-0x5d: GAS
-S[0] := G
-Where G is the amount of gas remaining after executing the opcode.
+\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\toprule
+\multicolumn{5}{c}{\textbf{60s \& 70s: Push Operations}} \vspace{5pt} \\
+\textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
+0x60 & {\small PUSH1} & 0 & 1 & Place 1 byte item on stack. \\
+&&&& $\mathbb{M}'_T[0] \equiv I_C[\mathbb{M}_{pc} + 1]$ \\
+&&&& The byte is right-aligned (takes the lowest significant place in big endian). \\
+\midrule
+0x61 & {\small PUSH2} & 0 & 1 & Place 2-byte item on stack. \\
+&&&& $\mathbb{M}'_T[0] \equiv I_C[(\mathbb{M}_{pc} + 1) \dots (\mathbb{M}_{pc} + 2) ]$ \\
+&&&& The bytes are right-aligned (takes the lowest significant place in big endian). \\
+\midrule
+\multicolumn{1}{c}{\vdots} & \multicolumn{1}{c}{\vdots} & \vdots & \vdots & \multicolumn{1}{c}{\vdots} \\
+\midrule
+0x7f & {\small PUSH32} & 0 & 1 & Place 32-byte (full word) item on stack. \\
+&&&& $\mathbb{M}'_T[0] \equiv I_C[(\mathbb{M}_{pc} + 1) \dots (\mathbb{M}_{pc} + 32) ]$ \\
+\bottomrule
+\end{tabular*}
 
-60s \& 70s: push
 
-0x60: PUSH1 0 +1
-S[0] := C[ PC' + 1 ]
-PC := PC' + 2
-0x61: PUSH2 0 +1
-S[0] := C[ PC' + 1 ] ++ C[ PC' + 2 ]
-PC := PC' + 3
-...
-0x7f: PUSH32 0 +1
-S[0] := C[ PC' + 1 ] ++ C[ PC' + 2 ] ++ ... ++ C[ PC' + 32 ]
-PC := PC' + 33
+\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\toprule
+\multicolumn{5}{c}{\textbf{f0s: System operations}} \vspace{5pt} \\
+\textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
+0xf0 & {\small CREATE} & 5 & 1 & Create a new contract. \\
+&&&&  \\
+\midrule
+0xf1 & {\small CALL} & 7 & 1 & Message-call into contract. \\
+&&&&  \\
+\midrule
+0xf2 & {\small RETURN} & 2 & 0 & Halt execution returning output data. \\
+&&&& $\mathbb{M}'_R = \mathbb{M}_M[ \mathbb{M}_T[0] \dots ( \mathbb{M}_T[0] + \mathbb{M}_T[1] - 1 ) ]$ \\
+\midrule
+0xff & {\small SUICIDE} & 1 & 0 & Halt execution and obliterate account. \\
+&&&& $\mathbb{S}'[\mathbb{M}_T[0]]_{balance} \equiv \mathbb{S}[\mathbb{M}_T[0]]_{balance} + \mathbb{S}[I_a]_{balance}$ \\
+&&&& $\mathbb{S}'[I_a] \equiv \varnothing$ \\
+\bottomrule
+\end{tabular*}
 
-f0s: closure-level operations
-
-0xf0: CREATE -5 +1
-Immediately creates a contract where:
-The endowment is given by S'[0]
-The body code of the eventual closure is given by T'[ S'[1] ... ( S'[1] + S'[2] - 1 ) ]
-The initialisation code of the eventual closure is given by T'[ S'[3] ... ( S'[3] + S'[4] - 1 ) ]
-(Thus the total number of bytes of the transaction data is given by S'[2] + S'[4].)
-S[0] = A
-where A is the address of the created contract or 0 if the creation failed.
-Fees are deducted from the sender balance to pay for enough gas to complete the operation (i.e. contract creation fee + initial storage fee). If there was not enough gas to complete the operation, then all gas will be deducted and the operation fails.
-0xf1: CALL -7 +1
-Immediately executes a call where:
-The recipient is given by S'[0], when interpreted as an address.
-The value is given by S'[1]
-The gas is given by S'[2]
-The input data of the call is given by T'[ S'[3] ... ( S'[3] + S'[4] - 1 ) ]
-(Thus the number of bytes of the transaction is given by S'[4].)
-The output data of the call is given by T[ S'[5] ... ( S'[5] + MIN( S'[6], S[0] ) - 1 ) ]
-If 0 gas is specified, transfer all gas from the caller to callee gas balance, otherwise transfer only the amount given. If there isn't enough gas in the caller balance, operation fails.
-If the value is less than the amount in the caller's balance then nothing is executed and the S'[2] gas gets refunded to the caller.
-See Appendix A for execution.
-Add any remaining callee gas to the caller's gas.
-S[0] = R
-where R = 1 when the instrinsic return code of the call is true, R = 0 otherwise.
-NOT YET: POST -5 +1
-Registers for delayed execution a call where:
-The recipient is given by S'[0], when interpreted as an address.
-The value is given by S'[1]
-The gas to supply the transaction with is given by S'[2] (paid for from the current gas balance)
-The input data of the call is given by T'[ S'[3] ... ( S'[3] + S'[4] - 1 ) ]
-(Thus the number of bytes of the transaction is given by S'[4].)
-Contract pays for itself to run at a defered time from its own GAS supply. The miner has no choice but to execute.
-NOT YET: ALARM -6 +1
-Registers for delayed execution a call where:
-The recipient is given by S'[0], when interpreted as an address.
-The value is given by S'[1]
-The gas (to convert from ETH at the later time) is given by S'[2]
-The number of blocks to wait before executing is S'[3]
-The input data of the call is given by T'[ S'[4] ... ( S'[4] + S'[5] - 1 ) ]
-(Thus the number of bytes of the transaction is given by S'[5].)
-Total gas used now is S'[3] * S'[5] * deferFee.
-Contract pays for itself to run at the defered time converting given amount of gas from its ETH balance; if it cannot pay it terminates as a bad transaction. TODO: include baseFee and allow miner freedom to determine whether to execute or not. If not, the next miner will have the chance.
-0xf2: RETURN -2 +0
-Halts execution.
-R := T[ S'[0] ... ( S'[0] + S'[1] - 1 ) ]
-Where the output data of the call is specified as R.
-Any gas left over gets returned to caller (or in the case of the top-level call, the sender converted back to ETH).
-0xff: SUICIDE -1 +0
-Halts execution.
-FOR ALL i: IF P[i] NOT EQUAL TO 0 THEN B[ S'[0] ] := B[ S'[0] ] + memoryFee
-B[ S'[0] ] := B[ S'[0] ] + B[ ADDRESS ]
-Removes all contract-related information from the Ethereum system.
+%0xf0: CREATE -5 +1
+%Immediately creates a contract where:
+%The endowment is given by S'[0]
+%The body code of the eventual closure is given by T'[ S'[1] ... ( S'[1] + S'[2] - 1 ) ]
+%The initialisation code of the eventual closure is given by T'[ S'[3] ... ( S'[3] + S'[4] - 1 ) ]
+%(Thus the total number of bytes of the transaction data is given by S'[2] + S'[4].)
+%S[0] = A
+%where A is the address of the created contract or 0 if the creation failed.
+%Fees are deducted from the sender balance to pay for enough gas to complete the operation (i.e. contract creation fee + initial storage fee). If there was not enough gas to complete the operation, then all gas will be deducted and the operation fails.
+%0xf1: CALL -7 +1
+%Immediately executes a call where:
+%The recipient is given by S'[0], when interpreted as an address.
+%The value is given by S'[1]
+%The gas is given by S'[2]
+%The input data of the call is given by T'[ S'[3] ... ( S'[3] + S'[4] - 1 ) ]
+%(Thus the number of bytes of the transaction is given by S'[4].)
+%The output data of the call is given by T[ S'[5] ... ( S'[5] + MIN( S'[6], S[0] ) - 1 ) ]
+%If 0 gas is specified, transfer all gas from the caller to callee gas balance, otherwise transfer only the amount given. If there isn't enough gas in the caller balance, operation fails.
+%If the value is less than the amount in the caller's balance then nothing is executed and the S'[2] gas gets refunded to the caller.
+%See Appendix A for execution.
+%Add any remaining callee gas to the caller's gas.
+%S[0] = R
+%where R = 1 when the instrinsic return code of the call is true, R = 0 otherwise.
 
 \section{Low-level Lisp-like Language}\label{app:lll}
 
@@ -945,30 +1009,6 @@ $2^{22}$ refers to the difficulty.
 $\mathcal{S}(\mathcal{R}([]))$ values refer to the hashes of the transaction and uncle lists in RLP, both empty.
 
 $stateRoot$ refers to the state root.
-
-\section{Fee Schedule}\label{app:fees}
-
-Constants:
-
-* STEPGAS = 1
-
-* SHA3GAS = 20
-
-* SLOADGAS = 20
-
-* SSTOREGAS = 100
-
-* BALANCEGAS = 20
-
-* CREATEGAS = 100
-
-* CALLGAS = 20
-
-* MEMORYGAS = 1
-
-* TXDATAGAS = 5 [not used in the VM]
-
-\end{multicols}
 
 \end{document}
 
