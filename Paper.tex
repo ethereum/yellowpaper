@@ -200,7 +200,7 @@ This mechanism enforces a homeostasis in terms of the time between blocks; a sma
 The nonce, $n$, must satisfy the relation:
 
 \begin{equation}
-\mathcal{P}(H, n) < \frac{2^{256}}{H_d}
+\mathcal{P}(H, n) \leqslant \frac{2^{256}}{H_d}
 \end{equation}
 
 Where $\mathcal{P}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an pseudo-random number cryptographically dependent on the parameters $H$ and $n$. Given an approximately uniform distribution in the range $[0, 2^{256})$, then the expected time to find a solution is proportional to the difficulty, $H_d$.
@@ -250,14 +250,14 @@ After the message call or contract creation is processed, the state is finalised
 
 There are number of intrinsic parameters used when creating a contract: sender ($s$), nonce ($o$), available gas ($g$), endowment ($v$) together with the two arbitrary length byte arrays, $\mathbf{i}$ for the initialisation EVM code and $\mathbf{b}$ for the EVM code of the body.
 
-The address of the new contract is defined as being the leftmost 160 bits of the SHA3 hash of RLP encoding of the structure \texttt{[ sender, nonce ]}. In in the unlikely event that the addresses is already in use, it is treated as a big-endian integer and incremented by one until an unused address is arrived at, thus:
+The address of the new contract is defined as being the rightmost 160 bits of the SHA3 hash of RLP encoding of the structure \texttt{[ sender, nonce ]}. In in the unlikely event that the addresses is already in use, it is treated as a big-endian integer and incremented by one until an unused address is arrived at, thus:
 
 \begin{eqnarray}
 a' & \equiv & \mathcal{L}_{160}(\mathcal{S}(\mathcal{R}([s, o])))\\
 a & \equiv & \arg \min_x : x \geq a' \wedge \mathbb{S}[x] = \varnothing
 \end{eqnarray}
 
-where $\mathcal{S}$ is the SHA3 256-bit hash function, $\mathcal{R}$ is the RLP encoding function, $\mathcal{L}_y(X)$ evaluates to the leftmost $y$ bits of the binary data $X$ and $\mathbb{S}[x]$ is the address state of $x$ or $\varnothing$ if none exists.
+where $\mathcal{S}$ is the SHA3 256-bit hash function, $\mathcal{R}$ is the RLP encoding function, $\mathcal{L}_y(X)$ evaluates to the rightmost $y$ bits of the binary data $X$ and $\mathbb{S}[x]$ is the address state of $x$ or $\varnothing$ if none exists.
 
 The account's nonce is initially defined as zero, the balance as the value passed, the storage as empty and the code hash as the SHA3 256-bit hash of the code, thus the new state becomes $\mathbb{S}'$:
 
@@ -610,9 +610,15 @@ $G_{txdata}$ & 5 & Paid for every byte of data or code for a transaction. \\
 
 \section{Recursive Length Prefix}\label{app:rlp}
 
+This is a method for encoding arbitrarily structured binary data (byte arrays).
+
 \section{Modified Merkle Patricia Tree}\label{app:trie}
 
+The modified Merkle Patricia tree (trie) provides a persistent data structure to map between arbitrary-length binary data (byte arrays). It is defined in terms of a mutable data structure to map between 256-bit binary fragments and arbitrary-length binary data, typically implemented as a database.
+
 \section{Hex-Prefix Encoding}\label{app:hexprefix}
+
+Hex-prefix encoding is an efficient method of encoding a arbitrary number of nibbles as a byte array. It is able to store an additional flag which, when used in the context of the trie (the only context in which it is used), disambiguates between node types.
 
 \section{Formal Specification of Structures}
 
@@ -714,7 +720,11 @@ Uncle-blocks contain only the uncle's header.
 
 \section{The State DB}\label{app:state}
 
+The state database is a mapping between SHA3-256 hashes (i.e. 256-bit binary fragments) and arbitrary byte data.
+
 \section{Signing Transactions}\label{app:signing}
+
+The method of signing transactions is similar to the `Electrum style signatures'; it utilises the SECP-256k1 curve.
 
 \section{Virtual Machine Specification}\label{app:vm}
 
@@ -984,7 +994,11 @@ TODO: Specify minimum memory limits for a general cost definition.
 
 \section{Low-level Lisp-like Language}\label{app:lll}
 
+The Low-level Lisp-like Language is a language created in order to efficiently author low-level programs (contracts) without having to resort to EVM-Assembly.
+
 \section{Wire Protocol}\label{app:wire}
+
+The wire-protocol specifies a network-level protocol for how two peers can communicate. It includes handshake procedures and the means for transfering information such as blocks \& transactions 
 
 \section{Peer Strategy}\label{app:peers}
 
