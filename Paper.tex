@@ -64,7 +64,7 @@ E language. Smart contracts. Bitcoin, namecoin \&c. Mastercoin.
 
 \section{Proposal} \label{ch:proposal}
 
-\subsection{The Block Chain Paradigm} \label{ch:overview}
+\subsection{The Blockchain Paradigm} \label{ch:overview}
 
 Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissable. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg be things such as reducing an account balance without an equal and opposite increase elsewhere. We define a valid state transitions as one which comes about through a transaction. Formally:
 
@@ -125,7 +125,7 @@ Having introduced the basic concepts behind Ethereum, we will discuss the meanin
 
 \subsubsection{World State} \label{ch:state}
 
-The world state (\textit{state}, see Appendix \ref{app:state}), is a mapping between addresses (160-bit identifiers) and account states (a data structure serialised as RLP). Though not stored on the block chain, it is assumed that the implementation will maintain this mapping in a modified Merkle Patricia tree (\textit{trie}, see Appendix \ref{app:trie}). The trie requires a simple database backend that maintains a mapping of bytearrays to bytearrays; we name this underlying database the state database. This has a number of benefits; firstly the root node of this structure is cryptographically dependent on all internal data and as such its hash can be used as a secure identity for the entire system state. Secondly, being an immutable data structure, it allows any previous state (whose root hash is known) to be recalled by simply altering the root hash accordingly. Since we store all such root hashes in the block chain, we are able to trivially revert to old states.
+The world state (\textit{state}, see Appendix \ref{app:state}), is a mapping between addresses (160-bit identifiers) and account states (a data structure serialised as RLP). Though not stored on the blockchain, it is assumed that the implementation will maintain this mapping in a modified Merkle Patricia tree (\textit{trie}, see Appendix \ref{app:trie}). The trie requires a simple database backend that maintains a mapping of bytearrays to bytearrays; we name this underlying database the state database. This has a number of benefits; firstly the root node of this structure is cryptographically dependent on all internal data and as such its hash can be used as a secure identity for the entire system state. Secondly, being an immutable data structure, it allows any previous state (whose root hash is known) to be recalled by simply altering the root hash accordingly. Since we store all such root hashes in the blockchain, we are able to trivially revert to old states.
 
 The account state comprises the first two, and potentially the last two, of the following fields:
 
@@ -265,7 +265,7 @@ After the message call or contract creation is processed, the state is finalised
 
 \begin{eqnarray}
 \mathbb{S}' & \equiv & \mathbb{S}_C \quad \text{except:} \\
-\mathbb{S}'[s]_{balance} & \equiv & \mathbb{S}_C[s]_{balance} + r p
+\mathbb{S}'[s]_{balance} & \equiv & \mathbb{S}_C[s]_{balance} + g' p
 \end{eqnarray}
 
 Evaluating $\mathbb{S}_C$ from $\mathbb{S}_R$ depends on the transaction type; either contract creation or message call; I will describe and define these separately.
@@ -329,7 +329,7 @@ I'_v & \equiv & v \\
 I'_C & \equiv & \mathbf{i}
 \end{eqnarray}
 
-$I'_D$ evaluates to the empty array. $I'_H$ and $I'_n$ have no special treatment and are determined from the block chain.
+$I'_D$ evaluates to the empty array. $I'_H$ and $I'_n$ have no special treatment and are determined from the blockchain.
 
 \subsubsection{Message Call} \label{ch:call}
 
@@ -516,11 +516,11 @@ However, instructions do typically alter one or several components of these valu
 
 \subsection{Blocktree to Blockchain} \label{ch:ghost}
 
-The canonical block chain is a path from root to leaf through the entire block tree. In order to have consensus over which path it is, conceptually we identify the path that has had the most computation done upon it, or, the \textit{heaviest} path. Clearly one factor that helps determine the heaviest path is the block number of the leaf, equivalent to the number of blocks, not counting the unmined genesis block, in the path. The longer the path, the greater the total mining effort that must have been done in order to arrive at the leaf. This is akin to existing schemes, such as that employed in Bitcoin-derived protocols.
+The canonical blockchain is a path from root to leaf through the entire block tree. In order to have consensus over which path it is, conceptually we identify the path that has had the most computation done upon it, or, the \textit{heaviest} path. Clearly one factor that helps determine the heaviest path is the block number of the leaf, equivalent to the number of blocks, not counting the unmined genesis block, in the path. The longer the path, the greater the total mining effort that must have been done in order to arrive at the leaf. This is akin to existing schemes, such as that employed in Bitcoin-derived protocols.
 
 This scheme notably ignores so-called \textit{stale} blocks: valid, mined blocks, which were propogated too late into the network and thus were beaten to network consensus by a sibling block (one with the same parent). Such blocks become more common as the network propogation time approaches the ideal inter-block time. However, by counting the computation work of stale block headers, we are able to do better: we can utilise this otherwise wasted computation and put it to use in helping to butress the more popular blockchain making it a stronger choice over less popular (though potentially longer) competitors.
 
-This increases overall network security by making it much harder for an adversary to silently mine a canonical block chain (which, it is assumed, would contain different transactions to the current consensus) and dump it on the network with the effect of reversing existing blocks and the transactions within.
+This increases overall network security by making it much harder for an adversary to silently mine a canonical blockchain (which, it is assumed, would contain different transactions to the current consensus) and dump it on the network with the effect of reversing existing blocks and the transactions within.
 
 In order to validate the extra computation, a given block $B$ may include the block headers from any known uncle blocks (i.e. blocks whose parent is equivalent to the grandparent of $B$). Since a block header includes the nonce, a proof-of-work, then the header alone is enough to validate the computation done. Any such blocks contribute toward the total computation or \textit{total difficulty} of a chain that includes them. To incentivise computation and inclusion, a reward is given both to the miner of the stale block and the miner of the block that references it.
 
@@ -543,7 +543,7 @@ Compute proof-of-work.
 
 \subsection{Mining Proof-of-Work} \label{ch:pow}
 
-The mining proof-of-work (PoW) exists as a cryptographically secure nonce that proves beyond reasonable doubt that a particular amount of computation has been expended in the determination of some token value $n$. It is utilised to enforce the block chain security by giving meaning and credence to the notion of difficulty (and, by extension, total difficulty). However, since mining new blocks comes with an attached reward, the proof-of-work not only functions as a method of securing confidence that the blockchain will remain canonical into the future, but also as a wealth distribution mechanism.
+The mining proof-of-work (PoW) exists as a cryptographically secure nonce that proves beyond reasonable doubt that a particular amount of computation has been expended in the determination of some token value $n$. It is utilised to enforce the blockchain security by giving meaning and credence to the notion of difficulty (and, by extension, total difficulty). However, since mining new blocks comes with an attached reward, the proof-of-work not only functions as a method of securing confidence that the blockchain will remain canonical into the future, but also as a wealth distribution mechanism.
 
 For both reasons, there are two important goals of the proof-of-work function; firstly, it should be as accessible as possible to as many people as possible. The requirement of or reward from specialised and uncommon hardware should be minimised. This makes the distribution model as open as possible, and, ideally, makes the act of mining a simple swap from electricity to ether at roughly the same rate for anyone around the world.
 
