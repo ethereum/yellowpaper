@@ -228,7 +228,7 @@ The execution of a transaction is the most complex part of the Ethereum protocol
 \item The transaction signature is valid;
 \item the transaction nonce is valid (equivalent to the sender account's current nonce);
 \item the gas limit is no smaller than the intrinsic gas, $g_0$, used by the transaction;
-\item the sender account balance contains at least the cost, $c$, (in wei) required in up-front payment;
+\item the sender account balance contains at least the cost, $v_0$, (in wei) required in up-front payment;
 \end{enumerate}
 
 Formally, we consider the function $\Upsilon$, with $T$ being a transaction and $\mathbb{S}$ the state:
@@ -243,8 +243,8 @@ We define intrinsic gas $g_0$, the amount of gas this transaction requires to be
 
 \begin{eqnarray}
 g_0 & \equiv & \begin{cases}
-  |T_\mathbf{d}| G_{data} + G_{call} & \quad \text{call} \\
-  (|T_\mathbf{i}| + |T_\mathbf{b}|) G_{data} + G_{create} & \quad \text{create} \\
+  (|T_\mathbf{i}| + |T_\mathbf{b}|) G_{data} + G_{create} & \text{if} \quad T_r = 0 \\
+  |T_\mathbf{d}| G_{data} + G_{call} & \text{otherwise} \\
 \end{cases}
 \end{eqnarray}
 
@@ -253,8 +253,14 @@ where $|T_\mathbf{d}|$, $|T_\mathbf{i}|$ and $|T_\mathbf{b}|$ are the sizes, in 
 The up-front cost $v_0$ is calculated as:
 
 \begin{equation}
-v_0 \equiv (T_g + g_0) T_p + T_v
+v_0 \equiv T_g T_p + T_v
 \end{equation}
+
+the validity is determined as:
+
+\begin{eqnarray}
+S(T) & \neq & \varnothing \\ \wedge \quad \mathbb{S}[S(T)] & \neq & \varnothing \\ \wedge \quad T_n & = & \mathbb{S}[S(T)]_{nonce} \\ \wedge \quad g_0 & \leq & T_g \\ \wedge \quad v_0 & \leq & \mathbb{S}[S(T)]_{balance}
+\end{eqnarray}
 
 The execution of a valid transaction begins with an irrevocable change made to the state: the nonce of the account of the sender ($S(T)$) is incremented by one and the balance is reduced by the up-front cost, $v_0$. The gas available for the proceeding computation, $g$, is defined as $T_g - g_0$. The computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
 
@@ -266,47 +272,49 @@ We define the rollback state $\mathbb{S}_0$:
 \mathbb{S}_0[S(T)]_{nonce} & \equiv & \mathbb{S}[S(T)]_{nonce} + 1
 \end{eqnarray}
 
-Evaluating $\mathbb{S}_C$ from $\mathbb{S}_0$ depends on the transaction type; either contract creation or message call; we define the pairing of post-execution provisional state ($\mathbb{S}_P$) and remaining gas ($g'$):
+Evaluating $\mathbb{S}_0$ from $\mathbb{S}_0$ depends on the transaction type; either contract creation or message call; we define the pairing of post-execution provisional state ($\mathbb{S}_P$) and remaining gas ($g'$):
 
 \begin{equation}
 (\mathbb{S}_P, g') \equiv \begin{cases}
-\Lambda(\mathbb{S}_0, S(T), T_o, T_g, T_p, T_v, T_\mathbf{i}, T_\mathbf{b}) & \text{if} \quad T_r = 0 \\
-\Theta_{0,1}(\mathbb{S}_0, S(T), T_o, T_r, T_g, T_p, T_v, T_\mathbf{d}) & \text{otherwise}
+\Lambda(\mathbb{S}_0, S(T), T_o, g, T_p, T_v, T_\mathbf{i}, T_\mathbf{b}) & \text{if} \quad T_r = 0 \\
+\Theta^*(\mathbb{S}_0, S(T), T_o, T_r, g, T_p, T_v, T_\mathbf{d}) & \text{otherwise}
 \end{cases}
 \end{equation}
 
-Note we use $\Theta_{0,1}$ to take only the first two components of the function's value; the third represents the message-call's output value (a byte array) and is unused in the context of transaction evaluation.
+where
+
+\begin{equation}
+g \equiv T_g - g_0
+\end{equation}
+
+Note we use $\Theta^*$ to take only the first two components of the function's value; the third represents the message-call's output value (a byte array) and is unused in the context of transaction evaluation.
 
 After the message call or contract creation is processed, the state is finalised by refunding $g'$, the remaining gas, to the sender at the original rate. So we define the final state $\mathbb{S}'$ in terms of the provisional state $\mathbb{S}_P$.
 
 \begin{eqnarray}
 \mathbb{S}' & \equiv & \mathbb{S}_o \quad \text{except} \\
-\mathbb{S}'[s]_{balance} & \equiv & \mathbb{S}_o[s]_{balance} + g' p
+\mathbb{S}'[s]_{balance} & \equiv & \mathbb{S}_o[s]_{balance} + g' T_p
 \end{eqnarray}
 
 \subsection{Contract Creation} \label{ch:create}
 
 There are number of intrinsic parameters used when creating a contract: sender ($s$), nonce ($o$), available gas ($g$), gas price ($p$), endowment ($v$) together with the two arbitrary length byte arrays, $\mathbf{i}$ for the initialisation EVM code and $\mathbf{b}$ for the EVM code of the body.
 
-We define the creation function formally as the function $\Lambda$, which evaluates from these values, together with the state $\mathbb{S}_C$ to the tuple containing the new state, additional database entries and remaining gas $(\mathbb{S}_P, g')$, as in \ref{ch:transactions}:
+We define the creation function formally as the function $\Lambda$, which evaluates from these values, together with the state $\mathbb{S}_0$ to the tuple containing the new state, additional database entries and remaining gas $(\mathbb{S}_P, g')$, as in \ref{ch:transactions}:
 
 \begin{equation}
-(\mathbb{S}_P, g') \equiv \Lambda(\mathbb{S}_C, s, o, g, p, v, \mathbf{i}, \mathbf{b})
+(\mathbb{S}_P, g') \equiv \Lambda(\mathbb{S}_0, s, o, g, p, v, \mathbf{i}, \mathbf{b})
 \end{equation}
-
-TODO: Move rest to own section after execution model.
-
-TODO: Transaction structure layout.
 
 The address of the new contract is defined as being the rightmost 160 bits of the SHA3 hash of RLP encoding of the structure \texttt{[ sender, nonce ]}. In the unlikely event that the address is already in use, it is treated as a big-endian integer and incremented by one until an unused address is arrived at. Thus we define the creation address function $A$:
 
 \begin{eqnarray}
 A(s, o) & \equiv & a \quad \text{where:} \\
-a' & \equiv & \mathcal{L}_{160}(\mathcal{S}(\mathcal{R}([s, o]))) \\
-a & \equiv & \arg \min_x : x \geqslant a' \wedge \mathbb{S}_C[x] = \varnothing
+a' & \equiv & \mathcal{B}_{96..255}(\mathcal{S}(\mathcal{R}([s, o]))) \\
+a & \equiv & \arg \min_x : x \geqslant a' \wedge \mathbb{S}_0[x] = \varnothing
 \end{eqnarray}
 
-where $\mathcal{S}$ is the SHA3 256-bit hash function, $\mathcal{R}$ is the RLP encoding function, $\mathcal{L}_y(X)$ evaluates to the rightmost $y$ bits of the binary data $X$ and $\mathbb{S}_C[x]$ is the address state of $x$ or $\varnothing$ if none exists.
+where $\mathcal{S}$ is the SHA3 256-bit hash function, $\mathcal{R}$ is the RLP encoding function, $\mathcal{B}_{a..b}(X)$ evaluates to binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$ and $\mathbb{S}_0[x]$ is the address state of $x$ or $\varnothing$ if none exists.
 
 The account's nonce is initially defined as zero, the balance as the value passed, the storage as empty and the code hash as the SHA3 256-bit hash of the code, thus the mutated state becomes $\mathbb{S}^*$:
 
@@ -326,46 +334,54 @@ If such an exception does not occur, then the remaining gas is refunded to the o
 \begin{eqnarray}
 (\mathbb{S}^{**}, g') & \equiv & \Xi(\mathbb{S}^*, g, I) \\
 \mathbb{S}_P & \equiv & \begin{cases}
-\mathbb{S}_C & \text{if} \quad \mathbb{S}^{**} = \varnothing \\
+\mathbb{S}_0 & \text{if} \quad \mathbb{S}^{**} = \varnothing \\
 \mathbb{S}^{**} & \text{otherwise}
 \end{cases} \\
-I'_a & \equiv & a \\
-I'_o & \equiv & s \\
-I'_p & \equiv & p \\
-I'_D & \equiv & [] \\
-I'_s & \equiv & s \\
-I'_v & \equiv & v \\
-I'_C & \equiv & \mathbf{i}
+I_a & \equiv & a \\
+I_o & \equiv & s \\
+I_p & \equiv & p \\
+I_\mathbf{d} & \equiv & [] \\
+I_s & \equiv & s \\
+I_v & \equiv & v \\
+I_\mathbf{b} & \equiv & \mathbf{i}
 \end{eqnarray}
 
-$I'_D$ evaluates to the empty array. $I'_H$ and $I'_n$ have no special treatment and are determined from the blockchain.
+$I_\mathbf{d}$ evaluates to the empty array. $I_H$ and $I_n$ have no special treatment and are determined from the blockchain.
 
 \subsection{Message Call} \label{ch:call}
 
 In the case of executing a message call, several parameters are required: sender ($s$), transaction originator ($o$), recipient ($r$), available gas ($g$), value ($v$) and gas price ($p$) together with an arbitrary length byte array, $\mathbf{d}$, the input data of the call. Aside from evaluating to a new state and additional database entries, message calls also have an extra component---the output data denoted by the byte array $\mathbf{o}$. This is ignored when executing transactions, however message calls can be initiated due to VM-code execution and in this case this information is used.
 
 \begin{equation}
-(\mathbb{S}_P, g', \mathbf{o}) \equiv \Theta(\mathbb{S}_C, s, o, r, g, p, v, \mathbf{d})
+(\mathbb{S}_P, g', \mathbf{o}) \equiv \Theta(\mathbb{S}, s, o, r, g, p, v, \mathbf{d})
 \end{equation}
 
-In the case that the recipient contains code to be executed (i.e. that the account is a contract), then the contract's body code (identified as the fragment whose SHA3 hash is $\mathbb{S}[r]_{code}]$) is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts due to an exhausted gas supply, then no gas is refunded to the caller and the state is reverted to the point immediately prior to code execution.
+We define $\mathbb{S}_1$, the rollback state as the original state but with the value transferred to the recipient:
 
 \begin{eqnarray}
-(\mathbb{S}^{**}, g') & \equiv & \Xi(\mathbb{S}^*, g, I) \\
-\mathbb{S}' & \equiv & \begin{cases}
-\mathbb{S}^* & \text{if} \quad \mathbb{S}^{**} = \varnothing \\
-\mathbb{S}^{**} & \text{otherwise}
-\end{cases} \\
-I'_a & \equiv & a \\
-I'_o & \equiv & o \\
-I'_p & \equiv & p \\
-I'_D & \equiv & \mathbf{d} \\
-I'_s & \equiv & s \\
-I'_v & \equiv & v \\
-\text{Let} \mathcal{S}(I'_C) & = & \mathbb{S}[r]_{code}
+\mathbb{S}_1 & \equiv & \mathbb{S} \quad \text{except:} \\
+\mathbb{S}_1[r]_{balance} & \equiv & \mathbb{S}_1[r]_{balance} + v
 \end{eqnarray}
 
-We assert that the state database contains the entry $(\mathcal{S}(I'_C), I'_C)$.
+If the recipient account contains no code to be executed (i.e. it's not a contract), then we define the final state as being equivalent to the rollback state. In the case that the recipient contains code to be executed (i.e. that the account is a contract), then the contract's body code (identified as the fragment whose SHA3 hash is $\mathbb{S}[r]_{code}]$) is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts due to an exhausted gas supply, then no gas is refunded to the caller and the state is reverted to the point immediately prior to code execution.
+
+\begin{eqnarray}
+\mathbb{S}' & \equiv & \begin{cases}
+\mathbb{S}_1 & \text{if} \quad \mathbb{S}_1[r]_{code} = \varnothing \\
+\mathbb{S}_1 & \text{if} \quad \mathbb{S}^{**} = \varnothing \\
+\mathbb{S}^{**} & \text{otherwise}
+\end{cases} \\
+(\mathbb{S}^{**}, g', \mathbf{o}) & \equiv & \Xi(\mathbb{S}_1, g, I) \\
+I_a & \equiv & a \\
+I_o & \equiv & o \\
+I_p & \equiv & p \\
+I_\mathbf{d} & \equiv & \mathbf{d} \\
+I_s & \equiv & s \\
+I_v & \equiv & v \\
+\text{Let} \quad \mathcal{S}(I_\mathbf{b}) & = & \mathbb{S}[r]_{code}
+\end{eqnarray}
+
+We assert that the state database contains the entry $(\mathcal{S}(I_\mathbf{b}), I_\mathbf{b})$.
 
 \subsection{Execution Model} \label{ch:model}
 
@@ -404,7 +420,7 @@ More formally, given an instruction, it is possible to calculate the gas cost of
 \item All other operations cost $G_{step}$ gas.
 \end{itemize}
 
-Additionally, when memory is accessed with {\small MSTORE}, {\small MLOAD}, {\small RETURN}, {\small SHA3}, {\small CALLDATA} or {\small CALL}, the memory should be enlarged to the smallest multiple of words such that all addressed bytes now fit in it. The memory size must always be a whole number of 32-byte words. Suppose that the highest previously accessed memory index is $i$, and the new index is $i'$; an additional $G_{m}(i, i')$ gas must be paid:
+Additionally, when memory is accessed with {\small MSTORE}, {\small MLOAD}, {\small RETURN}, {\small SHA3}, {\small CALLDATA} or {\small CALL}, the memory should be enlarged to the smallest multiple of words such that all addressed bytes now fit in it. The memory size must always be a whole number of 32-byte words. Suppose that the highest previously accessed memory word index is $i$, and the new word index is $i'$; an additional $G_{m}(i, i')$ gas must be paid:
 
 \begin{equation}
 G_{m}(i, i') \equiv \max(0, \ceil[\Bigg]{\frac{i'+1}{32}} - \ceil[\Bigg]{\frac{i+1}{32}}) G_{memory}
@@ -422,10 +438,10 @@ In addition to the system state $\mathbb{S}$, and the remaining gas for computat
 \item $I_a$, the address of the account which owns the code that is executing.
 \item $I_o$, the sender address of the transaction that originated this execution.
 \item $I_p$, the price of gas in the transaction that originated this execution.
-\item $I_D$, the byte array that is the input data to this execution; if the execution agent is a transaction, this would be the transaction data.
+\item $I_\mathbf{d}$, the byte array that is the input data to this execution; if the execution agent is a transaction, this would be the transaction data.
 \item $I_s$, the address of the account which caused the code to be executing; if the execution agent is a transaction, this would be the transaction sender.
 \item $I_v$, the value passed to this account as part of the same procedure as execution; if the execution agent is a transaction, this would be the transaction value.
-\item $I_C$, the byte array that is the machine code to be executed.
+\item $I_\mathbf{b}$, the byte array that is the machine code to be executed.
 \item $I_H$, the block header of the previous block.
 \item $I_n$, the block number of the current block.
 \end{itemize}
@@ -438,7 +454,7 @@ The execution model defines the function $\Xi$, which can compute the resultant 
 
 \subsubsection{Execution Overview}
 
-We must now define the $\Xi$ function. In most practical implementations this will be modelled as an iterative progression of the pair comprising the full system state, $\mathbb{S}$ and the machine state, $\mathbb{M}$. Formally, we define it recursively with a function $X$. This uses an iterator function $O$ (which defines the result of a single cycle of the state machine) together with functions $Z$ which determines if the present state is an exceptional halting state of the machine and $H$, specifying if the present state is a normal halting state of the machine:
+We must now define the $\Xi$ function. In most practical implementations this will be modelled as an iterative progression of the pair comprising the full system state, $\mathbb{S}$ and the machine state, $\mathbb{M}$. Formally, we define it recursively with a function $X$. This uses an iterator function $O$ (which defines the result of a single cycle of the state machine) together with functions $Z$ which determines if the present state is an exceptional halting state of the machine and $H$, specifying the output data of the instruction if and only if the present state is a normal halting state of the machine. We consider the empty sequence (denoted $[]$ to be non-equal to the empty set, denoted $\varnothing$).
 
 \begin{eqnarray}
 \Xi(\mathbb{S}, g, I) & \equiv & X(\mathbb{S}, \mathbb{M}, I) \\
@@ -446,79 +462,90 @@ We must now define the $\Xi$ function. In most practical implementations this wi
 \mathbb{M}_{pc} & \equiv & 0 \\
 \mathbb{M}_M & \equiv & [0, 0, ...] \\
 \mathbb{M}_i & \equiv & -1 \\
-\mathbb{M}_T & \equiv & [] \\
-X(\mathbb{S}, \mathbb{M}, I) & \equiv & \begin{cases}
-(\mathbb{S}, \mathbb{M}, I) & \text{if} \quad Z(\mathbb{S}, \mathbb{M}, I)\\
-O(\mathbb{S}, \mathbb{M}, I) & \text{if} \quad H(\mathbb{S}, \mathbb{M}, I)\\
+\mathbb{M}_T & \equiv & []
+\end{eqnarray}
+\begin{equation}
+X(\mathbb{S}, \mathbb{M}, I) \equiv \begin{cases}
+(\mathbb{S}, \mathbb{M}, I, []) & \text{if} \quad Z(\mathbb{S}, \mathbb{M}, I)\\
+(O(\mathbb{S}, \mathbb{M}, I), \mathbf{o}) & \text{if} \quad \mathbf{o} \neq \varnothing\\
 X(O(\mathbb{S}, \mathbb{M}, I)) & \text{otherwise}\\
 \end{cases}
-\end{eqnarray}
+\end{equation}
+
+where
+\begin{equation}
+\mathbf{o} \equiv H(\mathbb{S}, \mathbb{M}, I)
+\end{equation}
 
 The machine state $\mathbb{M}$ is defined as the tuple $(g, pc, M, i, T)$ which are the gas available, the program counter, the memory contents, the highest used memory index, and the stack contents. The memory contents $\mathbb{M}_M$ are a series of zeroes of size $2^{256}$.
 
-For the ease of reading, the instruction mnemonics, written in smallcaps (\eg {\small ADD}), should be interpreted as their numeric equivalents; the full table of instructions and their specifics is given in Appendix \ref{app:vm}.
+For the ease of reading, the instruction mnemonics, written in smallcaps (\eg \space {\small ADD}), should be interpreted as their numeric equivalents; the full table of instructions and their specifics is given in Appendix \ref{app:vm}.
 
-\subsubsection{Exceptional Halting}
-
-For the purposes of defining $H$ and $O$, we define $o$ as the current operation to be executed:
+For the purposes of defining $Z$, $H$ and $O$, we define $w$ as the current operation to be executed:
 
 \begin{equation}
-o \equiv \begin{cases} I_C[\mathbb{M}_{pc}] & \text{if} \quad \mathbb{M}_{pc} < \lVert I_C \rVert \\
+w \equiv \begin{cases} I_\mathbf{b}[\mathbb{M}_{pc}] & \text{if} \quad \mathbb{M}_{pc} < \lVert I_\mathbf{b} \rVert \\
 \text{\small STOP} & \text{otherwise}
 \end{cases}
 \end{equation}
 
-We also assume the fixed amounts of $\mathbf{\delta}$ and $\mathbf{\alpha}$, specifying the stack movement items removed and added, both subscriptable on the instruction and an instruction cost function $C$ evaluating to the full cost, in gas, of executing the given instruction. We also institute a function
+We also assume the fixed amounts of $\mathbf{\delta}$ and $\mathbf{\alpha}$, specifying the stack movement items removed and added, both subscriptable on the instruction and an instruction cost function $C$ evaluating to the full cost, in gas, of executing the given instruction.
 
-For calculating the exceptional halting function $Z$, we assume a secondary, instruction-specific halting function $Y$, which identifies edge cases specific to particular instructions (such as the division by zero or initiating a message call with insufficient funds). Thus $Z$ is defined as:
+\subsubsection{Exceptional Halting}
 
+The exceptional halting function $Z$ is defined as:
 \begin{equation}
-\begin{array} {lll}
-Z(\mathbb{S}, \mathbb{M}, I) & \equiv & Y(\mathbb{S}, \mathbb{M}, I) \\
-& & \vee \quad \mathbb{M}_g < C(\mathbb{S}, \mathbb{M}, I) \\
-& & \vee \quad \lVert\mathbb{M}_T\rVert < \mathbf{\delta}_o
-\end{array}
+Z(\mathbb{S}, \mathbb{M}, I) \equiv \mathbb{M}_g < C(\mathbb{S}, \mathbb{M}, I) \vee \lVert\mathbb{M}_T\rVert < \mathbf{\delta}_w
 \end{equation}
 
-This states that the execution is in an exceptional halting state if there is an instruction-specific issue, if there is insufficient gas or if there are insufficient stack items.
+This states that the execution is in an exceptional halting state if there is insufficient gas or if there are insufficient stack items. The astute read will realise that this implies that no instruction can, through its execution, cause an exceptional halt.
+
+\subsubsection{Normal Halting}
+
+We define the normal halting function $H$:
+\begin{equation}
+H(\mathbb{S}, \mathbb{M}, I) \equiv \begin{cases}
+H_{\text{\tiny RETURN}}(\mathbb{M}) & \text{if} \quad w = \text{\small RETURN} \\
+[] & \text{if} \quad w \in \{ \text{\small STOP}, \text{\small SUICIDE} \} \\
+\varnothing & \text{otherwise}
+\end{cases}
+\end{equation}
+
+The data-returning halt operation, \text{\small RETURN}, has a special function $H_{\text{\tiny RETURN}}$, defined in Appendix \ref{app:vm}.
 
 \subsubsection{The Execution Cycle}
 
 Stack items are added or removed from the left-most, lower-indexed portion of the series; all other items remain unchanged:
-
 \begin{eqnarray}
 O(\mathbb{S}, \mathbb{M}, I) & \equiv & (\mathbb{S}', \mathbb{M}', I) \\
-\Delta & \equiv & \mathbf{\alpha}_o - \mathbf{\delta}_o \\
+\Delta & \equiv & \mathbf{\alpha}_w - \mathbf{\delta}_w \\
 \lVert\mathbb{M}'_{T}\rVert & \equiv & \lVert\mathbb{M}_{T}\rVert + \Delta \\
-\quad \forall i \in [\mathbf{\alpha}_o, \lVert\mathbb{M}'_T\rVert): \mathbb{M}'_{T_i} & \equiv & \mathbb{M}_{T_{i+\Delta}}
+\quad \forall x \in [\mathbf{\alpha}_w, \lVert\mathbb{M}'_T\rVert): \mathbb{M}'_{T_x} & \equiv & \mathbb{M}_{T_{x+\Delta}}
 \end{eqnarray}
 
 The gas is reduced by the instruction's gas cost and for most instructions, the program counter increments on each cycle, for the three exceptions, we assume a function $J$ which evaluates to the according value:
-
 \begin{eqnarray}
-\mathbb{M}'_{g} \equiv \mathbb{M}_{g} - C(\mathbb{S}, \mathbb{M}, I) \\
-\mathbb{M}'_{pc} \equiv \begin{cases}
-J(\mathbb{M}) & \text{if} \quad o \in \{ \text{\small JUMP, JUMPI} \} \\
-\mathbb{M}_{pc} + p & \text{if} \quad o \in [\text{\small PUSH1}, \text{\small PUSH32}] \\
+\mathbb{M}'_{g} & \equiv & \mathbb{M}_{g} - C(\mathbb{S}, \mathbb{M}, I) \\
+\mathbb{M}'_{pc} & \equiv & \begin{cases}
+J_o(\mathbb{M}) & \text{if} \quad w \in \{ \text{\small JUMP, JUMPI} \} \\
+\mathbb{M}_{pc} + p & \text{if} \quad w \in [\text{\small PUSH1}, \text{\small PUSH32}] \\
 \mathbb{M}_{pc} + 1 & \text{otherwise}
 \end{cases}
 \end{eqnarray}
 
 where $p$ is the byte size of the push instruction, defined as:
-
 \begin{equation}
-p \equiv o - \text{\small PUSH1} + 2
+p \equiv w - \text{\small PUSH1} + 2
 \end{equation}
 
 In general, we assume the memory and system state don't change:
-
 \begin{eqnarray}
 \mathbb{M}'_M & \equiv & \mathbb{M}_M \\
 \mathbb{M}'_i & \equiv & \mathbb{M}_i \\
 \mathbb{S}' & \equiv & \mathbb{S}
 \end{eqnarray}
 
-However, instructions do typically alter one or several components of these values. Altered components listed by instruction are noted in Appendix \ref{app:vm}.
+However, instructions do typically alter one or several components of these values. Altered components listed by instruction are noted in Appendix \ref{app:vm}, alongside values for $\alpha$ and $\delta$.
 
 \subsection{Blocktree to Blockchain} \label{ch:ghost}
 
@@ -928,11 +955,11 @@ TODO: Specify minimum memory limits for a general cost definition.
 &&&& $\mathbb{M}'_T[0] \equiv I_v$ \\
 \midrule
 0x35 & {\small CALLDATALOAD} & 1 & 1 & Get input data of current environment. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathcal{I}_D[ \mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + 31) ]$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathcal{I}_\mathbf{d}[ \mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + 31) ]$ \\
 &&&& This pertains to the input data passed with the message call instruction or transaction. \\
 \midrule
 0x36 & {\small CALLDATASIZE} & 0 & 1 & Get size of input data in current environment. \\
-&&&& $\mathbb{M}'_T[0] \equiv \lVert \mathcal{I}_D \rVert$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \lVert \mathcal{I}_\mathbf{d} \rVert$ \\
 &&&& This pertains to the input data passed with the message call instruction or transaction. \\
 \midrule
 0x37 & {\small GASPRICE} & 0 & 1 & Get price of gas in current environment. \\
@@ -997,12 +1024,12 @@ TODO: Specify minimum memory limits for a general cost definition.
 &&&& $\mathbb{M}'_S[ \mathbb{M}_T[0] ] \equiv \mathbb{M}_T[1] $ \\
 \midrule
 0x58 & {\small JUMP} & 1 & 0 & Alter the program counter. \\
-&&&& $J(\mathbb{M}) \equiv \mathbb{M}_T[0] $ \\
-&&&& This has the effect of writing said value to $\mathbb{M}_{pc}$ \\
+&&&& $J_{\text{\tiny JUMP}}(\mathbb{M}) \equiv \mathbb{M}_T[0] $ \\
+&&&& This has the effect of writing said value to $\mathbb{M}_{pc}$. See section \ref{ch:model}. \\
 \midrule
 0x59 & {\small JUMPI} & 2 & 0 & Conditionally alter the program counter. \\
-&&&& $J(\mathbb{M}) \equiv \begin{cases} \mathbb{M}_T[0] & \text{if} \quad \mathbb{M}_T[0] = 0 \\ \mathbb{M}_{pc} + 1 & \text{otherwise} \end{cases} $ \\
-&&&& This has the effect of writing said value to $\mathbb{M}_{pc}$ \\
+&&&& $J_{\text{\tiny JUMPI}}(\mathbb{M}) \equiv \begin{cases} \mathbb{M}_T[0] & \text{if} \quad \mathbb{M}_T[0] = 0 \\ \mathbb{M}_{pc} + 1 & \text{otherwise} \end{cases} $ \\
+&&&& This has the effect of writing said value to $\mathbb{M}_{pc}$. See section \ref{ch:model}. \\
 \midrule
 0x5a & {\small PC} & 0 & 1 & Get the program counter. \\
 &&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_{pc}$ \\
@@ -1020,17 +1047,17 @@ TODO: Specify minimum memory limits for a general cost definition.
 \multicolumn{5}{c}{\textbf{60s \& 70s: Push Operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x60 & {\small PUSH1} & 0 & 1 & Place 1 byte item on stack. \\
-&&&& $\mathbb{M}'_T[0] \equiv I_C[\mathbb{M}_{pc} + 1]$ \\
+&&&& $\mathbb{M}'_T[0] \equiv I_\mathbf{b}[\mathbb{M}_{pc} + 1]$ \\
 &&&& The byte is right-aligned (takes the lowest significant place in big endian). \\
 \midrule
 0x61 & {\small PUSH2} & 0 & 1 & Place 2-byte item on stack. \\
-&&&& $\mathbb{M}'_T[0] \equiv I_C[(\mathbb{M}_{pc} + 1) \dots (\mathbb{M}_{pc} + 2) ]$ \\
+&&&& $\mathbb{M}'_T[0] \equiv I_\mathbf{b}[(\mathbb{M}_{pc} + 1) \dots (\mathbb{M}_{pc} + 2) ]$ \\
 &&&& The bytes are right-aligned (takes the lowest significant place in big endian). \\
 \midrule
 \multicolumn{1}{c}{\vdots} & \multicolumn{1}{c}{\vdots} & \vdots & \vdots & \multicolumn{1}{c}{\vdots} \\
 \midrule
 0x7f & {\small PUSH32} & 0 & 1 & Place 32-byte (full word) item on stack. \\
-&&&& $\mathbb{M}'_T[0] \equiv I_C[(\mathbb{M}_{pc} + 1) \dots (\mathbb{M}_{pc} + 32) ]$ \\
+&&&& $\mathbb{M}'_T[0] \equiv I_\mathbf{b}[(\mathbb{M}_{pc} + 1) \dots (\mathbb{M}_{pc} + 32) ]$ \\
 \bottomrule
 \end{tabular*}
 
@@ -1052,37 +1079,15 @@ TODO: Specify minimum memory limits for a general cost definition.
 &&&& $\mathbb{M}'_g \equiv g' + g_k$ \\
 \midrule
 0xf2 & {\small RETURN} & 2 & 0 & Halt execution returning output data. \\
-&&&& $\mathbb{M}'_R = \mathbb{M}_M[ \mathbb{M}_T[0] \dots ( \mathbb{M}_T[0] + \mathbb{M}_T[1] - 1 ) ]$ \\
+&&&& $H_{\text{\tiny RETURN}}(\mathbb{M}) \equiv \mathbb{M}_M[ \mathbb{M}_T[0] \dots ( \mathbb{M}_T[0] + \mathbb{M}_T[1] - 1 ) ]$ \\
+&&&& This has the effect of halting the execution at this point with output defined.\\
+&&&& See section \ref{ch:model}. \\
 \midrule
 0xff & {\small SUICIDE} & 1 & 0 & Halt execution and obliterate account. \\
 &&&& $\mathbb{S}'[\mathbb{M}_T[0]]_{balance} \equiv \mathbb{S}[\mathbb{M}_T[0]]_{balance} + \mathbb{S}[I_a]_{balance}$ \\
 &&&& $\mathbb{S}'[I_a] \equiv \varnothing$ \\
 \bottomrule
 \end{tabular*}
-
-%0xf0: CREATE -5 +1
-%Immediately creates a contract where:
-%The endowment is given by S'[0]
-%The body code of the eventual closure is given by T'[ S'[1] ... ( S'[1] + S'[2] - 1 ) ]
-%The initialisation code of the eventual closure is given by T'[ S'[3] ... ( S'[3] + S'[4] - 1 ) ]
-%(Thus the total number of bytes of the transaction data is given by S'[2] + S'[4].)
-%S[0] = A
-%where A is the address of the created contract or 0 if the creation failed.
-%Fees are deducted from the sender balance to pay for enough gas to complete the operation (i.e. contract creation fee + initial storage fee). If there was not enough gas to complete the operation, then all gas will be deducted and the operation fails.
-%0xf1: CALL -7 +1
-%Immediately executes a call where:
-%The recipient is given by S'[0], when interpreted as an address.
-%The value is given by S'[1]
-%The gas is given by S'[2]
-%The input data of the call is given by T'[ S'[3] ... ( S'[3] + S'[4] - 1 ) ]
-%(Thus the number of bytes of the transaction is given by S'[4].)
-%The output data of the call is given by T[ S'[5] ... ( S'[5] + MIN( S'[6], S[0] ) - 1 ) ]
-%If 0 gas is specified, transfer all gas from the caller to callee gas balance, otherwise transfer only the amount given. If there isn't enough gas in the caller balance, operation fails.
-%If the value is less than the amount in the caller's balance then nothing is executed and the S'[2] gas gets refunded to the caller.
-%See Appendix A for execution.
-%Add any remaining callee gas to the caller's gas.
-%S[0] = R
-%where R = 1 when the instrinsic return code of the call is true, R = 0 otherwise.
 
 \section{Low-level Lisp-like Language}\label{app:lll}
 
