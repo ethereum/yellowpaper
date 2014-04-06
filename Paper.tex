@@ -69,10 +69,10 @@ E language. Smart contracts. Bitcoin, namecoin \&c. Mastercoin.
 Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissable. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg be things such as reducing an account balance without an equal and opposite increase elsewhere. We define a valid state transitions as one which comes about through a transaction. Formally:
 
 \begin{equation}
-S_{t+1} \equiv f(S_t, T)
+\mathbb{S}_{t+1} \equiv \Upsilon(\mathbb{S}_t, T)
 \end{equation}
 
-and $f$ is the Ethereum state transition function. In Ethereum, $f$, together with $S$ are considerably more powerful then any existing comparable system; $f$ allows components to carry out arbitrary computation, while $S$ allows components to store arbitrary state between transactions.
+and $f$ is the Ethereum state transition function. In Ethereum, $\Upsilon$, together with $\mathbb{S}$ are considerably more powerful then any existing comparable system; $\Upsilon$ allows components to carry out arbitrary computation, while $\mathbb{S}$ allows components to store arbitrary state between transactions.
 
 Transactions are collated into blocks; we then chain blocks together using a cryptographic hash as a means of reference. Blocks function as a journal, recording a series of transactions together with the previous block and an identifier for the final state (though do not store the final state itself---that would be far too big). They also punctuate the transaction series with incentives for nodes to \textit{mine}. This incentivisation takes places as a state-transition function, adding value to a nominated account.
 
@@ -81,12 +81,12 @@ Mining is the process of dedicating effort (working) to bolster one series of tr
 Formally, we expand to:
 
 \begin{eqnarray}
-S_{t+1} & \equiv & F(S_t, \mathbb{T}) \\
-\mathbb{T} & \equiv & [ T_0, T_1, ... ] \\
-F(S, \mathbb{T}) & \equiv & g(f(f(S, T_0), T_1) ...)
+\mathbb{S}_{t+1} & \equiv & \Pi(\mathbb{S}_t, \mathbf{T}) \\
+\mathbf{T} & \equiv & [ T_0, T_1, ... ] \\
+\Pi(\mathbb{S}, \mathbf{T}) & \equiv & \Omega(\Upsilon(\Upsilon(\mathbb{S}, T_0), T_1) ...)
 \end{eqnarray}
 
-Where $g$ is the block-finalisation state transition function (a function that rewards a nominated party); $\mathbb{T}$ is the series of transactions included in this block; and $F$ is the block-level state-transition function.
+Where $\Omega$ is the block-finalisation state transition function (a function that rewards a nominated party); $\mathbf{T}$ is the series of transactions included in this block; and $\Pi$ is the block-level state-transition function.
 
 This is the basis of the blockchain paradigm, a model that forms the backbone of Ethereum.
 
@@ -140,22 +140,22 @@ If the latter two fields are missing, the node represents a simple (non-contract
 
 \subsubsection{Transaction} \label{ch:transaction}
 
-A transaction is a single cryptographically signed instruction sent by an actor external to Ethereum. An external actor can be a person (via a mobile device or desktop computer) or could be from a piece of automated software running on a server. There are two types of transactions: those which result in message calls and those which result in the creation of new contracts. Both types specify a number of common fields:
+A transaction (formally, $T$) is a single cryptographically signed instruction sent by an actor external to Ethereum. An external actor can be a person (via a mobile device or desktop computer) or could be from a piece of automated software running on a server. There are two types of transactions: those which result in message calls and those which result in the creation of new contracts. Both types specify a number of common fields:
 
 \begin{description}
-\item[nonce] A scalar value equal to the number of transactions sent by the sender.
-\item[value] A scalar value equal to the number of wei to be transferred to the message call's recipient or, in the case of contract creation, as an endowment to the newly created contract's account.
-\item[gasPrice] A scalar value equal to the number of wei to be paid per unit of gas for all computation costs incurred as a result of the execution of this transaction.
-\item[gasLimit] A scalar value equal to the maximum amount of gas that should be used in executing this transaction. This is paid up-front, before any computation is done and may not be topped-up later.
-\item[to] The 160-bit address of the message call's recipient or the zero address for a contract-creation transaction.
-\item[v, r, s] Three scalar values corresponding to the signature of the transaction and used to determine the sender of the transaction. See Appendix \ref{app:signing}.
+\item[nonce] A scalar value equal to the number of transactions sent by the sender; formally $T_n$.
+\item[value] A scalar value equal to the number of wei to be transferred to the message call's recipient or, in the case of contract creation, as an endowment to the newly created contract's account; formally $T_v$.
+\item[gasPrice] A scalar value equal to the number of wei to be paid per unit of gas for all computation costs incurred as a result of the execution of this transaction; formally $T_p$.
+\item[gasLimit] A scalar value equal to the maximum amount of gas that should be used in executing this transaction. This is paid up-front, before any computation is done and may not be topped-up later; formally $T_g$.
+\item[to] The 160-bit address of the message call's recipient or the zero address for a contract-creation transaction; formally $T_r$.
+\item[v, r, s] Three scalar values corresponding to the signature of the transaction and used to determine the sender of the transaction.
 \end{description}
 
 Additionally, a contract-creation transaction contains:
 
 \begin{description}
-\item[body] An unlimited size byte array specifying the EVM-code for the contract.
-\item[init] An unlimited size byte array specifying the EVM-code for the contract initialisation procedure.
+\item[body] An unlimited size byte array specifying the EVM-code for the contract, formally $T_\mathbf{b}$.
+\item[init] An unlimited size byte array specifying the EVM-code for the contract initialisation procedure, formally $T_\mathbf{i}$.
 \end{description}
 
 Both \textbf{body} and \textbf{init} are EVM-code fragments; \textbf{body} is executed each time the contract account receives a message call (either through a transaction or due to the internal execution of code). \textbf{init} is a piece of code that is executed only once at contract creation and that gets discarded immediately thereafter.
@@ -163,24 +163,25 @@ Both \textbf{body} and \textbf{init} are EVM-code fragments; \textbf{body} is ex
 Whereas a message call transaction contains:
 
 \begin{description}
-\item[data] An unlimited size byte array specifying the input data of the message call.
+\item[data] An unlimited size byte array specifying the input data of the message call, formally $T_\mathbf{d}$.
 \end{description}
 
+Appendix \ref{app:signing} specifies the function mapping transactions to the sender $S$, which happens through the ECDMA of the SECP-256k1 curve, using the hash of the transaction as the datum to sign. For the present we simply assert that the sender of a given transaction $T$ can be represented with $S(T)$.
 
 \subsubsection{Block} \label{ch:block}
 
-The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}) together with a set of transactions and a set of other block headers that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{uncles}). The block header contains several pieces of information:
+The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with a set of transactions and a set of other block headers that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{uncles}). The block header contains several pieces of information:
 
 \begin{description}
-\item[parentHash] The SHA3 256-bit hash of the parent block, in its entirety.
-\item[unclesHash] The SHA3 256-bit hash of the uncles list portion of this block.
-\item[coinbase] The 160-bit address to which all fees collected from the successful mining of this block be transferred.
-\item[stateRoot] The SHA3 256-bit hash of the root node of the state trie, after all transactions are executed and finalisations applied.
-\item[transactionsHash] The SHA3 256-bit hash of the transactions list portion of this block.
-\item[difficulty] A scalar value corresonding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp.
-\item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception.
-\item[extraData] An arbitrary byte array containing data relavant to this block. Generally 256-bit or less, but could be much larger in the genesis block.
-\item[nonce] A 256-bit hash which proves that a sufficient amount of computation has been carried out on this block.
+\item[parentHash] The SHA3 256-bit hash of the parent block, in its entirety; formally $H_p$.
+\item[unclesHash] The SHA3 256-bit hash of the uncles list portion of this block; formally $H_u$.
+\item[coinbase] The 160-bit address to which all fees collected from the successful mining of this block be transferred; formally $H_b$.
+\item[stateRoot] The SHA3 256-bit hash of the root node of the state trie, after all transactions are executed and finalisations applied; formally $H_r$.
+\item[transactionsHash] The SHA3 256-bit hash of the transactions list portion of this block; formally $H_t$.
+\item[difficulty] A scalar value corresonding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_d$.
+\item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.
+\item[extraData] An arbitrary byte array containing data relavant to this block. Generally 256-bit or less, but could be much larger in the genesis block; formally $H_x$.
+\item[nonce] A 256-bit hash which proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.
 \end{description}
 
 The difficulty of a block $H$, is defined as $H_d$:
@@ -197,13 +198,13 @@ Where $H'$ is the previous block, $H_t$ is the timestamp of block $H$.
 
 This mechanism enforces a homeostasis in terms of the time between blocks; a smaller period between the last two blocks results in an increase in the difficulty level and thus additional computation required, lengthening the likely next period. Conversely, if the period is too large, the difficulty, and expected time to the next block, is reduced.
 
-The nonce, $n$, must satisfy the relation:
+The nonce, $H_n$, must satisfy the relation:
 
 \begin{equation}
-\mathcal{P}(H, n) \leqslant \frac{2^{256}}{H_d}
+\mathcal{P}(H, H_n) \leqslant \frac{2^{256}}{H_d}
 \end{equation}
 
-Where $\mathcal{P}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an pseudo-random number cryptographically dependent on the parameters $H$ and $n$. Given an approximately uniform distribution in the range $[0, 2^{256})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
+Where $\mathcal{P}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an pseudo-random number cryptographically dependent on the parameters $H$ and $H_n$. Given an approximately uniform distribution in the range $[0, 2^{256})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
 
 This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propogate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because satisfaction of this requirement both depends on the contents of the block and
 
@@ -219,9 +220,9 @@ Any ether used to purchase gas that is not refunded is delivered to the \textit{
 
 %\subsubsection{Determining Computation Costs}
 
-\subsection{Transaction Execution} \label{ch:execution}
+\subsection{Transaction Execution} \label{ch:transactions}
 
-The execution of a transaction is the most complex part of the Ethereum protocol: it defines the state transition function as specified before. It is assumed that any transactions executed first pass the initial tests of intrinsic validity. These include:
+The execution of a transaction is the most complex part of the Ethereum protocol: it defines the state transition function $\Upsilon$. It is assumed that any transactions executed first pass the initial tests of intrinsic validity. These include:
 
 \begin{enumerate}
 \item The transaction signature is valid;
@@ -230,56 +231,67 @@ The execution of a transaction is the most complex part of the Ethereum protocol
 \item the sender account balance contains at least the cost, $c$, (in wei) required in up-front payment;
 \end{enumerate}
 
-Intrinsic gas $g_0$ is calculated as follows:
+Formally, we consider the function $\Upsilon$, with $T$ being a transaction and $\mathbb{S}$ the state:
+
+\begin{equation}
+\mathbb{S}' = \Upsilon(\mathbb{S}, T)
+\end{equation}
+
+Thus $\mathbb{S}'$ is the post-transactional state.
+
+We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
 
 \begin{eqnarray}
 g_0 & \equiv & \begin{cases}
-  |\mathbf{d}| G_{data} + G_{call} & \quad \text{call} \\
-  (|\mathbf{i}| + |\mathbf{b}|) G_{data} + G_{create} & \quad \text{create} \\
+  |T_\mathbf{d}| G_{data} + G_{call} & \quad \text{call} \\
+  (|T_\mathbf{i}| + |T_\mathbf{b}|) G_{data} + G_{create} & \quad \text{create} \\
 \end{cases}
 \end{eqnarray}
 
-where $|\mathbf{d}|$, $|\mathbf{i}|$ and $|\mathbf{b}|$ are the sizes, in bytes, of the transaction's associated data, initialisation and body EVM-code, respectively and $G$ is defined in Appendix \ref{app:fees}.
+where $|T_\mathbf{d}|$, $|T_\mathbf{i}|$ and $|T_\mathbf{b}|$ are the sizes, in bytes, of the transaction's associated data, initialisation and body EVM-code, respectively and $G$ is defined in Appendix \ref{app:fees}.
 
-The up-front cost $c$ is calculated as:
+The up-front cost $v_0$ is calculated as:
 
-\begin{eqnarray}
-c & \equiv & l p + v
-\end{eqnarray}
+\begin{equation}
+v_0 \equiv (T_g + g_0) T_p + T_v
+\end{equation}
 
-where $l$ is gasLimit, $p$ is gasPrice and $v$ is value as defined parts of the transaction.
+The execution of a valid transaction begins with an irrevocable change made to the state: the nonce of the account of the sender ($S(T)$) is incremented by one and the balance is reduced by the up-front cost, $v_0$. The gas available for the proceeding computation, $g$, is defined as $T_g - g_0$. The computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
 
-The execution of a valid transaction begins with an irrevocable change made to the state: the nonce of the account of the sender ($s$) is incremented by one and the balance is reduced by the cost, $c$. The gas available for the proceeding computation, $g$, is defined as $l - g_0$. The proceeding computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
-
-TODO: formal description of reduction of sender's balance by $c$, then re-addition later on by $g'.p$
-
-We define the rollback state $\mathbb{S}_R$:
+We define the rollback state $\mathbb{S}_0$:
 
 \begin{eqnarray}
-\mathbb{S}_R & \equiv & \mathbb{S} \quad \text{except:} \\
-\mathbb{S}_R[s]_{balance} & \equiv & \mathbb{S}[s]_{balance} - c \\
-\mathbb{S}_R[s]_{nonce} & \equiv & \mathbb{S}[s]_{nonce} + 1
+\mathbb{S}_0 & \equiv & \mathbb{S} \quad \text{except:} \\
+\mathbb{S}_0[S(T)]_{balance} & \equiv & \mathbb{S}[S(T)]_{balance} - c \\
+\mathbb{S}_0[S(T)]_{nonce} & \equiv & \mathbb{S}[S(T)]_{nonce} + 1
 \end{eqnarray}
 
-After the message call or contract creation is processed, the state is finalised by refunding $g'$, the remaining gas, to the sender at the original rate, thus we increase the sender's balance by the refunded amount. So we define the final state $\mathbb{S}'$ in terms of the pre-final state $\mathbb{S}_C$.
+Evaluating $\mathbb{S}_C$ from $\mathbb{S}_0$ depends on the transaction type; either contract creation or message call; we define the pairing of post-execution provisional state ($\mathbb{S}_P$) and remaining gas ($g'$):
+
+\begin{equation}
+(\mathbb{S}_P, g') \equiv \begin{cases}
+\Lambda(\mathbb{S}_0, S(T), T_o, T_g, T_p, T_v, T_\mathbf{i}, T_\mathbf{b}) & \text{if} \quad T_r = 0 \\
+\Theta_{0,1}(\mathbb{S}_0, S(T), T_o, T_r, T_g, T_p, T_v, T_\mathbf{d}) & \text{otherwise}
+\end{cases}
+\end{equation}
+
+Note we use $\Theta_{0,1}$ to take only the first two components of the function's value; the third represents the message-call's output value (a byte array) and is unused in the context of transaction evaluation.
+
+After the message call or contract creation is processed, the state is finalised by refunding $g'$, the remaining gas, to the sender at the original rate. So we define the final state $\mathbb{S}'$ in terms of the provisional state $\mathbb{S}_P$.
 
 \begin{eqnarray}
-\mathbb{S}' & \equiv & \mathbb{S}_C \quad \text{except:} \\
-\mathbb{S}'[s]_{balance} & \equiv & \mathbb{S}_C[s]_{balance} + g' p
+\mathbb{S}' & \equiv & \mathbb{S}_o \quad \text{except} \\
+\mathbb{S}'[s]_{balance} & \equiv & \mathbb{S}_o[s]_{balance} + g' p
 \end{eqnarray}
 
-Evaluating $\mathbb{S}_C$ from $\mathbb{S}_R$ depends on the transaction type; either contract creation or message call; I will describe and define these separately.
-
-
-
-\subsubsection{Create} \label{ch:create}
+\subsection{Contract Creation} \label{ch:create}
 
 There are number of intrinsic parameters used when creating a contract: sender ($s$), nonce ($o$), available gas ($g$), gas price ($p$), endowment ($v$) together with the two arbitrary length byte arrays, $\mathbf{i}$ for the initialisation EVM code and $\mathbf{b}$ for the EVM code of the body.
 
-We define the creation function formally as the function $\Lambda$, which evaluates from these values, together with the state $\mathbb{S}_C$ and additional state database entries $\mathbb{D}$, to the tuple containing the new state, additional database entries and remaining gas $(\mathbb{S}_P, \mathbb{D}', g')$:
+We define the creation function formally as the function $\Lambda$, which evaluates from these values, together with the state $\mathbb{S}_C$ to the tuple containing the new state, additional database entries and remaining gas $(\mathbb{S}_P, g')$, as in \ref{ch:transactions}:
 
 \begin{equation}
-(\mathbb{S}_P, \mathbb{D}', g') \equiv \Lambda(\mathbb{S}_C, \mathbb{D}, s, o, g, p, v, \mathbf{i}, \mathbf{b})
+(\mathbb{S}_P, g') \equiv \Lambda(\mathbb{S}_C, s, o, g, p, v, \mathbf{i}, \mathbf{b})
 \end{equation}
 
 TODO: Move rest to own section after execution model.
@@ -303,22 +315,19 @@ The account's nonce is initially defined as zero, the balance as the value passe
 \mathbb{S}^*[A(s, o)] & \equiv & ( 0, v, \varnothing, \mathcal{S}(\mathbf{b}) )
 \end{eqnarray}
 
-The mutated state database $\mathbb{D}'$, is defined as to include the pair $(\mathcal{S}(\mathbf{b}), \mathbf{b})$:
+It is asserted that the state database will also change such that it defines the pair $(\mathcal{S}(\mathbf{b}), \mathbf{b})$.
+
+Finally, the contract is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the contract's storage can be altered, further contracts can be created and further message calls can be made. As such, the code execution function $\Xi$ evaluates to a tuple of the resultant state $\mathbb{S}'$ and available gas remaining $g'$.
+
+Code execution depletes gas; thus it may exit before the code has come to a natural halting state. In this exceptional case we say an Out-of-Gas exception has occured: The evaluated state is defined as being the empty set $\varnothing$ and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation. The gas remaining should of course be zero. If the creation was conducted as the manifestation of a transaction, then this doesn't affect payment of the intrinsic cost: it is paid regardless.
+
+If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persevere. Thus formally, we may specify the new state and gas as $\mathbb{S}'$, $g'$ where:
 
 \begin{eqnarray}
-\mathbb{D}' & \equiv & \mathbb{D} \quad \text{except:} \\
-\mathbb{D}'[\mathcal{S}(\mathbf{b})] & \equiv & \mathbf{b}
-\end{eqnarray}
-
-Finally, the contract is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the contract's storage can be altered, further contracts can be created and further message calls can be made. As such, the code execution function $\Xi$ evaluates to a tuple of the resultant state $\mathbb{S}'$, additional database entries $\mathbb{D}'$ and available gas remaining $g'$.
-
-Code execution depletes gas; thus it may exit before the code has come to a natural halting state. In this exceptional case we say an Out-of-Gas exception has occured. In this case, the evaluated state is defined as being the empty set $\varnothing$. In this circumstance, the entire create operation should have no effect on the state/database; the gas remaining should of course be zero. If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persevere. Thus formally, we may specify the new state, database entries and gas as $\mathbb{S}'$, $\mathbb{D}', g'$ where:
-
-\begin{eqnarray}
-(\mathbb{S}^{**}, \mathbb{D}^{**}, g') & \equiv & \Xi(\mathbb{S}^*, \mathbb{D}^*, g, I) \\
-(\mathbb{S}_P, \mathbb{D}') & \equiv & \begin{cases}
-(\mathbb{S}_C, \mathbb{D}) & \text{if} \quad \mathbb{S}^{**} = \varnothing \\
-(\mathbb{S}^{**}, \mathbb{D}^{**}) & \text{otherwise}
+(\mathbb{S}^{**}, g') & \equiv & \Xi(\mathbb{S}^*, g, I) \\
+\mathbb{S}_P & \equiv & \begin{cases}
+\mathbb{S}_C & \text{if} \quad \mathbb{S}^{**} = \varnothing \\
+\mathbb{S}^{**} & \text{otherwise}
 \end{cases} \\
 I'_a & \equiv & a \\
 I'_o & \equiv & s \\
@@ -331,26 +340,21 @@ I'_C & \equiv & \mathbf{i}
 
 $I'_D$ evaluates to the empty array. $I'_H$ and $I'_n$ have no special treatment and are determined from the blockchain.
 
-\subsubsection{Message Call} \label{ch:call}
+\subsection{Message Call} \label{ch:call}
 
 In the case of executing a message call, several parameters are required: sender ($s$), transaction originator ($o$), recipient ($r$), available gas ($g$), value ($v$) and gas price ($p$) together with an arbitrary length byte array, $\mathbf{d}$, the input data of the call. Aside from evaluating to a new state and additional database entries, message calls also have an extra component---the output data denoted by the byte array $\mathbf{o}$. This is ignored when executing transactions, however message calls can be initiated due to VM-code execution and in this case this information is used.
 
 \begin{equation}
-(\mathbb{S}_P, \mathbb{D}', g', \mathbf{o}) \equiv \Theta(\mathbb{S}_C, \mathbb{D}, s, o, r, g, v, p, \mathbf{d})
+(\mathbb{S}_P, g', \mathbf{o}) \equiv \Theta(\mathbb{S}_C, s, o, r, g, p, v, \mathbf{d})
 \end{equation}
 
-TODO: Move rest to own section after execution model.
-
-TODO: Transaction structure layout.
-
-
-In the case that the recipient contains code to be executed (i.e. that the account is a contract), then the contract's body code, $\mathbb{D}[\mathbb{S}[r]_{code}]$, is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts due to an exhausted gas supply, then no gas is refunded to the caller and the state is reverted to the point immediately prior to code execution.
+In the case that the recipient contains code to be executed (i.e. that the account is a contract), then the contract's body code (identified as the fragment whose SHA3 hash is $\mathbb{S}[r]_{code}]$) is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts due to an exhausted gas supply, then no gas is refunded to the caller and the state is reverted to the point immediately prior to code execution.
 
 \begin{eqnarray}
-(\mathbb{S}^{**}, \mathbb{D}^{**}, g') & \equiv & \Xi(\mathbb{S}^*, \mathbb{D}^*, g, I) \\
-(\mathbb{S}', \mathbb{D}') & \equiv & \begin{cases}
-(\mathbb{S}^*, \mathbb{D}) & \text{if} \quad \mathbb{S}^{**} = \varnothing \\
-(\mathbb{S}^{**}, \mathbb{D}^{**}) & \text{otherwise}
+(\mathbb{S}^{**}, g') & \equiv & \Xi(\mathbb{S}^*, g, I) \\
+\mathbb{S}' & \equiv & \begin{cases}
+\mathbb{S}^* & \text{if} \quad \mathbb{S}^{**} = \varnothing \\
+\mathbb{S}^{**} & \text{otherwise}
 \end{cases} \\
 I'_a & \equiv & a \\
 I'_o & \equiv & o \\
@@ -361,7 +365,7 @@ I'_v & \equiv & v \\
 \text{Let} \mathcal{S}(I'_C) & = & \mathbb{S}[r]_{code}
 \end{eqnarray}
 
-For practicality, we know that the state database contains additional entries to 
+We assert that the state database contains the entry $(\mathcal{S}(I'_C), I'_C)$.
 
 \subsection{Execution Model} \label{ch:model}
 
@@ -1038,12 +1042,14 @@ TODO: Specify minimum memory limits for a general cost definition.
 0xf0 & {\small CREATE} & 5 & 1 & Create a new contract. \\
 &&&& $\mathbf{b} \equiv \mathbb{M}_M[ \mathbb{M}_S[1] \dots (\mathbb{M}_S[1] + \mathbb{M}_S[2] - 1) ]$ \\
 &&&& $\mathbf{i} \equiv \mathbb{M}_M[ \mathbb{M}_S[3] \dots (\mathbb{M}_S[3] + \mathbb{M}_S[4] - 1) ]$ \\
-&&&& $(\mathbb{S}', \mathbb{D}', \mathbb{M}'_g) \equiv \Lambda(\mathbb{S}, \mathbb{D}, I_a, I_o, \mathbb{M}_g, I_p, \mathbb{M}_S[0], \mathbf{i}, \mathbf{b})$ \\
+&&&& $(\mathbb{S}', \mathbb{M}'_g) \equiv \Lambda(\mathbb{S}, I_a, I_o, \mathbb{M}_g, I_p, \mathbb{M}_S[0], \mathbf{i}, \mathbf{b})$ \\
 \midrule
 0xf1 & {\small CALL} & 7 & 1 & Message-call into contract. \\
 &&&& $\mathbf{i} \equiv \mathbb{M}_M[ \mathbb{M}_S[3] \dots (\mathbb{M}_S[3] + \mathbb{M}_S[4] - 1) ]$ \\
 &&&& $\mathbf{o} \equiv \mathbb{M}_M[ \mathbb{M}_S[5] \dots (\mathbb{M}_S[5] + \mathbb{M}_S[6] - 1) ]$ \\
-&&&& $(\mathbb{S}', \mathbb{D}', \mathbb{M}'_g, \mathbf{o}) \equiv \Theta(\mathbb{S}, \mathbb{D}, I_a, I_o, \mathbb{M}_g, I_p, \mathbb{M}_S[0], \mathbb{M}_S[1], \mathbb{M}_S[2], \mathbf{i})$ \\
+&&&& Let $g_k = \begin{cases}0 & \text{if} \quad \mathbb{M}_S[2] = 0 \\ \mathbb{M}_g - \min(\mathbb{M}_g, \mathbb{M}_S[2]) & \text{otherwise} \end{cases}$ \\
+&&&& $(\mathbb{S}', g', \mathbf{o}) \equiv \Theta(\mathbb{S}, I_a, I_o, \mathbb{M}_S[0], g, I_p, \mathbb{M}_g - g_k, \mathbb{M}_S[1], \mathbf{i})$ \\
+&&&& $\mathbb{M}'_g \equiv g' + g_k$ \\
 \midrule
 0xf2 & {\small RETURN} & 2 & 0 & Halt execution returning output data. \\
 &&&& $\mathbb{M}'_R = \mathbb{M}_M[ \mathbb{M}_T[0] \dots ( \mathbb{M}_T[0] + \mathbb{M}_T[1] - 1 ) ]$ \\
