@@ -1070,6 +1070,9 @@ TODO: Specify minimum memory limits for a general cost definition.
 &&&& $\mathbf{b} \equiv \mathbb{M}_M[ \mathbb{M}_S[1] \dots (\mathbb{M}_S[1] + \mathbb{M}_S[2] - 1) ]$ \\
 &&&& $\mathbf{i} \equiv \mathbb{M}_M[ \mathbb{M}_S[3] \dots (\mathbb{M}_S[3] + \mathbb{M}_S[4] - 1) ]$ \\
 &&&& $(\mathbb{S}', \mathbb{M}'_g) \equiv \Lambda(\mathbb{S}, I_a, I_o, \mathbb{M}_g, I_p, \mathbb{M}_S[0], \mathbf{i}, \mathbf{b})$ \\
+&&&& $\mathbb{M}'_T[0] \equiv x$ \\
+&&&& where $x=0$ if the code execution for this operation failed due to lack of gas;\\
+&&&& $x=A(I_a, \mathbb{S}[I_a]_{nonce})$, the address of the newly created contract, otherwise. \\
 \midrule
 0xf1 & {\small CALL} & 7 & 1 & Message-call into contract. \\
 &&&& $\mathbf{i} \equiv \mathbb{M}_M[ \mathbb{M}_S[3] \dots (\mathbb{M}_S[3] + \mathbb{M}_S[4] - 1) ]$ \\
@@ -1077,6 +1080,9 @@ TODO: Specify minimum memory limits for a general cost definition.
 &&&& Let $g_k = \begin{cases}0 & \text{if} \quad \mathbb{M}_S[2] = 0 \\ \mathbb{M}_g - \min(\mathbb{M}_g, \mathbb{M}_S[2]) & \text{otherwise} \end{cases}$ \\
 &&&& $(\mathbb{S}', g', \mathbf{o}) \equiv \Theta(\mathbb{S}, I_a, I_o, \mathbb{M}_S[0], g, I_p, \mathbb{M}_g - g_k, \mathbb{M}_S[1], \mathbf{i})$ \\
 &&&& $\mathbb{M}'_g \equiv g' + g_k$ \\
+&&&& $\mathbb{M}'_T[0] \equiv x$ \\
+&&&& where $x=0$ if the code execution for this operation failed due to lack of gas;\\
+&&&& $x=1$ otherwise. \\
 \midrule
 0xf2 & {\small RETURN} & 2 & 0 & Halt execution returning output data. \\
 &&&& $H_{\text{\tiny RETURN}}(\mathbb{M}) \equiv \mathbb{M}_M[ \mathbb{M}_T[0] \dots ( \mathbb{M}_T[0] + \mathbb{M}_T[1] - 1 ) ]$ \\
