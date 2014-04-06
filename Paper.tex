@@ -221,19 +221,19 @@ Any ether used to purchase gas that is not refunded is delivered to the \textit{
 
 \subsection{Transaction Execution} \label{ch:execution}
 
-The execution of a transaction is the most complex part of the Ethereum protocol: it defines the state transition function $f$ as specified before. It is assumed that any transactions executed first pass the initial tests of intrinsic validity. These include:
+The execution of a transaction is the most complex part of the Ethereum protocol: it defines the state transition function as specified before. It is assumed that any transactions executed first pass the initial tests of intrinsic validity. These include:
 
 \begin{enumerate}
 \item The transaction signature is valid;
 \item the transaction nonce is valid (equivalent to the sender account's current nonce);
-\item the gas limit is no smaller that the intrinsic gas, $i$, used by the transaction;
+\item the gas limit is no smaller that the intrinsic gas, $g_i$, used by the transaction;
 \item the sender account balance contains at least the cost, $c$, (in wei) required in up-front payment;
 \end{enumerate}
 
 where:
 
 \begin{eqnarray}
-i & \equiv & \begin{cases}
+g_i & \equiv & \begin{cases}
   |\mathbf{d}|.G_{data} + G_{call} & \quad \text{call} \\
   (|\mathbf{i}| + |\mathbf{b}|).G_{data} + G_{create} & \quad \text{create} \\
 \end{cases} \\
@@ -242,44 +242,117 @@ c & \equiv & l.p + v
 
 where $|\mathbf{d}|$, $|\mathbf{i}|$ and $|\mathbf{b}|$ are the sizes, in bytes, of the transaction's associated data, initialisation \& body EVM-code and $G$ is defined in Appendix \ref{app:fees}.
 
-The execution of a valid transaction begins with an irrevocable change made to the state: the sender's nonce is incremented by one and the balance is reduced by the cost, $c$. The gas available for the proceeding computation, $g$, is defined as $l - i$. The proceeding computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
+The execution of a valid transaction begins with an irrevocable change made to the state: the nonce of the account of the sender ($s$) is incremented by one and the balance is reduced by the cost, $c$. The gas available for the proceeding computation, $g$, is defined as $l - i$. The proceeding computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
 
-After the message call or contract creation is processed, the state is finalised by refunding $g'$, the remaining gas, to the sender at the original rate, thus we increase the sender's balance by $g.p$.
+TODO: formal description of reduction of sender's balance by $c$, then re-addition later on by $g'.p$
+
+We define the rollback state $\mathbb{S}_R$:
+
+\begin{eqnarray}
+\mathbb{S}_R & \equiv & \mathbb{S} \quad \text{except:} \\
+\mathbb{S}_R[s]_{balance} & \equiv & \mathbb{S}[s]_{balance} - c \\
+\mathbb{S}_R[s]_{nonce} & \equiv & \mathbb{S}[s]_{nonce} + 1
+\end{eqnarray}
+
+After the message call or contract creation is processed, the state is finalised by refunding $g'$, the remaining gas, to the sender at the original rate, thus we increase the sender's balance by the refunded amount. So we define the final state $\mathbb{S}'$ in terms of the pre-final state $\mathbb{S}_C$.
+
+\begin{eqnarray}
+\mathbb{S}' & \equiv & \mathbb{S}_C \quad \text{except:} \\
+\mathbb{S}'[s]_{balance} & \equiv & \mathbb{S}_C[s]_{balance} + g'.p
+\end{eqnarray}
+
+Evaluating $\mathbb{S}_C$ from $\mathbb{S}_R$ depends on the transaction type; either contract-creation or message-call; I will describe and define these separately. 
+
+
 
 \subsubsection{Create} \label{ch:create}
 
-There are number of intrinsic parameters used when creating a contract: sender ($s$), nonce ($o$), available gas ($g$), endowment ($v$) together with the two arbitrary length byte arrays, $\mathbf{i}$ for the initialisation EVM code and $\mathbf{b}$ for the EVM code of the body.
+There are number of intrinsic parameters used when creating a contract: sender ($s$), nonce ($o$), available gas ($g$), gas price ($p$), endowment ($v$) together with the two arbitrary length byte arrays, $\mathbf{i}$ for the initialisation EVM code and $\mathbf{b}$ for the EVM code of the body.
 
-The address of the new contract is defined as being the rightmost 160 bits of the SHA3 hash of RLP encoding of the structure \texttt{[ sender, nonce ]}. In in the unlikely event that the addresses is already in use, it is treated as a big-endian integer and incremented by one until an unused address is arrived at, thus:
-
-\begin{eqnarray}
-a' & \equiv & \mathcal{L}_{160}(\mathcal{S}(\mathcal{R}([s, o])))\\
-a & \equiv & \arg \min_x : x \geq a' \wedge \mathbb{S}[x] = \varnothing
-\end{eqnarray}
-
-where $\mathcal{S}$ is the SHA3 256-bit hash function, $\mathcal{R}$ is the RLP encoding function, $\mathcal{L}_y(X)$ evaluates to the rightmost $y$ bits of the binary data $X$ and $\mathbb{S}[x]$ is the address state of $x$ or $\varnothing$ if none exists.
-
-The account's nonce is initially defined as zero, the balance as the value passed, the storage as empty and the code hash as the SHA3 256-bit hash of the code, thus the new state becomes $\mathbb{S}'$:
+We define the creation function formally as the function $\Lambda$, which evaluates from these values, together with the state $\mathbb{S}_C$ and additional state database entries $\mathbb{D}$, to the tuple containing the new state, additional database entries and remaining gas $(\mathbb{S}_P, \mathbb{D}', g')$:
 
 \begin{equation}
-\mathbb{S}'[r] \equiv ( 0, v, \varnothing, \mathcal{S}(\mathbf{b}) )
+(\mathbb{S}_P, \mathbb{D}', g') \equiv \Lambda(\mathbb{S}_C, \mathbb{D}, s, o, g, p, v, \mathbf{i}, \mathbf{b})
 \end{equation}
 
-The state database is altered to include the pair $(\mathcal{S}(\mathbf{b}), \mathbf{b})$. Finally, the contract is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the contract's storage can be altered, further contracts can be created and further message calls can be made.
+TODO: Move rest to own section after execution model.
 
-Code execution depletes gas; thus it may exit before the code has come to a natural halting state. In this exceptional case we say an Out-of-Gas exception has occured and the state database is reverted to the point immediately prior to the account initialisation. All available gas is used and no gas is refunded to the originator. If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persevere.
+TODO: Transaction structure layout.
+
+The address of the new contract is defined as being the rightmost 160 bits of the SHA3 hash of RLP encoding of the structure \texttt{[ sender, nonce ]}. In in the unlikely event that the address is already in use, it is treated as a big-endian integer and incremented by one until an unused address is arrived at. Thus we define the creation address function $A$:
+
+\begin{eqnarray}
+A(s, o) & \equiv & a \quad \text{where:} \\
+a' & \equiv & \mathcal{L}_{160}(\mathcal{S}(\mathcal{R}([s, o]))) \\
+a & \equiv & \arg \min_x : x \geqslant a' \wedge \mathbb{S}_C[x] = \varnothing
+\end{eqnarray}
+
+where $\mathcal{S}$ is the SHA3 256-bit hash function, $\mathcal{R}$ is the RLP encoding function, $\mathcal{L}_y(X)$ evaluates to the rightmost $y$ bits of the binary data $X$ and $\mathbb{S}_C[x]$ is the address state of $x$ or $\varnothing$ if none exists.
+
+The account's nonce is initially defined as zero, the balance as the value passed, the storage as empty and the code hash as the SHA3 256-bit hash of the code, thus the mutated state becomes $\mathbb{S}^*$:
+
+\begin{eqnarray}
+\mathbb{S}^* & \equiv & \mathbb{S} \quad \text{except:} \\
+\mathbb{S}^*[A(s, o)] & \equiv & ( 0, v, \varnothing, \mathcal{S}(\mathbf{b}) )
+\end{eqnarray}
+
+The mutated state database $\mathbb{D}'$, is defined as to include the pair $(\mathcal{S}(\mathbf{b}), \mathbf{b})$:
+
+\begin{eqnarray}
+\mathbb{D}' & \equiv & \mathbb{D} \quad \text{except:} \\
+\mathbb{D}'[\mathcal{S}(\mathbf{b})] & \equiv & \mathbf{b}
+\end{eqnarray}
+
+Finally, the contract is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the contract's storage can be altered, further contracts can be created and further message calls can be made. As such, the code execution function $\Xi$ evaluates to a tuple of the resultant state $\mathbb{S}'$, additional database entries $\mathbb{D}'$ and available gas remaining $g'$.
+
+Code execution depletes gas; thus it may exit before the code has come to a natural halting state. In this exceptional case we say an Out-of-Gas exception has occured. In this case, the evaluated state is defined as being the empty set $\varnothing$. In this circumstance, the entire create operation should have no effect on the state/database; the gas remaining should of course be zero. If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persevere. Thus formally, we may specify the new state, database entries and gas as $\mathbb{S}'$, $\mathbb{D}', g'$ where:
+
+\begin{eqnarray}
+(\mathbb{S}^{**}, \mathbb{D}^{**}, g') & \equiv & \Xi(\mathbb{S}^*, \mathbb{D}^*, g, I) \\
+(\mathbb{S}_P, \mathbb{D}') & \equiv & \begin{cases}
+(\mathbb{S}_C, \mathbb{D}) & \text{if} \quad \mathbb{S}^{**} = \varnothing \\
+(\mathbb{S}^{**}, \mathbb{D}^{**}) & \text{otherwise}
+\end{cases} \\
+I'_a & \equiv & a \\
+I'_o & \equiv & s \\
+I'_p & \equiv & p \\
+I'_D & \equiv & [] \\
+I'_s & \equiv & s \\
+I'_v & \equiv & v \\
+I'_C & \equiv & \mathbf{i}
+\end{eqnarray}
+
+$I'_D$ evaluates to the empty array. $I'_H$ and $I'_n$ have no special treatment and are determined from the block chain.
 
 \subsubsection{Message Call} \label{ch:call}
 
-In the case of executing a message call, several parameters are required: sender ($s$), recipient ($r$), available gas ($g$), value ($v$) together with an arbitrary length byte array, $\mathbf{d}$, the input data of the call. Message calls also have intrinsic return data; the call's output byte array $\mathbf{r}$. This is ignored when executing transactions, however message calls can be initiated due to VM-code execution and in this case the return data is used.
-
-In executing a message call, the account balance of the recipient is increased by the value passed, thus $\mathbb{S}$ becomes replaced with $\mathbb{S}'$:
+In the case of executing a message call, several parameters are required: sender ($s$), transaction originator ($o$), recipient ($r$), available gas ($g$), value ($v$) and gas price ($p$) together with an arbitrary length byte array, $\mathbf{d}$, the input data of the call. Aside from evaluating to a new state and additional database entries, message calls also have an extra component---the output data denoted by the byte array $\mathbf{o}$. This is ignored when executing transactions, however message calls can be initiated due to VM-code execution and in this case this information is used.
 
 \begin{equation}
-\mathbb{S}'[r]_{balance} \equiv \mathbb{S}[r]_{balance} + v
+(\mathbb{S}_P, \mathbb{D}', g', \mathbf{o}) \equiv \Theta(\mathbb{S}_C, \mathbb{D}, s, o, r, g, v, p, \mathbf{d})
 \end{equation}
 
-In the case that the recipient contains code to be executed (i.e. that the account is a contract), then the contract's body code, to be found in the state database with key $\mathbb{S}[r]_{code}$, is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts due to an exhausted gas supply, then no gas is refunded to the caller and the state is reverted to the point immediately prior to code execution. Unlike with contract creation, 
+TODO: Move rest to own section after execution model.
+
+TODO: Transaction structure layout.
+
+
+In the case that the recipient contains code to be executed (i.e. that the account is a contract), then the contract's body code, $\mathbb{D}[\mathbb{S}[r]_{code}]$, is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts due to an exhausted gas supply, then no gas is refunded to the caller and the state is reverted to the point immediately prior to code execution.
+
+\begin{eqnarray}
+(\mathbb{S}^{**}, \mathbb{D}^{**}, g') & \equiv & \Xi(\mathbb{S}^*, \mathbb{D}^*, g, I) \\
+(\mathbb{S}', \mathbb{D}') & \equiv & \begin{cases}
+(\mathbb{S}^*, \mathbb{D}) & \text{if} \quad \mathbb{S}^{**} = \varnothing \\
+(\mathbb{S}^{**}, \mathbb{D}^{**}) & \text{otherwise}
+\end{cases} \\
+I'_a & \equiv & a \\
+I'_o & \equiv & o \\
+I'_p & \equiv & p \\
+I'_D & \equiv & \mathbf{d} \\
+I'_s & \equiv & s \\
+I'_v & \equiv & v \\
+I'_C & \equiv & \mathbb{D}[\mathbb{S}[r]_{code}]
+\end{eqnarray}
 
 \subsection{Execution Model} \label{ch:model}
 
@@ -287,7 +360,7 @@ The execution model specifies how the system state is altered given a series of 
 
 \subsubsection{Basics}
 
-The EVM is a simple stack-based architecture. The word size of the machine (and thus size of stack item) is 256-bit. This was chosen to facilitate the SHA3-256 hash scheme. The memory model is a simple word-addressed byte array. The stack has an unlimited size. The machine also has an independent storage model; this is similar in concept to the memory but rather than a byte array, it is a word-addressable word array. Unlike memory, which is volatile, storage is non volatile and is maintained as part of the system state in the state database. All locations in both storage and memory are well-defined initially as zero.
+The EVM is a simple stack-based architecture. The word size of the machine (and thus size of stack item) is 256-bit. This was chosen to facilitate the SHA3-256 hash scheme and ECC. The memory model is a simple word-addressed byte array. The stack has an unlimited size. The machine also has an independent storage model; this is similar in concept to the memory but rather than a byte array, it is a word-addressable word array. Unlike memory, which is volatile, storage is non volatile and is maintained as part of the system state in the state database. All locations in both storage and memory are well-defined initially as zero.
 
 The machine does not follow the standard von Neumann architecture. Rather than storing program code in memory or storage, it is stored separately in a virtual ROM. It cannot be read directly; instead it exists only as a model for determining the next instruction to execute.
 
@@ -339,12 +412,12 @@ In addition to the system state $\mathbb{S}$, and the remaining gas for computat
 \item $I_D$, the byte array that is the input data to this execution; if the execution agent is a transaction, this would be the transaction data.
 \item $I_s$, the address of the account which caused the code to be executing; if the execution agent is a transaction, this would be the transaction sender.
 \item $I_v$, the value passed to this account as part of the same procedure as execution; if the execution agent is a transaction, this would be the transaction value.
+\item $I_C$, the byte array that is the machine code to be executed.
 \item $I_H$, the block header of the previous block.
 \item $I_n$, the block number of the current block.
-\item $I_C$, the byte array that is the machine code to be executed.
 \end{itemize}
 
-The execution model defines the function $X$, which can compute the resultant state $\mathbb{S}'$ and the remaining gas $g'$, given these definitions:
+The execution model defines the function $\Xi$, which can compute the resultant state $\mathbb{S}'$ and the remaining gas $g'$, given these definitions:
 
 \begin{equation}
 (\mathbb{S}', g') \equiv \Xi(\mathbb{S}, g, I)
@@ -590,7 +663,7 @@ This paper has introduced, discussed and formally defined the protocol of Ethere
 
 \section{Fee Schedule}\label{app:fees}
 
-\begin{tabular*}{\columnwidth}[h]{rll}
+\begin{tabular*}{\columnwidth}[h]{lrl}
 \toprule
 Name & Value & Description* \\
 \midrule
@@ -828,7 +901,7 @@ TODO: Specify minimum memory limits for a general cost definition.
 &&&& $\mathbb{M}'_T[0] \equiv I_a$ \\
 \midrule
 0x31 & {\small BALANCE} & 0 & 1 & Get balance of currently executing account. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{S}[I_a]_balance$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{S}[I_a]_{balance}$ \\
 \midrule
 0x32 & {\small ORIGIN} & 0 & 1 & Get execution origination address. \\
 &&&& $\mathbb{M}'_T[0] \equiv I_o$ \\
@@ -954,10 +1027,14 @@ TODO: Specify minimum memory limits for a general cost definition.
 \multicolumn{5}{c}{\textbf{f0s: System operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0xf0 & {\small CREATE} & 5 & 1 & Create a new contract. \\
-&&&&  \\
+&&&& $\mathbf{b} \equiv \mathbb{M}_M[ \mathbb{M}_S[1] \dots (\mathbb{M}_S[1] + \mathbb{M}_S[2] - 1) ]$ \\
+&&&& $\mathbf{i} \equiv \mathbb{M}_M[ \mathbb{M}_S[3] \dots (\mathbb{M}_S[3] + \mathbb{M}_S[4] - 1) ]$ \\
+&&&& $(\mathbb{S}', \mathbb{D}', \mathbb{M}'_g) \equiv \Lambda(\mathbb{S}, \mathbb{D}, I_a, I_o, \mathbb{M}_g, I_p, \mathbb{M}_S[0], \mathbf{i}, \mathbf{b})$ \\
 \midrule
 0xf1 & {\small CALL} & 7 & 1 & Message-call into contract. \\
-&&&&  \\
+&&&& $\mathbf{i} \equiv \mathbb{M}_M[ \mathbb{M}_S[3] \dots (\mathbb{M}_S[3] + \mathbb{M}_S[4] - 1) ]$ \\
+&&&& $\mathbf{o} \equiv \mathbb{M}_M[ \mathbb{M}_S[5] \dots (\mathbb{M}_S[5] + \mathbb{M}_S[6] - 1) ]$ \\
+&&&& $(\mathbb{S}', \mathbb{D}', \mathbb{M}'_g, \mathbf{o}) \equiv \Theta(\mathbb{S}, \mathbb{D}, I_a, I_o, \mathbb{M}_g, I_p, \mathbb{M}_S[0], \mathbb{M}_S[1], \mathbb{M}_S[2], \mathbf{i})$ \\
 \midrule
 0xf2 & {\small RETURN} & 2 & 0 & Halt execution returning output data. \\
 &&&& $\mathbb{M}'_R = \mathbb{M}_M[ \mathbb{M}_T[0] \dots ( \mathbb{M}_T[0] + \mathbb{M}_T[1] - 1 ) ]$ \\
