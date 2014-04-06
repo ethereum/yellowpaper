@@ -38,7 +38,7 @@
 \pagecolor{lightyellow}
 
 \begin{abstract}
-The block-chain paradigm when coupled with cryptographically-secured transactions has demonstrated its utility through a number of projects, not least Bitcoin. Each such project can be seen as a simple application on a decentralised, but singleton, compute resource. We can call this paradigm a transactional singleton machine with shared-state.
+The blockchain paradigm when coupled with cryptographically-secured transactions has demonstrated its utility through a number of projects, not least Bitcoin. Each such project can be seen as a simple application on a decentralised, but singleton, compute resource. We can call this paradigm a transactional singleton machine with shared-state.
 
 Ethereum implements this paradigm in a generalised manner. Furthermore it provides a plurality of such resources, each with a distinct state and operating code but able to interact through a message-passing framework with others. We discuss its design, implementation issues, the opportunities it provides and the future hurdles we envisage.
 \end{abstract}
@@ -64,7 +64,7 @@ E language. Smart contracts. Bitcoin, namecoin \&c. Mastercoin.
 
 \section{Proposal} \label{ch:proposal}
 
-\subsection{The Block Chain Paradigm} \label{ch:overview}
+\subsection{The Blockchain Paradigm} \label{ch:overview}
 
 Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissable. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg be things such as reducing an account balance without an equal and opposite increase elsewhere. We define a valid state transitions as one which comes about through a transaction. Formally:
 
@@ -72,7 +72,7 @@ Ethereum, taken as a whole, can be viewed as a transaction-based state machine: 
 S_{t+1} \equiv f(S_t, T)
 \end{equation}
 
-and $f$ is the Ethereum state transition function. In Ethereum, $f$, together with $S$ are considerably more powerful then any existing comparable system; $f$ allows components to carry out arbitrary computation to be done, while $S$ allows components to store arbitrary state between transactions.
+and $f$ is the Ethereum state transition function. In Ethereum, $f$, together with $S$ are considerably more powerful then any existing comparable system; $f$ allows components to carry out arbitrary computation, while $S$ allows components to store arbitrary state between transactions.
 
 Transactions are collated into blocks; we then chain blocks together using a cryptographic hash as a means of reference. Blocks function as a journal, recording a series of transactions together with the previous block and an identifier for the final state (though do not store the final state itself---that would be far too big). They also punctuate the transaction series with incentives for nodes to \textit{mine}. This incentivisation takes places as a state-transition function, adding value to a nominated account.
 
@@ -88,7 +88,7 @@ F(S, \mathbb{T}) & \equiv & g(f(f(S, T_0), T_1) ...)
 
 Where $g$ is the block-finalisation state transition function (a function that rewards a nominated party); $\mathbb{T}$ is the series of transactions included in this block; and $F$ is the block-level state-transition function.
 
-This is the basis of the block-chain paradigm, a model that forms the backbone of Ethereum.
+This is the basis of the blockchain paradigm, a model that forms the backbone of Ethereum.
 
 \subsubsection{Value}
 
@@ -109,13 +109,13 @@ $10^{18}$ & Ether \\
 \end{center}
 \par
 
-Throughout the document, any reference to value, in the context of Ether, currency, a balance or a payment, should assumed to be counted in Wei. 
+Throughout the document, any reference to value, in the context of Ether, currency, a balance or a payment, should assumed to be counted in Wei.
 
 \subsubsection{Which History?}
 
-Since the system is decentralised and all parties have an opportunity to create a new block on some older pre-existing block the resultant structure is necessarily a tree of blocks. In order to form a consensus as to which path, from root (the genesis block) to leaf (the block containing the most recent transactions) through this tree structure, known as the block-chain, there must be an agreed-upon scheme. If there is ever a disagreement between nodes as to which root-to-leaf path down the block-tree is the `best' block-chain, then a \textit{fork} occurs.
+Since the system is decentralised and all parties have an opportunity to create a new block on some older pre-existing block the resultant structure is necessarily a tree of blocks. In order to form a consensus as to which path, from root (the genesis block) to leaf (the block containing the most recent transactions) through this tree structure, known as the blockchain, there must be an agreed-upon scheme. If there is ever a disagreement between nodes as to which root-to-leaf path down the block tree is the `best' blockchain, then a \textit{fork} occurs.
 
-This would mean that past a given point in time (block), there is a temporal co-existance of multiple states of the system: some nodes believing one block to contain the canonical transactions, other nodes believing some other block to be canonical, potentially containing radically different or incompatible transactions. This is to be avoided at all costs as the uncertainty that would ensue would likely kill all confidence in the entire system.
+This would mean that past a given point in time (block), multiple states of the system may coexist: some nodes believing one block to contain the canonical transactions, other nodes believing some other block to be canonical, potentially containing radically different or incompatible transactions. This is to be avoided at all costs as the uncertainty that would ensue would likely kill all confidence in the entire system.
 
 The scheme we use in order to generate consensus is a simplified version of the GHOST algorithm \cite{ghost}. This process is described in detail in section \ref{ch:ghost}.
 
@@ -125,7 +125,7 @@ Having introduced the basic concepts behind Ethereum, we will discuss the meanin
 
 \subsubsection{World State} \label{ch:state}
 
-The world-state (\textit{state}, see Appendix \ref{app:state}), is a mapping between addresses (160-bit identifiers) and account states (a data structure serialised as RLP). Though not stored on the block chain, it is assumed that the implementation will maintain this mapping in a modified Merkle Patricia tree (\textit{trie}, see Appendix \ref{app:trie}). The trie requires a simple database back-end that maintains a mapping of bytearrays to bytearrays; we name this underlaying database the state database. This has a number of benefits; firstly the root node of this structure is cryptographically dependent on all internal data and as such its hash can be used as a secure identity for the entire system state. Secondly, being an immutable data structure, it allows any previous state (whose root hash is known) to be recalled by simply altering the root hash accordingly. Since we store all such root hashes in the block chain, we are able to trivially revert to old states.
+The world state (\textit{state}, see Appendix \ref{app:state}), is a mapping between addresses (160-bit identifiers) and account states (a data structure serialised as RLP). Though not stored on the blockchain, it is assumed that the implementation will maintain this mapping in a modified Merkle Patricia tree (\textit{trie}, see Appendix \ref{app:trie}). The trie requires a simple database backend that maintains a mapping of bytearrays to bytearrays; we name this underlying database the state database. This has a number of benefits; firstly the root node of this structure is cryptographically dependent on all internal data and as such its hash can be used as a secure identity for the entire system state. Secondly, being an immutable data structure, it allows any previous state (whose root hash is known) to be recalled by simply altering the root hash accordingly. Since we store all such root hashes in the blockchain, we are able to trivially revert to old states.
 
 The account state comprises the first two, and potentially the last two, of the following fields:
 
@@ -140,7 +140,7 @@ If the latter two fields are missing, the node represents a simple (non-contract
 
 \subsubsection{Transaction} \label{ch:transaction}
 
-A transaction is a single cryptographically signed instruction sent by an actor external to Ethereum. e.g. This might be from a person (via a mobile device or desktop computer) or could be from a piece of automated software running on a server. There are two types of transactions: those which result in message calls and those which result in the creation of new contracts. Both types specify a number of common fields:
+A transaction is a single cryptographically signed instruction sent by an actor external to Ethereum. An external actor can be a person (via a mobile device or desktop computer) or could be from a piece of automated software running on a server. There are two types of transactions: those which result in message calls and those which result in the creation of new contracts. Both types specify a number of common fields:
 
 \begin{description}
 \item[nonce] A scalar value equal to the number of transactions sent by the sender.
@@ -158,7 +158,7 @@ Additionally, a contract-creation transaction contains:
 \item[init] An unlimited size byte array specifying the EVM-code for the contract initialisation procedure.
 \end{description}
 
-Both \textbf{body} and \textbf{init} are EVM-code fragments; \textbf{body} is executed each time the contract account receives a message call (either through a transaction or due to the internal execution of code). \textbf{init} is a piece of code executed only once and at contract creation. It gets discarded immediately.
+Both \textbf{body} and \textbf{init} are EVM-code fragments; \textbf{body} is executed each time the contract account receives a message call (either through a transaction or due to the internal execution of code). \textbf{init} is a piece of code that is executed only once at contract creation and that gets discarded immediately thereafter.
 
 Whereas a message call transaction contains:
 
@@ -195,7 +195,7 @@ H'_d - \frac{H'_d}{1024} & \quad \text{otherwise}\\
 
 Where $H'$ is the previous block, $H_t$ is the timestamp of block $H$.
 
-This mechanism enforces a homeostasis in terms of the time between blocks; a smaller period between the last two blocks results in an increase in the difficulty level and thus additional computation required, lengthening the likely next period. Conversely, is the period is too large the difficulty, and expected time to the next block, is reduced.
+This mechanism enforces a homeostasis in terms of the time between blocks; a smaller period between the last two blocks results in an increase in the difficulty level and thus additional computation required, lengthening the likely next period. Conversely, if the period is too large, the difficulty, and expected time to the next block, is reduced.
 
 The nonce, $n$, must satisfy the relation:
 
@@ -203,11 +203,11 @@ The nonce, $n$, must satisfy the relation:
 \mathcal{P}(H, n) \leqslant \frac{2^{256}}{H_d}
 \end{equation}
 
-Where $\mathcal{P}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an pseudo-random number cryptographically dependent on the parameters $H$ and $n$. Given an approximately uniform distribution in the range $[0, 2^{256})$, then the expected time to find a solution is proportional to the difficulty, $H_d$.
+Where $\mathcal{P}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an pseudo-random number cryptographically dependent on the parameters $H$ and $n$. Given an approximately uniform distribution in the range $[0, 2^{256})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
 
-This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propogate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because satisfaction of this requirement both depends on the contents of the block and 
+This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propogate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because satisfaction of this requirement both depends on the contents of the block and
 
-The other two components in the block are simply a list of the transactions (as defined previously) and a list of uncle headers (of the same format as above).
+The other two components in the block are simply a list of the transactions (as defined previously) and a list of uncle block headers (of the same format as above).
 
 \subsection{Gas and Payment} \label{ch:payment}
 
@@ -215,7 +215,7 @@ In order to avoid issues of network abuse and to sidestep the inevitable questio
 
 Every transaction has a specific amount of gas associated with it: \textbf{gasLimit}. This is the amount of gas which is implicitly purchased from the sender's account balance. The purchase happens at the according \textbf{gasPrice}, also specified in the transaction. The transaction is considered invalid if the account balance cannot support such a purchase. It is named \textbf{gasLimit} since any unused gas at the end of the transaction is refunded (at the same rate of purchase) to the sender's account. Gas does not exist outside of the execution of a transaction. Thus for trusted contracts, a relatively high gas limit may be set and left alone.
 
-Any ether used to purchase gas that is not refunded is delivered to the \textit{coinbase} address, the address of an account typically under control of the miner. Transactors are free to specify any \textbf{gasPrice} that they wish, however miners are free to ignore transactions as they choose. A higher gas price on a transaction will therefore cost the sender more in terms of Ether and deliver a greater value to the miner and thus will more likely be selected for inclusion by more miners. Miners, in general, will choose to advertise the minimum gas price for which they will execute transactions and transactors will be free to canvas these prices in determining what gas price to offer. Since there will be a (weighted) distribution of minimum acceptable gas prices, transactors will necessarily have a trade-off to make between lowering the gas price and maximising the chance that their transaction will be mined in a timely manner.
+Any ether used to purchase gas that is not refunded is delivered to the \textit{coinbase} address, the address of an account typically under the control of the miner. Transactors are free to specify any \textbf{gasPrice} that they wish, however miners are free to ignore transactions as they choose. A higher gas price on a transaction will therefore cost the sender more in terms of Ether and deliver a greater value to the miner and thus will more likely be selected for inclusion by more miners. Miners, in general, will choose to advertise the minimum gas price for which they will execute transactions and transactors will be free to canvas these prices in determining what gas price to offer. Since there will be a (weighted) distribution of minimum acceptable gas prices, transactors will necessarily have a trade-off to make between lowering the gas price and maximising the chance that their transaction will be mined in a timely manner.
 
 %\subsubsection{Determining Computation Costs}
 
@@ -226,23 +226,30 @@ The execution of a transaction is the most complex part of the Ethereum protocol
 \begin{enumerate}
 \item The transaction signature is valid;
 \item the transaction nonce is valid (equivalent to the sender account's current nonce);
-\item the gas limit is no smaller that the intrinsic gas, $g_i$, used by the transaction;
+\item the gas limit is no smaller than the intrinsic gas, $g_0$, used by the transaction;
 \item the sender account balance contains at least the cost, $c$, (in wei) required in up-front payment;
 \end{enumerate}
 
-where:
+Intrinsic gas $g_0$ is calculated as follows:
 
 \begin{eqnarray}
-g_i & \equiv & \begin{cases}
-  |\mathbf{d}|.G_{data} + G_{call} & \quad \text{call} \\
-  (|\mathbf{i}| + |\mathbf{b}|).G_{data} + G_{create} & \quad \text{create} \\
-\end{cases} \\
-c & \equiv & l.p + v
+g_0 & \equiv & \begin{cases}
+  |\mathbf{d}| G_{data} + G_{call} & \quad \text{call} \\
+  (|\mathbf{i}| + |\mathbf{b}|) G_{data} + G_{create} & \quad \text{create} \\
+\end{cases}
 \end{eqnarray}
 
-where $|\mathbf{d}|$, $|\mathbf{i}|$ and $|\mathbf{b}|$ are the sizes, in bytes, of the transaction's associated data, initialisation \& body EVM-code and $G$ is defined in Appendix \ref{app:fees}.
+where $|\mathbf{d}|$, $|\mathbf{i}|$ and $|\mathbf{b}|$ are the sizes, in bytes, of the transaction's associated data, initialisation and body EVM-code, respectively and $G$ is defined in Appendix \ref{app:fees}.
 
-The execution of a valid transaction begins with an irrevocable change made to the state: the nonce of the account of the sender ($s$) is incremented by one and the balance is reduced by the cost, $c$. The gas available for the proceeding computation, $g$, is defined as $l - i$. The proceeding computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
+The up-front cost $c$ is calculated as:
+
+\begin{eqnarray}
+c & \equiv & l p + v
+\end{eqnarray}
+
+where $l$ is gasLimit, $p$ is gasPrice and $v$ is value as defined parts of the transaction.
+
+The execution of a valid transaction begins with an irrevocable change made to the state: the nonce of the account of the sender ($s$) is incremented by one and the balance is reduced by the cost, $c$. The gas available for the proceeding computation, $g$, is defined as $l - g_0$. The proceeding computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
 
 TODO: formal description of reduction of sender's balance by $c$, then re-addition later on by $g'.p$
 
@@ -258,10 +265,10 @@ After the message call or contract creation is processed, the state is finalised
 
 \begin{eqnarray}
 \mathbb{S}' & \equiv & \mathbb{S}_C \quad \text{except:} \\
-\mathbb{S}'[s]_{balance} & \equiv & \mathbb{S}_C[s]_{balance} + g'.p
+\mathbb{S}'[s]_{balance} & \equiv & \mathbb{S}_C[s]_{balance} + g' p
 \end{eqnarray}
 
-Evaluating $\mathbb{S}_C$ from $\mathbb{S}_R$ depends on the transaction type; either contract-creation or message-call; I will describe and define these separately. 
+Evaluating $\mathbb{S}_C$ from $\mathbb{S}_R$ depends on the transaction type; either contract creation or message call; I will describe and define these separately.
 
 
 
@@ -279,7 +286,7 @@ TODO: Move rest to own section after execution model.
 
 TODO: Transaction structure layout.
 
-The address of the new contract is defined as being the rightmost 160 bits of the SHA3 hash of RLP encoding of the structure \texttt{[ sender, nonce ]}. In in the unlikely event that the address is already in use, it is treated as a big-endian integer and incremented by one until an unused address is arrived at. Thus we define the creation address function $A$:
+The address of the new contract is defined as being the rightmost 160 bits of the SHA3 hash of RLP encoding of the structure \texttt{[ sender, nonce ]}. In the unlikely event that the address is already in use, it is treated as a big-endian integer and incremented by one until an unused address is arrived at. Thus we define the creation address function $A$:
 
 \begin{eqnarray}
 A(s, o) & \equiv & a \quad \text{where:} \\
@@ -322,7 +329,7 @@ I'_v & \equiv & v \\
 I'_C & \equiv & \mathbf{i}
 \end{eqnarray}
 
-$I'_D$ evaluates to the empty array. $I'_H$ and $I'_n$ have no special treatment and are determined from the block chain.
+$I'_D$ evaluates to the empty array. $I'_H$ and $I'_n$ have no special treatment and are determined from the blockchain.
 
 \subsubsection{Message Call} \label{ch:call}
 
@@ -505,15 +512,15 @@ In general, we assume the memory and system state don't change:
 \mathbb{S}' & \equiv & \mathbb{S}
 \end{eqnarray}
 
-However, instructions do typically alter one or several components of these values. Altered components, on an listed by instruction are noted in Appendix \ref{app:vm}.
+However, instructions do typically alter one or several components of these values. Altered components listed by instruction are noted in Appendix \ref{app:vm}.
 
-\subsection{Block-tree to Block-chain} \label{ch:ghost}
+\subsection{Blocktree to Blockchain} \label{ch:ghost}
 
-The canonical block chain is a path from root to leaf through the entire block tree. In order to have consensus over which path it is, conceptually we identify the path that has had the most computation done upon it, or, the \textit{heaviest} path. Clearly one factor that helps determine the heaviest path is the block number of the leaf, equivalent to the number of blocks, not counting the unmined genesis block, in the path. The longer the path, the greater the total mining effort that must have been done in order to arrive at the leaf. This is akin to existing schemes, such as that employed in Bitcoin-derived protocols.
+The canonical blockchain is a path from root to leaf through the entire block tree. In order to have consensus over which path it is, conceptually we identify the path that has had the most computation done upon it, or, the \textit{heaviest} path. Clearly one factor that helps determine the heaviest path is the block number of the leaf, equivalent to the number of blocks, not counting the unmined genesis block, in the path. The longer the path, the greater the total mining effort that must have been done in order to arrive at the leaf. This is akin to existing schemes, such as that employed in Bitcoin-derived protocols.
 
-This scheme notably ignores so-called \textit{stale} blocks: valid, mined blocks, which were propogated too late into the network and thus were beaten to network consensus by a sibling block (one with the same parent). Such blocks become more common as the network propogation time approaches the ideal inter-block time. However, by counting the computation work of stale block headers, we are able to do better: we can utilise this otherwise wasted computation and put it to use in helping to butress the more popular block-chain making it a stronger choice over less popular (though potentially longer) competitors.
+This scheme notably ignores so-called \textit{stale} blocks: valid, mined blocks, which were propogated too late into the network and thus were beaten to network consensus by a sibling block (one with the same parent). Such blocks become more common as the network propogation time approaches the ideal inter-block time. However, by counting the computation work of stale block headers, we are able to do better: we can utilise this otherwise wasted computation and put it to use in helping to butress the more popular blockchain making it a stronger choice over less popular (though potentially longer) competitors.
 
-This increases overall network security by making it much harder for an adversary to silently mine a canonical block chain (which, it is assumed, would contain different transactions to the current consensus) and dump it on the network with the effect of reversing existing blocks and the transactions within.
+This increases overall network security by making it much harder for an adversary to silently mine a canonical blockchain (which, it is assumed, would contain different transactions to the current consensus) and dump it on the network with the effect of reversing existing blocks and the transactions within.
 
 In order to validate the extra computation, a given block $B$ may include the block headers from any known uncle blocks (i.e. blocks whose parent is equivalent to the grandparent of $B$). Since a block header includes the nonce, a proof-of-work, then the header alone is enough to validate the computation done. Any such blocks contribute toward the total computation or \textit{total difficulty} of a chain that includes them. To incentivise computation and inclusion, a reward is given both to the miner of the stale block and the miner of the block that references it.
 
@@ -524,7 +531,7 @@ B_{td} & \equiv & P_{td} + B_d + \sum\limits_{U \in B_\mathbb{U}} U_d \\
 P & \equiv & B_P
 \end{eqnarray}
 
-As such given a block $B$, $B_td$ is its total difficulty, $B_P$ is its parent block, $B_d$ is its difficulty and $B_\mathbb{U}$ is its set of uncle blocks.
+As such given a block $B$, $B_{td}$ is its total difficulty, $B_P$ is its parent block, $B_d$ is its difficulty and $B_\mathbb{U}$ is its set of uncle blocks.
 
 \subsection{Block Finalisation} \label{ch:finalisation}
 
@@ -536,7 +543,7 @@ Compute proof-of-work.
 
 \subsection{Mining Proof-of-Work} \label{ch:pow}
 
-The mining proof-of-work (PoW) exists as a cryptographically secure nonce that proves beyond reasonable doubt that a particular amount of computation has been expended in the determination of some token value $n$. It is utilised to enforce the block chain security by giving meaning and credence to the notion of difficulty (and, by extension, total difficulty). However, since mining new blocks comes with an attached reward, the proof-of-work not only functions as a method of securing confidence that the blockchain will remain canonical into the future, but also as a wealth distribution mechanism.
+The mining proof-of-work (PoW) exists as a cryptographically secure nonce that proves beyond reasonable doubt that a particular amount of computation has been expended in the determination of some token value $n$. It is utilised to enforce the blockchain security by giving meaning and credence to the notion of difficulty (and, by extension, total difficulty). However, since mining new blocks comes with an attached reward, the proof-of-work not only functions as a method of securing confidence that the blockchain will remain canonical into the future, but also as a wealth distribution mechanism.
 
 For both reasons, there are two important goals of the proof-of-work function; firstly, it should be as accessible as possible to as many people as possible. The requirement of or reward from specialised and uncommon hardware should be minimised. This makes the distribution model as open as possible, and, ideally, makes the act of mining a simple swap from electricity to ether at roughly the same rate for anyone around the world.
 
@@ -544,7 +551,7 @@ Secondly, it should not be possible to make super-linear profits, and especially
 
 One plague of the Bitcoin world is ASICs. These are specialised pieces of compute hardware that exist only to do a single task. In Bitcoin's case the task is the SHA256 hash function. While ASICs exist for a proof-of-work function, both goals are placed in jeopardy. Because of this, a proof-of-work function that is ASIC-resistant (i.e. difficult or economically inefficient to implement in specialised compute hardware) has been identified as the proverbial silver bullet.
 
-Two directions exist for ASIC resistance; firstly make it sequential memory-hard, i.e. engineer the function such that the determination of the nonce requires a lot of memory and that the memory cannot be used in parallel to discover multiple nonces simultaneously. The second is to make the type of computation it would need to do general-purpose; the meaning of ``specialised hardware''  for a general-purpose task set is, naturally, general purpose hardware and as such commodity desktop computers are likely to be pretty close to ``specialised hardware'' for the task. 
+Two directions exist for ASIC resistance; firstly make it sequential memory-hard, i.e. engineer the function such that the determination of the nonce requires a lot of memory and that the memory cannot be used in parallel to discover multiple nonces simultaneously. The second is to make the type of computation it would need to do general-purpose; the meaning of ``specialised hardware''  for a general-purpose task set is, naturally, general purpose hardware and as such commodity desktop computers are likely to be pretty close to ``specialised hardware'' for the task.
 
 More formally, the proof-of-work function takes the form of $\mathcal{P}$:
 
@@ -558,7 +565,7 @@ As of the proof-of-concept (PoC) series of the Ethereum software, the proof-of-w
 
 \subsubsection{PoC Series}
 
-For the PoC series, we use a simplified proof-of-work. This is not ASIC resistant and is meant merely as a placeholder. It utilises the SHA3 hash function to 
+For the PoC series, we use a simplified proof-of-work. This is not ASIC resistant and is meant merely as a placeholder. It utilises the SHA3 hash function to
 
 It is formally defined as $\mathcal{P}$:
 
@@ -575,7 +582,7 @@ $\mathcal{B}(X)$ evaluates to the value equal to X when interpreted as a big-end
 
 \subsubsection{Release Series}
 
-For the release series, we use a more complex proof-of-work. This has yet to be formally defined, but involves two components; firstly that it concerns contract processing, and by extension the evaluation of programs on the EVM. Secondly that it concerns the utilisation of either the block-chain or the full state trie.
+For the release series, we use a more complex proof-of-work. This has yet to be formally defined, but involves two components; firstly that it concerns contract processing, and by extension the evaluation of programs on the EVM. Secondly that it concerns the utilisation of either the blockchain or the full state trie.
 
 As an overview, the output of the function is based upon the system state, defined as the hash of the root node of the state trie. A set of transactions, pseudo-randomly determined from the nonce value and selected from the last $N$ blocks is taken. $N$ is large enough and the selection criteria are such that execution of the transactions requires some non-negligable amount of processing by the EVM. Whenever code is executed on the EVM, it is pseudo-randomly (seeded again by the nonce) corrupted before alteration. Corruption could involve switching addresses with other transactions or rotating them through in the state trie (perhaps to the next address with the same order of magnitude of funds), rotating through instructions that have equivalent stack behaviour (e.g. swapping {\small ADD} for {\small SUB} or {\small GT} for {\small EQ}), or more destructive techniques such as randomly changing opcodes. This results in a problem that both require generalised computation hardware and is sequentially memory (and perhaps even disk) hard.
 
@@ -625,13 +632,13 @@ This paper has introduced, discussed and formally defined the protocol of Ethere
 \section{Terminology}
 
 \begin{description}
-\item[External Actor] A person or other entity able to interface to an Ethereum node, but external to the world of Ethereum. It can interact with Ethereum through depositing signed Transactions and inspecting the block-chain and associated state. Has one (or more) intrinsic Accounts.
+\item[External Actor] A person or other entity able to interface to an Ethereum node, but external to the world of Ethereum. It can interact with Ethereum through depositing signed Transactions and inspecting the blockchain and associated state. Has one (or more) intrinsic Accounts.
 
 \item[Address] A 160-bit code used for identifying Accounts.
 
 \item[Account] Accounts have an intrinsic balance and transaction count maintained as part of the Ethereum state. They are owned either by External Actors or intrinsically (as an identity) an Autonomous Object within Ethereum. If an Account identifies an Autonomous Object, then Ethereum will also maintain a Storage State particular to that Account. Each Account has a single Address that identifies it.
 
-\item[Transaction] A piece of data, signed by an External Actor. It represents either a Message or a new Autonomous Object. Transactions are recorded into each block of the block-chain.
+\item[Transaction] A piece of data, signed by an External Actor. It represents either a Message or a new Autonomous Object. Transactions are recorded into each block of the blockchain.
 
 \item[Autonomous Object] A virtual object existant only within the hypothetical state of Ethereum.  Has an intrinsic address. Incorporated only as the state of the storage component of the VM.
 
@@ -649,7 +656,7 @@ This paper has introduced, discussed and formally defined the protocol of Ethere
 
 \item[App] An end-user-visible application hosted in the Ethereum Browser.
 
-\item[Ethereum Browser] (aka Ethereum Reference Client) A cross-platform GUI of an interface similar to a simplified browser (ala Chrome) that is able to host sandboxed applications whose back-end is purely on the Ethereum protocol.
+\item[Ethereum Browser] (aka Ethereum Reference Client) A cross-platform GUI of an interface similar to a simplified browser (ala Chrome) that is able to host sandboxed applications whose backend is purely on the Ethereum protocol.
 
 \item[Ethereum Virtual Machine] (aka EVM) The virtual machine that forms the key part of the execution model for a contract's program code.
 
@@ -1075,7 +1082,7 @@ The Low-level Lisp-like Language is a language created in order to efficiently a
 
 \section{Wire Protocol}\label{app:wire}
 
-The wire-protocol specifies a network-level protocol for how two peers can communicate. It includes handshake procedures and the means for transfering information such as blocks \& transactions 
+The wire-protocol specifies a network-level protocol for how two peers can communicate. It includes handshake procedures and the means for transfering information such as blocks \& transactions
 
 \section{Peer Strategy}\label{app:peers}
 
