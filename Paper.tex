@@ -62,9 +62,7 @@ Transparency. Open state. User can be guaranteed that backend will do what front
 
 E language. Smart contracts. Bitcoin, namecoin \&c. Mastercoin.
 
-\section{Proposal} \label{ch:proposal}
-
-\subsection{The Blockchain Paradigm} \label{ch:overview}
+\section{The Blockchain Paradigm} \label{ch:overview}
 
 Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissable. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg be things such as reducing an account balance without an equal and opposite increase elsewhere. We define a valid state transitions as one which comes about through a transaction. Formally:
 
@@ -82,15 +80,15 @@ Formally, we expand to:
 
 \begin{eqnarray}
 \mathbb{S}_{t+1} & \equiv & \Pi(\mathbb{S}_t, \mathbf{T}) \\
-\mathbf{T} & \equiv & [ T_0, T_1, ... ] \\
-\Pi(\mathbb{S}, \mathbf{T}) & \equiv & \Omega(\Upsilon(\Upsilon(\mathbb{S}, T_0), T_1) ...)
+B & \equiv & (..., [ T_0, T_1, ... ]) \\
+\Pi(\mathbb{S}, B) & \equiv & \Omega(B, \Upsilon(\Upsilon(\mathbb{S}, T_0), T_1) ...)
 \end{eqnarray}
 
-Where $\Omega$ is the block-finalisation state transition function (a function that rewards a nominated party); $\mathbf{T}$ is the series of transactions included in this block; and $\Pi$ is the block-level state-transition function.
+Where $\Omega$ is the block-finalisation state transition function (a function that rewards a nominated party); $B$ is this block, which includes a series of transactions amongst some other components; and $\Pi$ is the block-level state-transition function.
 
 This is the basis of the blockchain paradigm, a model that forms the backbone of Ethereum.
 
-\subsubsection{Value}
+\subsection{Value}
 
 In order to incentivise computation within the network, there needs to be an agreed method for transmitting value. To address this issue, Ethereum has an intrinsic currency, Ether, known also as ETH. The smallest subdenomination of Ether, and thus the one in which all integer values of the currency are counted is the Wei. One Ether is defined as being $10^{18}$ Wei. There exist other subdenominations of Ether:
 
@@ -111,7 +109,7 @@ $10^{18}$ & Ether \\
 
 Throughout the document, any reference to value, in the context of Ether, currency, a balance or a payment, should assumed to be counted in Wei.
 
-\subsubsection{Which History?}
+\subsection{Which History?}
 
 Since the system is decentralised and all parties have an opportunity to create a new block on some older pre-existing block the resultant structure is necessarily a tree of blocks. In order to form a consensus as to which path, from root (the genesis block) to leaf (the block containing the most recent transactions) through this tree structure, known as the blockchain, there must be an agreed-upon scheme. If there is ever a disagreement between nodes as to which root-to-leaf path down the block tree is the `best' blockchain, then a \textit{fork} occurs.
 
@@ -119,11 +117,11 @@ This would mean that past a given point in time (block), multiple states of the 
 
 The scheme we use in order to generate consensus is a simplified version of the GHOST algorithm \cite{ghost}. This process is described in detail in section \ref{ch:ghost}.
 
-\subsection{Blocks, State and Transactions} \label{ch:bst}
+\section{Blocks, State and Transactions} \label{ch:bst}
 
 Having introduced the basic concepts behind Ethereum, we will discuss the meaning of a transaction, a block and the state in more detail.
 
-\subsubsection{World State} \label{ch:state}
+\subsection{World State} \label{ch:state}
 
 The world state (\textit{state}, see Appendix \ref{app:state}), is a mapping between addresses (160-bit identifiers) and account states (a data structure serialised as RLP). Though not stored on the blockchain, it is assumed that the implementation will maintain this mapping in a modified Merkle Patricia tree (\textit{trie}, see Appendix \ref{app:trie}). The trie requires a simple database backend that maintains a mapping of bytearrays to bytearrays; we name this underlying database the state database. This has a number of benefits; firstly the root node of this structure is cryptographically dependent on all internal data and as such its hash can be used as a secure identity for the entire system state. Secondly, being an immutable data structure, it allows any previous state (whose root hash is known) to be recalled by simply altering the root hash accordingly. Since we store all such root hashes in the blockchain, we are able to trivially revert to old states.
 
@@ -138,7 +136,7 @@ The account state comprises the first two, and potentially the last two, of the 
 
 If the latter two fields are missing, the node represents a simple (non-contract) account: it maintains no state and executes no code on receipt of a transaction.
 
-\subsubsection{Transaction} \label{ch:transaction}
+\subsection{The Transaction} \label{ch:transaction}
 
 A transaction (formally, $T$) is a single cryptographically signed instruction sent by an actor external to Ethereum. An external actor can be a person (via a mobile device or desktop computer) or could be from a piece of automated software running on a server. There are two types of transactions: those which result in message calls and those which result in the creation of new contracts. Both types specify a number of common fields:
 
@@ -168,9 +166,9 @@ Whereas a message call transaction contains:
 
 Appendix \ref{app:signing} specifies the function mapping transactions to the sender $S$, which happens through the ECDMA of the SECP-256k1 curve, using the hash of the transaction as the datum to sign. For the present we simply assert that the sender of a given transaction $T$ can be represented with $S(T)$.
 
-\subsubsection{Block} \label{ch:block}
+\subsection{The Block} \label{ch:block}
 
-The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with a set of transactions and a set of other block headers that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{uncles}). The block header contains several pieces of information:
+The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with a set of transactions, $\mathbf{T}$, and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{uncles}). The block header contains several pieces of information:
 
 \begin{description}
 \item[parentHash] The SHA3 256-bit hash of the parent block, in its entirety; formally $H_p$.
@@ -180,37 +178,64 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[transactionsHash] The SHA3 256-bit hash of the transactions list portion of this block; formally $H_t$.
 \item[difficulty] A scalar value corresonding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_d$.
 \item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.
-\item[extraData] An arbitrary byte array containing data relavant to this block. Generally 256-bit or less, but could be much larger in the genesis block; formally $H_x$.
+\item[extraData] An arbitrary byte array containing data relavant to this block. Generally 256-bit or less, but could be much larger in the genesis block. Not formally used.
 \item[nonce] A 256-bit hash which proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.
 \end{description}
 
-The difficulty of a block $H$, is defined as $H_d$:
-
+The other two components in the block are simply a list of the transactions (as defined previously) and a list of uncle block headers (of the same format as above). Formally, we can refer to a block $B$:
 \begin{equation}
-H_d \equiv  \begin{cases}
+B \equiv (H, \mathbf{T}, \mathbf{U})
+\end{equation}
+
+We can assert its validity if and only if it satisfies several conditions: It must be internally consistent with the uncle and transaction block hashes; the given transactions $\mathbf{T}$, when executed in order on the base state $\mathbb{S}$ result in a new state of the identity $H_r$:
+\begin{eqnarray}
+& & \mathcal{S}(\mathcal{R}(\mathbf{U})) \equiv H_u \\
+& \wedge & \mathcal{S}(\mathcal{R}(\mathbf{T})) \equiv H_t \\
+& \wedge & r(\Pi(\mathbb{S}, B)) \equiv H_r
+\end{eqnarray}
+
+where $r(\mathbb{S})$ is the root node hash of the Merkle Patricia tree structure containing the key-value pairs of $\mathbb{S}$ with values encoded using RLP.
+
+\subsubsection{Block Header Validity}
+
+We define $P(B_H)$ to be the parent block of $B$, formally:
+\begin{equation}
+P(H) \equiv B': S(R(B')) = H_p
+\end{equation}
+
+The canonical difficulty of a block of header $H$, is defined as $D(H)$:
+\begin{equation}
+D(H) \equiv \begin{cases}
 2^{22} & \quad \text{if genesis block}\\
-H'_d + \frac{H'_d}{1024} & \quad \text{if $H_t < H'_t + 42$}\\
-H'_d - \frac{H'_d}{1024} & \quad \text{otherwise}\\
+{P(H)_H}_d + \frac{{P(H)_H}_d}{1024} & \quad \text{if $H_t < {P(H)_H}_t + 42$}\\
+{P(H)_H}_d - \frac{{P(H)_H}_d}{1024} & \quad \text{otherwise}\\
 \end{cases}
 \end{equation}
 
-Where $H'$ is the previous block, $H_t$ is the timestamp of block $H$.
+$H_t$ is the timestamp of block $H$, must fulfill the relation:
+\begin{equation}
+H_t > {P(H)_H}_t
+\end{equation}
 
 This mechanism enforces a homeostasis in terms of the time between blocks; a smaller period between the last two blocks results in an increase in the difficulty level and thus additional computation required, lengthening the likely next period. Conversely, if the period is too large, the difficulty, and expected time to the next block, is reduced.
 
 The nonce, $H_n$, must satisfy the relation:
-
 \begin{equation}
 \mathcal{P}(H, H_n) \leqslant \frac{2^{256}}{H_d}
 \end{equation}
 
 Where $\mathcal{P}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an pseudo-random number cryptographically dependent on the parameters $H$ and $H_n$. Given an approximately uniform distribution in the range $[0, 2^{256})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
 
-This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propogate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because satisfaction of this requirement both depends on the contents of the block and
+This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propogate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because satisfaction of this requirement depends on the contents of the block and in turn its composed transactions, creating new, valid, blocks is difficult, and, over time, requires approximately the total compute power of the trustworthy portion of the mining peers.
 
-The other two components in the block are simply a list of the transactions (as defined previously) and a list of uncle block headers (of the same format as above).
+Thus we are able to define the block header validity function $V(H)$:
+\begin{eqnarray}
+V(H) & \equiv & \mathcal{P}(H, H_n) \leqslant \frac{2^{256}}{H_d} \\
+& \wedge & H_d = D(H) \\
+& \wedge & H_t > {P(H)_H}_t
+\end{eqnarray}
 
-\subsection{Gas and Payment} \label{ch:payment}
+\section{Gas and Payment} \label{ch:payment}
 
 In order to avoid issues of network abuse and to sidestep the inevitable questions stemming from Turing completeness, all programmable computation in Ethereum is subject to fees. The fee schedule is specified in units of \textit{gas} (see Appendix \ref{app:fees} for the fees associated with various computation). Thus any given fragment of programmable computation (this includes creating contracts, making message calls, utilising and accessing contract storage and executing operations on the virtual machine) has a universally agreed cost in terms of gas.
 
@@ -220,7 +245,7 @@ Any ether used to purchase gas that is not refunded is delivered to the \textit{
 
 %\subsubsection{Determining Computation Costs}
 
-\subsection{Transaction Execution} \label{ch:transactions}
+\section{Transaction Execution} \label{ch:transactions}
 
 The execution of a transaction is the most complex part of the Ethereum protocol: it defines the state transition function $\Upsilon$. It is assumed that any transactions executed first pass the initial tests of intrinsic validity. These include:
 
@@ -228,7 +253,7 @@ The execution of a transaction is the most complex part of the Ethereum protocol
 \item The transaction signature is valid;
 \item the transaction nonce is valid (equivalent to the sender account's current nonce);
 \item the gas limit is no smaller than the intrinsic gas, $g_0$, used by the transaction;
-\item the sender account balance contains at least the cost, $v_0$, (in wei) required in up-front payment;
+\item the sender account balance contains at least the cost, $v_0$, required in up-front payment;
 \end{enumerate}
 
 Formally, we consider the function $\Upsilon$, with $T$ being a transaction and $\mathbb{S}$ the state:
@@ -262,6 +287,8 @@ the validity is determined as:
 S(T) & \neq & \varnothing \\ \wedge \quad \mathbb{S}[S(T)] & \neq & \varnothing \\ \wedge \quad T_n & = & \mathbb{S}[S(T)]_{nonce} \\ \wedge \quad g_0 & \leq & T_g \\ \wedge \quad v_0 & \leq & \mathbb{S}[S(T)]_{balance}
 \end{eqnarray}
 
+The transaction must not require more gas to be utilised in this block than the global block limit of gas, specified at $10^6$.
+
 The execution of a valid transaction begins with an irrevocable change made to the state: the nonce of the account of the sender ($S(T)$) is incremented by one and the balance is reduced by the up-front cost, $v_0$. The gas available for the proceeding computation, $g$, is defined as $T_g - g_0$. The computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
 
 We define the rollback state $\mathbb{S}_0$:
@@ -289,14 +316,16 @@ g \equiv T_g - g_0
 
 Note we use $\Theta^*$ to take only the first two components of the function's value; the third represents the message-call's output value (a byte array) and is unused in the context of transaction evaluation.
 
-After the message call or contract creation is processed, the state is finalised by refunding $g'$, the remaining gas, to the sender at the original rate. So we define the final state $\mathbb{S}'$ in terms of the provisional state $\mathbb{S}_P$.
+After the message call or contract creation is processed, the state is finalised by refunding $g'$, the remaining gas, to the sender at the original rate and the Ether for the gas actually used is given to the miner, whose address is specified as the coinbase of the present block $B$. So we define the final state $\mathbb{S}'$ in terms of the provisional state $\mathbb{S}_P$:
 
 \begin{eqnarray}
 \mathbb{S}' & \equiv & \mathbb{S}_o \quad \text{except} \\
-\mathbb{S}'[s]_{balance} & \equiv & \mathbb{S}_o[s]_{balance} + g' T_p
+\mathbb{S}'[s]_{balance} & \equiv & \mathbb{S}_o[s]_{balance} + g' T_p \\
+\mathbb{S}'[m]_{balance} & \equiv & \mathbb{S}_o[m]_{balance} + (g - g') T_p \\
+m & \equiv & {B_H}_b
 \end{eqnarray}
 
-\subsection{Contract Creation} \label{ch:create}
+\section{Contract Creation} \label{ch:create}
 
 There are number of intrinsic parameters used when creating a contract: sender ($s$), nonce ($o$), available gas ($g$), gas price ($p$), endowment ($v$) together with the two arbitrary length byte arrays, $\mathbf{i}$ for the initialisation EVM code and $\mathbf{b}$ for the EVM code of the body.
 
@@ -310,8 +339,8 @@ The address of the new contract is defined as being the rightmost 160 bits of th
 
 \begin{eqnarray}
 A(s, o) & \equiv & a \quad \text{where:} \\
-a' & \equiv & \mathcal{B}_{96..255}(\mathcal{S}(\mathcal{R}([s, o]))) \\
-a & \equiv & \arg \min_x : x \geqslant a' \wedge \mathbb{S}_0[x] = \varnothing
+a & = & \arg \min_x : x \geqslant a' \wedge \mathbb{S}_0[x] = \varnothing \\
+a' & = & \mathcal{B}_{96..255}(\mathcal{S}(\mathcal{R}([s, o])))
 \end{eqnarray}
 
 where $\mathcal{S}$ is the SHA3 256-bit hash function, $\mathcal{R}$ is the RLP encoding function, $\mathcal{B}_{a..b}(X)$ evaluates to binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$ and $\mathbb{S}_0[x]$ is the address state of $x$ or $\varnothing$ if none exists.
@@ -348,7 +377,7 @@ I_\mathbf{b} & \equiv & \mathbf{i}
 
 $I_\mathbf{d}$ evaluates to the empty array. $I_H$ and $I_n$ have no special treatment and are determined from the blockchain.
 
-\subsection{Message Call} \label{ch:call}
+\section{Message Call} \label{ch:call}
 
 In the case of executing a message call, several parameters are required: sender ($s$), transaction originator ($o$), recipient ($r$), available gas ($g$), value ($v$) and gas price ($p$) together with an arbitrary length byte array, $\mathbf{d}$, the input data of the call. Aside from evaluating to a new state and additional database entries, message calls also have an extra component---the output data denoted by the byte array $\mathbf{o}$. This is ignored when executing transactions, however message calls can be initiated due to VM-code execution and in this case this information is used.
 
@@ -383,11 +412,11 @@ I_v & \equiv & v \\
 
 We assert that the state database contains the entry $(\mathcal{S}(I_\mathbf{b}), I_\mathbf{b})$.
 
-\subsection{Execution Model} \label{ch:model}
+\section{Execution Model} \label{ch:model}
 
 The execution model specifies how the system state is altered given a series of bytecode instructions and a small tuple of environmental data. This is specified through a formal model of a virtual state machine, known as the Ethereum Virtual Machine (EVM). It is a \textit{quasi-}Turing-complete machine; the \textit{quasi} qualification comes from the fact that the computation is intrinsically bounded through a parameter, \textit{gas}, which limits the total amount of computation done.
 
-\subsubsection{Basics}
+\subsection{Basics}
 
 The EVM is a simple stack-based architecture. The word size of the machine (and thus size of stack item) is 256-bit. This was chosen to facilitate the SHA3-256 hash scheme and ECC. The memory model is a simple word-addressed byte array. The stack has an unlimited size. The machine also has an independent storage model; this is similar in concept to the memory but rather than a byte array, it is a word-addressable word array. Unlike memory, which is volatile, storage is non volatile and is maintained as part of the system state in the state database. All locations in both storage and memory are well-defined initially as zero.
 
@@ -395,7 +424,7 @@ The machine does not follow the standard von Neumann architecture. Rather than s
 
 The machine can have exceptional execution for several reasons, including stack underflows, invalid instructions and divides by zero. These unambiguously and validly result in immediate halting of the machine with all state changes left intact. The one piece of exceptional execution that does not leave state changes intact is the out-of-gas (OOG) exception. Here, the machine halts immediately and reports the issue to the execution agent (either the transaction processor or, recursively, the spawning execution environment) and which will deal with it separately.
 
-\subsubsection{Fees Overview}
+\subsection{Fees Overview}
 
 Fees (denominated in gas) are charged under three distinct circumstances, all three as prerequisite to the execution of an operation. The first and most common is the fee intrinsic to the computation of the operation. Most operations require a single gas fee to be paid for their execution; exceptions include {\small SSTORE}, {\small SLOAD}, {\small CALL}, {\small CREATE}, {\small BALANCE} and {\small SHA3}. Secondly, gas may be deducted in order to form the payment for a subordinate message call or contract creation; this forms part of the payment for {\small CREATE} and {\small CALL}. Finally, gas may be paid due to an increase in the usage of the memory.
 
@@ -430,7 +459,7 @@ Originally, with no accesses taken place, the highest accessed index of memory $
 
 %Whenever a higher memory index is referenced, the fee difference to take it to the higher usage from the original (lower) usage is charged. Notably, because {\small MSTORE} and {\small MLOAD} operate on word lengths, they implicitly increase the highest-accessed index to 31 greater than their target index.
 
-\subsubsection{Execution Environment}
+\subsection{Execution Environment}
 
 In addition to the system state $\mathbb{S}$, and the remaining gas for computation $g$, there are several pieces of important information used in the execution environment that the execution agent must provide; these are contained in the tuple $I$:
 
@@ -452,7 +481,7 @@ The execution model defines the function $\Xi$, which can compute the resultant 
 (\mathbb{S}', g') \equiv \Xi(\mathbb{S}, g, I)
 \end{equation}
 
-\subsubsection{Execution Overview}
+\subsection{Execution Overview}
 
 We must now define the $\Xi$ function. In most practical implementations this will be modelled as an iterative progression of the pair comprising the full system state, $\mathbb{S}$ and the machine state, $\mathbb{M}$. Formally, we define it recursively with a function $X$. This uses an iterator function $O$ (which defines the result of a single cycle of the state machine) together with functions $Z$ which determines if the present state is an exceptional halting state of the machine and $H$, specifying the output data of the instruction if and only if the present state is a normal halting state of the machine. We consider the empty sequence (denoted $[]$ to be non-equal to the empty set, denoted $\varnothing$).
 
@@ -513,7 +542,7 @@ H_{\text{\tiny RETURN}}(\mathbb{M}) & \text{if} \quad w = \text{\small RETURN} \
 
 The data-returning halt operation, \text{\small RETURN}, has a special function $H_{\text{\tiny RETURN}}$, defined in Appendix \ref{app:vm}.
 
-\subsubsection{The Execution Cycle}
+\subsection{The Execution Cycle}
 
 Stack items are added or removed from the left-most, lower-indexed portion of the series; all other items remain unchanged:
 \begin{eqnarray}
@@ -523,7 +552,7 @@ O(\mathbb{S}, \mathbb{M}, I) & \equiv & (\mathbb{S}', \mathbb{M}', I) \\
 \quad \forall x \in [\mathbf{\alpha}_w, \lVert\mathbb{M}'_T\rVert): \mathbb{M}'_{T_x} & \equiv & \mathbb{M}_{T_{x+\Delta}}
 \end{eqnarray}
 
-The gas is reduced by the instruction's gas cost and for most instructions, the program counter increments on each cycle, for the three exceptions, we assume a function $J$ which evaluates to the according value:
+The gas is reduced by the instruction's gas cost and for most instructions, the program counter increments on each cycle, for the three exceptions, we assume a function $J$, subscripted by one of two instructions, which evaluates to the according value:
 \begin{eqnarray}
 \mathbb{M}'_{g} & \equiv & \mathbb{M}_{g} - C(\mathbb{S}, \mathbb{M}, I) \\
 \mathbb{M}'_{pc} & \equiv & \begin{cases}
@@ -547,7 +576,7 @@ In general, we assume the memory and system state don't change:
 
 However, instructions do typically alter one or several components of these values. Altered components listed by instruction are noted in Appendix \ref{app:vm}, alongside values for $\alpha$ and $\delta$.
 
-\subsection{Blocktree to Blockchain} \label{ch:ghost}
+\section{Blocktree to Blockchain} \label{ch:ghost}
 
 The canonical blockchain is a path from root to leaf through the entire block tree. In order to have consensus over which path it is, conceptually we identify the path that has had the most computation done upon it, or, the \textit{heaviest} path. Clearly one factor that helps determine the heaviest path is the block number of the leaf, equivalent to the number of blocks, not counting the unmined genesis block, in the path. The longer the path, the greater the total mining effort that must have been done in order to arrive at the leaf. This is akin to existing schemes, such as that employed in Bitcoin-derived protocols.
 
@@ -560,19 +589,34 @@ In order to validate the extra computation, a given block $B$ may include the bl
 Thus we define the total difficulty of block $B$ recursively as:
 
 \begin{eqnarray}
-B_{td} & \equiv & P_{td} + B_d + \sum\limits_{U \in B_\mathbb{U}} U_d \\
-P & \equiv & B_P
+B_t & \equiv & B'_t + B_d + \sum\limits_{U \in B_\mathbf{U}} U_d \\
+B' & \equiv & P(H) \\
+H & \equiv & B_H \\
 \end{eqnarray}
 
-As such given a block $B$, $B_{td}$ is its total difficulty, $B_P$ is its parent block, $B_d$ is its difficulty and $B_\mathbb{U}$ is its set of uncle blocks.
+As such given a block $B$, $B_t$ is its total difficulty, $B'$ is its parent block, $B_d$ is its difficulty and $B_\mathbf{U}$ is its set of uncle blocks.
 
-\subsection{Block Finalisation} \label{ch:finalisation}
+\section{Block Finalisation} \label{ch:finalisation}
 
-Validate uncles.
+The process of finalising a block involves three stages:
 
-Reward everything.
+\begin{enumerate}
+\item Validate (or, if mining, determine) uncles.
+\item Apply rewards.
+\item Verify (or, if mining, compute a valid) nonce.
+\end{enumerate}
 
-Compute proof-of-work.
+\subsubsection{Uncle Validation}
+
+The validation of uncle headers means nothing more than verifying that each uncle header is both a valid header and satisfies the relation of uncle to the present block. Formally:
+
+\begin{equation}
+\bigwedge_{U \in B_\mathbf{U}} V(U) \; \wedge \; P(U) = P(P(B_H)) \; \wedge \; P(B_H) \neq B
+\end{equation}
+
+\subsubsection{Reward Application}
+
+The application of rewards to a block involves little more 
 
 \subsection{Mining Proof-of-Work} \label{ch:pow}
 
@@ -621,23 +665,16 @@ As an overview, the output of the function is based upon the system state, defin
 
 Any specialised hardware to perform this task could also be leveraged to speed up (and thus drive down costs) of general Ethereum transaction processing.
 
-\section{User Interface}
-
-Browser-style.
-
-Displays ETH balance (i.e. functions as a wallet).
-
-Tabs or perhaps MacOS style app icons.
-
-Display taken up with a single app.
-
-Extensible \eg should be able to display the balances of other currencies hosted on Etheruem alongside ETH.
-
-Should be able to trust certain apps with creation of transactions (and thus sending of ETH \& payment of gas).
-
-Preconfigured with home app that is the Eth app store.
-
-Eth app store comes preloaded with high trust for ethereum.org; apps have identity and WoT reputation.
+%\section{User Interface}
+%
+%Browser-style.
+%Displays ETH balance (i.e. functions as a wallet).
+%Tabs or perhaps MacOS style app icons.
+%Display taken up with a single app.
+%Extensible \eg should be able to display the balances of other currencies hosted on Etheruem alongside ETH.
+%Should be able to trust certain apps with creation of transactions (and thus sending of ETH \& payment of gas).
+%Preconfigured with home app that is the Eth app store.
+%Eth app store comes preloaded with high trust for ethereum.org; apps have identity and WoT reputation.
 
 \section{Implementing Contracts}
 
@@ -650,6 +687,10 @@ External server runs node. Creates \& signs a transaction every minute containin
 Hash the block timestamp; for a series of pseudorandoms, take the previous, add some constant and hash the result.
 
 For a more secure pseudo-random offering both parties agree on a number of random data feed contracts; these are concatenated along with the block timestamp and hashed to produce the first number in the series.
+
+\section{Future Directions} \label{ch:future}
+
+Rether than being hard-specified in the protocol, the block limit will become based upon some fixed ratio about a long-term moving average of actual gas usage in blocks, allowing it to slowly increase according to the network's ability to manage the transaction volume.
 
 \section{Conclusion} \label{ch:conclusion}
 
@@ -851,7 +892,22 @@ When interpreting 256-bit binary values as integers the representation is big-en
 
 When a 32-byte machine datum is converted to and from as a 160-bit address or hash, the leftwards (high-order for BE) 20 bytes are used and the right most 12 are discarded or filled with zeroes.
 
-TODO: Specify minimum memory limits for a general cost definition.
+The general gas cost function is defined as:
+
+\begin{equation}
+C(\mathbb{S}, \mathbb{M}) \equiv C_M(\mathbb{S}, \mathbb{M}) + \begin{cases}
+c_\text{\tiny SSTORE} & \text{if} \quad o = \text{\small SSTORE} \\
+G_{call} & \text{if} \quad o = \text{\small CALL}\\
+G_{create} & \text{if} \quad o = \text{\small CREATE}\\
+G_{sha3} & \text{if} \quad o = \text{\small SHA3}\\
+G_{sload} & \text{if} \quad o = \text{\small SLOAD}\\
+G_{balance} & \text{if} \quad o = \text{\small BALANCE}\\
+G_{stop} & \text{if} \quad o = \text{\small STOP}\\
+G_{step} & \text{otherwise}
+\end{cases}
+\end{equation}
+
+where $c_o$ is specified in the appropriate section below and $C_M$ is the memory cost function, given as the product of $G_{memory}$ and the maximum of 0 and the ceiling of the number of words in size that the memory must be over the current number of words, $\mathbb{M}_i$ in order that all accesses reference valid memory whether for read or write; $\mathbb{M}'_i$ is defined as this new maximum number of words of active memory.
 
 \begin{tabular*}{\columnwidth}[h]{rlrrl}
 \toprule
@@ -955,15 +1011,15 @@ TODO: Specify minimum memory limits for a general cost definition.
 &&&& $\mathbb{M}'_T[0] \equiv I_v$ \\
 \midrule
 0x35 & {\small CALLDATALOAD} & 1 & 1 & Get input data of current environment. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathcal{I}_\mathbf{d}[ \mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + 31) ]$ \\
+&&&& $\mathbb{M}'_T[0] \equiv I_\mathbf{d}[ \mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + 31) ]$ \\
 &&&& This pertains to the input data passed with the message call instruction or transaction. \\
 \midrule
 0x36 & {\small CALLDATASIZE} & 0 & 1 & Get size of input data in current environment. \\
-&&&& $\mathbb{M}'_T[0] \equiv \lVert \mathcal{I}_\mathbf{d} \rVert$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \lVert I_\mathbf{d} \rVert$ \\
 &&&& This pertains to the input data passed with the message call instruction or transaction. \\
 \midrule
 0x37 & {\small GASPRICE} & 0 & 1 & Get price of gas in current environment. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathcal{I}_p$ \\
+&&&& $\mathbb{M}'_T[0] \equiv I_p$ \\
 &&&& This is gas price specified by the originating transaction.\\
 \bottomrule
 \end{tabular*}
@@ -973,21 +1029,21 @@ TODO: Specify minimum memory limits for a general cost definition.
 \multicolumn{5}{c}{\textbf{40s: Block Information}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x40 & {\small PREVHASH} & 0 & 1 & Get hash of most recent complete block. \\
-&&&& $\mathbb{M}'_T[0] \equiv I_{H_{prevHash}}$ \\
-&&&& $I_{H_{prevHash}}$ is the previous block's hash. \\
+&&&& $\mathbb{M}'_T[0] \equiv {I_H}_p$ \\
+&&&& $I_{H_p}$ is the previous block's hash. \\
 \midrule
 0x41 & {\small COINBASE} & 0 & 1 & Get the block's coinbase address. \\
-&&&& $\mathbb{M}'_T[0] \equiv I_{H_{coinbase}}$ \\
+&&&& $\mathbb{M}'_T[0] \equiv {I_H}_b$ \\
 \midrule
 0x42 & {\small TIMESTAMP} & 0 & 1 & Get the block's timestamp. \\
-&&&& $\mathbb{M}'_T[0] \equiv I_{H_{timestamp}}$ \\
+&&&& $\mathbb{M}'_T[0] \equiv {I_H}_t$ \\
 \midrule
 0x43 & {\small NUMBER} & 0 & 1 & Get the block's number. \\
-&&&& $\mathbb{M}'_T[0] \equiv I_{H_{number}}$ \\
-&&&& $I_{H_{number}}$ is the total number of ancestor blocks of the current block. \\
+&&&& $\mathbb{M}'_T[0] \equiv n({I_H})$ \\
+&&&& $n(I_H)$ is the total number of ancestor blocks of the current block. \\
 \midrule
 0x44 & {\small DIFFICULTY} & 0 & 1 & Get the block's difficulty. \\
-&&&& $\mathbb{M}'_T[0] \equiv I_{H_{difficulty}}$ \\
+&&&& $\mathbb{M}'_T[0] \equiv {I_H}_d$ \\
 \midrule
 0x45 & {\small GASLIMIT} & 0 & 1 & Get the block's gas limit. \\
 &&&& $\mathbb{M}'_T[0] \equiv 10^6$ \\
@@ -1018,10 +1074,15 @@ TODO: Specify minimum memory limits for a general cost definition.
 &&&& $\mathbb{M}'_M[ \mathbb{M}_T[0] ] \equiv (\mathbb{M}_T[1] \mod 256) $ \\
 \midrule
 0x56 & {\small SLOAD} & 1 & 1 & Load word from storage. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_S[\mathbb{M}_T[0]]$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{S}'[I_a]_{storage}[\mathbb{M}_T[0]]$ \\
 \midrule
 0x57 & {\small SSTORE} & 2 & 0 & Save word to storage. \\
-&&&& $\mathbb{M}'_S[ \mathbb{M}_T[0] ] \equiv \mathbb{M}_T[1] $ \\
+&&&& $\mathbb{S}'[I_a]_{storage}[ \mathbb{M}_T[0] ] \equiv \mathbb{M}_T[1] $ \\
+&&&& $c_{\text{\tiny SSTORE}} \equiv \begin{cases}
+2G_{sstore} & \text{if} \quad \mathbb{M}_T[1] \neq 0 \; \wedge \; \mathbb{S}[I_a]_{storage}[\mathbb{M}_T[0]] = 0 \\
+0 & \text{if} \quad \mathbb{M}_T[1] = 0 \; \wedge \; \mathbb{S}[I_a]_{storage}[\mathbb{M}_T[0]] \neq 0 \\
+G_{sstore} & \text{otherwise}
+\end{cases}$ \\
 \midrule
 0x58 & {\small JUMP} & 1 & 0 & Alter the program counter. \\
 &&&& $J_{\text{\tiny JUMP}}(\mathbb{M}) \equiv \mathbb{M}_T[0] $ \\
