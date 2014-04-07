@@ -444,18 +444,12 @@ More formally, given an instruction, it is possible to calculate the gas cost of
 \item $d = 0$ if the new value of the storage is zero and the old is non-zero;
 \item $d = 1$ otherwise.
 \end{itemize}
-\item {\small CALL} costs $G_{call} + g$, where $g$ is the quantity of gas provided; some gas may later be refunded.
-\item {\small CREATE} costs $G_{create} + g$ gas, where $g$ is the quantity of gas provided.
+\item {\small CALL} costs $G_{call}$, though additional gas may be taken for the execution of contract body code.
+\item {\small CREATE} costs $G_{create}$, though additional gas may be taken for the execution of contract initialisation code.
 \item All other operations cost $G_{step}$ gas.
 \end{itemize}
 
-Additionally, when memory is accessed with {\small MSTORE}, {\small MLOAD}, {\small RETURN}, {\small SHA3}, {\small CALLDATA} or {\small CALL}, the memory should be enlarged to the smallest multiple of words such that all addressed bytes now fit in it. The memory size must always be a whole number of 32-byte words. Suppose that the highest previously accessed memory word index is $i$, and the new word index is $i'$; an additional $G_{m}(i, i')$ gas must be paid:
-
-\begin{equation}
-G_{m}(i, i') \equiv \max(0, \ceil[\Bigg]{\frac{i'+1}{32}} - \ceil[\Bigg]{\frac{i+1}{32}}) G_{memory}
-\end{equation}
-
-Originally, with no accesses taken place, the highest accessed index of memory $i$ is defined as $-1$.
+Additionally, when memory is accessed with {\small MSTORE}, {\small MSTORE8}, {\small MLOAD}, {\small RETURN}, {\small SHA3}, {\small CREATE} or {\small CALL}, the memory should be enlarged to the smallest multiple of words such that all addressed bytes now fit in it. See Appendix \ref{app:vm} for a rigourous definition of the EVM gas cost.
 
 %Whenever a higher memory index is referenced, the fee difference to take it to the higher usage from the original (lower) usage is charged. Notably, because {\small MSTORE} and {\small MLOAD} operate on word lengths, they implicitly increase the highest-accessed index to 31 greater than their target index.
 
@@ -490,8 +484,8 @@ We must now define the $\Xi$ function. In most practical implementations this wi
 \mathbb{M}_g & \equiv & g \\
 \mathbb{M}_{pc} & \equiv & 0 \\
 \mathbb{M}_M & \equiv & [0, 0, ...] \\
-\mathbb{M}_i & \equiv & -1 \\
-\mathbb{M}_T & \equiv & []
+\mathbb{M}_i & \equiv & 0 \\
+\mathbb{M}_S & \equiv & []
 \end{eqnarray}
 \begin{equation}
 X(\mathbb{S}, \mathbb{M}, I) \equiv \begin{cases}
@@ -506,7 +500,7 @@ where
 \mathbf{o} \equiv H(\mathbb{S}, \mathbb{M}, I)
 \end{equation}
 
-The machine state $\mathbb{M}$ is defined as the tuple $(g, pc, M, i, T)$ which are the gas available, the program counter, the memory contents, the highest used memory index, and the stack contents. The memory contents $\mathbb{M}_M$ are a series of zeroes of size $2^{256}$.
+The machine state $\mathbb{M}$ is defined as the tuple $(g, pc, M, i, T)$ which are the gas available, the program counter, the memory contents, the active number of words in memory (counting continuously from position 0), and the stack contents. The memory contents $\mathbb{M}_M$ are a series of zeroes of size $2^{256}$.
 
 For the ease of reading, the instruction mnemonics, written in smallcaps (\eg \space {\small ADD}), should be interpreted as their numeric equivalents; the full table of instructions and their specifics is given in Appendix \ref{app:vm}.
 
@@ -524,7 +518,7 @@ We also assume the fixed amounts of $\mathbf{\delta}$ and $\mathbf{\alpha}$, spe
 
 The exceptional halting function $Z$ is defined as:
 \begin{equation}
-Z(\mathbb{S}, \mathbb{M}, I) \equiv \mathbb{M}_g < C(\mathbb{S}, \mathbb{M}, I) \vee \lVert\mathbb{M}_T\rVert < \mathbf{\delta}_w
+Z(\mathbb{S}, \mathbb{M}, I) \equiv \mathbb{M}_g < C(\mathbb{S}, \mathbb{M}, I) \vee \lVert\mathbb{M}_S\rVert < \mathbf{\delta}_w
 \end{equation}
 
 This states that the execution is in an exceptional halting state if there is insufficient gas or if there are insufficient stack items. The astute read will realise that this implies that no instruction can, through its execution, cause an exceptional halt.
@@ -616,7 +610,7 @@ The validation of uncle headers means nothing more than verifying that each uncl
 
 \subsubsection{Reward Application}
 
-The application of rewards to a block involves little more 
+The application of rewards to a block involves placing in the account of the miner-determined coinbase address additional Ether according to 
 
 \subsection{Mining Proof-of-Work} \label{ch:pow}
 
@@ -895,7 +889,7 @@ When a 32-byte machine datum is converted to and from as a 160-bit address or ha
 The general gas cost function is defined as:
 
 \begin{equation}
-C(\mathbb{S}, \mathbb{M}) \equiv C_M(\mathbb{S}, \mathbb{M}) + \begin{cases}
+C(\mathbb{S}, \mathbb{M}) \equiv G_{memory}(\mathbb{M}'_i - \mathbb{M}_i) + \begin{cases}
 c_\text{\tiny SSTORE} & \text{if} \quad o = \text{\small SSTORE} \\
 G_{call} & \text{if} \quad o = \text{\small CALL}\\
 G_{create} & \text{if} \quad o = \text{\small CREATE}\\
@@ -907,7 +901,7 @@ G_{step} & \text{otherwise}
 \end{cases}
 \end{equation}
 
-where $c_o$ is specified in the appropriate section below and $C_M$ is the memory cost function, given as the product of $G_{memory}$ and the maximum of 0 and the ceiling of the number of words in size that the memory must be over the current number of words, $\mathbb{M}_i$ in order that all accesses reference valid memory whether for read or write; $\mathbb{M}'_i$ is defined as this new maximum number of words of active memory.
+where $c_o$ is specified in the appropriate section below and $C_M$ is the memory cost function, given as the product of $G_{memory}$ and the maximum of 0 and the ceiling of the number of words in size that the memory must be over the current number of words, $\mathbb{M}_i$ in order that all accesses reference valid memory whether for read or write; $\mathbb{M}'_i$ is defined as this new maximum number of words of active memory; special-cases are given where these two are not equal.
 
 \begin{tabular*}{\columnwidth}[h]{rlrrl}
 \toprule
@@ -918,64 +912,64 @@ where $c_o$ is specified in the appropriate section below and $C_M$ is the memor
 &&&& $\mathbb{M}'_R = []$ \\
 \midrule
 0x01 & {\small ADD} & 2 & 1 & Addition operation. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_T[0] + \mathbb{M}_T[1]$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_S[0] + \mathbb{M}_S[1]$ \\
 \midrule
 0x02 & {\small MUL} & 2 & 1 & Multiplication operation. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_T[0] \times \mathbb{M}_T[1]$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_S[0] \times \mathbb{M}_S[1]$ \\
 \midrule
 0x03 & {\small SUB} & 2 & 1 & Subtraction operation. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_T[0] - \mathbb{M}_T[1]$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_S[0] - \mathbb{M}_S[1]$ \\
 \midrule
 0x04 & {\small DIV} & 2 & 1 & Integer division operation. \\
-&&&& $\mathbb{M}'_T[0] \equiv \lfloor\mathbb{M}_T[0] \div \mathbb{M}_T[1]\rfloor$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \lfloor\mathbb{M}_S[0] \div \mathbb{M}_S[1]\rfloor$ \\
 \midrule
 0x05 & {\small SDIV} & 2 & 1 & Signed integer division operation. \\
-&&&& $\mathbb{M}'_T[0] \equiv \lfloor\mathbb{M}_T[0] \div \mathbb{M}_T[1]\rfloor$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \lfloor\mathbb{M}_S[0] \div \mathbb{M}_S[1]\rfloor$ \\
 &&&& Where all values are treated as signed 256-bit integers for the purposes of this operation. \\
 \midrule
 0x06 & {\small MOD} & 2 & 1 & Modulo remainder operation. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_T[0] \mod{ \mathbb{M}_T[1] }$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_S[0] \mod{ \mathbb{M}_S[1] }$ \\
 \midrule
 0x07 & {\small SMOD} & 2 & 1 & Modulo remainder operation. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_T[0] \mod{ \mathbb{M}_T[1] }$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_S[0] \mod{ \mathbb{M}_S[1] }$ \\
 &&&& Where all values are treated as signed 256-bit integers for the purposes of this operation. \\
 \midrule
 0x08 & {\small EXP} & 2 & 1 & Exponential operation. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_T[0] ^ {\mathbb{M}_T[1] }$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_S[0] ^ {\mathbb{M}_S[1] }$ \\
 \midrule
 0x09 & {\small NEG} & 1 & 1 & Negation operation. \\
-&&&& $\mathbb{M}'_T[0] \equiv -\mathbb{M}_T[0]$ \\
+&&&& $\mathbb{M}'_T[0] \equiv -\mathbb{M}_S[0]$ \\
 &&&& Where all values are treated as signed 256-bit integers for the purposes of this operation. \\
 \midrule
 0x0a & {\small LT} & 2 & 1 & Less-than comparision. \\
-&&&& $\mathbb{M}'_T[0] \equiv \begin{cases} 1 & \text{if} \quad \mathbb{M}_T[0] < \mathbb{M}_T[1] \\ 0 & \text{otherwise} \end{cases}$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \begin{cases} 1 & \text{if} \quad \mathbb{M}_S[0] < \mathbb{M}_S[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
 0x0b & {\small GT} & 2 & 1 & Greater-than comparision. \\
-&&&& $\mathbb{M}'_T[0] \equiv \begin{cases} 1 & \text{if} \quad \mathbb{M}_T[0] > \mathbb{M}_T[1] \\ 0 & \text{otherwise} \end{cases}$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \begin{cases} 1 & \text{if} \quad \mathbb{M}_S[0] > \mathbb{M}_S[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
 0x0c & {\small EQ} & 2 & 1 & Equality comparision. \\
-&&&& $\mathbb{M}'_T[0] \equiv \begin{cases} 1 & \text{if} \quad \mathbb{M}_T[0] = \mathbb{M}_T[1] \\ 0 & \text{otherwise} \end{cases}$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \begin{cases} 1 & \text{if} \quad \mathbb{M}_S[0] = \mathbb{M}_S[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
 0x0d & {\small NOT} & 1 & 1 & Simple not operator. \\
-&&&& $\mathbb{M}'_T[0] \equiv \begin{cases} 1 & \text{if} \quad \mathbb{M}_T[0] = 0 \\ 0 & \text{otherwise} \end{cases}$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \begin{cases} 1 & \text{if} \quad \mathbb{M}_S[0] = 0 \\ 0 & \text{otherwise} \end{cases}$ \\
 \end{tabular*}
 
 \begin{tabular*}{\columnwidth}[h]{rlrrl}
 \toprule
 \multicolumn{5}{c}{\textbf{10s: Bitwise Logic Operations}} \\
-\multicolumn{5}{l}{$\mathbb{M}_T[0]_i$ gives the $i$th bit (counting from zero) of $\mathbb{M}_T[0]$} \vspace{5pt} \\
+\multicolumn{5}{l}{$\mathbb{M}_S[0]_i$ gives the $i$th bit (counting from zero) of $\mathbb{M}_S[0]$} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x10 & {\small AND} & 2 & 1 & Bitwise AND operation. \\
-&&&& $\forall i \in [0..255]: \mathbb{M}'_T[0]_i \equiv \mathbb{M}_T[0]_i \wedge \mathbb{M}_T[1]_i$ \\
+&&&& $\forall i \in [0..255]: \mathbb{M}'_T[0]_i \equiv \mathbb{M}_S[0]_i \wedge \mathbb{M}_S[1]_i$ \\
 \midrule
 0x11 & {\small OR} & 2 & 1 & Bitwise OR operation. \\
-&&&& $\forall i \in [0..255]: \mathbb{M}'_T[0]_i \equiv \mathbb{M}_T[0]_i \vee \mathbb{M}_T[1]_i$ \\
+&&&& $\forall i \in [0..255]: \mathbb{M}'_T[0]_i \equiv \mathbb{M}_S[0]_i \vee \mathbb{M}_S[1]_i$ \\
 \midrule
 0x12 & {\small XOR} & 2 & 1 & Bitwise XOR operation. \\
-&&&& $\forall i \in [0..255]: \mathbb{M}'_T[0]_i \equiv \mathbb{M}_T[0]_i \oplus \mathbb{M}_T[1]_i$ \\
+&&&& $\forall i \in [0..255]: \mathbb{M}'_T[0]_i \equiv \mathbb{M}_S[0]_i \oplus \mathbb{M}_S[1]_i$ \\
 \midrule
 0x13 & {\small BYTE} & 2 & 1 & Retrieve single byte from word. \\
-&&&& $\forall i \in [0..7]: \mathbb{M}'_T[0]_i \equiv \begin{cases} \mathbb{M}_T[1]_{(i + 8\mathbb{M}_T[0])} & \text{if} \quad \mathbb{M}_T[0] < 32 \\ 0 & \text{otherwise} \end{cases} $\\
+&&&& $\forall i \in [0..7]: \mathbb{M}'_T[0]_i \equiv \begin{cases} \mathbb{M}_S[1]_{(i + 8\mathbb{M}_S[0])} & \text{if} \quad \mathbb{M}_S[0] < 32 \\ 0 & \text{otherwise} \end{cases} $\\
 &&&& For Nth byte, we count from the left (i.e. N=0 would be the most significant in big endian). \\
 \bottomrule
 \end{tabular*}
@@ -986,6 +980,7 @@ where $c_o$ is specified in the appropriate section below and $C_M$ is the memor
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x20 & {\small SHA3} & 2 & 1 & Compute SHA3-256 hash. \\
 &&&& $\mathbb{M}'_T[0] \equiv \mathcal{S}(\mathbb{M}_M[ \mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + \mathbb{M}_S[1] - 1) ])$ \\
+&&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ (\mathbb{M}_S[0] + \mathbb{M}_S[1] - 1) \div 32 })$ \\
 \bottomrule
 \end{tabular*}
 
@@ -1058,38 +1053,41 @@ where $c_o$ is specified in the appropriate section below and $C_M$ is the memor
 0x50 & {\small POP} & 1 & 0 & Remove item from stack. \\
 \midrule
 0x51 & {\small DUP} & 1 & 2 & Duplicate stack item. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_T[0]$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_S[0]$ \\
 \midrule
 0x52 & {\small SWAP} & 2 & 2 & Exchange stack items. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_T[1]$ \\
-&&&& $\mathbb{M}'_T[1] \equiv \mathbb{M}_T[0]$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_S[1]$ \\
+&&&& $\mathbb{M}'_T[1] \equiv \mathbb{M}_S[0]$ \\
 \midrule
 0x53 & {\small MLOAD} & 1 & 1 & Load word from memory. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_M[\mathbb{M}_T[0] \dots (\mathbb{M}_T[0] + 31) ]$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_M[\mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + 31) ]$ \\
+&&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ (\mathbb{M}_S[0] + 31) \div 32 })$ \\
 \midrule
 0x54 & {\small MSTORE} & 2 & 0 & Save word to memory. \\
-&&&& $\mathbb{M}'_M[ \mathbb{M}_T[0] \dots (\mathbb{M}_T[0] + 31) ] \equiv \mathbb{M}_T[1]$ \\
+&&&& $\mathbb{M}'_M[ \mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + 31) ] \equiv \mathbb{M}_S[1]$ \\
+&&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ (\mathbb{M}_S[0] + 31) \div 32 })$ \\
 \midrule
 0x55 & {\small MSTORE8} & 2 & 0 & Save byte to memory. \\
-&&&& $\mathbb{M}'_M[ \mathbb{M}_T[0] ] \equiv (\mathbb{M}_T[1] \mod 256) $ \\
+&&&& $\mathbb{M}'_M[ \mathbb{M}_S[0] ] \equiv (\mathbb{M}_S[1] \mod 256) $ \\
+&&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ \mathbb{M}_S[0] \div 32 })$ \\
 \midrule
 0x56 & {\small SLOAD} & 1 & 1 & Load word from storage. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{S}'[I_a]_{storage}[\mathbb{M}_T[0]]$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{S}'[I_a]_{storage}[\mathbb{M}_S[0]]$ \\
 \midrule
 0x57 & {\small SSTORE} & 2 & 0 & Save word to storage. \\
-&&&& $\mathbb{S}'[I_a]_{storage}[ \mathbb{M}_T[0] ] \equiv \mathbb{M}_T[1] $ \\
+&&&& $\mathbb{S}'[I_a]_{storage}[ \mathbb{M}_S[0] ] \equiv \mathbb{M}_S[1] $ \\
 &&&& $c_{\text{\tiny SSTORE}} \equiv \begin{cases}
-2G_{sstore} & \text{if} \quad \mathbb{M}_T[1] \neq 0 \; \wedge \; \mathbb{S}[I_a]_{storage}[\mathbb{M}_T[0]] = 0 \\
-0 & \text{if} \quad \mathbb{M}_T[1] = 0 \; \wedge \; \mathbb{S}[I_a]_{storage}[\mathbb{M}_T[0]] \neq 0 \\
+2G_{sstore} & \text{if} \quad \mathbb{M}_S[1] \neq 0 \; \wedge \; \mathbb{S}[I_a]_{storage}[\mathbb{M}_S[0]] = 0 \\
+0 & \text{if} \quad \mathbb{M}_S[1] = 0 \; \wedge \; \mathbb{S}[I_a]_{storage}[\mathbb{M}_S[0]] \neq 0 \\
 G_{sstore} & \text{otherwise}
 \end{cases}$ \\
 \midrule
 0x58 & {\small JUMP} & 1 & 0 & Alter the program counter. \\
-&&&& $J_{\text{\tiny JUMP}}(\mathbb{M}) \equiv \mathbb{M}_T[0] $ \\
+&&&& $J_{\text{\tiny JUMP}}(\mathbb{M}) \equiv \mathbb{M}_S[0] $ \\
 &&&& This has the effect of writing said value to $\mathbb{M}_{pc}$. See section \ref{ch:model}. \\
 \midrule
 0x59 & {\small JUMPI} & 2 & 0 & Conditionally alter the program counter. \\
-&&&& $J_{\text{\tiny JUMPI}}(\mathbb{M}) \equiv \begin{cases} \mathbb{M}_T[0] & \text{if} \quad \mathbb{M}_T[0] = 0 \\ \mathbb{M}_{pc} + 1 & \text{otherwise} \end{cases} $ \\
+&&&& $J_{\text{\tiny JUMPI}}(\mathbb{M}) \equiv \begin{cases} \mathbb{M}_S[0] & \text{if} \quad \mathbb{M}_S[0] = 0 \\ \mathbb{M}_{pc} + 1 & \text{otherwise} \end{cases} $ \\
 &&&& This has the effect of writing said value to $\mathbb{M}_{pc}$. See section \ref{ch:model}. \\
 \midrule
 0x5a & {\small PC} & 0 & 1 & Get the program counter. \\
@@ -1134,6 +1132,7 @@ G_{sstore} & \text{otherwise}
 &&&& $\mathbb{M}'_T[0] \equiv x$ \\
 &&&& where $x=0$ if the code execution for this operation failed due to lack of gas;\\
 &&&& $x=A(I_a, \mathbb{S}[I_a]_{nonce})$, the address of the newly created contract, otherwise. \\
+&&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ \max(\mathbb{M}_S[1] + \mathbb{M}_S[2] - 1, \mathbb{M}_S[3] + \mathbb{M}_S[4] - 1) \div 32 })$ \\
 \midrule
 0xf1 & {\small CALL} & 7 & 1 & Message-call into contract. \\
 &&&& $\mathbf{i} \equiv \mathbb{M}_M[ \mathbb{M}_S[3] \dots (\mathbb{M}_S[3] + \mathbb{M}_S[4] - 1) ]$ \\
@@ -1144,14 +1143,16 @@ G_{sstore} & \text{otherwise}
 &&&& $\mathbb{M}'_T[0] \equiv x$ \\
 &&&& where $x=0$ if the code execution for this operation failed due to lack of gas;\\
 &&&& $x=1$ otherwise. \\
+&&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ \max(\mathbb{M}_S[3] + \mathbb{M}_S[4] - 1, \mathbb{M}_S[5] + \mathbb{M}_S[6] - 1) \div 32 })$ \\
 \midrule
 0xf2 & {\small RETURN} & 2 & 0 & Halt execution returning output data. \\
-&&&& $H_{\text{\tiny RETURN}}(\mathbb{M}) \equiv \mathbb{M}_M[ \mathbb{M}_T[0] \dots ( \mathbb{M}_T[0] + \mathbb{M}_T[1] - 1 ) ]$ \\
+&&&& $H_{\text{\tiny RETURN}}(\mathbb{M}) \equiv \mathbb{M}_M[ \mathbb{M}_S[0] \dots ( \mathbb{M}_S[0] + \mathbb{M}_S[1] - 1 ) ]$ \\
 &&&& This has the effect of halting the execution at this point with output defined.\\
 &&&& See section \ref{ch:model}. \\
+&&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ (\mathbb{M}_S[0] + \mathbb{M}_S[1] - 1) \div 32 })$ \\
 \midrule
 0xff & {\small SUICIDE} & 1 & 0 & Halt execution and obliterate account. \\
-&&&& $\mathbb{S}'[\mathbb{M}_T[0]]_{balance} \equiv \mathbb{S}[\mathbb{M}_T[0]]_{balance} + \mathbb{S}[I_a]_{balance}$ \\
+&&&& $\mathbb{S}'[\mathbb{M}_S[0]]_{balance} \equiv \mathbb{S}[\mathbb{M}_S[0]]_{balance} + \mathbb{S}[I_a]_{balance}$ \\
 &&&& $\mathbb{S}'[I_a] \equiv \varnothing$ \\
 \bottomrule
 \end{tabular*}
