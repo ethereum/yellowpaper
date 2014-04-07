@@ -58,7 +58,7 @@ Ethereum is a project that attempts to build the generalised technology; technol
 
 \subsection{Driving Factors} \label{ch:driving}
 
-Transparency. Open state. User can be guaranteed that backend will do what front-end says it will. Parties can analyse and be wholly confident in outcomes given events.
+Incorruptability of judgement. Transparency. Open state. User can be guaranteed that backend will do what front-end says it will. Parties can analyse and be wholly confident in outcomes given events.
 
 \subsection{Previous Work} \label{ch:previous}
 
@@ -184,9 +184,9 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[nonce] A 256-bit hash which proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.
 \end{description}
 
-The other two components in the block are simply a list of the transactions (as defined previously) and a list of uncle block headers (of the same format as above). Formally, we can refer to a block $B$:
+The other two components in the block are simply a list of uncle block headers (of the same format as above) and a list of the transactions (as defined previously). Formally, we can refer to a block $B$:
 \begin{equation}
-B \equiv (H, \mathbf{T}, \mathbf{U})
+B \equiv (H, \mathbf{U}, \mathbf{T})
 \end{equation}
 
 We can assert its validity if and only if it satisfies several conditions: It must be internally consistent with the uncle and transaction block hashes; the given transactions $\mathbf{T}$, when executed in order on the base state $\mathbb{S}$ result in a new state of the identity $H_r$:
@@ -202,7 +202,7 @@ where $r(\mathbb{S})$ is the root node hash of the Merkle Patricia tree structur
 
 We define $P(B_H)$ to be the parent block of $B$, formally:
 \begin{equation}
-P(H) \equiv B': S(R(B')) = H_p
+P(H) \equiv B': \mathcal{S}(\mathcal{R}(B')) = H_p
 \end{equation}
 
 The canonical difficulty of a block of header $H$, is defined as $D(H)$:
@@ -329,26 +329,23 @@ In the case that $s = m$ then we simply return the Ether back to the sender/mine
 There are number of intrinsic parameters used when creating a contract: sender ($s$), nonce ($o$), available gas ($g$), gas price ($p$), endowment ($v$) together with the two arbitrary length byte arrays, $\mathbf{i}$ for the initialisation EVM code and $\mathbf{b}$ for the EVM code of the body.
 
 We define the creation function formally as the function $\Lambda$, which evaluates from these values, together with the state $\mathbb{S}_0$ to the tuple containing the new state, additional database entries and remaining gas $(\mathbb{S}_P, g')$, as in \ref{ch:transactions}:
-
 \begin{equation}
 (\mathbb{S}_P, g') \equiv \Lambda(\mathbb{S}_0, s, o, g, p, v, \mathbf{i}, \mathbf{b})
 \end{equation}
 
 The address of the new contract is defined as being the rightmost 160 bits of the SHA3 hash of RLP encoding of the structure \texttt{[ sender, nonce ]}. In the unlikely event that the address is already in use, it is treated as a big-endian integer and incremented by one until an unused address is arrived at. Thus we define the creation address function $A$:
-
 \begin{eqnarray}
-A(s, o) & \equiv & a \quad \text{where:} \\
+A(s, n) & \equiv & a \quad \text{where:} \\
 a & = & \arg \min_x : x \geqslant a' \wedge \mathbb{S}_0[x] = \varnothing \\
-a' & = & \mathcal{B}_{96..255}(\mathcal{S}(\mathcal{R}([s, o])))
+a' & = & \mathcal{B}_{96..255}(\mathcal{S}(\mathcal{R}([s, n])))
 \end{eqnarray}
 
-where $\mathcal{S}$ is the SHA3 256-bit hash function, $\mathcal{R}$ is the RLP encoding function, $\mathcal{B}_{a..b}(X)$ evaluates to binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$ and $\mathbb{S}_0[x]$ is the address state of $x$ or $\varnothing$ if none exists.
+where $\mathcal{S}$ is the SHA3 256-bit hash function, $\mathcal{R}$ is the RLP encoding function, $\mathcal{B}_{a..b}(X)$ evaluates to binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$ and $\mathbb{S}_0[x]$ is the address state of $x$ or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
 
 The account's nonce is initially defined as zero, the balance as the value passed, the storage as empty and the code hash as the SHA3 256-bit hash of the code, thus the mutated state becomes $\mathbb{S}^*$:
-
 \begin{eqnarray}
 \mathbb{S}^* & \equiv & \mathbb{S} \quad \text{except:} \\
-\mathbb{S}^*[A(s, o)] & \equiv & ( 0, v, \varnothing, \mathcal{S}(\mathbf{b}) )
+\mathbb{S}^*[A(s, \mathbb{S}[s]_{nonce})] & \equiv & ( 0, v, \varnothing, \mathcal{S}(\mathbf{b}) )
 \end{eqnarray}
 
 It is asserted that the state database will also change such that it defines the pair $(\mathcal{S}(\mathbf{b}), \mathbf{b})$.
@@ -358,7 +355,6 @@ Finally, the contract is initialised through the execution of the initialising E
 Code execution depletes gas; thus it may exit before the code has come to a natural halting state. In this exceptional case we say an Out-of-Gas exception has occured: The evaluated state is defined as being the empty set $\varnothing$ and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation. The gas remaining should of course be zero. If the creation was conducted as the manifestation of a transaction, then this doesn't affect payment of the intrinsic cost: it is paid regardless.
 
 If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persevere. Thus formally, we may specify the new state and gas as $\mathbb{S}'$, $g'$ where:
-
 \begin{eqnarray}
 (\mathbb{S}^{**}, g') & \equiv & \Xi(\mathbb{S}^*, g, I) \\
 \mathbb{S}_P & \equiv & \begin{cases}
@@ -379,20 +375,17 @@ $I_\mathbf{d}$ evaluates to the empty array. $I_H$ and $I_n$ have no special tre
 \section{Message Call} \label{ch:call}
 
 In the case of executing a message call, several parameters are required: sender ($s$), transaction originator ($o$), recipient ($r$), available gas ($g$), value ($v$) and gas price ($p$) together with an arbitrary length byte array, $\mathbf{d}$, the input data of the call. Aside from evaluating to a new state and additional database entries, message calls also have an extra component---the output data denoted by the byte array $\mathbf{o}$. This is ignored when executing transactions, however message calls can be initiated due to VM-code execution and in this case this information is used.
-
 \begin{equation}
 (\mathbb{S}_P, g', \mathbf{o}) \equiv \Theta(\mathbb{S}, s, o, r, g, p, v, \mathbf{d})
 \end{equation}
 
 We define $\mathbb{S}_1$, the rollback state as the original state but with the value transferred to the recipient:
-
 \begin{eqnarray}
 \mathbb{S}_1 & \equiv & \mathbb{S} \quad \text{except:} \\
 \mathbb{S}_1[r]_{balance} & \equiv & \mathbb{S}_1[r]_{balance} + v
 \end{eqnarray}
 
 If the recipient account contains no code to be executed (i.e. it's not a contract), then we define the final state as being equivalent to the rollback state. In the case that the recipient contains code to be executed (i.e. that the account is a contract), then the contract's body code (identified as the fragment whose SHA3 hash is $\mathbb{S}[r]_{code}]$) is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts due to an exhausted gas supply, then no gas is refunded to the caller and the state is reverted to the point immediately prior to code execution.
-
 \begin{eqnarray}
 \mathbb{S}' & \equiv & \begin{cases}
 \mathbb{S}_1 & \text{if} \quad \mathbb{S}_1[r]_{code} = \varnothing \\
@@ -617,7 +610,7 @@ The application of rewards to a block involves raising the balance of the accoun
 
 We define the block reward as 1500 Finney:
 \begin{equation}
-\text{Let} \quad R_b = 1.5^{16}
+\text{Let} \quad R_b = 1.5 * 10^{16}
 \end{equation}
 
 \subsubsection{State \& Nonce Validation}
@@ -1018,7 +1011,7 @@ where $c_o$ is specified in the appropriate section below and $C_M$ is the memor
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x20 & {\small SHA3} & 2 & 1 & Compute SHA3-256 hash. \\
 &&&& $\mathbb{M}'_T[0] \equiv \mathcal{S}(\mathbb{M}_M[ \mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + \mathbb{M}_S[1] - 1) ])$ \\
-&&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ (\mathbb{M}_S[0] + \mathbb{M}_S[1] - 1) \div 32 })$ \\
+&&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ (\mathbb{M}_S[0] + \mathbb{M}_S[1]) \div 32 })$ \\
 \bottomrule
 \end{tabular*}
 
@@ -1044,7 +1037,7 @@ where $c_o$ is specified in the appropriate section below and $C_M$ is the memor
 &&&& $\mathbb{M}'_T[0] \equiv I_v$ \\
 \midrule
 0x35 & {\small CALLDATALOAD} & 1 & 1 & Get input data of current environment. \\
-&&&& $\mathbb{M}'_T[0] \equiv I_\mathbf{d}[ \mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + 31) ]$ \\
+&&&& $\mathbb{M}'_T[0] \equiv I_\mathbf{d}[ \mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + 32) ]$ \\
 &&&& This pertains to the input data passed with the message call instruction or transaction. \\
 \midrule
 0x36 & {\small CALLDATASIZE} & 0 & 1 & Get size of input data in current environment. \\
@@ -1098,16 +1091,16 @@ where $c_o$ is specified in the appropriate section below and $C_M$ is the memor
 &&&& $\mathbb{M}'_T[1] \equiv \mathbb{M}_S[0]$ \\
 \midrule
 0x53 & {\small MLOAD} & 1 & 1 & Load word from memory. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_M[\mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + 31) ]$ \\
-&&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ (\mathbb{M}_S[0] + 31) \div 32 })$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_M[\mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + 32) ]$ \\
+&&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ (\mathbb{M}_S[0] + 32) \div 32 })$ \\
 \midrule
 0x54 & {\small MSTORE} & 2 & 0 & Save word to memory. \\
-&&&& $\mathbb{M}'_M[ \mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + 31) ] \equiv \mathbb{M}_S[1]$ \\
-&&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ (\mathbb{M}_S[0] + 31) \div 32 })$ \\
+&&&& $\mathbb{M}'_M[ \mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + 32) ] \equiv \mathbb{M}_S[1]$ \\
+&&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ (\mathbb{M}_S[0] + 32) \div 32 })$ \\
 \midrule
 0x55 & {\small MSTORE8} & 2 & 0 & Save byte to memory. \\
 &&&& $\mathbb{M}'_M[ \mathbb{M}_S[0] ] \equiv (\mathbb{M}_S[1] \mod 256) $ \\
-&&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ \mathbb{M}_S[0] \div 32 })$ \\
+&&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ (\mathbb{M}_S[0] + 1) \div 32 })$ \\
 \midrule
 0x56 & {\small SLOAD} & 1 & 1 & Load word from storage. \\
 &&&& $\mathbb{M}'_T[0] \equiv \mathbb{S}'[I_a]_{storage}[\mathbb{M}_S[0]]$ \\
@@ -1166,11 +1159,12 @@ G_{sstore} & \text{otherwise}
 0xf0 & {\small CREATE} & 5 & 1 & Create a new contract. \\
 &&&& $\mathbf{b} \equiv \mathbb{M}_M[ \mathbb{M}_S[1] \dots (\mathbb{M}_S[1] + \mathbb{M}_S[2] - 1) ]$ \\
 &&&& $\mathbf{i} \equiv \mathbb{M}_M[ \mathbb{M}_S[3] \dots (\mathbb{M}_S[3] + \mathbb{M}_S[4] - 1) ]$ \\
-&&&& $(\mathbb{S}', \mathbb{M}'_g) \equiv \Lambda(\mathbb{S}, I_a, I_o, \mathbb{M}_g, I_p, \mathbb{M}_S[0], \mathbf{i}, \mathbf{b})$ \\
+&&&& $(\mathbb{S}', \mathbb{M}'_g) \equiv \Lambda(\mathbb{S}^*, I_a, I_o, \mathbb{M}_g, I_p, \mathbb{M}_S[0], \mathbf{i}, \mathbf{b})$ \\
+&&&& $\mathbb{S}^* \equiv \mathbb{S} \quad \text{except} \quad \mathbb{S}^*[I_a]_{nonce} = \mathbb{S}[I_a]_{nonce} + 1$ \\
 &&&& $\mathbb{M}'_T[0] \equiv x$ \\
 &&&& where $x=0$ if the code execution for this operation failed due to lack of gas;\\
 &&&& $x=A(I_a, \mathbb{S}[I_a]_{nonce})$, the address of the newly created contract, otherwise. \\
-&&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ \max(\mathbb{M}_S[1] + \mathbb{M}_S[2] - 1, \mathbb{M}_S[3] + \mathbb{M}_S[4] - 1) \div 32 })$ \\
+&&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ \max(\mathbb{M}_S[1] + \mathbb{M}_S[2], \mathbb{M}_S[3] + \mathbb{M}_S[4]) \div 32 })$ \\
 \midrule
 0xf1 & {\small CALL} & 7 & 1 & Message-call into contract. \\
 &&&& $\mathbf{i} \equiv \mathbb{M}_M[ \mathbb{M}_S[3] \dots (\mathbb{M}_S[3] + \mathbb{M}_S[4] - 1) ]$ \\
@@ -1181,13 +1175,13 @@ G_{sstore} & \text{otherwise}
 &&&& $\mathbb{M}'_T[0] \equiv x$ \\
 &&&& where $x=0$ if the code execution for this operation failed due to lack of gas;\\
 &&&& $x=1$ otherwise. \\
-&&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ \max(\mathbb{M}_S[3] + \mathbb{M}_S[4] - 1, \mathbb{M}_S[5] + \mathbb{M}_S[6] - 1) \div 32 })$ \\
+&&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ \max(\mathbb{M}_S[3] + \mathbb{M}_S[4], \mathbb{M}_S[5] + \mathbb{M}_S[6]) \div 32 })$ \\
 \midrule
 0xf2 & {\small RETURN} & 2 & 0 & Halt execution returning output data. \\
 &&&& $H_{\text{\tiny RETURN}}(\mathbb{M}) \equiv \mathbb{M}_M[ \mathbb{M}_S[0] \dots ( \mathbb{M}_S[0] + \mathbb{M}_S[1] - 1 ) ]$ \\
 &&&& This has the effect of halting the execution at this point with output defined.\\
 &&&& See section \ref{ch:model}. \\
-&&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ (\mathbb{M}_S[0] + \mathbb{M}_S[1] - 1) \div 32 })$ \\
+&&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ (\mathbb{M}_S[0] + \mathbb{M}_S[1]) \div 32 })$ \\
 \midrule
 0xff & {\small SUICIDE} & 1 & 0 & Halt execution and obliterate account. \\
 &&&& $\mathbb{S}'[\mathbb{M}_S[0]]_{balance} \equiv \mathbb{S}[\mathbb{M}_S[0]]_{balance} + \mathbb{S}[I_a]_{balance}$ \\
@@ -1209,23 +1203,21 @@ The wire-protocol specifies a network-level protocol for how two peers can commu
 
 The header of the genesis block is 9 items, and is specified thus:
 
-$[z_{256}, \mathcal{S}(\mathcal{R}([])), z_{160}, stateRoot, \mathcal{S}(\mathcal{R}([])), 2^{22}, 0, \text{`'}, 42]$
+$\langle 0_{256}, \mathcal{S}(\mathcal{R}([])), 0_{160}, 0_{256}, \mathcal{S}(\mathcal{R}([])), 2^{22}, 0, [], 42 \rangle$
 
 Where:
 
-$z_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes.
+$0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes.
 
-$z_{160}$ refers to the coinbase address, a 160-bit hash which is all zeroes.
+$0_{160}$ refers to the coinbase address, a 160-bit hash which is all zeroes.
 
 $2^{22}$ refers to the difficulty.
 
 0 refers to the timestamp (the Unix epoch).
 
-`' refers to the extradata, an empty byte array.
+$[]$ refers to the extradata, an empty byte array.
 
 $\mathcal{S}(\mathcal{R}([]))$ values refer to the hashes of the transaction and uncle lists in RLP, both empty.
-
-$stateRoot$ refers to the state root.
 
 \end{document}
 
