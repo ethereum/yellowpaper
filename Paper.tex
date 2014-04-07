@@ -20,6 +20,7 @@
 \usepackage{afterpage}
 
 \definecolor{lightyellow}{rgb}{1,0.98,0.9}
+\definecolor{lightpink}{rgb}{1,0.94,0.95}
 
 \DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
 \newcommand*\eg{e.g.\@\xspace}
@@ -36,6 +37,7 @@
 \begin{document}
 
 \pagecolor{lightyellow}
+%\pagecolor{lightpink}
 
 \begin{abstract}
 The blockchain paradigm when coupled with cryptographically-secured transactions has demonstrated its utility through a number of projects, not least Bitcoin. Each such project can be seen as a simple application on a decentralised, but singleton, compute resource. We can call this paradigm a transactional singleton machine with shared-state.
@@ -70,7 +72,7 @@ Ethereum, taken as a whole, can be viewed as a transaction-based state machine: 
 \mathbb{S}_{t+1} \equiv \Upsilon(\mathbb{S}_t, T)
 \end{equation}
 
-and $f$ is the Ethereum state transition function. In Ethereum, $\Upsilon$, together with $\mathbb{S}$ are considerably more powerful then any existing comparable system; $\Upsilon$ allows components to carry out arbitrary computation, while $\mathbb{S}$ allows components to store arbitrary state between transactions.
+where $\Upsilon$ is the Ethereum state transition function. In Ethereum, $\Upsilon$, together with $\mathbb{S}$ are considerably more powerful then any existing comparable system; $\Upsilon$ allows components to carry out arbitrary computation, while $\mathbb{S}$ allows components to store arbitrary state between transactions.
 
 Transactions are collated into blocks; we then chain blocks together using a cryptographic hash as a means of reference. Blocks function as a journal, recording a series of transactions together with the previous block and an identifier for the final state (though do not store the final state itself---that would be far too big). They also punctuate the transaction series with incentives for nodes to \textit{mine}. This incentivisation takes places as a state-transition function, adding value to a nominated account.
 
@@ -79,22 +81,22 @@ Mining is the process of dedicating effort (working) to bolster one series of tr
 Formally, we expand to:
 
 \begin{eqnarray}
-\mathbb{S}_{t+1} & \equiv & \Pi(\mathbb{S}_t, \mathbf{T}) \\
+\mathbb{S}_{t+1} & \equiv & \Pi(\mathbb{S}_t, B) \\
 B & \equiv & (..., [ T_0, T_1, ... ]) \\
 \Pi(\mathbb{S}, B) & \equiv & \Omega(B, \Upsilon(\Upsilon(\mathbb{S}, T_0), T_1) ...)
 \end{eqnarray}
 
 Where $\Omega$ is the block-finalisation state transition function (a function that rewards a nominated party); $B$ is this block, which includes a series of transactions amongst some other components; and $\Pi$ is the block-level state-transition function.
 
-This is the basis of the blockchain paradigm, a model that forms the backbone of Ethereum.
+This is the basis of the blockchain paradigm, a model that forms the backbone of not only Ethereum, but all decentralised consensus-based transaction systems to date.
 
 \subsection{Value}
 
-In order to incentivise computation within the network, there needs to be an agreed method for transmitting value. To address this issue, Ethereum has an intrinsic currency, Ether, known also as ETH. The smallest subdenomination of Ether, and thus the one in which all integer values of the currency are counted is the Wei. One Ether is defined as being $10^{18}$ Wei. There exist other subdenominations of Ether:
+In order to incentivise computation within the network, there needs to be an agreed method for transmitting value. To address this issue, Ethereum has an intrinsic currency, Ether, known also as {\small ETH}. The smallest subdenomination of Ether, and thus the one in which all integer values of the currency are counted, is the Wei. One Ether is defined as being $10^{18}$ Wei. There exist other subdenominations of Ether:
 
 \par\bigskip
 \begin{center}
-\begin{tabular}{lr}
+\begin{tabular}{rl}
 \toprule
 Multiplier & Name \\
 \midrule
@@ -107,11 +109,11 @@ $10^{18}$ & Ether \\
 \end{center}
 \par
 
-Throughout the document, any reference to value, in the context of Ether, currency, a balance or a payment, should assumed to be counted in Wei.
+Throughout the present work, any reference to value, in the context of Ether, currency, a balance or a payment, should be assumed to be counted in Wei.
 
 \subsection{Which History?}
 
-Since the system is decentralised and all parties have an opportunity to create a new block on some older pre-existing block the resultant structure is necessarily a tree of blocks. In order to form a consensus as to which path, from root (the genesis block) to leaf (the block containing the most recent transactions) through this tree structure, known as the blockchain, there must be an agreed-upon scheme. If there is ever a disagreement between nodes as to which root-to-leaf path down the block tree is the `best' blockchain, then a \textit{fork} occurs.
+Since the system is decentralised and all parties have an opportunity to create a new block on some older pre-existing block, the resultant structure is necessarily a tree of blocks. In order to form a consensus as to which path, from root (the genesis block) to leaf (the block containing the most recent transactions) through this tree structure, known as the blockchain, there must be an agreed-upon scheme. If there is ever a disagreement between nodes as to which root-to-leaf path down the block tree is the `best' blockchain, then a \textit{fork} occurs.
 
 This would mean that past a given point in time (block), multiple states of the system may coexist: some nodes believing one block to contain the canonical transactions, other nodes believing some other block to be canonical, potentially containing radically different or incompatible transactions. This is to be avoided at all costs as the uncertainty that would ensue would likely kill all confidence in the entire system.
 
@@ -123,7 +125,7 @@ Having introduced the basic concepts behind Ethereum, we will discuss the meanin
 
 \subsection{World State} \label{ch:state}
 
-The world state (\textit{state}, see Appendix \ref{app:state}), is a mapping between addresses (160-bit identifiers) and account states (a data structure serialised as RLP). Though not stored on the blockchain, it is assumed that the implementation will maintain this mapping in a modified Merkle Patricia tree (\textit{trie}, see Appendix \ref{app:trie}). The trie requires a simple database backend that maintains a mapping of bytearrays to bytearrays; we name this underlying database the state database. This has a number of benefits; firstly the root node of this structure is cryptographically dependent on all internal data and as such its hash can be used as a secure identity for the entire system state. Secondly, being an immutable data structure, it allows any previous state (whose root hash is known) to be recalled by simply altering the root hash accordingly. Since we store all such root hashes in the blockchain, we are able to trivially revert to old states.
+The world state (\textit{state}, see Appendix \ref{app:state}), is a mapping between addresses (160-bit identifiers) and account states (a data structure serialised as RLP, see Appendix \ref{app:rlp}). Though not stored on the blockchain, it is assumed that the implementation will maintain this mapping in a modified Merkle Patricia tree (\textit{trie}, see Appendix \ref{app:trie}). The trie requires a simple database backend that maintains a mapping of bytearrays to bytearrays; we name this underlying database the state database. This has a number of benefits; firstly the root node of this structure is cryptographically dependent on all internal data and as such its hash can be used as a secure identity for the entire system state. Secondly, being an immutable data structure, it allows any previous state (whose root hash is known) to be recalled by simply altering the root hash accordingly. Since we store all such root hashes in the blockchain, we are able to trivially revert to old states.
 
 The account state comprises the first two, and potentially the last two, of the following fields:
 
@@ -257,7 +259,6 @@ The execution of a transaction is the most complex part of the Ethereum protocol
 \end{enumerate}
 
 Formally, we consider the function $\Upsilon$, with $T$ being a transaction and $\mathbb{S}$ the state:
-
 \begin{equation}
 \mathbb{S}' = \Upsilon(\mathbb{S}, T)
 \end{equation}
@@ -265,24 +266,21 @@ Formally, we consider the function $\Upsilon$, with $T$ being a transaction and 
 Thus $\mathbb{S}'$ is the post-transactional state.
 
 We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
-
-\begin{eqnarray}
-g_0 & \equiv & \begin{cases}
+\begin{equation}
+g_0 \equiv \begin{cases}
   (|T_\mathbf{i}| + |T_\mathbf{b}|) G_{data} + G_{create} & \text{if} \quad T_r = 0 \\
   |T_\mathbf{d}| G_{data} + G_{call} & \text{otherwise} \\
 \end{cases}
-\end{eqnarray}
+\end{equation}
 
 where $|T_\mathbf{d}|$, $|T_\mathbf{i}|$ and $|T_\mathbf{b}|$ are the sizes, in bytes, of the transaction's associated data, initialisation and body EVM-code, respectively and $G$ is defined in Appendix \ref{app:fees}.
 
 The up-front cost $v_0$ is calculated as:
-
 \begin{equation}
 v_0 \equiv T_g T_p + T_v
 \end{equation}
 
 the validity is determined as:
-
 \begin{eqnarray}
 S(T) & \neq & \varnothing \\ \wedge \quad \mathbb{S}[S(T)] & \neq & \varnothing \\ \wedge \quad T_n & = & \mathbb{S}[S(T)]_{nonce} \\ \wedge \quad g_0 & \leq & T_g \\ \wedge \quad v_0 & \leq & \mathbb{S}[S(T)]_{balance}
 \end{eqnarray}
@@ -292,7 +290,6 @@ The transaction must not require more gas to be utilised in this block than the 
 The execution of a valid transaction begins with an irrevocable change made to the state: the nonce of the account of the sender ($S(T)$) is incremented by one and the balance is reduced by the up-front cost, $v_0$. The gas available for the proceeding computation, $g$, is defined as $T_g - g_0$. The computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
 
 We define the rollback state $\mathbb{S}_0$:
-
 \begin{eqnarray}
 \mathbb{S}_0 & \equiv & \mathbb{S} \quad \text{except:} \\
 \mathbb{S}_0[S(T)]_{balance} & \equiv & \mathbb{S}[S(T)]_{balance} - c \\
@@ -300,7 +297,6 @@ We define the rollback state $\mathbb{S}_0$:
 \end{eqnarray}
 
 Evaluating $\mathbb{S}_0$ from $\mathbb{S}_0$ depends on the transaction type; either contract creation or message call; we define the pairing of post-execution provisional state ($\mathbb{S}_P$) and remaining gas ($g'$):
-
 \begin{equation}
 (\mathbb{S}_P, g') \equiv \begin{cases}
 \Lambda(\mathbb{S}_0, S(T), T_o, g, T_p, T_v, T_\mathbf{i}, T_\mathbf{b}) & \text{if} \quad T_r = 0 \\
@@ -309,20 +305,23 @@ Evaluating $\mathbb{S}_0$ from $\mathbb{S}_0$ depends on the transaction type; e
 \end{equation}
 
 where
-
 \begin{equation}
 g \equiv T_g - g_0
 \end{equation}
 
-Note we use $\Theta^*$ to take only the first two components of the function's value; the third represents the message-call's output value (a byte array) and is unused in the context of transaction evaluation.
+Note we use $\Theta^*$ to denote the fact that only the first two components of the function's value are taken; the third represents the message-call's output value (a byte array) and is unused in the context of transaction evaluation.
 
-After the message call or contract creation is processed, the state is finalised by refunding $g'$, the remaining gas, to the sender at the original rate and the Ether for the gas actually used is given to the miner, whose address is specified as the coinbase of the present block $B$. So we define the final state $\mathbb{S}'$ in terms of the provisional state $\mathbb{S}_P$:
-
+After the message call or contract creation is processed, the state is finalised by refunding $g'$, the remaining gas, to the sender at the original rate. The Ether for the gas that was actually used is given to the miner, whose address is specified as the coinbase of the present block $B$. So we define the final state $\mathbb{S}'$ in terms of the provisional state $\mathbb{S}_P$:
 \begin{eqnarray}
-\mathbb{S}' & \equiv & \mathbb{S}_o \quad \text{except} \\
-\mathbb{S}'[s]_{balance} & \equiv & \mathbb{S}_o[s]_{balance} + g' T_p \\
-\mathbb{S}'[m]_{balance} & \equiv & \mathbb{S}_o[m]_{balance} + (g - g') T_p \\
+\mathbb{S}' & \equiv & \mathbb{S}_P \quad \text{except} \\
+\mathbb{S}'[s]_{balance} & \equiv & \mathbb{S}_P[s]_{balance} + g' T_p \\
+\mathbb{S}'[m]_{balance} & \equiv & \mathbb{S}_P[m]_{balance} + (g - g') T_p \\
 m & \equiv & {B_H}_b
+\end{eqnarray}
+
+In the case that $s = m$ then we simply return the Ether back to the sender/miner, collapsing the exception into:
+\begin{eqnarray}
+\mathbb{S}'[s]_{balance} & \equiv & \mathbb{S}_P[s]_{balance} + g
 \end{eqnarray}
 
 \section{Contract Creation} \label{ch:create}
@@ -418,7 +417,7 @@ The execution model specifies how the system state is altered given a series of 
 
 \subsection{Basics}
 
-The EVM is a simple stack-based architecture. The word size of the machine (and thus size of stack item) is 256-bit. This was chosen to facilitate the SHA3-256 hash scheme and ECC. The memory model is a simple word-addressed byte array. The stack has an unlimited size. The machine also has an independent storage model; this is similar in concept to the memory but rather than a byte array, it is a word-addressable word array. Unlike memory, which is volatile, storage is non volatile and is maintained as part of the system state in the state database. All locations in both storage and memory are well-defined initially as zero.
+The EVM is a simple stack-based architecture. The word size of the machine (and thus size of stack item) is 256-bit. This was chosen to facilitate the SHA3-256 hash scheme and elliptic-curve computations. The memory model is a simple word-addressed byte array. The stack has an unlimited size. The machine also has an independent storage model; this is similar in concept to the memory but rather than a byte array, it is a word-addressable word array. Unlike memory, which is volatile, storage is non volatile and is maintained as part of the system state in the state database. All locations in both storage and memory are well-defined initially as zero.
 
 The machine does not follow the standard von Neumann architecture. Rather than storing program code in memory or storage, it is stored separately in a virtual ROM. It cannot be read directly; instead it exists only as a model for determining the next instruction to execute.
 
@@ -446,6 +445,7 @@ More formally, given an instruction, it is possible to calculate the gas cost of
 \end{itemize}
 \item {\small CALL} costs $G_{call}$, though additional gas may be taken for the execution of contract body code.
 \item {\small CREATE} costs $G_{create}$, though additional gas may be taken for the execution of contract initialisation code.
+\item {\small STOP} costs $G_{stop}$ gas
 \item All other operations cost $G_{step}$ gas.
 \end{itemize}
 
@@ -568,7 +568,7 @@ In general, we assume the memory and system state don't change:
 \mathbb{S}' & \equiv & \mathbb{S}
 \end{eqnarray}
 
-However, instructions do typically alter one or several components of these values. Altered components listed by instruction are noted in Appendix \ref{app:vm}, alongside values for $\alpha$ and $\delta$.
+However, instructions do typically alter one or several components of these values. Altered components listed by instruction are noted in Appendix \ref{app:vm}, alongside values for $\alpha$ and $\delta$ and formal a description of the gas requirements.
 
 \section{Blocktree to Blockchain} \label{ch:ghost}
 
@@ -581,7 +581,6 @@ This increases overall network security by making it much harder for an adversar
 In order to validate the extra computation, a given block $B$ may include the block headers from any known uncle blocks (i.e. blocks whose parent is equivalent to the grandparent of $B$). Since a block header includes the nonce, a proof-of-work, then the header alone is enough to validate the computation done. Any such blocks contribute toward the total computation or \textit{total difficulty} of a chain that includes them. To incentivise computation and inclusion, a reward is given both to the miner of the stale block and the miner of the block that references it.
 
 Thus we define the total difficulty of block $B$ recursively as:
-
 \begin{eqnarray}
 B_t & \equiv & B'_t + B_d + \sum\limits_{U \in B_\mathbf{U}} U_d \\
 B' & \equiv & P(H) \\
@@ -597,20 +596,56 @@ The process of finalising a block involves three stages:
 \begin{enumerate}
 \item Validate (or, if mining, determine) uncles.
 \item Apply rewards.
-\item Verify (or, if mining, compute a valid) nonce.
+\item Verify (or, if mining, compute a valid) state and nonce.
 \end{enumerate}
 
 \subsubsection{Uncle Validation}
 
 The validation of uncle headers means nothing more than verifying that each uncle header is both a valid header and satisfies the relation of uncle to the present block. Formally:
-
 \begin{equation}
 \bigwedge_{U \in B_\mathbf{U}} V(U) \; \wedge \; P(U) = P(P(B_H)) \; \wedge \; P(B_H) \neq B
 \end{equation}
 
 \subsubsection{Reward Application}
 
-The application of rewards to a block involves placing in the account of the miner-determined coinbase address additional Ether according to 
+The application of rewards to a block involves raising the balance of the accounts of the coinbase address of the block and each uncle by a certain amount. We raise the block's coinbase account by $R_b$, the block reward, and the coinbase of each uncle by $\frac{7}{8}$ of that. Formally we define the function $\Omega$:
+\begin{eqnarray}
+\Omega(B, \mathbb{S}) & \equiv & \mathbb{S}': \mathbb{S}' = \mathbb{S} \quad \text{except:} \\
+\mathbb{S}'[{B_H}_b] & = & \mathbb{S}[{B_H}_b] + R_b \\
+\forall U \in B_\mathbf{U}: \quad \mathbb{S}'[U_b] & = & \mathbb{S}[U_b] + \frac{7}{8}R_b
+\end{eqnarray}
+
+We define the block reward as 1500 Finney:
+\begin{equation}
+\text{Let} \quad R_b = 1.5^{16}
+\end{equation}
+
+\subsubsection{State \& Nonce Validation}
+
+We may now define the function, $\Gamma$, that maps a block $B$ to its initiation state:
+\begin{equation}
+\Gamma(B) \equiv \begin{cases}
+\mathbb{S}_0 & \text{if} \quad P(B_H) = \varnothing \\
+\mathbb{S}_i: r(\mathbb{S}_i) = {P(B_H)_H}_r & \text{otherwise}
+\end{cases}
+\end{equation}
+
+Here, $r(\mathbb{S}_i)$ means the hash of the root node of a trie of state $\mathbb{S}_i$; this is stored in the state database since the trie is a mutable data structure.
+
+And finally define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
+\begin{eqnarray}
+\Phi(B) & \equiv & B': \quad B' = B^* \quad \text{except:} \\
+B'_n & = & n: \quad \mathcal{P}(B^*, n) < \frac{2^{256}}{H_d} \\
+B^* & \equiv & B \quad \text{except:} \quad B'_r = r(\Pi(\Gamma(B), B))
+\end{eqnarray}
+
+As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of $\Omega$, the block finalisation function and $\Upsilon$, the transaction-evaluation function, both now well-defined:
+\begin{eqnarray}
+\Pi(\mathbb{S}, B) & \equiv & \Omega(B, \Upsilon(\Upsilon(\mathbb{S}, T_0), T_1) ...) \\
+B & \equiv & (H, [ T_0, T_1, ... ], \mathbf{U})
+\end{eqnarray}
+
+Thus the complete block-transition mechanism, less $\mathcal{P}$, the proof-of-work function is defined.
 
 \subsection{Mining Proof-of-Work} \label{ch:pow}
 
@@ -636,10 +671,9 @@ As of the proof-of-concept (PoC) series of the Ethereum software, the proof-of-w
 
 \subsubsection{PoC Series}
 
-For the PoC series, we use a simplified proof-of-work. This is not ASIC resistant and is meant merely as a placeholder. It utilises the SHA3 hash function to
+For the PoC series, we use a simplified proof-of-work. This is not ASIC resistant and is meant merely as a placeholder. It utilises the bare SHA3 hash function to secure the block chain by requiring the SHA3 hash of the concatenation of the nonce and the header's SHA3 hash to be sufficiently low.
 
 It is formally defined as $\mathcal{P}$:
-
 \begin{equation}
 \mathcal{P}(H, n) \equiv \mathcal{B}(\mathcal{S}(\mathcal{S}(\mathcal{R}(H)) \circ n))
 \end{equation}
@@ -685,6 +719,10 @@ For a more secure pseudo-random offering both parties agree on a number of rando
 \section{Future Directions} \label{ch:future}
 
 Rether than being hard-specified in the protocol, the block limit will become based upon some fixed ratio about a long-term moving average of actual gas usage in blocks, allowing it to slowly increase according to the network's ability to manage the transaction volume.
+
+State database won't keep everything; maintains an age and eventually throws out nodes that are not recent enough or checkpoints.
+
+Throw out nodes in state that haven't sent/received a transaction in over X blocks.
 
 \section{Conclusion} \label{ch:conclusion}
 
