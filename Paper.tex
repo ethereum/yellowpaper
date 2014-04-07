@@ -1,6 +1,7 @@
 \documentclass[9pt,oneside]{amsart}
 %\usepackage{tweaklist}
 \usepackage{url}
+\usepackage{cancel}
 \usepackage{xspace}
 \usepackage{graphicx}
 \usepackage{multicol}
@@ -18,6 +19,14 @@
 \usepackage{mathtools}
 \usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{afterpage}
+\usepackage{tikz}
+
+\newcommand{\hcancel}[1]{%
+    \tikz[baseline=(tocancel.base)]{
+        \node[inner sep=0pt,outer sep=0pt] (tocancel) {#1};
+        \draw[black] (tocancel.south west) -- (tocancel.north east);
+    }%
+}%
 
 \definecolor{lightyellow}{rgb}{1,0.98,0.9}
 \definecolor{lightpink}{rgb}{1,0.94,0.95}
@@ -58,11 +67,14 @@ Ethereum is a project that attempts to build the generalised technology; technol
 
 \subsection{Driving Factors} \label{ch:driving}
 
-Incorruptability of judgement. Transparency. Open state. User can be guaranteed that backend will do what front-end says it will. Parties can analyse and be wholly confident in outcomes given events.
+There are many goals of this project; one key goal is to facilitate transactions between consenting individuals who would otherwise have no means to trust one another. This may be due to geographical separation, interfacing difficulty, or perhaps the incompatibility, incompetance, unwillingness, expense, uncertainty, inconvenience or corruption of existing legal systems. By specifying a state-change system through a rich and unambiguous language, and furthermore architecting a system such that we can reasonably expect that an agreement will be thus enforced autonomously, we can provide a means to this end.
 
-\subsection{Previous Work} \label{ch:previous}
+Dealings in this proposed system would have several attributes not often found in the real word. The incorruptibility of judgement, often difficult to find, comes naturally from a disinterested algorithmic interpreter. Transparency, through being about to see exactly how a state or judgement came about through the transaction log and rules or instructional codes never happens perfectly in human-based systems.
 
-E language. Smart contracts. Bitcoin, namecoin \&c. Mastercoin.
+Overall, we wish to provide a system such that the user can be guaranteed that any other individuals, systems or organisations that they interact with, they can do so with absolute confidence in the possible outcomes and how they might come about.
+
+%\subsection{Previous Work} \label{ch:previous}
+%E language. Smart contracts. Bitcoin, namecoin \&c. Mastercoin.
 
 \section{The Blockchain Paradigm} \label{ch:overview}
 
@@ -191,8 +203,8 @@ B \equiv (H, \mathbf{U}, \mathbf{T})
 
 We can assert its validity if and only if it satisfies several conditions: It must be internally consistent with the uncle and transaction block hashes; the given transactions $\mathbf{T}$, when executed in order on the base state $\mathbb{S}$ result in a new state of the identity $H_r$:
 \begin{eqnarray}
-& & \mathcal{S}(\mathcal{R}(\mathbf{U})) \equiv H_u \\
-& \wedge & \mathcal{S}(\mathcal{R}(\mathbf{T})) \equiv H_t \\
+& & \mathtt{\tiny SHA3}(\mathtt{\tiny RLP}(\mathbf{U})) \equiv H_u \\
+& \wedge & \mathtt{\tiny SHA3}(\mathtt{\tiny RLP}(\mathbf{T})) \equiv H_t \\
 & \wedge & r(\Pi(\mathbb{S}, B)) \equiv H_r
 \end{eqnarray}
 
@@ -202,7 +214,7 @@ where $r(\mathbb{S})$ is the root node hash of the Merkle Patricia tree structur
 
 We define $P(B_H)$ to be the parent block of $B$, formally:
 \begin{equation}
-P(H) \equiv B': \mathcal{S}(\mathcal{R}(B')) = H_p
+P(H) \equiv B': \mathtt{\tiny SHA3}(\mathtt{\tiny RLP}(B')) = H_p
 \end{equation}
 
 The canonical difficulty of a block of header $H$, is defined as $D(H)$:
@@ -223,16 +235,16 @@ This mechanism enforces a homeostasis in terms of the time between blocks; a sma
 
 The nonce, $H_n$, must satisfy the relation:
 \begin{equation}
-\mathcal{P}(H, H_n) \leqslant \frac{2^{256}}{H_d}
+\mathtt{PoW}(H, H_n) \leqslant \frac{2^{256}}{H_d}
 \end{equation}
 
-Where $\mathcal{P}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an pseudo-random number cryptographically dependent on the parameters $H$ and $H_n$. Given an approximately uniform distribution in the range $[0, 2^{256})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
+Where $\mathtt{PoW}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an pseudo-random number cryptographically dependent on the parameters $H$ and $H_n$. Given an approximately uniform distribution in the range $[0, 2^{256})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
 
 This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propogate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because satisfaction of this requirement depends on the contents of the block and in turn its composed transactions, creating new, valid, blocks is difficult, and, over time, requires approximately the total compute power of the trustworthy portion of the mining peers.
 
 Thus we are able to define the block header validity function $V(H)$:
 \begin{eqnarray}
-V(H) & \equiv & \mathcal{P}(H, H_n) \leqslant \frac{2^{256}}{H_d} \\
+V(H) & \equiv & \mathtt{PoW}(H, H_n) \leqslant \frac{2^{256}}{H_d} \\
 & \wedge & H_d = D(H) \\
 & \wedge & H_t > {P(H)_H}_t
 \end{eqnarray}
@@ -337,18 +349,18 @@ The address of the new contract is defined as being the rightmost 160 bits of th
 \begin{eqnarray}
 A(s, n) & \equiv & a \quad \text{where:} \\
 a & = & \arg \min_x : x \geqslant a' \wedge \mathbb{S}_0[x] = \varnothing \\
-a' & = & \mathcal{B}_{96..255}(\mathcal{S}(\mathcal{R}([s, n])))
+a' & = & \mathcal{B}_{96..255}\Big(\mathtt{\tiny SHA3}\Big(\mathtt{\tiny RLP}\big(\;\langle s, n\rangle\;\big)\Big)\Big)
 \end{eqnarray}
 
-where $\mathcal{S}$ is the SHA3 256-bit hash function, $\mathcal{R}$ is the RLP encoding function, $\mathcal{B}_{a..b}(X)$ evaluates to binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$ and $\mathbb{S}_0[x]$ is the address state of $x$ or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
+where $\mathtt{\tiny SHA3}$ is the SHA3 256-bit hash function, $\mathtt{\tiny RLP}$ is the RLP encoding function, $\mathcal{B}_{a..b}(X)$ evaluates to binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$ and $\mathbb{S}_0[x]$ is the address state of $x$ or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
 
 The account's nonce is initially defined as zero, the balance as the value passed, the storage as empty and the code hash as the SHA3 256-bit hash of the code, thus the mutated state becomes $\mathbb{S}^*$:
 \begin{eqnarray}
 \mathbb{S}^* & \equiv & \mathbb{S} \quad \text{except:} \\
-\mathbb{S}^*[A(s, \mathbb{S}[s]_{nonce})] & \equiv & ( 0, v, \varnothing, \mathcal{S}(\mathbf{b}) )
+\mathbb{S}^*[A(s, \mathbb{S}[s]_{nonce})] & \equiv & ( 0, v, \varnothing, \mathtt{\tiny SHA3}(\mathbf{b}) )
 \end{eqnarray}
 
-It is asserted that the state database will also change such that it defines the pair $(\mathcal{S}(\mathbf{b}), \mathbf{b})$.
+It is asserted that the state database will also change such that it defines the pair $(\mathtt{\tiny SHA3}(\mathbf{b}), \mathbf{b})$.
 
 Finally, the contract is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the contract's storage can be altered, further contracts can be created and further message calls can be made. As such, the code execution function $\Xi$ evaluates to a tuple of the resultant state $\mathbb{S}'$ and available gas remaining $g'$.
 
@@ -399,10 +411,10 @@ I_p & \equiv & p \\
 I_\mathbf{d} & \equiv & \mathbf{d} \\
 I_s & \equiv & s \\
 I_v & \equiv & v \\
-\text{Let} \quad \mathcal{S}(I_\mathbf{b}) & = & \mathbb{S}[r]_{code}
+\text{Let} \quad \mathtt{\tiny SHA3}(I_\mathbf{b}) & = & \mathbb{S}[r]_{code}
 \end{eqnarray}
 
-We assert that the state database contains the entry $(\mathcal{S}(I_\mathbf{b}), I_\mathbf{b})$.
+We assert that the state database contains the entry $(\mathtt{\tiny SHA3}(I_\mathbf{b}), I_\mathbf{b})$.
 
 \section{Execution Model} \label{ch:model}
 
@@ -577,7 +589,7 @@ Thus we define the total difficulty of block $B$ recursively as:
 \begin{eqnarray}
 B_t & \equiv & B'_t + B_d + \sum\limits_{U \in B_\mathbf{U}} U_d \\
 B' & \equiv & P(H) \\
-H & \equiv & B_H \\
+H & \equiv & B_H
 \end{eqnarray}
 
 As such given a block $B$, $B_t$ is its total difficulty, $B'$ is its parent block, $B_d$ is its difficulty and $B_\mathbf{U}$ is its set of uncle blocks.
@@ -592,14 +604,14 @@ The process of finalising a block involves three stages:
 \item Verify (or, if mining, compute a valid) state and nonce.
 \end{enumerate}
 
-\subsubsection{Uncle Validation}
+\subsection{Uncle Validation}
 
 The validation of uncle headers means nothing more than verifying that each uncle header is both a valid header and satisfies the relation of uncle to the present block. Formally:
 \begin{equation}
 \bigwedge_{U \in B_\mathbf{U}} V(U) \; \wedge \; P(U) = P(P(B_H)) \; \wedge \; P(B_H) \neq B
 \end{equation}
 
-\subsubsection{Reward Application}
+\subsection{Reward Application}
 
 The application of rewards to a block involves raising the balance of the accounts of the coinbase address of the block and each uncle by a certain amount. We raise the block's coinbase account by $R_b$, the block reward, and the coinbase of each uncle by $\frac{7}{8}$ of that. Formally we define the function $\Omega$:
 \begin{eqnarray}
@@ -613,7 +625,7 @@ We define the block reward as 1500 Finney:
 \text{Let} \quad R_b = 1.5 * 10^{16}
 \end{equation}
 
-\subsubsection{State \& Nonce Validation}
+\subsection{State \& Nonce Validation}
 
 We may now define the function, $\Gamma$, that maps a block $B$ to its initiation state:
 \begin{equation}
@@ -628,7 +640,7 @@ Here, $r(\mathbb{S}_i)$ means the hash of the root node of a trie of state $\mat
 And finally define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
 \begin{eqnarray}
 \Phi(B) & \equiv & B': \quad B' = B^* \quad \text{except:} \\
-B'_n & = & n: \quad \mathcal{P}(B^*, n) < \frac{2^{256}}{H_d} \\
+B'_n & = & n: \quad \mathtt{PoW}(B^*, n) < \frac{2^{256}}{H_d} \\
 B^* & \equiv & B \quad \text{except:} \quad B'_r = r(\Pi(\Gamma(B), B))
 \end{eqnarray}
 
@@ -638,7 +650,7 @@ As specified at the beginning of the present work, $\Pi$ is the state-transition
 B & \equiv & (H, [ T_0, T_1, ... ], \mathbf{U})
 \end{eqnarray}
 
-Thus the complete block-transition mechanism, less $\mathcal{P}$, the proof-of-work function is defined.
+Thus the complete block-transition mechanism, less $\mathtt{PoW}$, the proof-of-work function is defined.
 
 \subsection{Mining Proof-of-Work} \label{ch:pow}
 
@@ -652,13 +664,12 @@ One plague of the Bitcoin world is ASICs. These are specialised pieces of comput
 
 Two directions exist for ASIC resistance; firstly make it sequential memory-hard, i.e. engineer the function such that the determination of the nonce requires a lot of memory and that the memory cannot be used in parallel to discover multiple nonces simultaneously. The second is to make the type of computation it would need to do general-purpose; the meaning of ``specialised hardware''  for a general-purpose task set is, naturally, general purpose hardware and as such commodity desktop computers are likely to be pretty close to ``specialised hardware'' for the task.
 
-More formally, the proof-of-work function takes the form of $\mathcal{P}$:
-
+More formally, the proof-of-work function takes the form of $\mathtt{PoW}$:
 \begin{equation}
-\mathcal{P}(H, n) < \frac{2^{256}}{H_d}
+\mathtt{PoW}(H_{\hcancel{n}}, n) < \frac{2^{256}}{H_d}
 \end{equation}
 
-Where $H$ is the new block's header \textit{without} the nonce entry; $H_d$ is the difficulty value (i.e. the block difficulty from section \ref{ch:ghost}).
+Where $H_{\hcancel{n}}$ is the new block's header $H$, but \textit{without} the nonce component; $H_d$ is the new block's difficulty value (i.e. the block difficulty from section \ref{ch:ghost}).
 
 As of the proof-of-concept (PoC) series of the Ethereum software, the proof-of-work function is simplistic and does not attempt to secure these goals. It will be described here for completeness.
 
@@ -666,17 +677,17 @@ As of the proof-of-concept (PoC) series of the Ethereum software, the proof-of-w
 
 For the PoC series, we use a simplified proof-of-work. This is not ASIC resistant and is meant merely as a placeholder. It utilises the bare SHA3 hash function to secure the block chain by requiring the SHA3 hash of the concatenation of the nonce and the header's SHA3 hash to be sufficiently low.
 
-It is formally defined as $\mathcal{P}$:
+It is formally defined as $\mathtt{PoW}$:
 \begin{equation}
-\mathcal{P}(H, n) \equiv \mathcal{B}(\mathcal{S}(\mathcal{S}(\mathcal{R}(H)) \circ n))
+\mathtt{PoW}(H, n) \equiv \mathtt{BE}(\mathtt{\tiny SHA3}(\mathtt{\tiny SHA3}(\mathtt{\tiny RLP}(H_{\hcancel{n}})) \circ n))
 \end{equation}
 
 where:
-$\mathcal{R}(H)$ is the RLP encoding of the $H$;
-$\mathcal{S}$ is the SHA3 hash function accepting an arbitrary length series of bytes and evaluating to a series of 32 bytes (i.e. 256-bit);
+$\mathtt{\tiny RLP}(H_{\hcancel{n}})$ is the RLP encoding of the block header $H$, not including the final nonce component;
+$\mathtt{\tiny SHA3}$ is the SHA3 hash function accepting an arbitrary length series of bytes and evaluating to a series of 32 bytes (i.e. 256-bit);
 $n$ is the nonce, a series of 32 bytes;
 $\circ$ is the series concatenation operator;
-$\mathcal{B}(X)$ evaluates to the value equal to X when interpreted as a big-endian-encoded integer.
+$\mathtt{BE}(X)$ evaluates to the value equal to X when interpreted as a big-endian-encoded integer.
 
 \subsubsection{Release Series}
 
@@ -711,11 +722,11 @@ For a more secure pseudo-random offering both parties agree on a number of rando
 
 \section{Future Directions} \label{ch:future}
 
-Rether than being hard-specified in the protocol, the block limit will become based upon some fixed ratio about a long-term moving average of actual gas usage in blocks, allowing it to slowly increase according to the network's ability to manage the transaction volume.
+Rather than being hard-specified in the protocol, the block limit will become based upon some fixed ratio about a long-term moving average of actual gas usage in blocks, allowing it to slowly increase according to the network's ability to manage the transaction volume.
 
 State database won't keep everything; maintains an age and eventually throws out nodes that are not recent enough or checkpoints.
 
-Throw out nodes in state that haven't sent/received a transaction in over X blocks.
+Nodes in state trie that haven't sent/received a transaction in over X blocks could be thrown out, reducing Ether-leakage and reducing the growth of the state database.
 
 \section{Conclusion} \label{ch:conclusion}
 
@@ -786,21 +797,16 @@ $G_{txdata}$ & 5 & Paid for every byte of data or code for a transaction. \\
 \bottomrule
 \end{tabular*}
 
-
 \section{Recursive Length Prefix}\label{app:rlp}
-
 This is a method for encoding arbitrarily structured binary data (byte arrays).
 
 \section{Modified Merkle Patricia Tree}\label{app:trie}
-
 The modified Merkle Patricia tree (trie) provides a persistent data structure to map between arbitrary-length binary data (byte arrays). It is defined in terms of a mutable data structure to map between 256-bit binary fragments and arbitrary-length binary data, typically implemented as a database.
 
 \section{Hex-Prefix Encoding}\label{app:hexprefix}
-
 Hex-prefix encoding is an efficient method of encoding a arbitrary number of nibbles as a byte array. It is able to store an additional flag which, when used in the context of the trie (the only context in which it is used), disambiguates between node types.
 
 \section{Formal Specification of Structures}
-
 Though RLP is data-agnostic, it does specify a canonical representation for integer quantities. It is big-endian with no leading zero-bytes. Thus for elements than feasibly can be stored as integers, it becomes important to specify whether they should adhere to this canonical representation or be left in some other (perhaps more 'native') format.
 
 In the case of counts, balances, fees and amounts of wei, the canon-integer form must be used when storing in RLP. We call these INTs.
@@ -1010,7 +1016,7 @@ where $c_o$ is specified in the appropriate section below and $C_M$ is the memor
 \multicolumn{5}{c}{\textbf{20s: SHA3}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x20 & {\small SHA3} & 2 & 1 & Compute SHA3-256 hash. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathcal{S}(\mathbb{M}_M[ \mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + \mathbb{M}_S[1] - 1) ])$ \\
+&&&& $\mathbb{M}'_T[0] \equiv \mathtt{\tiny SHA3}(\mathbb{M}_M[ \mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + \mathbb{M}_S[1] - 1) ])$ \\
 &&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ (\mathbb{M}_S[0] + \mathbb{M}_S[1]) \div 32 })$ \\
 \bottomrule
 \end{tabular*}
@@ -1189,21 +1195,19 @@ G_{sstore} & \text{otherwise}
 \bottomrule
 \end{tabular*}
 
-\section{Low-level Lisp-like Language}\label{app:lll}
-
-The Low-level Lisp-like Language is a language created in order to efficiently author low-level programs (contracts) without having to resort to EVM-Assembly.
+%\section{Low-level Lisp-like Language}\label{app:lll}
+%The Low-level Lisp-like Language is a language created in order to efficiently author low-level programs (contracts) without having to resort to EVM-Assembly.
 
 \section{Wire Protocol}\label{app:wire}
+The wire-protocol specifies a network-level protocol for how two peers can communicate. It includes handshake procedures and the means for transfering information such as blocks \& transactions.
 
-The wire-protocol specifies a network-level protocol for how two peers can communicate. It includes handshake procedures and the means for transfering information such as blocks \& transactions
-
-\section{Peer Strategy}\label{app:peers}
+%\section{Peer Strategy}\label{app:peers}
 
 \section{Genesis Block}\label{app:genesis}
 
 The header of the genesis block is 9 items, and is specified thus:
 
-$\langle 0_{256}, \mathcal{S}(\mathcal{R}([])), 0_{160}, 0_{256}, \mathcal{S}(\mathcal{R}([])), 2^{22}, 0, [], 42 \rangle$
+$\langle 0_{256}, \mathtt{\tiny SHA3}(\mathtt{\tiny RLP}([])), 0_{160}, 0_{256}, \mathtt{\tiny SHA3}(\mathtt{\tiny RLP}([])), 2^{22}, 0, [], 42 \rangle$
 
 Where:
 
@@ -1217,7 +1221,7 @@ $2^{22}$ refers to the difficulty.
 
 $[]$ refers to the extradata, an empty byte array.
 
-$\mathcal{S}(\mathcal{R}([]))$ values refer to the hashes of the transaction and uncle lists in RLP, both empty.
+$\mathtt{\tiny SHA3}(\mathtt{\tiny RLP}([]))$ values refer to the hashes of the transaction and uncle lists in RLP, both empty.
 
 \end{document}
 
