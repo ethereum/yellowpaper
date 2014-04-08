@@ -523,10 +523,10 @@ We also assume the fixed amounts of $\mathbf{\delta}$ and $\mathbf{\alpha}$, spe
 
 The exceptional halting function $Z$ is defined as:
 \begin{equation}
-Z(\mathbb{S}, \mathbb{M}, I) \equiv \mathbb{M}_g < C(\mathbb{S}, \mathbb{M}, I) \vee \lVert\mathbb{M}_S\rVert < \mathbf{\delta}_w
+Z(\mathbb{S}, \mathbb{M}, I) \equiv \mathbb{M}_g < C(\mathbb{S}, \mathbb{M}, I) \vee \mathbf{\delta}_w = \varnothing \vee \lVert\mathbb{M}_S\rVert < \mathbf{\delta}_w
 \end{equation}
 
-This states that the execution is in an exceptional halting state if there is insufficient gas or if there are insufficient stack items. The astute reader will realise that this implies that no instruction can, through its execution, cause an exceptional halt.
+This states that the execution is in an exceptional halting state if there is insufficient gas, if the instruction is invalid (and therefore its $\delta$ subscript is undefined) or if there are insufficient stack items. The astute reader will realise that this implies that no instruction can, through its execution, cause an exceptional halt.
 
 \subsubsection{Normal Halting}
 
