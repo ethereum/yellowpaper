@@ -197,7 +197,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 
 The other two components in the block are simply a list of uncle block headers (of the same format as above) and a list of the transactions (as defined previously). Formally, we can refer to a block $B$:
 \begin{equation}
-B \equiv (H, \mathbf{U}, \mathbf{T})
+B \equiv (H, \mathbf{T}, \mathbf{U})
 \end{equation}
 
 We can assert its validity if and only if it satisfies several conditions: It must be internally consistent with the uncle and transaction block hashes; the given transactions $\mathbf{T}$, when executed in order on the base state $\mathbb{S}$ result in a new state of the identity $H_r$:
@@ -811,7 +811,13 @@ $G_{txdata}$ & 5 & Paid for every byte of data or code for a transaction. \\
 \end{tabular*}
 
 \section{Recursive Length Prefix}\label{app:rlp}
-This is a method for encoding arbitrarily structured binary data (byte arrays).
+This is a serialisation method for encoding arbitrarily structured binary data (byte arrays). Within RLP, integers are specified as the byte array equal to the big-endian representation of the value. Thus we may define the notation of a tree structure $\mathbf{t}$:
+
+\begin{equation}
+\mathbf{t}
+\end{equation}
+
+We define the function $\mathtt{\tiny RLP}$ that maps from an arbitrarily structured tree whose leaves are byte arrays into a single byte array. 
 
 \section{Modified Merkle Patricia Tree}\label{app:trie}
 The modified Merkle Patricia tree (trie) provides a persistent data structure to map between arbitrary-length binary data (byte arrays). It is defined in terms of a mutable data structure to map between 256-bit binary fragments and arbitrary-length binary data, typically implemented as a database.
@@ -909,8 +915,8 @@ for blocks, there are no immediate data field, but lists:
 \begin{verbatim}
 [
   blockHeader: [...]
-  uncleList: [ [...], [...], ... ]
   txList: [ [...], [...], ... ]
+  uncleList: [ [...], [...], ... ]
 ]
 \end{verbatim}
 
