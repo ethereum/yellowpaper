@@ -40,7 +40,7 @@
 \title{Ethereum: A Secure Decentralised Generalised Transaction Ledger}
 \author{
     Dr. Gavin Wood\\
-    CTO, Ethereum Project\\
+    Co-Founder \& CTO, Ethereum Project\\
     gavin@ethereum.org
 }
 \begin{document}
@@ -105,8 +105,7 @@ This is the basis of the blockchain paradigm, a model that forms the backbone of
 \subsection{Value}
 
 In order to incentivise computation within the network, there needs to be an agreed method for transmitting value. To address this issue, Ethereum has an intrinsic currency, Ether, known also as {\small ETH}. The smallest subdenomination of Ether, and thus the one in which all integer values of the currency are counted, is the Wei. One Ether is defined as being $10^{18}$ Wei. There exist other subdenominations of Ether:
-
-\par\bigskip
+\par`
 \begin{center}
 \begin{tabular}{rl}
 \toprule
@@ -221,8 +220,8 @@ The canonical difficulty of a block of header $H$, is defined as $D(H)$:
 \begin{equation}
 D(H) \equiv \begin{cases}
 2^{22} & \quad \text{if genesis block}\\
-{P(H)_H}_d + \frac{{P(H)_H}_d}{1024} & \quad \text{if $H_t < {P(H)_H}_t + 42$}\\
-{P(H)_H}_d - \frac{{P(H)_H}_d}{1024} & \quad \text{otherwise}\\
+{P(H)_H}_d + \lfloor\frac{{P(H)_H}_d}{1024}\rfloor & \quad \text{if $H_t < {P(H)_H}_t + 42$}\\
+{P(H)_H}_d - \lfloor\frac{{P(H)_H}_d}{1024}\rfloor & \quad \text{otherwise}\\
 \end{cases}
 \end{equation}
 
@@ -280,12 +279,22 @@ Thus $\mathbb{S}'$ is the post-transactional state.
 We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
 \begin{equation}
 g_0 \equiv \begin{cases}
-  (|T_\mathbf{i}| + |T_\mathbf{b}|) G_{data} + G_{create} & \text{if} \quad T_r = 0 \\
-  |T_\mathbf{d}| G_{data} + G_{call} & \text{otherwise} \\
+g_d + G_{create} & \text{if} \quad T_r = 0 \\
+g_d + G_{call} & \text{otherwise} \\
 \end{cases}
 \end{equation}
 
-where $|T_\mathbf{d}|$, $|T_\mathbf{i}|$ and $|T_\mathbf{b}|$ are the sizes, in bytes, of the transaction's associated data, initialisation and body EVM-code, respectively and $G$ is defined in Appendix \ref{app:fees}.
+where
+
+\begin{equation}
+g_d \equiv \begin{cases} (\lVert T_\mathbf{i}\rVert + \lVert T_\mathbf{b}\rVert) G_{data} & \text{if} \quad T_r = 0 \\
+ \lVert T_\mathbf{d}\rVert G_{data} & \text{otherwise}
+ \end{cases}
+\end{equation}
+
+where $\lVert T_\mathbf{d}\rVert$, $\lVert T_\mathbf{i}\rVert$ and $\lVert T_\mathbf{b}\rVert$ are the sizes, in bytes, of the transaction's associated data, initialisation and body EVM-code, respectively and $G$ is defined in Appendix \ref{app:fees}. The portion of $g_0$ that will not be paid to the miner is $g_d$, and is removed from the system.
+
+% Explain g_d reason?
 
 The up-front cost $v_0$ is calculated as:
 \begin{equation}
@@ -304,7 +313,7 @@ The execution of a valid transaction begins with an irrevocable change made to t
 We define the rollback state $\mathbb{S}_0$:
 \begin{eqnarray}
 \mathbb{S}_0 & \equiv & \mathbb{S} \quad \text{except:} \\
-\mathbb{S}_0[S(T)]_{balance} & \equiv & \mathbb{S}[S(T)]_{balance} - c \\
+\mathbb{S}_0[S(T)]_{balance} & \equiv & \mathbb{S}[S(T)]_{balance} - v_0 \\
 \mathbb{S}_0[S(T)]_{nonce} & \equiv & \mathbb{S}[S(T)]_{nonce} + 1
 \end{eqnarray}
 
@@ -327,22 +336,22 @@ After the message call or contract creation is processed, the state is finalised
 \begin{eqnarray}
 \mathbb{S}' & \equiv & \mathbb{S}_P \quad \text{except} \\
 \mathbb{S}'[s]_{balance} & \equiv & \mathbb{S}_P[s]_{balance} + g' T_p \\
-\mathbb{S}'[m]_{balance} & \equiv & \mathbb{S}_P[m]_{balance} + (g - g') T_p \\
+\mathbb{S}'[m]_{balance} & \equiv & \mathbb{S}_P[m]_{balance} + (T_g - g' - g_d) T_p \\
 m & \equiv & {B_H}_b
 \end{eqnarray}
 
-In the case that $s = m$ then we simply return the Ether back to the sender/miner, collapsing the exception into:
-\begin{eqnarray}
-\mathbb{S}'[s]_{balance} & \equiv & \mathbb{S}_P[s]_{balance} + g
-\end{eqnarray}
+%In the case that $s = m$ then we simply return the Ether back to the sender/miner, collapsing the exception into:
+%\begin{eqnarray}
+%\mathbb{S}'[s]_{balance} & \equiv & \mathbb{S}_P[s]_{balance} + g
+%\end{eqnarray}
 
 \section{Contract Creation} \label{ch:create}
 
-There are number of intrinsic parameters used when creating a contract: sender ($s$), nonce ($o$), available gas ($g$), gas price ($p$), endowment ($v$) together with the two arbitrary length byte arrays, $\mathbf{i}$ for the initialisation EVM code and $\mathbf{b}$ for the EVM code of the body.
+There are number of intrinsic parameters used when creating a contract: sender ($s$), nonce ($n$), available gas ($g$), gas price ($p$), endowment ($v$) together with the two arbitrary length byte arrays, $\mathbf{i}$ for the initialisation EVM code and $\mathbf{b}$ for the EVM code of the body.
 
 We define the creation function formally as the function $\Lambda$, which evaluates from these values, together with the state $\mathbb{S}_0$ to the tuple containing the new state, additional database entries and remaining gas $(\mathbb{S}_P, g')$, as in \ref{ch:transactions}:
 \begin{equation}
-(\mathbb{S}_P, g') \equiv \Lambda(\mathbb{S}_0, s, o, g, p, v, \mathbf{i}, \mathbf{b})
+(\mathbb{S}_P, g') \equiv \Lambda(\mathbb{S}_0, s, n, g, p, v, \mathbf{i}, \mathbf{b})
 \end{equation}
 
 The address of the new contract is defined as being the rightmost 160 bits of the SHA3 hash of RLP encoding of the structure \texttt{[ sender, nonce ]}. In the unlikely event that the address is already in use, it is treated as a big-endian integer and incremented by one until an unused address is arrived at. Thus we define the creation address function $A$:
@@ -523,7 +532,7 @@ We also assume the fixed amounts of $\mathbf{\delta}$ and $\mathbf{\alpha}$, spe
 
 The exceptional halting function $Z$ is defined as:
 \begin{equation}
-Z(\mathbb{S}, \mathbb{M}, I) \equiv \mathbb{M}_g < C(\mathbb{S}, \mathbb{M}, I) \vee \mathbf{\delta}_w = \varnothing \vee \lVert\mathbb{M}_S\rVert < \mathbf{\delta}_w
+Z(\mathbb{S}, \mathbb{M}, I) \equiv \mathbb{M}_g < C(\mathbb{S}, \mathbb{M}) \vee \mathbf{\delta}_w = \varnothing \vee \lVert\mathbb{M}_S\rVert < \mathbf{\delta}_w
 \end{equation}
 
 This states that the execution is in an exceptional halting state if there is insufficient gas, if the instruction is invalid (and therefore its $\delta$ subscript is undefined) or if there are insufficient stack items. The astute reader will realise that this implies that no instruction can, through its execution, cause an exceptional halt.
@@ -547,8 +556,8 @@ Stack items are added or removed from the left-most, lower-indexed portion of th
 \begin{eqnarray}
 O(\mathbb{S}, \mathbb{M}, I) & \equiv & (\mathbb{S}', \mathbb{M}', I) \\
 \Delta & \equiv & \mathbf{\alpha}_w - \mathbf{\delta}_w \\
-\lVert\mathbb{M}'_{T}\rVert & \equiv & \lVert\mathbb{M}_{T}\rVert + \Delta \\
-\quad \forall x \in [\mathbf{\alpha}_w, \lVert\mathbb{M}'_T\rVert): \mathbb{M}'_{T_x} & \equiv & \mathbb{M}_{T_{x+\Delta}}
+\lVert\mathbb{M}'_{S}\rVert & \equiv & \lVert\mathbb{M}_{T}\rVert + \Delta \\
+\quad \forall x \in [\mathbf{\alpha}_w, \lVert\mathbb{M}'_S\rVert): \mathbb{M}'_{T_x} & \equiv & \mathbb{M}_{T_{x+\Delta}}
 \end{eqnarray}
 
 The gas is reduced by the instruction's gas cost and for most instructions, the program counter increments on each cycle, for the three exceptions, we assume a function $J$, subscripted by one of two instructions, which evaluates to the according value:
@@ -731,6 +740,10 @@ Nodes in state trie that haven't sent/received a transaction in over X blocks co
 \section{Conclusion} \label{ch:conclusion}
 
 This paper has introduced, discussed and formally defined the protocol of Ethereum.
+
+\section{Acknowledgements}
+
+Vitalik Buterin first proposed in the original Ethereum whitepaper (first distributed in December 2013) moving from a single state-transaction function with trivial state to something much more general and expansive. Useful corrections and suggestions were provided by a number of others from the Ethereum community including Aeron Buchanan
 
 \bibliography{Biblio}
 \bibliographystyle{plainnat}
@@ -949,46 +962,46 @@ where $c_o$ is specified in the appropriate section below and $C_M$ is the memor
 &&&& $\mathbb{M}'_R = []$ \\
 \midrule
 0x01 & {\small ADD} & 2 & 1 & Addition operation. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_S[0] + \mathbb{M}_S[1]$ \\
+&&&& $\mathbb{M}'_S[0] \equiv \mathbb{M}_S[0] + \mathbb{M}_S[1]$ \\
 \midrule
 0x02 & {\small MUL} & 2 & 1 & Multiplication operation. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_S[0] \times \mathbb{M}_S[1]$ \\
+&&&& $\mathbb{M}'_S[0] \equiv \mathbb{M}_S[0] \times \mathbb{M}_S[1]$ \\
 \midrule
 0x03 & {\small SUB} & 2 & 1 & Subtraction operation. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_S[0] - \mathbb{M}_S[1]$ \\
+&&&& $\mathbb{M}'_S[0] \equiv \mathbb{M}_S[0] - \mathbb{M}_S[1]$ \\
 \midrule
 0x04 & {\small DIV} & 2 & 1 & Integer division operation. \\
-&&&& $\mathbb{M}'_T[0] \equiv \begin{cases}0 & \text{if} \quad \mathbb{M}_S[1] = 0\\ \lfloor\mathbb{M}_S[0] \div \mathbb{M}_S[1]\rfloor & \text{otherwise}\end{cases}$  \\
+&&&& $\mathbb{M}'_S[0] \equiv \begin{cases}0 & \text{if} \quad \mathbb{M}_S[1] = 0\\ \lfloor\mathbb{M}_S[0] \div \mathbb{M}_S[1]\rfloor & \text{otherwise}\end{cases}$  \\
 \midrule
 0x05 & {\small SDIV} & 2 & 1 & Signed integer division operation. \\
-&&&& $\mathbb{M}'_T[0] \equiv \begin{cases}0 & \text{if} \quad \mathbb{M}_S[1] = 0\\ \lfloor\mathbb{M}_S[0] \div \mathbb{M}_S[1]\rfloor & \text{otherwise}\end{cases}$  \\
+&&&& $\mathbb{M}'_S[0] \equiv \begin{cases}0 & \text{if} \quad \mathbb{M}_S[1] = 0\\ \lfloor\mathbb{M}_S[0] \div \mathbb{M}_S[1]\rfloor & \text{otherwise}\end{cases}$  \\
 &&&& Where all values are treated as signed 256-bit integers for the purposes of this operation. \\
 \midrule
 0x06 & {\small MOD} & 2 & 1 & Modulo remainder operation. \\
-&&&& $\mathbb{M}'_T[0] \equiv \begin{cases}0 & \text{if} \quad \mathbb{M}_S[1] = 0\\ \mathbb{M}_S[0] \bmod \mathbb{M}_S[1] & \text{otherwise}\end{cases}$  \\
+&&&& $\mathbb{M}'_S[0] \equiv \begin{cases}0 & \text{if} \quad \mathbb{M}_S[1] = 0\\ \mathbb{M}_S[0] \bmod \mathbb{M}_S[1] & \text{otherwise}\end{cases}$  \\
 \midrule
 0x07 & {\small SMOD} & 2 & 1 & Modulo remainder operation. \\
-&&&& $\mathbb{M}'_T[0] \equiv \begin{cases}0 & \text{if} \quad \mathbb{M}_S[1] = 0\\ \mathbb{M}_S[0] \bmod \mathbb{M}_S[1] & \text{otherwise}\end{cases}$  \\
+&&&& $\mathbb{M}'_S[0] \equiv \begin{cases}0 & \text{if} \quad \mathbb{M}_S[1] = 0\\ \mathbb{M}_S[0] \bmod \mathbb{M}_S[1] & \text{otherwise}\end{cases}$  \\
 &&&& Where all values are treated as signed 256-bit integers for the purposes of this operation. \\
 \midrule
 0x08 & {\small EXP} & 2 & 1 & Exponential operation. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_S[0] ^ {\mathbb{M}_S[1] }$ \\
+&&&& $\mathbb{M}'_S[0] \equiv \mathbb{M}_S[0] ^ {\mathbb{M}_S[1] }$ \\
 \midrule
 0x09 & {\small NEG} & 1 & 1 & Negation operation. \\
-&&&& $\mathbb{M}'_T[0] \equiv -\mathbb{M}_S[0]$ \\
+&&&& $\mathbb{M}'_S[0] \equiv -\mathbb{M}_S[0]$ \\
 &&&& Where all values are treated as signed 256-bit integers for the purposes of this operation. \\
 \midrule
 0x0a & {\small LT} & 2 & 1 & Less-than comparision. \\
-&&&& $\mathbb{M}'_T[0] \equiv \begin{cases} 1 & \text{if} \quad \mathbb{M}_S[0] < \mathbb{M}_S[1] \\ 0 & \text{otherwise} \end{cases}$ \\
+&&&& $\mathbb{M}'_S[0] \equiv \begin{cases} 1 & \text{if} \quad \mathbb{M}_S[0] < \mathbb{M}_S[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
 0x0b & {\small GT} & 2 & 1 & Greater-than comparision. \\
-&&&& $\mathbb{M}'_T[0] \equiv \begin{cases} 1 & \text{if} \quad \mathbb{M}_S[0] > \mathbb{M}_S[1] \\ 0 & \text{otherwise} \end{cases}$ \\
+&&&& $\mathbb{M}'_S[0] \equiv \begin{cases} 1 & \text{if} \quad \mathbb{M}_S[0] > \mathbb{M}_S[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
 0x0c & {\small EQ} & 2 & 1 & Equality comparision. \\
-&&&& $\mathbb{M}'_T[0] \equiv \begin{cases} 1 & \text{if} \quad \mathbb{M}_S[0] = \mathbb{M}_S[1] \\ 0 & \text{otherwise} \end{cases}$ \\
+&&&& $\mathbb{M}'_S[0] \equiv \begin{cases} 1 & \text{if} \quad \mathbb{M}_S[0] = \mathbb{M}_S[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
 0x0d & {\small NOT} & 1 & 1 & Simple not operator. \\
-&&&& $\mathbb{M}'_T[0] \equiv \begin{cases} 1 & \text{if} \quad \mathbb{M}_S[0] = 0 \\ 0 & \text{otherwise} \end{cases}$ \\
+&&&& $\mathbb{M}'_S[0] \equiv \begin{cases} 1 & \text{if} \quad \mathbb{M}_S[0] = 0 \\ 0 & \text{otherwise} \end{cases}$ \\
 \end{tabular*}
 
 \begin{tabular*}{\columnwidth}[h]{rlrrl}
@@ -997,16 +1010,16 @@ where $c_o$ is specified in the appropriate section below and $C_M$ is the memor
 \multicolumn{5}{l}{$\mathbb{M}_S[0]_i$ gives the $i$th bit (counting from zero) of $\mathbb{M}_S[0]$} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x10 & {\small AND} & 2 & 1 & Bitwise AND operation. \\
-&&&& $\forall i \in [0..255]: \mathbb{M}'_T[0]_i \equiv \mathbb{M}_S[0]_i \wedge \mathbb{M}_S[1]_i$ \\
+&&&& $\forall i \in [0..255]: \mathbb{M}'_S[0]_i \equiv \mathbb{M}_S[0]_i \wedge \mathbb{M}_S[1]_i$ \\
 \midrule
 0x11 & {\small OR} & 2 & 1 & Bitwise OR operation. \\
-&&&& $\forall i \in [0..255]: \mathbb{M}'_T[0]_i \equiv \mathbb{M}_S[0]_i \vee \mathbb{M}_S[1]_i$ \\
+&&&& $\forall i \in [0..255]: \mathbb{M}'_S[0]_i \equiv \mathbb{M}_S[0]_i \vee \mathbb{M}_S[1]_i$ \\
 \midrule
 0x12 & {\small XOR} & 2 & 1 & Bitwise XOR operation. \\
-&&&& $\forall i \in [0..255]: \mathbb{M}'_T[0]_i \equiv \mathbb{M}_S[0]_i \oplus \mathbb{M}_S[1]_i$ \\
+&&&& $\forall i \in [0..255]: \mathbb{M}'_S[0]_i \equiv \mathbb{M}_S[0]_i \oplus \mathbb{M}_S[1]_i$ \\
 \midrule
 0x13 & {\small BYTE} & 2 & 1 & Retrieve single byte from word. \\
-&&&& $\forall i \in [0..7]: \mathbb{M}'_T[0]_i \equiv \begin{cases} \mathbb{M}_S[1]_{(i + 8\mathbb{M}_S[0])} & \text{if} \quad \mathbb{M}_S[0] < 32 \\ 0 & \text{otherwise} \end{cases} $\\
+&&&& $\forall i \in [0..7]: \mathbb{M}'_S[0]_i \equiv \begin{cases} \mathbb{M}_S[1]_{(i + 8\mathbb{M}_S[0])} & \text{if} \quad \mathbb{M}_S[0] < 32 \\ 0 & \text{otherwise} \end{cases} $\\
 &&&& For Nth byte, we count from the left (i.e. N=0 would be the most significant in big endian). \\
 \bottomrule
 \end{tabular*}
@@ -1016,7 +1029,7 @@ where $c_o$ is specified in the appropriate section below and $C_M$ is the memor
 \multicolumn{5}{c}{\textbf{20s: SHA3}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x20 & {\small SHA3} & 2 & 1 & Compute SHA3-256 hash. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathtt{\tiny SHA3}(\mathbb{M}_M[ \mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + \mathbb{M}_S[1] - 1) ])$ \\
+&&&& $\mathbb{M}'_S[0] \equiv \mathtt{\tiny SHA3}(\mathbb{M}_M[ \mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + \mathbb{M}_S[1] - 1) ])$ \\
 &&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ (\mathbb{M}_S[0] + \mathbb{M}_S[1]) \div 32 })$ \\
 \bottomrule
 \end{tabular*}
@@ -1026,32 +1039,32 @@ where $c_o$ is specified in the appropriate section below and $C_M$ is the memor
 \multicolumn{5}{c}{\textbf{30s: Environmental Information}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x30 & {\small ADDRESS} & 0 & 1 & Get address of currently executing account. \\
-&&&& $\mathbb{M}'_T[0] \equiv I_a$ \\
+&&&& $\mathbb{M}'_S[0] \equiv I_a$ \\
 \midrule
 0x31 & {\small BALANCE} & 0 & 1 & Get balance of currently executing account. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{S}[I_a]_{balance}$ \\
+&&&& $\mathbb{M}'_S[0] \equiv \mathbb{S}[I_a]_{balance}$ \\
 \midrule
 0x32 & {\small ORIGIN} & 0 & 1 & Get execution origination address. \\
-&&&& $\mathbb{M}'_T[0] \equiv I_o$ \\
-&&&& This is the sender of original transaction; it's never a contract. \\
+&&&& $\mathbb{M}'_S[0] \equiv I_o$ \\
+&&&& This is the sender of original transaction; it is never a contract. \\
 \midrule
 0x33 & {\small CALLER} & 0 & 1 & Get caller address. \\
-&&&& $\mathbb{M}'_T[0] \equiv I_c$ \\
+&&&& $\mathbb{M}'_S[0] \equiv I_c$ \\
 &&&& This is the address of the account that is directly responsible for this execution. \\
 \midrule
 0x34 & {\small CALLVALUE} & 0 & 1 & Get deposited value by the instruction/transaction responsible for this execution. \\
-&&&& $\mathbb{M}'_T[0] \equiv I_v$ \\
+&&&& $\mathbb{M}'_S[0] \equiv I_v$ \\
 \midrule
 0x35 & {\small CALLDATALOAD} & 1 & 1 & Get input data of current environment. \\
-&&&& $\mathbb{M}'_T[0] \equiv I_\mathbf{d}[ \mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + 32) ]$ \\
+&&&& $\mathbb{M}'_S[0] \equiv I_\mathbf{d}[ \mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + 31) ]$ \\
 &&&& This pertains to the input data passed with the message call instruction or transaction. \\
 \midrule
 0x36 & {\small CALLDATASIZE} & 0 & 1 & Get size of input data in current environment. \\
-&&&& $\mathbb{M}'_T[0] \equiv \lVert I_\mathbf{d} \rVert$ \\
+&&&& $\mathbb{M}'_S[0] \equiv \lVert I_\mathbf{d} \rVert$ \\
 &&&& This pertains to the input data passed with the message call instruction or transaction. \\
 \midrule
 0x37 & {\small GASPRICE} & 0 & 1 & Get price of gas in current environment. \\
-&&&& $\mathbb{M}'_T[0] \equiv I_p$ \\
+&&&& $\mathbb{M}'_S[0] \equiv I_p$ \\
 &&&& This is gas price specified by the originating transaction.\\
 \bottomrule
 \end{tabular*}
@@ -1061,24 +1074,24 @@ where $c_o$ is specified in the appropriate section below and $C_M$ is the memor
 \multicolumn{5}{c}{\textbf{40s: Block Information}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x40 & {\small PREVHASH} & 0 & 1 & Get hash of most recent complete block. \\
-&&&& $\mathbb{M}'_T[0] \equiv {I_H}_p$ \\
+&&&& $\mathbb{M}'_S[0] \equiv {I_H}_p$ \\
 &&&& $I_{H_p}$ is the previous block's hash. \\
 \midrule
 0x41 & {\small COINBASE} & 0 & 1 & Get the block's coinbase address. \\
-&&&& $\mathbb{M}'_T[0] \equiv {I_H}_b$ \\
+&&&& $\mathbb{M}'_S[0] \equiv {I_H}_b$ \\
 \midrule
 0x42 & {\small TIMESTAMP} & 0 & 1 & Get the block's timestamp. \\
-&&&& $\mathbb{M}'_T[0] \equiv {I_H}_t$ \\
+&&&& $\mathbb{M}'_S[0] \equiv {I_H}_t$ \\
 \midrule
 0x43 & {\small NUMBER} & 0 & 1 & Get the block's number. \\
-&&&& $\mathbb{M}'_T[0] \equiv n({I_H})$ \\
+&&&& $\mathbb{M}'_S[0] \equiv n({I_H})$ \\
 &&&& $n(I_H)$ is the total number of ancestor blocks of the current block. \\
 \midrule
 0x44 & {\small DIFFICULTY} & 0 & 1 & Get the block's difficulty. \\
-&&&& $\mathbb{M}'_T[0] \equiv {I_H}_d$ \\
+&&&& $\mathbb{M}'_S[0] \equiv {I_H}_d$ \\
 \midrule
 0x45 & {\small GASLIMIT} & 0 & 1 & Get the block's gas limit. \\
-&&&& $\mathbb{M}'_T[0] \equiv 10^6$ \\
+&&&& $\mathbb{M}'_S[0] \equiv 10^6$ \\
 &&&& Presently, the gas limit is hard-coded in the protocol. \\
 \bottomrule
 \end{tabular*}
@@ -1090,18 +1103,18 @@ where $c_o$ is specified in the appropriate section below and $C_M$ is the memor
 0x50 & {\small POP} & 1 & 0 & Remove item from stack. \\
 \midrule
 0x51 & {\small DUP} & 1 & 2 & Duplicate stack item. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_S[0]$ \\
+&&&& $\mathbb{M}'_S[0] \equiv \mathbb{M}_S[0]$ \\
 \midrule
 0x52 & {\small SWAP} & 2 & 2 & Exchange stack items. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_S[1]$ \\
-&&&& $\mathbb{M}'_T[1] \equiv \mathbb{M}_S[0]$ \\
+&&&& $\mathbb{M}'_S[0] \equiv \mathbb{M}_S[1]$ \\
+&&&& $\mathbb{M}'_S[1] \equiv \mathbb{M}_S[0]$ \\
 \midrule
 0x53 & {\small MLOAD} & 1 & 1 & Load word from memory. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_M[\mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + 32) ]$ \\
+&&&& $\mathbb{M}'_S[0] \equiv \mathbb{M}_M[\mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + 31) ]$ \\
 &&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ (\mathbb{M}_S[0] + 32) \div 32 })$ \\
 \midrule
 0x54 & {\small MSTORE} & 2 & 0 & Save word to memory. \\
-&&&& $\mathbb{M}'_M[ \mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + 32) ] \equiv \mathbb{M}_S[1]$ \\
+&&&& $\mathbb{M}'_M[ \mathbb{M}_S[0] \dots (\mathbb{M}_S[0] + 31) ] \equiv \mathbb{M}_S[1]$ \\
 &&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ (\mathbb{M}_S[0] + 32) \div 32 })$ \\
 \midrule
 0x55 & {\small MSTORE8} & 2 & 0 & Save byte to memory. \\
@@ -1109,7 +1122,7 @@ where $c_o$ is specified in the appropriate section below and $C_M$ is the memor
 &&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ (\mathbb{M}_S[0] + 1) \div 32 })$ \\
 \midrule
 0x56 & {\small SLOAD} & 1 & 1 & Load word from storage. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{S}'[I_a]_{storage}[\mathbb{M}_S[0]]$ \\
+&&&& $\mathbb{M}'_S[0] \equiv \mathbb{S}[I_a]_{storage}[\mathbb{M}_S[0]]$ \\
 \midrule
 0x57 & {\small SSTORE} & 2 & 0 & Save word to storage. \\
 &&&& $\mathbb{S}'[I_a]_{storage}[ \mathbb{M}_S[0] ] \equiv \mathbb{M}_S[1] $ \\
@@ -1124,17 +1137,17 @@ G_{sstore} & \text{otherwise}
 &&&& This has the effect of writing said value to $\mathbb{M}_{pc}$. See section \ref{ch:model}. \\
 \midrule
 0x59 & {\small JUMPI} & 2 & 0 & Conditionally alter the program counter. \\
-&&&& $J_{\text{\tiny JUMPI}}(\mathbb{M}) \equiv \begin{cases} \mathbb{M}_S[0] & \text{if} \quad \mathbb{M}_S[0] = 0 \\ \mathbb{M}_{pc} + 1 & \text{otherwise} \end{cases} $ \\
+&&&& $J_{\text{\tiny JUMPI}}(\mathbb{M}) \equiv \begin{cases} \mathbb{M}_S[0] & \text{if} \quad \mathbb{M}_S[1] = 0 \\ \mathbb{M}_{pc} + 1 & \text{otherwise} \end{cases} $ \\
 &&&& This has the effect of writing said value to $\mathbb{M}_{pc}$. See section \ref{ch:model}. \\
 \midrule
 0x5a & {\small PC} & 0 & 1 & Get the program counter. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_{pc}$ \\
+&&&& $\mathbb{M}'_S[0] \equiv \mathbb{M}_{pc}$ \\
 \midrule
 0x5b & {\small MSIZE} & 0 & 1 & Get the size of active memory. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_{i}$ \\
+&&&& $\mathbb{M}'_S[0] \equiv \mathbb{M}_{i}$ \\
 \midrule
 0x5c & {\small GAS} & 0 & 1 & Get the amount of available gas. \\
-&&&& $\mathbb{M}'_T[0] \equiv \mathbb{M}_{g}$ \\
+&&&& $\mathbb{M}'_S[0] \equiv \mathbb{M}_{g}$ \\
 \bottomrule
 \end{tabular*}
 
@@ -1143,17 +1156,17 @@ G_{sstore} & \text{otherwise}
 \multicolumn{5}{c}{\textbf{60s \& 70s: Push Operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x60 & {\small PUSH1} & 0 & 1 & Place 1 byte item on stack. \\
-&&&& $\mathbb{M}'_T[0] \equiv I_\mathbf{b}[\mathbb{M}_{pc} + 1]$ \\
+&&&& $\mathbb{M}'_S[0] \equiv I_\mathbf{b}[\mathbb{M}_{pc} + 1]$ \\
 &&&& The byte is right-aligned (takes the lowest significant place in big endian). \\
 \midrule
 0x61 & {\small PUSH2} & 0 & 1 & Place 2-byte item on stack. \\
-&&&& $\mathbb{M}'_T[0] \equiv I_\mathbf{b}[(\mathbb{M}_{pc} + 1) \dots (\mathbb{M}_{pc} + 2) ]$ \\
+&&&& $\mathbb{M}'_S[0] \equiv I_\mathbf{b}[(\mathbb{M}_{pc} + 1) \dots (\mathbb{M}_{pc} + 2) ]$ \\
 &&&& The bytes are right-aligned (takes the lowest significant place in big endian). \\
 \midrule
 \multicolumn{1}{c}{\vdots} & \multicolumn{1}{c}{\vdots} & \vdots & \vdots & \multicolumn{1}{c}{\vdots} \\
 \midrule
 0x7f & {\small PUSH32} & 0 & 1 & Place 32-byte (full word) item on stack. \\
-&&&& $\mathbb{M}'_T[0] \equiv I_\mathbf{b}[(\mathbb{M}_{pc} + 1) \dots (\mathbb{M}_{pc} + 32) ]$ \\
+&&&& $\mathbb{M}'_S[0] \equiv I_\mathbf{b}[(\mathbb{M}_{pc} + 1) \dots (\mathbb{M}_{pc} + 32) ]$ \\
 \bottomrule
 \end{tabular*}
 
@@ -1167,7 +1180,7 @@ G_{sstore} & \text{otherwise}
 &&&& $\mathbf{i} \equiv \mathbb{M}_M[ \mathbb{M}_S[3] \dots (\mathbb{M}_S[3] + \mathbb{M}_S[4] - 1) ]$ \\
 &&&& $(\mathbb{S}', \mathbb{M}'_g) \equiv \Lambda(\mathbb{S}^*, I_a, I_o, \mathbb{M}_g, I_p, \mathbb{M}_S[0], \mathbf{i}, \mathbf{b})$ \\
 &&&& $\mathbb{S}^* \equiv \mathbb{S} \quad \text{except} \quad \mathbb{S}^*[I_a]_{nonce} = \mathbb{S}[I_a]_{nonce} + 1$ \\
-&&&& $\mathbb{M}'_T[0] \equiv x$ \\
+&&&& $\mathbb{M}'_S[0] \equiv x$ \\
 &&&& where $x=0$ if the code execution for this operation failed due to lack of gas;\\
 &&&& $x=A(I_a, \mathbb{S}[I_a]_{nonce})$, the address of the newly created contract, otherwise. \\
 &&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ \max(\mathbb{M}_S[1] + \mathbb{M}_S[2], \mathbb{M}_S[3] + \mathbb{M}_S[4]) \div 32 })$ \\
@@ -1178,7 +1191,7 @@ G_{sstore} & \text{otherwise}
 &&&& Let $g_k = \begin{cases}0 & \text{if} \quad \mathbb{M}_S[2] = 0 \\ \mathbb{M}_g - \min(\mathbb{M}_g, \mathbb{M}_S[2]) & \text{otherwise} \end{cases}$ \\
 &&&& $(\mathbb{S}', g', \mathbf{o}) \equiv \Theta(\mathbb{S}, I_a, I_o, \mathbb{M}_S[0], g, I_p, \mathbb{M}_g - g_k, \mathbb{M}_S[1], \mathbf{i})$ \\
 &&&& $\mathbb{M}'_g \equiv g' + g_k$ \\
-&&&& $\mathbb{M}'_T[0] \equiv x$ \\
+&&&& $\mathbb{M}'_S[0] \equiv x$ \\
 &&&& where $x=0$ if the code execution for this operation failed due to lack of gas;\\
 &&&& $x=1$ otherwise. \\
 &&&& $\mathbb{M}'_i \equiv \max(\mathbb{M}_i, \ceil{ \max(\mathbb{M}_S[3] + \mathbb{M}_S[4], \mathbb{M}_S[5] + \mathbb{M}_S[6]) \div 32 })$ \\
