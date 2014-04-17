@@ -220,14 +220,14 @@ The canonical difficulty of a block of header $H$, is defined as $D(H)$:
 \begin{equation}
 D(H) \equiv \begin{cases}
 2^{22} & \quad \text{if genesis block}\\
-{P(H)_H}_d + \lfloor\frac{{P(H)_H}_d}{1024}\rfloor & \quad \text{if $H_t < {P(H)_H}_t + 42$}\\
+{P(H)_H}_d + \lfloor\frac{{P(H)_H}_d}{1024}\rfloor & \quad \text{if $H_s < {P(H)_H}_s + 42$}\\
 {P(H)_H}_d - \lfloor\frac{{P(H)_H}_d}{1024}\rfloor & \quad \text{otherwise}\\
 \end{cases}
 \end{equation}
 
-$H_t$ is the timestamp of block $H$, must fulfill the relation:
+$H_s$ is the timestamp of block $H$, must fulfill the relation:
 \begin{equation}
-H_t > {P(H)_H}_t
+H_s > {P(H)_H}_s
 \end{equation}
 
 This mechanism enforces a homeostasis in terms of the time between blocks; a smaller period between the last two blocks results in an increase in the difficulty level and thus additional computation required, lengthening the likely next period. Conversely, if the period is too large, the difficulty, and expected time to the next block, is reduced.
@@ -811,13 +811,16 @@ $G_{txdata}$ & 5 & Paid for every byte of data or code for a transaction. \\
 \end{tabular*}
 
 \section{Recursive Length Prefix}\label{app:rlp}
-This is a serialisation method for encoding arbitrarily structured binary data (byte arrays). Within RLP, integers are specified as the byte array equal to the big-endian representation of the value. Thus we may define the notation of a tree structure $\mathbf{t}$:
+This is a serialisation method for encoding arbitrarily structured binary data (byte arrays). Within RLP, integers are specified as the byte array equal to the big-endian representation of the value.
 
-\begin{equation}
-\mathbf{t}
-\end{equation}
+%Thus we define the set of possible structures $\mathbb{T}$:
 
-We define the function $\mathtt{\tiny RLP}$ that maps from an arbitrarily structured tree whose leaves are byte arrays into a single byte array. 
+%\begin{eqnarray}
+%\text{Let} \mathbf{t} & = & \langle \mathbf{t}_0, \mathbf{t}_1, ... \rangle
+%\vee \mathbf{t} & = & 
+%\end{eqnarray}
+
+%We define the function $\mathtt{\tiny RLP}$ that maps from an arbitrarily structured tree whose leaves are byte arrays into a single byte array. 
 
 \section{Modified Merkle Patricia Tree}\label{app:trie}
 The modified Merkle Patricia tree (trie) provides a persistent data structure to map between arbitrary-length binary data (byte arrays). It is defined in terms of a mutable data structure to map between 256-bit binary fragments and arbitrary-length binary data, typically implemented as a database.
