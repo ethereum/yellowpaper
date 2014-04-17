@@ -839,20 +839,70 @@ $G_{txdata}$ & 5 & Burnt (discarded from the system) for every byte of data or c
 \section{Recursive Length Prefix}\label{app:rlp}
 This is a serialisation method for encoding arbitrarily structured binary data (byte arrays). Within RLP, integers are specified as the byte array equal to the big-endian representation of the value.
 
-%Thus we define the set of possible structures $\mathbb{T}$:
+We define the set of possible structures $\mathbb{T}$:
+\begin{eqnarray}
+\mathbb{T} & \equiv & \mathbb{L} \cup \mathbb{B} \\
+\mathbb{L} & \equiv & \{ \mathbf{t}: \mathbf{t} = ( \mathbf{t}[0], \mathbf{t}[1], ... ) \; \wedge \; \forall_{n < \lVert \mathbf{t} \rVert} \; \mathbf{t}[n] \in \mathbb{T} \} \\
+\mathbb{B} & \equiv & \{ \mathbf{b}: \mathbf{b} = ( \mathbf{b}[0], \mathbf{b}[1], ... ) \; \wedge \; \forall_{n < \lVert \mathbf{b} \rVert} \; \mathbf{b}[n] \in \mathbb{Y} \}
+\end{eqnarray}
 
-%\begin{eqnarray}
-%\text{Let} \mathbf{t} & = & \langle \mathbf{t}_0, \mathbf{t}_1, ... \rangle
-%\vee \mathbf{t} & = & 
-%\end{eqnarray}
+Where $\mathbb{Y}$ is the set of bytes. Thus $\mathbb{B}$ is the set of all sequences of bytes (otherwise known as byte-arrays, and a leaf if imagined as a tree), $\mathbb{L}$ is the set of all tree-like (sub-)structures that are not a single leaf (a branch node if imagined as a tree) and $\mathbb{T}$ is the set of all byte-arrays and such structural sequences.
 
-%We define the function $\mathtt{\tiny RLP}$ that maps from an arbitrarily structured tree whose leaves are byte arrays into a single byte array. 
+We define the RLP function as $\mathtt{\tiny RLP}$ through two sub-functions, the first handling the instance when the value is a byte array, the second when it is a sequence of further values:
+\begin{equation}
+\mathtt{\tiny RLP}(\mathbf{x}) \equiv \begin{cases} R_b(\mathbf{x}) & \text{if} \quad \mathbf{x} \in \mathbb{B} \\ R_l(\mathbf{x}) & \text{otherwise} \end{cases}
+\end{equation}
+
+If the value to be serialised is a byte-array, the RLP serialisation takes one of three forms:
+
+\begin{itemize}
+\item If the byte-array contains solely a single byte and that single byte is less than 128, then the input is exactly equal to the output.
+\item If the byte-array contains fewer than 56 bytes, then the output is equal to the input prefixed by the byte equal to the length of the byte array plus 128.
+\item Otherwise, the output is equal to the input prefixed by the minimal-length byte-array which when interpreted as a big-endian integer is equal to the length of the input byte array, which is itself prefixed by the number of bytes required to faithfully encode this length value plus 183.
+\end{itemize}
+
+Formally, we define $R_b$:
+\begin{eqnarray}
+R_b(\mathbf{x}) & \equiv & \begin{cases}
+\mathbf{x} & \text{if} \quad \lVert \mathbf{x} \rVert = 1 \wedge \mathbf{x}[0] < 128 \\
+(128 + \lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{else if} \quad \lVert \mathbf{x} \rVert < 56 \\
+\big(183 + \big\lVert \mathtt{\tiny BE}(\lVert \mathbf{x} \rVert) \big\rVert \big) \cdot \mathtt{\tiny BE}(\lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{otherwise}
+\end{cases} \\
+\mathtt{\tiny BE}(x) & \equiv & (b_0, b_1, ...): b_0 \neq 0 \wedge \sum^{n = 0}_{n < \lVert \mathbf{b} \rVert} b_n256^{\lVert \mathbf{b} \rVert - 1 - n} \\
+(a) \cdot (b, c) \cdot (d, e) & = & (a, b, c, d, e)
+\end{eqnarray}
+
+Thus $\mathtt{\tiny BE}$ is the function that expands a positive integer value to a big-endian byte array of minimal length and the dot operator performs sequence concatenation.
+
+If instead, the value to be serialised is a sequence of other items then the RLP serialisation takes one of two forms:
+
+\begin{itemize}
+\item If the concatenated serialisations of each contained item is less than 56 bytes in length, then the output is equal to that concatenation prefixed by the byte equal to the length of this byte array plus 192.
+\item Otherwise, the output is equal to the concatenated serialisations prefixed by the minimal-length byte-array which when interpreted as a big-endian integer is equal to the length of the concatenated serialisations byte array, which is itself prefixed by the number of bytes required to faithfully encode this length value plus 247.
+\end{itemize}
+
+Thus we finish by formally defining $R_l$:
+\begin{eqnarray}
+R_l(\mathbf{x}) & \equiv & \begin{cases}
+(192 + \lVert s(\mathbf{x}) \rVert) \cdot s(\mathbf{x}) & \text{if} \quad \lVert s(\mathbf{x}) \rVert < 56 \\
+\big(247 + \big\lVert \mathtt{\tiny BE}(\lVert s(\mathbf{x}) \rVert) \big\rVert \big) \cdot \mathtt{\tiny BE}(\lVert s(\mathbf{x}) \rVert) \cdot s(\mathbf{x}) & \text{otherwise}
+\end{cases} \\
+s(\mathbf{x}) & \equiv & \mathtt{\tiny RLP}(\mathbf{x}_0) \cdot \mathtt{\tiny RLP}(\mathbf{x}_1) ...
+\end{eqnarray}
+
+\section{Hex-Prefix Encoding}\label{app:hexprefix}
+Hex-prefix encoding is an efficient method of encoding an arbitrary number of nibbles as a byte array. It is able to store an additional flag which, when used in the context of the trie (the only context in which it is used), disambiguates between node types.
+
+It is defined as the function $\mathtt{\tiny HP}$ which maps from a sequence of nibbles (represented by the set $\mathbb{E}$) together with a boolean value to a sequence of bytes (represented by the set $\mathbb{B}$):
+
+\begin{eqnarray}
+\mathtt{\tiny HP}(\mathbf{x}, t) & \equiv & ...
+\end{eqnarray}
+
+
 
 \section{Modified Merkle Patricia Tree}\label{app:trie}
 The modified Merkle Patricia tree (trie) provides a persistent data structure to map between arbitrary-length binary data (byte arrays). It is defined in terms of a mutable data structure to map between 256-bit binary fragments and arbitrary-length binary data, typically implemented as a database.
-
-\section{Hex-Prefix Encoding}\label{app:hexprefix}
-Hex-prefix encoding is an efficient method of encoding a arbitrary number of nibbles as a byte array. It is able to store an additional flag which, when used in the context of the trie (the only context in which it is used), disambiguates between node types.
 
 \section{Formal Specification of Structures}
 Though RLP is data-agnostic, it does specify a canonical representation for integer quantities. It is big-endian with no leading zero-bytes. Thus for elements than feasibly can be stored as integers, it becomes important to specify whether they should adhere to this canonical representation or be left in some other (perhaps more 'native') format.
