@@ -128,7 +128,7 @@ Since the system is decentralised and all parties have an opportunity to create 
 
 This would mean that past a given point in time (block), multiple states of the system may coexist: some nodes believing one block to contain the canonical transactions, other nodes believing some other block to be canonical, potentially containing radically different or incompatible transactions. This is to be avoided at all costs as the uncertainty that would ensue would likely kill all confidence in the entire system.
 
-The scheme we use in order to generate consensus is a simplified version of the GHOST algorithm \cite{ghost}. This process is described in detail in section \ref{ch:ghost}.
+The scheme we use in order to generate consensus is a simplified version of the GHOST protocol \cite{cryptoeprint:2013:881}. This process is described in detail in section \ref{ch:ghost}.
 
 \section{Blocks, State and Transactions} \label{ch:bst}
 
@@ -743,7 +743,7 @@ This paper has introduced, discussed and formally defined the protocol of Ethere
 
 \section{Acknowledgements}
 
-Vitalik Buterin first proposed in the original Ethereum whitepaper (first distributed in December 2013) moving from a single state-transaction function with trivial state to something much more general and expansive. Useful corrections and suggestions were provided by a number of others from the Ethereum community including Aeron Buchanan
+Vitalik Buterin first proposed in the original Ethereum whitepaper (first distributed in December 2013) moving from a suffocating state-transaction function with trivial state to something much more general and expansive. Useful corrections and suggestions were provided by a number of others from the Ethereum community including Aeron Buchanan, Nick Savers and Marko Simovic.
 
 \bibliography{Biblio}
 \bibliographystyle{plainnat}
@@ -931,7 +931,7 @@ The state database is a mapping between SHA3-256 hashes (i.e. 256-bit binary fra
 
 \section{Signing Transactions}\label{app:signing}
 
-The method of signing transactions is similar to the `Electrum style signatures'; it utilises the SECP-256k1 curve.
+The method of signing transactions is similar to the `Electrum style signatures'; it utilises the SECP-256k1 curve. This has yet to be formally specified.
 
 \section{Virtual Machine Specification}\label{app:vm}
 
