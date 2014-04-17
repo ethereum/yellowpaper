@@ -317,7 +317,7 @@ We define the rollback state $\mathbb{S}_0$:
 \mathbb{S}_0[S(T)]_{nonce} & \equiv & \mathbb{S}[S(T)]_{nonce} + 1
 \end{eqnarray}
 
-Evaluating $\mathbb{S}_0$ from $\mathbb{S}_0$ depends on the transaction type; either contract creation or message call; we define the pairing of post-execution provisional state ($\mathbb{S}_P$) and remaining gas ($g'$):
+Evaluating $\mathbb{S}_P$ from $\mathbb{S}_0$ depends on the transaction type; either contract creation or message call; we define the pairing of post-execution provisional state ($\mathbb{S}_P$) and remaining gas ($g'$):
 \begin{equation}
 (\mathbb{S}_P, g') \equiv \begin{cases}
 \Lambda(\mathbb{S}_0, S(T), T_o, g, T_p, T_v, T_\mathbf{i}, T_\mathbf{b}) & \text{if} \quad T_r = 0 \\
@@ -371,11 +371,11 @@ The account's nonce is initially defined as zero, the balance as the value passe
 
 It is asserted that the state database will also change such that it defines the pair $(\mathtt{\tiny SHA3}(\mathbf{b}), \mathbf{b})$.
 
-Finally, the contract is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the contract's storage can be altered, further contracts can be created and further message calls can be made. As such, the code execution function $\Xi$ evaluates to a tuple of the resultant state $\mathbb{S}'$ and available gas remaining $g'$.
+Finally, the contract is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the contract's storage can be altered, further contracts can be created and further message calls can be made. As such, the code execution function $\Xi$ evaluates to a tuple of the resultant state $\mathbb{S}^{**}$ and available gas remaining $g'$.
 
 Code execution depletes gas; thus it may exit before the code has come to a natural halting state. In this exceptional case we say an Out-of-Gas exception has occured: The evaluated state is defined as being the empty set $\varnothing$ and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation. The gas remaining should of course be zero. If the creation was conducted as the manifestation of a transaction, then this doesn't affect payment of the intrinsic cost: it is paid regardless.
 
-If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persevere. Thus formally, we may specify the new state and gas as $\mathbb{S}'$, $g'$ where:
+If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persevere. Thus formally, we may specify the resultant state and gas as $\mathbb{S}_P$, $g'$ where:
 \begin{eqnarray}
 (\mathbb{S}^{**}, g') & \equiv & \Xi(\mathbb{S}^*, g, I) \\
 \mathbb{S}_P & \equiv & \begin{cases}
@@ -408,7 +408,7 @@ We define $\mathbb{S}_1$, the rollback state as the original state but with the 
 
 If the recipient account contains no code to be executed (i.e. it's not a contract), then we define the final state as being equivalent to the rollback state. In the case that the recipient contains code to be executed (i.e. that the account is a contract), then the contract's body code (identified as the fragment whose SHA3 hash is $\mathbb{S}[r]_{code}]$) is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts due to an exhausted gas supply, then no gas is refunded to the caller and the state is reverted to the point immediately prior to code execution.
 \begin{eqnarray}
-\mathbb{S}' & \equiv & \begin{cases}
+\mathbb{S}_P & \equiv & \begin{cases}
 \mathbb{S}_1 & \text{if} \quad \mathbb{S}_1[r]_{code} = \varnothing \\
 \mathbb{S}_1 & \text{if} \quad \mathbb{S}^{**} = \varnothing \\
 \mathbb{S}^{**} & \text{otherwise}
@@ -514,7 +514,7 @@ where
 \mathbf{o} \equiv H(\mathbb{S}, \mathbb{M}, I)
 \end{equation}
 
-The machine state $\mathbb{M}$ is defined as the tuple $(g, pc, M, i, T)$ which are the gas available, the program counter, the memory contents, the active number of words in memory (counting continuously from position 0), and the stack contents. The memory contents $\mathbb{M}_M$ are a series of zeroes of size $2^{256}$.
+The machine state $\mathbb{M}$ is defined as the tuple $(g, pc, M, i, S)$ which are the gas available, the program counter, the memory contents, the active number of words in memory (counting continuously from position 0), and the stack contents. The memory contents $\mathbb{M}_M$ are a series of zeroes of size $2^{256}$.
 
 For the ease of reading, the instruction mnemonics, written in smallcaps (\eg \space {\small ADD}), should be interpreted as their numeric equivalents; the full table of instructions and their specifics is given in Appendix \ref{app:vm}.
 
@@ -556,8 +556,8 @@ Stack items are added or removed from the left-most, lower-indexed portion of th
 \begin{eqnarray}
 O(\mathbb{S}, \mathbb{M}, I) & \equiv & (\mathbb{S}', \mathbb{M}', I) \\
 \Delta & \equiv & \mathbf{\alpha}_w - \mathbf{\delta}_w \\
-\lVert\mathbb{M}'_{S}\rVert & \equiv & \lVert\mathbb{M}_{T}\rVert + \Delta \\
-\quad \forall x \in [\mathbf{\alpha}_w, \lVert\mathbb{M}'_S\rVert): \mathbb{M}'_{T_x} & \equiv & \mathbb{M}_{T_{x+\Delta}}
+\lVert\mathbb{M}'_{S}\rVert & \equiv & \lVert\mathbb{M}_T\rVert + \Delta \\
+\quad \forall x \in [\mathbf{\alpha}_w, \lVert\mathbb{M}'_S\rVert): \mathbb{M}'_S[x] & \equiv & \mathbb{M}_S[x+\Delta]
 \end{eqnarray}
 
 The gas is reduced by the instruction's gas cost and for most instructions, the program counter increments on each cycle, for the three exceptions, we assume a function $J$, subscripted by one of two instructions, which evaluates to the according value:
@@ -949,7 +949,7 @@ The general gas cost function is defined as:
 
 \begin{equation}
 C(\mathbb{S}, \mathbb{M}) \equiv G_{memory}(\mathbb{M}'_i - \mathbb{M}_i) + \begin{cases}
-c_\text{\tiny SSTORE} & \text{if} \quad o = \text{\small SSTORE} \\
+C_\text{\tiny SSTORE}(\mathbb{S}, \mathbb{M}) & \text{if} \quad o = \text{\small SSTORE} \\
 G_{call} & \text{if} \quad o = \text{\small CALL}\\
 G_{create} & \text{if} \quad o = \text{\small CREATE}\\
 G_{sha3} & \text{if} \quad o = \text{\small SHA3}\\
@@ -960,7 +960,11 @@ G_{step} & \text{otherwise}
 \end{cases}
 \end{equation}
 
-where $c_o$ is specified in the appropriate section below and $C_M$ is the memory cost function, given as the product of $G_{memory}$ and the maximum of 0 and the ceiling of the number of words in size that the memory must be over the current number of words, $\mathbb{M}_i$ in order that all accesses reference valid memory whether for read or write; $\mathbb{M}'_i$ is defined as this new maximum number of words of active memory; special-cases are given where these two are not equal.
+where $C_\text{\tiny SSTORE}$ is specified in the appropriate section below. Note the memory cost component, given as the product of $G_{memory}$ and the maximum of 0 and the ceiling of the number of words in size that the memory must be over the current number of words, $\mathbb{M}_i$ in order that all accesses reference valid memory whether for read or write; $\mathbb{M}'_i$ is defined as this new maximum number of words of active memory; special-cases are given where these two are not equal.
+
+\subsection{Instruction Set}
+
+Here given are the various exceptions to the state transition rules given in section \ref{ch:model} specified for each instruction, together with the additional instruction-specific definitions of $J$ and $C$. For each instruction, also specify is $\alpha$, the additional items placed on the stack and $\delta$, the items removed from stack.
 
 \begin{tabular*}{\columnwidth}[h]{rlrrl}
 \toprule
@@ -1135,7 +1139,7 @@ where $c_o$ is specified in the appropriate section below and $C_M$ is the memor
 \midrule
 0x57 & {\small SSTORE} & 2 & 0 & Save word to storage. \\
 &&&& $\mathbb{S}'[I_a]_{storage}[ \mathbb{M}_S[0] ] \equiv \mathbb{M}_S[1] $ \\
-&&&& $c_{\text{\tiny SSTORE}} \equiv \begin{cases}
+&&&& $C_{\text{\tiny SSTORE}}(\mathbb{S}, \mathbb{M}) \equiv \begin{cases}
 2G_{sstore} & \text{if} \quad \mathbb{M}_S[1] \neq 0 \; \wedge \; \mathbb{S}[I_a]_{storage}[\mathbb{M}_S[0]] = 0 \\
 0 & \text{if} \quad \mathbb{M}_S[1] = 0 \; \wedge \; \mathbb{S}[I_a]_{storage}[\mathbb{M}_S[0]] \neq 0 \\
 G_{sstore} & \text{otherwise}
