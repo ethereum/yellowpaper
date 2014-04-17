@@ -144,7 +144,7 @@ The account state comprises the first two, and potentially the last two, of the 
 \item[nonce] A scalar value equal to the number of transactions sent from this address, or, in the case of contract accounts, the number of contract-creations made by this account.
 \item[balance] A scalar value equal to the number of wei owned by this address.
 \item[stateRoot] A 256-bit hash equal to the root node of a further trie structure that encodes the storage contents of the contract. Though a separate data structure, this trie is still stored using the same underlying state database. This trie takes the form as a simple mapping between domains of 256-bit values.
-\item[codeHash] The hash of the EVM code of this contract---this is the code that gets executed should this address reveive a call; it is immutable and thus, unlike all other fields, cannot be changed after construction. All such code fragments are contained in the state database under their corresponding hashes for later retrieval.
+\item[codeHash] The hash of the EVM code of this contract---this is the code that gets executed should this address receive a message call; it is immutable and thus, unlike all other fields, cannot be changed after construction. All such code fragments are contained in the state database under their corresponding hashes for later retrieval.
 \end{description}
 
 If the latter two fields are missing, the node represents a simple (non-contract) account: it maintains no state and executes no code on receipt of a transaction.
@@ -159,7 +159,7 @@ A transaction (formally, $T$) is a single cryptographically signed instruction s
 \item[gasPrice] A scalar value equal to the number of wei to be paid per unit of gas for all computation costs incurred as a result of the execution of this transaction; formally $T_p$.
 \item[gasLimit] A scalar value equal to the maximum amount of gas that should be used in executing this transaction. This is paid up-front, before any computation is done and may not be topped-up later; formally $T_g$.
 \item[to] The 160-bit address of the message call's recipient or the zero address for a contract-creation transaction; formally $T_r$.
-\item[v, r, s] Three scalar values corresponding to the signature of the transaction and used to determine the sender of the transaction.
+\item[v, r, s] A scalar and complex value corresponding to the signature of the transaction and used to determine the sender of the transaction; formally $T_v$ and $T_{rs}$. This is expanded in Appendix \ref{app:signing}.
 \end{description}
 
 Additionally, a contract-creation transaction contains:
@@ -191,7 +191,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[transactionsHash] The SHA3 256-bit hash of the transactions list portion of this block; formally $H_t$.
 \item[difficulty] A scalar value corresonding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_d$.
 \item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.
-\item[extraData] An arbitrary byte array containing data relavant to this block. Generally 256-bit or less, but could be much larger in the genesis block. Not formally used.
+\item[extraData] An arbitrary byte array containing data relavant to this block. With the exception of the genesis block, this must be 32 bytes or fewer. Not formally used.
 \item[nonce] A 256-bit hash which proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.
 \end{description}
 
