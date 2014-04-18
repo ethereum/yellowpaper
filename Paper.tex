@@ -128,7 +128,7 @@ Since the system is decentralised and all parties have an opportunity to create 
 
 This would mean that past a given point in time (block), multiple states of the system may coexist: some nodes believing one block to contain the canonical transactions, other nodes believing some other block to be canonical, potentially containing radically different or incompatible transactions. This is to be avoided at all costs as the uncertainty that would ensue would likely kill all confidence in the entire system.
 
-The scheme we use in order to generate consensus is a simplified version of the GHOST protocol \cite{cryptoeprint:2013:881}. This process is described in detail in section \ref{ch:ghost}.
+The scheme we use in order to generate consensus is a simplified version of the GHOST protocol introduced by \cite{cryptoeprint:2013:881}. This process is described in detail in section \ref{ch:ghost}.
 
 \section{Conventions}\label{ch:conventions}
 
@@ -140,13 +140,13 @@ Functions operating on highly structured values are denoted with an upper-case g
 
 For most functions, an uppercase letter is used, e.g. $C$, the general cost function. These may be subscripted to denote specialised variants, \eg $C_\text{\tiny SSTORE}$, the cost function for the {\tiny SSTORE} operation. For specialised and possibly externally defined functions, I may format as typewriter text, \eg the SHA3 hash function is denoted $\texttt{SHA3}$.
 
-Tuples are typically denoted with an upper-case letter, \eg $T$, is used to denote an Ethereum transaction. This symbol may, if accoringly defined, be subscripted to refer to an individual component, \eg $T_s$, denotes the timestamp of said transaction. The form of the subscript is used to denote its type; \eg bold subscripts refer to sequences 
+Tuples are typically denoted with an upper-case letter, \eg $T$, is used to denote an Ethereum transaction. This symbol may, if accoringly defined, be subscripted to refer to an individual component, \eg $T_s$, denotes the timestamp of said transaction. The form of the subscript is used to denote its type; \eg uppercase subscripts refer to tuples with subscriptable components.
 
-Scalars and fixed-size byte vectors are denoted with a normal lower-case letter, \eg $n$ is used in the document to denote a transaction nonce. Those with a partcularly special meaning may be greek, \eg $\delta$, the number of items required on the stack for a given operation.
+Scalars and fixed-size byte vectors are denoted with a normal lower-case letter, \eg $n$ is used in the document to denote a transaction nonce. Those with a particularly special meaning may be greek, \eg $\delta$, the number of items required on the stack for a given operation.
 
-Arbitrary-length sequences are typically denoted as a bold lower-case letter, \eg $\mathbf{o}$ is used to denote the byte-sequence given as the output data of a message call. For particularly important values, an bold uppercase letter may be used.
+Arbitrary-length sequences are typically denoted as a bold lower-case letter, \eg $\mathbf{o}$ is used to denote the byte-sequence given as the output data of a message call. For particularly important values, a bold uppercase letter may be used.
 
-Square brackets are used to index into and reference individual components or subsequences of sequences, \eg $\mathbb{M}_\mathbf{s}[0]$ denotes the first item on the machine's stack. For subsequences, ellipses are used to specify the intended range, to include elements at both limits, \eg $\mathbb{M}_\mathbf{m}[0..31]$ denotes the first 32-byte word of the machine's memory.
+Square brackets are used to index into and reference individual components or subsequences of sequences, \eg $\mathbb{M}_\mathbf{s}[0]$ denotes the first item on the machine's stack. For subsequences, ellipses are used to specify the intended range, to include elements at both limits, \eg $\mathbb{M}_\mathbf{m}[0..31]$ denotes the first 32 items of the machine's memory.
 
 In the case of the global state $\mathbb{S}$, which is a sequence of accounts, themselves tuples, the square brackets are used to reference an individual account.
 
@@ -166,7 +166,7 @@ The account state comprises the first two, and potentially the last two, of the 
 \item[nonce] A scalar value equal to the number of transactions sent from this address, or, in the case of contract accounts, the number of contract-creations made by this account. For account of address $a$ in state $\mathbb{S}$, this would be formally denoted $\mathbb{S}[a]_n$.
 \item[balance] A scalar value equal to the number of wei owned by this address. Formally denoted $\mathbb{S}[a]_b$.
 \item[stateRoot] A 256-bit hash equal to the root node of a further trie structure that encodes the storage contents of the contract. Though a separate data structure, this trie is still stored using the same underlying state database. This trie takes the form as a simple mapping between domains of 256-bit values. The storage, modelled as a $2^{256}$ size sequence of 256-bit values is formally denoted $\mathbb{S}[a]_\mathbf{s}$.
-\item[codeHash] The hash of the EVM code of this contract---this is the code that gets executed should this address receive a message call; it is immutable and thus, unlike all other fields, cannot be changed after construction. All such code fragments are contained in the state database under their corresponding hashes for later retrieval. This hash is formally denoted $\mathbb{S}[a]_c$, and thus the code is denoted as $c$, given that $c = \texttt{\small SHA3}(\mathbb{S}[a]_c)$.
+\item[codeHash] The hash of the EVM code of this contract---this is the code that gets executed should this address receive a message call; it is immutable and thus, unlike all other fields, cannot be changed after construction. All such code fragments are contained in the state database under their corresponding hashes for later retrieval. This hash is formally denoted $\mathbb{S}[a]_c$, and thus the code is denoted as $b$, given that $\texttt{\small SHA3}(b) = \mathbb{S}[a]_c$.
 \end{description}
 
 If the latter two fields are missing, the node represents a simple (non-contract) account: it maintains no state and executes no code on receipt of a transaction.
@@ -222,7 +222,7 @@ The other two components in the block are simply a list of uncle block headers (
 B \equiv (H, \mathbf{T}, \mathbf{U})
 \end{equation}
 
-We can assert its validity if and only if it satisfies several conditions: It must be internally consistent with the uncle and transaction block hashes; the given transactions $\mathbf{T}$, when executed in order on the base state $\mathbb{S}$ result in a new state of the identity $H_r$:
+We can assert its validity if and only if it satisfies several conditions: It must be internally consistent with the uncle and transaction block hashes and the given transactions $\mathbf{T}$, when executed in order on the base state $\mathbb{S}$, result in a new state of the identity $H_r$:
 \begin{eqnarray}
 & & \mathtt{\tiny SHA3}(\mathtt{\tiny RLP}(\mathbf{U})) \equiv H_u \\
 & \wedge & \mathtt{\tiny SHA3}(\mathtt{\tiny RLP}(\mathbf{T})) \equiv H_t \\
@@ -238,7 +238,7 @@ We define $P(B_H)$ to be the parent block of $B$, formally:
 P(H) \equiv B': \mathtt{\tiny SHA3}(\mathtt{\tiny RLP}(B')) = H_p
 \end{equation}
 
-The canonical difficulty of a block of header $H$, is defined as $D(H)$:
+The canonical difficulty of a block of header $H$ is defined as $D(H)$:
 \begin{equation}
 D(H) \equiv \begin{cases}
 2^{22} & \quad \text{if genesis block}\\
@@ -247,7 +247,7 @@ D(H) \equiv \begin{cases}
 \end{cases}
 \end{equation}
 
-$H_s$ is the timestamp of block $H$, must fulfill the relation:
+$H_s$ is the timestamp of block $H$ and must fulfill the relation:
 \begin{equation}
 H_s > {P(H)_H}_s
 \end{equation}
@@ -380,7 +380,7 @@ The address of the new contract is defined as being the rightmost 160 bits of th
 \begin{eqnarray}
 A(s, n) & \equiv & a \quad \text{where:} \\
 a & = & \arg \min_x : x \geqslant a' \wedge \mathbb{S}_0[x] = \varnothing \\
-a' & = & \mathcal{B}_{96..255}\Big(\mathtt{\tiny SHA3}\Big(\mathtt{\tiny RLP}\big(\;\langle s, n\rangle\;\big)\Big)\Big)
+a' & = & \mathcal{B}_{96..255}\Big(\mathtt{\tiny SHA3}\Big(\mathtt{\tiny RLP}\big(\;(s, n)\;\big)\Big)\Big)
 \end{eqnarray}
 
 where $\mathtt{\tiny SHA3}$ is the SHA3 256-bit hash function, $\mathtt{\tiny RLP}$ is the RLP encoding function, $\mathcal{B}_{a..b}(X)$ evaluates to binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$ and $\mathbb{S}_0[x]$ is the address state of $x$ or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
