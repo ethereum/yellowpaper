@@ -155,9 +155,11 @@ For most functions, an uppercase letter is used, e.g. $C$, the general cost func
 
 Tuples are typically denoted with an upper-case letter, \eg $T$, is used to denote an Ethereum transaction. This symbol may, if accoringly defined, be subscripted to refer to an individual component, \eg $T_s$, denotes the timestamp of said transaction. The form of the subscript is used to denote its type; \eg uppercase subscripts refer to tuples with subscriptable components.
 
-Scalars and fixed-size byte vectors are denoted with a normal lower-case letter, \eg $n$ is used in the document to denote a transaction nonce. Those with a particularly special meaning may be greek, \eg $\delta$, the number of items required on the stack for a given operation.
+Scalars and fixed-size byte sequences (or, synonymously, arrays) are denoted with a normal lower-case letter, \eg $n$ is used in the document to denote a transaction nonce. Those with a particularly special meaning may be greek, \eg $\delta$, the number of items required on the stack for a given operation.
 
 Arbitrary-length sequences are typically denoted as a bold lower-case letter, \eg $\mathbf{o}$ is used to denote the byte-sequence given as the output data of a message call. For particularly important values, a bold uppercase letter may be used.
+
+Throughout, we assume scalars are positive integers and thus belong to the set $\mathbb{P}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{32}$. This is formally defined in section \ref{ch:block}.
 
 Square brackets are used to index into and reference individual components or subsequences of sequences, \eg $\mathbb{M}_\mathbf{s}[0]$ denotes the first item on the machine's stack. For subsequences, ellipses are used to specify the intended range, to include elements at both limits, \eg $\mathbb{M}_\mathbf{m}[0..31]$ denotes the first 32 items of the machine's memory.
 
@@ -165,24 +167,43 @@ In the case of the global state $\mathbb{S}$, which is a sequence of accounts, t
 
 When considering variants of existing values, I follow the rule that within a given scope for definition, if we assume that the unmodified `input' value be $\Box$ then the modified and utilisable value is denoted as $\Box'$, and intermediate values would be $\Box^*$,  $\Box^{**}$ \&c. On very particular occasions, in order to maximise readability and only if unambiguous in meaning, I may use alpha-numeric subscripts to denote intermediate values, especially those of particular note.
 
+When considering the use of existing functions, given a function $f$, the function $f^*$ denotes a similar, element-wise version of the function mapping instead between sequences. It is formally defined in chapter \ref{ch:block}.
+
 \section{Blocks, State and Transactions} \label{ch:bst}
 
 Having introduced the basic concepts behind Ethereum, we will discuss the meaning of a transaction, a block and the state in more detail.
 
 \subsection{World State} \label{ch:state}
 
-The world state (\textit{state}, see Appendix \ref{app:state}), is a mapping between addresses (160-bit identifiers) and account states (a data structure serialised as RLP, see Appendix \ref{app:rlp}). Though not stored on the blockchain, it is assumed that the implementation will maintain this mapping in a modified Merkle Patricia tree (\textit{trie}, see Appendix \ref{app:trie}). The trie requires a simple database backend that maintains a mapping of bytearrays to bytearrays; we name this underlying database the state database. This has a number of benefits; firstly the root node of this structure is cryptographically dependent on all internal data and as such its hash can be used as a secure identity for the entire system state. Secondly, being an immutable data structure, it allows any previous state (whose root hash is known) to be recalled by simply altering the root hash accordingly. Since we store all such root hashes in the blockchain, we are able to trivially revert to old states.
+The world state (\textit{state}), is a mapping between addresses (160-bit identifiers) and account states (a data structure serialised as RLP, see Appendix \ref{app:rlp}). Though not stored on the blockchain, it is assumed that the implementation will maintain this mapping in a modified Merkle Patricia tree (\textit{trie}, see Appendix \ref{app:trie}). The trie requires a simple database backend that maintains a mapping of bytearrays to bytearrays; we name this underlying database the state database. This has a number of benefits; firstly the root node of this structure is cryptographically dependent on all internal data and as such its hash can be used as a secure identity for the entire system state. Secondly, being an immutable data structure, it allows any previous state (whose root hash is known) to be recalled by simply altering the root hash accordingly. Since we store all such root hashes in the blockchain, we are able to trivially revert to old states.
 
 The account state comprises the first two, and potentially the last two, of the following fields:
 
 \begin{description}
 \item[nonce] A scalar value equal to the number of transactions sent from this address, or, in the case of contract accounts, the number of contract-creations made by this account. For account of address $a$ in state $\mathbb{S}$, this would be formally denoted $\mathbb{S}[a]_n$.
-\item[balance] A scalar value equal to the number of wei owned by this address. Formally denoted $\mathbb{S}[a]_b$.
-\item[stateRoot] A 256-bit hash equal to the root node of a further trie structure that encodes the storage contents of the contract. Though a separate data structure, this trie is still stored using the same underlying state database. This trie takes the form as a simple mapping between domains of 256-bit values. The storage, modelled as a $2^{256}$ size sequence of 256-bit values is formally denoted $\mathbb{S}[a]_\mathbf{s}$.
-\item[codeHash] The hash of the EVM code of this contract---this is the code that gets executed should this address receive a message call; it is immutable and thus, unlike all other fields, cannot be changed after construction. All such code fragments are contained in the state database under their corresponding hashes for later retrieval. This hash is formally denoted $\mathbb{S}[a]_c$, and thus the code is denoted as $b$, given that $\texttt{\small SHA3}(b) = \mathbb{S}[a]_c$.
+\item[balance] A scalar value equal to the number of Wei owned by this address. Formally denoted $\mathbb{S}[a]_b$.
+\item[stateRoot] A 256-bit hash of the root node of a trie structure that encodes the storage contents of the contract, itself a simple mapping from byte arrays of size 32 to arbitrary length byte arrays. The hash is formally denoted $\mathbb{S}[a]_s$. Since I typically wish to refer not to the trie's root hash but to the underlying set of key/value pairs stored within, I define a convenient equivalence $\texttt{\small TRIE}(\mathbb{S}[a]_\mathbf{s}) \equiv \mathbb{S}[a]_s$. It shall be understood that $\mathbb{S}[a]_\mathbf{s}$ is not a `physical' member of the account and does not contribute to its later serialisation.
+\item[codeHash] The hash of the EVM code of this contract---this is the code that gets executed should this address receive a message call; it is immutable and thus, unlike all other fields, cannot be changed after construction. All such code fragments are contained in the state database under their corresponding hashes for later retrieval. This hash is formally denoted $\mathbb{S}[a]_c$, and thus the code may be denoted as $\mathbf{b}$, given that $\texttt{\small SHA3}(\mathbf{b}) = \mathbb{S}[a]_c$.
 \end{description}
 
 If the latter two fields are missing, the node represents a simple (non-contract) account: it maintains no state and executes no code on receipt of a transaction.
+
+Thus we may define a world-state collapse function $L_S$:
+\begin{eqnarray}
+L_S(\mathbb{S}) & \equiv & \{ p(a): \mathbb{S}[a] \neq \varnothing \} \\
+p(a) & \equiv & \big(a, \texttt{\small RLP}\big( (\mathbb{S}[a]_n, \mathbb{S}[a]_b, \mathbb{S}[a]_s, \mathbb{S}[a]_c) \big) \big)
+\end{eqnarray}
+
+This function, $L$, is used alongside the trie function to provide a short identity (hash) of the world state. We assume:
+\begin{equation}
+\forall a: \mathbb{S}[a] = \varnothing \vee (a \in \mathbb{B}_{20} \wedge v(\mathbb{S}[a]))
+\end{equation}
+
+Where $v$ is the account validity function:
+\begin{eqnarray}
+v(x) & \equiv & x_n \in \mathbb{P} \wedge x_p \in \mathbb{P} \wedge (x_r = x_c = \varnothing \vee w(x)) \\
+w(x) & \equiv & x_r \in \mathbb{B}_{32} \wedge \quad x_c \in \mathbb{B}_{32}
+\end{eqnarray}
 
 \subsection{The Transaction} \label{ch:transaction}
 
@@ -193,8 +214,8 @@ A transaction (formally, $T$) is a single cryptographically signed instruction s
 \item[value] A scalar value equal to the number of wei to be transferred to the message call's recipient or, in the case of contract creation, as an endowment to the newly created contract's account; formally $T_v$.
 \item[gasPrice] A scalar value equal to the number of wei to be paid per unit of gas for all computation costs incurred as a result of the execution of this transaction; formally $T_p$.
 \item[gasLimit] A scalar value equal to the maximum amount of gas that should be used in executing this transaction. This is paid up-front, before any computation is done and may not be topped-up later; formally $T_g$.
-\item[to] The 160-bit address of the message call's recipient or the zero address for a contract-creation transaction; formally $T_r$.
-\item[v, r, s] A scalar and complex value corresponding to the signature of the transaction and used to determine the sender of the transaction; formally $T_v$ and $T_{rs}$. This is expanded in Appendix \ref{app:signing}.
+\item[to] The 160-bit address of the message call's recipient or the zero address for a contract-creation transaction; formally $T_t$.
+\item[v, r, s] A scalar and complex value corresponding to the signature of the transaction and used to determine the sender of the transaction; formally $T_w$, $T_r$ and $T_s$. This is expanded in Appendix \ref{app:signing}.
 \end{description}
 
 Additionally, a contract-creation transaction contains:
@@ -214,6 +235,24 @@ Whereas a message call transaction contains:
 
 Appendix \ref{app:signing} specifies the function mapping transactions to the sender $S$, which happens through the ECDMA of the SECP-256k1 curve, using the hash of the transaction as the datum to sign. For the present we simply assert that the sender of a given transaction $T$ can be represented with $S(T)$.
 
+The function $L_T$ prepares a transaction for being transformed into an RLP-serialised byte array:
+\begin{equation}
+L_T(T) \equiv \begin{cases}
+(T_n, T_v, T_p, T_g, T_t, T_\mathbf{b}, T_\mathbf{i}, T_w, T_r, T_s) & \text{if} \; T_t = 0\\
+(T_n, T_v, T_p, T_g, T_t, T_\mathbf{d}, T_w, T_r, T_s) & \text{otherwise} 
+\end{cases}
+\end{equation}
+
+Here, we assume all components are interpreted by the RLP as integer values, with the exception of the arbitrary length byte arrays $T_\mathbf{b}$, $T_\mathbf{i}$ and $T_\mathbf{d}$ and the address hash $T_\mathbf{t}$:
+\begin{equation}
+\begin{array}{lclclcl}
+T_n \in \mathbb{P} & \wedge & T_v \in \mathbb{P} & \wedge & T_p \in \mathbb{P} & \wedge & T_g \in \mathbb{P} \\
+& \wedge & T_w \in \mathbb{P} & \wedge & T_r \in \mathbb{P} & \wedge & T_s \in \mathbb{P} \\
+& \wedge & T_\mathbf{d} \in \mathbb{B} & \wedge & T_\mathbf{b} \in \mathbb{B} & \wedge & T_\mathbf{i} \in \mathbb{B} \\
+& \wedge & T_t \in \mathbb{B}_{20} &&\\
+\end{array}
+\end{equation}
+
 \subsection{The Block} \label{ch:block}
 
 The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with a set of transactions, $\mathbf{T}$, and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{uncles}). The block header contains several pieces of information:
@@ -226,23 +265,56 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[transactionsHash] The SHA3 256-bit hash of the transactions list portion of this block; formally $H_t$.
 \item[difficulty] A scalar value corresonding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_d$.
 \item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.
-\item[extraData] An arbitrary byte array containing data relavant to this block. With the exception of the genesis block, this must be 32 bytes or fewer. Not formally used.
+\item[extraData] An arbitrary byte array containing data relavant to this block. With the exception of the genesis block, this must be 32 bytes or fewer; formally $H_x$.
 \item[nonce] A 256-bit hash which proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.
 \end{description}
 
 The other two components in the block are simply a list of uncle block headers (of the same format as above) and a list of the transactions (as defined previously). Formally, we can refer to a block $B$:
 \begin{equation}
-B \equiv (H, \mathbf{T}, \mathbf{U})
+B \equiv (B_H, B_\mathbf{T}, B_\mathbf{U})
 \end{equation}
 
-We can assert its validity if and only if it satisfies several conditions: It must be internally consistent with the uncle and transaction block hashes and the given transactions $\mathbf{T}$, when executed in order on the base state $\mathbb{S}$, result in a new state of the identity $H_r$:
+We can assert its validity if and only if it satisfies several conditions: It must be internally consistent with the uncle and transaction block hashes and the given transactions $B_\mathbf{T}$, when executed in order on the base state $\mathbb{S}$ (derived from the final state of the parent block), result in a new state of the identity $H_r$:
 \begin{eqnarray}
-& & \mathtt{\tiny SHA3}(\mathtt{\tiny RLP}(\mathbf{U})) \equiv H_u \\
-& \wedge & \mathtt{\tiny SHA3}(\mathtt{\tiny RLP}(\mathbf{T})) \equiv H_t \\
-& \wedge & r(\Pi(\mathbb{S}, B)) \equiv H_r
+H_u & \equiv & \mathtt{\small SHA3}(\mathtt{\small RLP}(L_H^*(B_\mathbf{U}))) \\
+\wedge \quad H_t & \equiv & \mathtt{\small SHA3}(\mathtt{\small RLP}(L_T^*(B_\mathbf{T}))) \\
+\wedge \quad H_r & \equiv & \mathtt{\small TRIE}(L_S(\Pi(\mathbb{S}, B)))
 \end{eqnarray}
 
-where $r(\mathbb{S})$ is the root node hash of the Merkle Patricia tree structure containing the key-value pairs of $\mathbb{S}$ with values encoded using RLP.
+where 
+\begin{equation}
+\mathtt{\small TRIE}(L_S(\mathbb{S})) = {P(B_H)_H}_r
+\end{equation}
+
+this $\texttt{\small TRIE}(L_S(\mathbb{S}))$ is the root node hash of the Merkle Patricia tree structure containing the key-value pairs of the state $\mathbb{S}$ with values encoded using RLP, and $P(B_H)$ is the parent block of $B$, defined directly.
+
+The function $L_B$ and $L_H$ are the preparation functions for a block and block header respectively. Much like the transaction preparation function $L_T$, we assert the types and order of the structure for when the RLP transformation is required:
+
+\begin{eqnarray}
+\quad L_H(H) & \equiv & (H_p, H_u, H_b, H_r, H_t, H_d, H_s, H_x, H_n) \\
+\quad L_B(B) & \equiv & \big( L_H(B_H), L_T^*(B_\mathbf{T}), L_H^*(B_\mathbf{U}) \big)
+\end{eqnarray}
+
+With $L_T^*$ and $L_H^*$ being element-wise sequence transformations, thus:
+\begin{equation}
+f^*\big( (x_0, x_1, ...) \big) \equiv \big( f(x_0), f(x_1), ... \big) \quad \text{for any function} \; f
+\end{equation}
+
+The component types are defined thus:
+\begin{equation}
+\begin{array}[t]{lclclcl}
+H_p \in \mathbb{B}_{32} & \wedge & H_u \in \mathbb{B}_{32} & \wedge & H_b \in \mathbb{B}_{20} & \wedge \\
+H_r \in \mathbb{B}_{32} & \wedge & H_t \in \mathbb{B}_{32} & \wedge & H_d \in \mathbb{P} & \wedge \\
+H_s \in \mathbb{P} & \wedge & H_x \in \mathbb{B} & \wedge & H_b \in \mathbb{B}_{32} &&
+\end{array}
+\end{equation}
+
+where
+\begin{equation}
+\mathbb{B}_n = \{ B: B \in \mathbb{B} \wedge \lVert B \rVert = n \}
+\end{equation}
+
+We now have a rogourous specification for the construction of a formal block structure. The RLP function $\texttt{\small RLP}$ (see Appendix \ref{app:rlp}) provides the canonical method for transforming this structure into a sequence of bytes ready for transmission over the wire or storage locally.
 
 \subsubsection{Block Header Validity}
 
@@ -314,7 +386,7 @@ Thus $\mathbb{S}'$ is the post-transactional state.
 We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
 \begin{equation}
 g_0 \equiv \begin{cases}
-g_d + G_{create} & \text{if} \quad T_r = 0 \\
+g_d + G_{create} & \text{if} \quad T_t = 0 \\
 g_d + G_{call} & \text{otherwise} \\
 \end{cases}
 \end{equation}
@@ -322,7 +394,7 @@ g_d + G_{call} & \text{otherwise} \\
 where
 
 \begin{equation}
-g_d \equiv \begin{cases} (\lVert T_\mathbf{i}\rVert + \lVert T_\mathbf{b}\rVert) G_{data} & \text{if} \quad T_r = 0 \\
+g_d \equiv \begin{cases} (\lVert T_\mathbf{i}\rVert + \lVert T_\mathbf{b}\rVert) G_{data} & \text{if} \quad T_t = 0 \\
  \lVert T_\mathbf{d}\rVert G_{data} & \text{otherwise}
  \end{cases}
 \end{equation}
@@ -355,8 +427,8 @@ We define the checkpoint state $\mathbb{S}_0$:
 Evaluating $\mathbb{S}_P$ from $\mathbb{S}_0$ depends on the transaction type; either contract creation or message call; we define the pairing of post-execution provisional state ($\mathbb{S}_P$) and remaining gas ($g'$):
 \begin{equation}
 (\mathbb{S}_P, g') \equiv \begin{cases}
-\Lambda(\mathbb{S}_0, S(T), T_o, g, T_p, T_v, T_\mathbf{i}, T_\mathbf{b}) & \text{if} \quad T_r = 0 \\
-\Theta^*(\mathbb{S}_0, S(T), T_o, T_r, g, T_p, T_v, T_\mathbf{d}) & \text{otherwise}
+\Lambda(\mathbb{S}_0, S(T), T_o, g, T_p, T_v, T_\mathbf{i}, T_\mathbf{b}) & \text{if} \quad T_t = 0 \\
+\Theta^*(\mathbb{S}_0, S(T), T_o, T_t, g, T_p, T_v, T_\mathbf{d}) & \text{otherwise}
 \end{cases}
 \end{equation}
 
@@ -569,7 +641,12 @@ We also assume the fixed amounts of $\mathbf{\delta}$ and $\mathbf{\alpha}$, spe
 
 The exceptional halting function $Z$ is defined as:
 \begin{equation}
-Z(\mathbb{S}, \mathbb{M}, I) \equiv \mathbb{M}_g < C(\mathbb{S}, \mathbb{M}, I) \vee \mathbf{\delta}_w = \varnothing \vee \lVert\mathbb{M}_\mathbf{s}\rVert < \mathbf{\delta}_w
+Z(\mathbb{S}, \mathbb{M}, I) \equiv
+\begin{array}[t]{rl}
+& \mathbb{M}_g < C(\mathbb{S}, \mathbb{M}, I) \\
+\vee & \mathbf{\delta}_w = \varnothing \\
+\vee & \lVert\mathbb{M}_\mathbf{s}\rVert < \mathbf{\delta}_w
+\end{array}
 \end{equation}
 
 This states that the execution is in an exceptional halting state if there is insufficient gas, if the instruction is invalid (and therefore its $\delta$ subscript is undefined) or if there are insufficient stack items. The astute reader will realise that this implies that no instruction can, through its execution, cause an exceptional halt.
@@ -913,10 +990,12 @@ R_l(\mathbf{x}) & \equiv & \begin{cases}
 s(\mathbf{x}) & \equiv & \mathtt{\tiny RLP}(\mathbf{x}_0) \cdot \mathtt{\tiny RLP}(\mathbf{x}_1) ...
 \end{eqnarray}
 
-If RLP is used to encode a positive integer, it must be specified as the shortest byte array such that the big-endian interpretation of it is equal. Thus the RLP of some positive integer $i$ is defined as:
+If RLP is used to encode a scalar, defined only as a positive integer, it must be specified as the shortest byte array such that the big-endian interpretation of it is equal. Thus the RLP of some positive integer $i$ is defined as:
 \begin{equation}
 \mathtt{\tiny RLP}(i : i \in \mathbb{P}) \equiv \mathtt{\tiny RLP}(\mathtt{\tiny BE}(i))
 \end{equation}
+
+When interpreting RLP data, if an expected fragment is decoded as a scalar and leading zeroes are found in the byte sequence, clients are required to consider it non-canonical and treat it in the same manner as otherwise invalid RLP data, dismissing it completely.
 
 There is no specific canonical encoding format for signed or floating-point values.
 
@@ -987,10 +1066,10 @@ In a manner similar to a radix tree, when the trie is traversed from root to lea
 A branch is then only used when necessary; no branch nodes may exist that contain only a single non-zero entry. We may formally define this structure with the structural composition function $c$:
 \begin{equation}
 c(\mathfrak{I}, i) \equiv \begin{cases}
-\texttt{\small RLP}\Big( \big(\texttt{\small HP}(I_0[i .. (\lVert I_0\rVert - 1)], I_1 \big) \Big) & \text{if} \quad \lVert \mathfrak{I} \rVert = 1 \quad \text{where} \; \exists I: I \in \mathfrak{I} \\
-\texttt{\small RLP}\Big(\big(\texttt{\small HP}(I_0[i .. (j - 1)]), n(\mathfrak{I}, j) \big) \Big) & \text{if} \quad i \ne j \quad \text{where} \; j = \arg \max_x : \exists \mathbf{l}: \lVert \mathbf{l} \rVert = x : \forall_{I \in \mathfrak{I}}: I_0[0 .. (x - 1)] = \mathbf{l} \\
+\texttt{\small RLP}\Big( \big(\texttt{\small HP}(I_0[i .. (\lVert I_0\rVert - 1)], true), I_1 \big) \Big) & \text{if} \quad \lVert \mathfrak{I} \rVert = 1 \quad \text{where} \; \exists I: I \in \mathfrak{I} \\
+\texttt{\small RLP}\Big( \big(\texttt{\small HP}(I_0[i .. (j - 1)], false), n(\mathfrak{I}, j) \big) \Big) & \text{if} \quad i \ne j \quad \text{where} \; j = \arg \max_x : \exists \mathbf{l}: \lVert \mathbf{l} \rVert = x : \forall_{I \in \mathfrak{I}}: I_0[0 .. (x - 1)] = \mathbf{l} \\
 \texttt{\small RLP}\Big( (u(0), u(1), ..., u(15), v) \Big) & \text{otherwise} \quad \text{where} \begin{array}[t]{rcl}
-u(n) & \equiv & n(\{ I : I \in \mathfrak{I} \wedge I_0[i] = n \}, i + 1) \\
+u(j) & \equiv & n(\{ I : I \in \mathfrak{I} \wedge I_0[i] = j \}, i + 1) \\
 v & = & \begin{cases}
 I_1 & \text{if} \quad \exists I: I \in \mathfrak{I} \wedge \lVert I_0 \rVert = i \\
 () & \text{otherwise}
@@ -1003,103 +1082,6 @@ I_1 & \text{if} \quad \exists I: I \in \mathfrak{I} \wedge \lVert I_0 \rVert = i
 Thus no explicit assumptions are made concerning what data is stored and what is not, since that is an implementation-specific consideration; we simply define the identity function mapping the key-value set $\mathfrak{I}$ to a 32-byte hash and assert that only a single such hash exists for any $\mathfrak{I}$, which though not strictly true is accurate within acceptable precision. In reality, a sensible implemention will not fully recompute the trie root hash for each set.
 
 A reasonable implementation will maintain a database of nodes determined from the computation of various tries or, more formally, it will memoise the function $c$. This strategy uses the nature of the trie to both easily recall the contents of any previous key-value set and to store multiple such sets in a very efficient manner. Due to the dependency relationship, Merkle-proofs may be constructed with an $O(\log N)$ space requirement that can demonstrate a particular leaf must exist within a trie of a given root hash.
-
-\section{Formal Specification of Structures}
-Though RLP is data-agnostic, it does specify a canonical representation for integer quantities. It is big-endian with no leading zero-bytes. Thus for elements than feasibly can be stored as integers, it becomes important to specify whether they should adhere to this canonical representation or be left in some other (perhaps more 'native') format.
-
-In the case of counts, balances, fees and amounts of wei, the canon-integer form must be used when storing in RLP. We call these INTs.
-
-In the case of hashes (256-bit or 160-bit), user-visible strings and specialised byte-arrays (e.g. hex-prefix notation from the trie), they should be stored as unformatted byte-array data and not altered into some other form. We call these BINs.
-
-When interpreting RLP data, clients are required to consider non-canonical INT fields in the same way as otherwise invalid RLP data and dismiss it completely.
-
-Specifically:
-
-for the Block header:
-\begin{verbatim}
-[
-  parentHash: BIN (256-bit),
-  unclesHash: BIN (256-bit),
-  coinbase: BIN (160-bit),
-  stateRoot: BIN (256-bit),
-  transactionsHash: BIN (256-bit),
-  difficulty: INT,
-  timestamp: INT,
-  extraData: BIN (typically 256-bit),
-  nonce: BIN (256-bit)
-]
-\end{verbatim}
-
-(note: 'nonce', the last element, refers to a hash here and so is binary)
-
-for entries in the State trie for normal addresses:
-\begin{verbatim}
-[
-  balance: INT,
-  nonce: INT
-]
-\end{verbatim}
-
-and for contract addresses:
-\begin{verbatim}
-[
-  balance: INT,
-  nonce: INT,
-  storageRoot: BIN (256-bit),
-  codeHash: BIN (256-bit)
-]
-\end{verbatim}
-
-(note: 'nonce', the second element, refers to a tx-count here and so is integer)
-
-for message call transactions:
-
-\begin{verbatim}
-[
-  nonce: INT,
-  value: INT,
-  gasPrice: INT,
-  gas: INT,
-  recvAddr: BIN (160-bit),
-  data: BIN (arbitrary length),
-  v: INT,
-  r: INT,
-  s: INT
-]
-\end{verbatim}
-
-or, for contract creation transactions,
-
-\begin{verbatim}
-[
-  nonce: INT,
-  value: INT,
-  gasPrice: INT,
-  gas: INT,
-  0: BIN (160-bit),
-  code: BIN (arbitrary length),
-  init: BIN (arbitrary length),
-  v: INT,
-  r: INT,
-  s: INT
-]
-\end{verbatim}
-
-(note: 'nonce', the first element, refers to a tx-count here and so is integer)
-
-The nonce in the transaction refers to the total amount of transactions sent from the address up until that moment in time.
-
-for blocks, there are no immediate data field, but lists:
-
-\begin{verbatim}
-[
-  blockHeader: [...]
-  txList: [ [...], [...], ... ]
-  uncleList: [ [...], [...], ... ]
-]
-\end{verbatim}
-
-Uncle-blocks contain only the uncle's header.
 
 \section{Signing Transactions}\label{app:signing}
 
