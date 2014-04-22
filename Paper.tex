@@ -187,11 +187,16 @@ The account state comprises the first two, and potentially the last two, of the 
 If the latter two fields are missing, the node represents a simple (non-contract) account: it maintains no state and executes no code on receipt of a transaction.
 
 Thus we may define a world-state collapse function $L_S$:
-\begin{eqnarray}
-L_S(\boldsymbol{\sigma}) & \equiv & \{ p(a): \boldsymbol{\sigma}[a] \neq \varnothing \} \\
-p(a) & \equiv & \big(a, \texttt{\small RLP}\big( (\boldsymbol{\sigma}[a]_n, \boldsymbol{\sigma}[a]_b, \boldsymbol{\sigma}[a]_s, \boldsymbol{\sigma}[a]_c) \big) \big)
-\end{eqnarray}
-
+\begin{equation}
+L_S(\boldsymbol{\sigma}) \equiv \{ p(a): \boldsymbol{\sigma}[a] \neq \varnothing \}
+\end{equation}
+where
+\begin{equation}
+p(a) \equiv \begin{cases}
+\big(a, \texttt{\small RLP}\big( (\boldsymbol{\sigma}[a]_n, \boldsymbol{\sigma}[a]_b) \big) \big) & \text{if} \; \boldsymbol{\sigma}[a]_s = \varnothing\\
+\big(a, \texttt{\small RLP}\big( (\boldsymbol{\sigma}[a]_n, \boldsymbol{\sigma}[a]_b, \boldsymbol{\sigma}[a]_s, \boldsymbol{\sigma}[a]_c) \big) \big) & \text{otherwise}
+\end{cases}
+\end{equation}
 This function, $L_S$, is used alongside the trie function to provide a short identity (hash) of the world state. We assume:
 \begin{equation}
 \forall a: \boldsymbol{\sigma}[a] = \varnothing \; \vee \; (a \in \mathbb{B}_{20} \; \wedge \; v(\boldsymbol{\sigma}[a]))
@@ -199,8 +204,8 @@ This function, $L_S$, is used alongside the trie function to provide a short ide
 
 Where $v$ is the account validity function:
 \begin{eqnarray}
-\quad v(x) & \equiv & x_n \in \mathbb{P} \wedge x_p \in \mathbb{P} \wedge (x_r = x_c = \varnothing \vee w(x)) \\
-\quad w(x) & \equiv & x_r \in \mathbb{B}_{32} \quad \wedge \quad x_c \in \mathbb{B}_{32}
+\quad v(x) & \equiv & x_n \in \mathbb{P} \wedge x_b \in \mathbb{P} \wedge (x_s = x_c = \varnothing \vee w(x)) \\
+\quad w(x) & \equiv & x_s \in \mathbb{B}_{32} \quad \wedge \quad x_c \in \mathbb{B}_{32}
 \end{eqnarray}
 
 \subsection{The Transaction} \label{ch:transaction}
