@@ -314,7 +314,7 @@ where
 \mathbb{B}_n = \{ B: B \in \mathbb{B} \wedge \lVert B \rVert = n \}
 \end{equation}
 
-We now have a rogourous specification for the construction of a formal block structure. The RLP function $\texttt{\small RLP}$ (see Appendix \ref{app:rlp}) provides the canonical method for transforming this structure into a sequence of bytes ready for transmission over the wire or storage locally.
+We now have a rigourous specification for the construction of a formal block structure. The RLP function $\texttt{\small RLP}$ (see Appendix \ref{app:rlp}) provides the canonical method for transforming this structure into a sequence of bytes ready for transmission over the wire or storage locally.
 
 \subsubsection{Block Header Validity}
 
@@ -1085,7 +1085,47 @@ A reasonable implementation will maintain a database of nodes determined from th
 
 \section{Signing Transactions}\label{app:signing}
 
-The method of signing transactions is similar to the `Electrum style signatures'; it utilises the SECP-256k1 curve as described by \cite{gura2004comparing}. This has yet to be formally specified.
+The method of signing transactions is similar to the `Electrum style signatures'; it utilises the SECP-256k1 curve as described by \cite{gura2004comparing}.
+
+It is assumed that the sender has a valid private key $p_r$, a randomly selected positive integer in the range $(0, 2^{256})$ represented as a byte array of length 32 in big-endian form.
+
+We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARESTORE}$ and $\mathtt{\small ECDSAPUBKEY}$. These are formally defined in the literature.
+\begin{eqnarray}
+\mathtt{\small ECDSAPUBKEY}(p_r \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64} \\
+\mathtt{\small ECDSASIGN}(e \in \mathbb{B}_{32}, p_r \in \mathbb{B}_{32}) & \equiv & (v \in \mathbb{B}_{2}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) \\
+\mathtt{\small ECDSARESTORE}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{2}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64}
+\end{eqnarray}
+
+Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer $< 2^{256}$). It is assumed that $v$ is the `recovery id', a 2-bit value specifying the sign and finiteness of the curve point; unlike some implementations which keep this value in the range of $[27, 30]$, we subtract the lower bound thus reducing it to a pure 2-bit value in the range $[0, 3]$.
+
+For a given private key, $p_r$, the Ethereum address $A(p_r)$ (a 160-bit value) to which it corresponds is defined as the right most 160-bits of the SHA3 hash of the corresponding ECDSA public key:
+\begin{equation}
+A(p_r) = \mathcal{B}_{96..255}\big(\mathtt{\tiny SHA3}\big( \mathtt{\small ECDSAPUBKEY}(p_r) \big) \big)
+\end{equation}
+
+The message hash, $h(T)$, to be signed is the SHA3 hash of the transaction without the latter three signiture components, formally described as $T_r$, $T_s$ and $T_w$:
+\begin{eqnarray}
+L_S(T) & \equiv & \begin{cases}
+(T_n, T_v, T_p, T_g, T_t, T_\mathbf{b}, T_\mathbf{i}) & \text{if} \; T_t = 0\\
+(T_n, T_v, T_p, T_g, T_t, T_\mathbf{d}) & \text{otherwise} \end{cases} \\
+h(T) & \equiv & \mathtt{\small SHA3}( L_S(T) )
+\end{eqnarray}
+
+The signed transaction $G(T, p_r)$ is defined as:
+\begin{eqnarray}
+G(T, p_r) \equiv T \quad \text{except} \\
+(T_w, T_r, T_s) = \mathtt{\small ECDSASIGN}(h(T), p_r)
+\end{eqnarray}
+
+We may then define the sender function $S$ of the transaction as:
+\begin{equation}
+S(T) \equiv \mathcal{B}_{96..255}\big(\mathtt{\tiny SHA3}\big( \mathtt{\small ECDSARESTORE}(h(T), T_w, T_r, T_s) \big) \big)
+\end{equation}
+
+The assertion that the sender of the a signed transaction equals the address of the signer should be self-evident:
+\begin{equation}
+\forall T: \forall p_r: S(G(T, p_r)) \equiv A(p_r)
+\end{equation}
 
 \section{Virtual Machine Specification}\label{app:vm}
 
