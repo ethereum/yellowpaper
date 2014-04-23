@@ -1525,7 +1525,7 @@ Specify a block or blocks that the peer should know about. The items in the list
 \end{itemize}
 }\\
 \midrule
-0x14 & \textsc{GetChain} & \textsc{Chain} or \textsc{NotInChain} & $(\text{0x}14, p_0 \in \mathbb{B}_{32}, p_1 \in \mathbb{B}_{32}, ..., c \in \mathbb{P})$ \\
+0x14 & \textsc{GetChain} & \textsc{Blocks} or \textsc{NotInChain} & $(\text{0x}14, p_0 \in \mathbb{B}_{32}, p_1 \in \mathbb{B}_{32}, ..., c \in \mathbb{P})$ \\
 & \multicolumn{3}{p{0.8\columnwidth}}{
 Request the peer to send $c$ blocks in the current canonical block chain that are children of one of a number of given blocks, according to a preferential order with $p_0$ being the most prefered. If the designated parent is the present block chain head, an empty reply should be sent. If none of the parents are in the current canonical block chain, then a NotInChain message should be sent along with $p_n$, the least preferential parent. If no parents are passed, then a reply need not be made.
 \begin{itemize}
