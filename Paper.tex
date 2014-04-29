@@ -37,7 +37,7 @@
 \newcommand*\ie{i.e.\@\xspace}
 %\renewcommand{\itemhook}{\setlength{\topsep}{0pt}  \setlength{\itemsep}{0pt}\setlength{\leftmargin}{15pt}}
 
-\title{Ethereum: A Secure Decentralised Generalised Transaction Ledger}
+\title{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ {\smaller \textbf{Proof-of-Concept V}}}
 \author{
     Dr. Gavin Wood\\
     Co-Founder \& CTO, Ethereum Project\\
@@ -681,9 +681,10 @@ O(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) & \equiv & (\boldsymbol{\sigma}', \b
 
 The gas is reduced by the instruction's gas cost and for most instructions, the program counter increments on each cycle, for the three exceptions, we assume a function $J$, subscripted by one of two instructions, which evaluates to the according value:
 \begin{eqnarray}
-\boldsymbol{\mu}'_{g} & \equiv & \boldsymbol{\mu}_{g} - C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \\
-\boldsymbol{\mu}'_{pc} & \equiv & \begin{cases}
-J_o(\boldsymbol{\mu}) & \text{if} \quad w \in \{ \text{\small JUMP, JUMPI} \} \\
+\quad \boldsymbol{\mu}'_{g} & \equiv & \boldsymbol{\mu}_{g} - C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \\
+\quad \boldsymbol{\mu}'_{pc} & \equiv & \begin{cases}
+J_{\text{JUMP}}(\boldsymbol{\mu}) & \text{if} \quad w = \text{\small JUMP} \\
+J_{\text{JUMPI}}(\boldsymbol{\mu}) & \text{if} \quad w = \text{\small JUMPI} \\
 \boldsymbol{\mu}_{pc} + p & \text{if} \quad w \in [\text{\small PUSH1}, \text{\small PUSH32}] \\
 \boldsymbol{\mu}_{pc} + 1 & \text{otherwise}
 \end{cases}
