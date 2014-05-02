@@ -167,6 +167,12 @@ When considering variants of existing values, I follow the rule that within a gi
 
 When considering the use of existing functions, given a function $f$, the function $f^*$ denotes a similar, element-wise version of the function mapping instead between sequences. It is formally defined in section \ref{ch:block}.
 
+I define a number of useful functions throughout. One of the more common is $\ell$, which evaluates to the last item in the given sequence:
+
+\begin{equation}
+\ell(\mathbf{x}) \equiv \mathbf{x}[\lVert \mathbf{x} \rVert - 1]
+\end{equation}
+
 \section{Blocks, State and Transactions} \label{ch:bst}
 
 Having introduced the basic concepts behind Ethereum, we will discuss the meaning of a transaction, a block and the state in more detail.
@@ -184,7 +190,7 @@ The account state comprises the first two, and potentially the last two, of the 
 \item[codeHash] The hash of the EVM code of this contract---this is the code that gets executed should this address receive a message call; it is immutable and thus, unlike all other fields, cannot be changed after construction. All such code fragments are contained in the state database under their corresponding hashes for later retrieval. This hash is formally denoted $\boldsymbol{\sigma}[a]_c$, and thus the code may be denoted as $\mathbf{b}$, given that $\texttt{\small SHA3}(\mathbf{b}) = \boldsymbol{\sigma}[a]_c$.
 \end{description}
 
-If the latter two fields are missing, the node represents a simple (non-contract) account: it maintains no state and executes no code on receipt of a transaction.
+If the latter field is the SHA3 hash of the empty string, i.e. $\boldsymbol{\sigma}[a]_c = \texttt{\small SHA3}\big(()\big)$, then the node represents a simple account, sometimes refered to as a ``non-contract'' account.
 
 Thus we may define a world-state collapse function $L_S$:
 \begin{equation}
@@ -204,8 +210,7 @@ This function, $L_S$, is used alongside the trie function to provide a short ide
 
 Where $v$ is the account validity function:
 \begin{eqnarray}
-\quad v(x) & \equiv & x_n \in \mathbb{P} \wedge x_b \in \mathbb{P} \wedge (x_s = x_c = \varnothing \vee w(x)) \\
-\quad w(x) & \equiv & x_s \in \mathbb{B}_{32} \quad \wedge \quad x_c \in \mathbb{B}_{32}
+\quad v(x) & \equiv & x_n \in \mathbb{P} \wedge x_b \in \mathbb{P} \wedge x_s \in \mathbb{B}_{32} \wedge x_c \in \mathbb{B}_{32}
 \end{eqnarray}
 
 \subsection{The Transaction} \label{ch:transaction}
@@ -224,11 +229,10 @@ A transaction (formally, $T$) is a single cryptographically signed instruction s
 Additionally, a contract-creation transaction contains:
 
 \begin{description}
-\item[body] An unlimited size byte array specifying the EVM-code for the contract, formally $T_\mathbf{b}$.
 \item[init] An unlimited size byte array specifying the EVM-code for the contract initialisation procedure, formally $T_\mathbf{i}$.
 \end{description}
 
-Both \textbf{body} and \textbf{init} are EVM-code fragments; \textbf{body} is executed each time the contract account receives a message call (either through a transaction or due to the internal execution of code). \textbf{init} is a piece of code that is executed only once at contract creation and that gets discarded immediately thereafter.
+\textbf{init} is an EVM-code fragment; it returns the \textbf{body}, a second fragment of code that executed each time the account receives a message call (either through a transaction or due to the internal execution of code). \textbf{init} is executed only once at contract creation and that gets discarded immediately thereafter.
 
 Whereas a message call transaction contains:
 
@@ -241,7 +245,7 @@ Appendix \ref{app:signing} specifies the function mapping transactions to the se
 The function $L_T$ prepares a transaction for being transformed into an RLP-serialised byte array:
 \begin{equation}
 L_T(T) \equiv \begin{cases}
-(T_n, T_v, T_t, T_p, T_g, T_\mathbf{b}, T_\mathbf{i}, T_w, T_r, T_s) & \text{if} \; T_t = 0\\
+(T_n, T_v, T_t, T_p, T_g, T_\mathbf{i}, T_w, T_r, T_s) & \text{if} \; T_t = 0\\
 (T_n, T_v, T_t, T_p, T_g, T_\mathbf{d}, T_w, T_r, T_s) & \text{otherwise} 
 \end{cases}
 \end{equation}
@@ -251,8 +255,8 @@ Here, we assume all components are interpreted by the RLP as integer values, wit
 \begin{array}[t]{lclclc}
 T_n \in \mathbb{P} & \wedge & T_v \in \mathbb{P} & \wedge & T_p \in \mathbb{P} & \wedge \\
 T_g \in \mathbb{P} & \wedge & T_w \in \mathbb{P} & \wedge & T_r \in \mathbb{P} & \wedge \\
-T_s \in \mathbb{P} & \wedge & T_\mathbf{d} \in \mathbb{B} & \wedge & T_\mathbf{b} \in \mathbb{B} & \wedge \\
-T_\mathbf{i} \in \mathbb{B} & \wedge & T_t \in \mathbb{B}_{20} &&\\
+T_s \in \mathbb{P} & \wedge & T_\mathbf{d} \in \mathbb{B} & \wedge & T_\mathbf{i} \in \mathbb{B} & \wedge \\
+T_t \in \mathbb{B}_{20} &&&&\\
 \end{array}
 \end{equation}
 
@@ -265,14 +269,18 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[unclesHash] The SHA3 256-bit hash of the uncles list portion of this block; formally $H_u$.
 \item[coinbase] The 160-bit address to which all fees collected from the successful mining of this block be transferred; formally $H_b$.
 \item[stateRoot] The SHA3 256-bit hash of the root node of the state trie, after all transactions are executed and finalisations applied; formally $H_r$.
-\item[transactionsHash] The SHA3 256-bit hash of the transactions list portion of this block; formally $H_t$.
+\item[transactionsTrie] The SHA3 256-bit hash of the root node of the trie structure populated with each transaction in the transactions list portion of the block; formally $H_t$.
 \item[difficulty] A scalar value corresponding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_d$.
 \item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.
+\item[number] A scalar value equal to the number of ancestor blocks. The genesis block has a number of zero; formally $H_i$.
+\item[minGasPrice] A scalar value equal to the minimum price of gas a transaction must have provided in order to be sufficient for inclusion by this miner in this block; formally $H_m$.
+\item[gasLimit] A scalar value equal to the current limit of gas expenditure per block; formally $H_l$.
+\item[gasUsed] A scalar value equal to the total gas used in transactions in this block; formally $H_u$.
 \item[extraData] An arbitrary byte array containing data relevant to this block. With the exception of the genesis block, this must be 32 bytes or fewer; formally $H_x$.
 \item[nonce] A 256-bit hash which proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.
 \end{description}
 
-The other two components in the block are simply a list of uncle block headers (of the same format as above) and a list of the transactions (as defined previously). Formally, we can refer to a block $B$:
+The other two components in the block are simply a list of uncle block headers (of the same format as above) and a list of the transaction information (as defined previously). Formally, we can refer to a block $B$:
 \begin{equation}
 B \equiv (B_H, B_\mathbf{T}, B_\mathbf{U})
 \end{equation}
@@ -281,17 +289,26 @@ We can assert its validity if and only if it satisfies several conditions: It mu
 \begin{equation}
 \begin{array}[t]{lclc}
 H_u &\equiv& \mathtt{\small SHA3}(\mathtt{\small RLP}(L_H^*(B_\mathbf{U}))) & \wedge \\
-H_t &\equiv& \mathtt{\small SHA3}(\mathtt{\small RLP}(L_T^*(B_\mathbf{T}))) & \wedge \\
+H_t &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert: (i, B_\mathbf{T}[i])\}) & \wedge \\
 H_r &\equiv& \mathtt{\small TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) &
 \end{array}
 \end{equation}
 
-where:
+where $s[i]$ equals the root of the state trie immediately after the execution of the transaction $B_\mathbf{T}[i]$, and $g[i]$ the total gas used immediately after said transaction.
+
+% TODO: formal.
+
+Furthermore:
+
 \begin{equation}
 \mathtt{\small TRIE}(L_S(\boldsymbol{\sigma})) = {P(B_H)_H}_r
 \end{equation}
 
-thus $\texttt{\small TRIE}(L_S(\boldsymbol{\sigma}))$ is the root node hash of the Merkle Patricia tree structure containing the key-value pairs of the state $\boldsymbol{\sigma}$ with values encoded using RLP, and $P(B_H)$ is the parent block of $B$, defined directly.
+Thus $\texttt{\small TRIE}(L_S(\boldsymbol{\sigma}))$ is the root node hash of the Merkle Patricia tree structure containing the key-value pairs of the state $\boldsymbol{\sigma}$ with values encoded using RLP, and $P(B_H)$ is the parent block of $B$, defined directly.
+
+TODO: Transaction manifest more than just transactions: $(T[i], s[i], g[i])$
+
+TODO: Remove extrameous references to number.
 
 The function $L_B$ and $L_H$ are the preparation functions for a block and block header respectively. Much like the transaction preparation function $L_T$, we assert the types and order of the structure for when the RLP transformation is required:
 \begin{eqnarray}
@@ -330,11 +347,20 @@ P(H) \equiv B': \mathtt{\tiny SHA3}(\mathtt{\tiny RLP}(B')) = H_p
 The canonical difficulty of a block of header $H$ is defined as $D(H)$:
 \begin{equation}
 D(H) \equiv \begin{cases}
-2^{22} & \quad \text{if genesis block}\\
-{P(H)_H}_d + \lfloor\frac{{P(H)_H}_d}{1024}\rfloor & \quad \text{if $H_s < {P(H)_H}_s + 42$}\\
-{P(H)_H}_d - \lfloor\frac{{P(H)_H}_d}{1024}\rfloor & \quad \text{otherwise}\\
+2^{22} & \text{if} \quad H_i = 0\\
+{P(H)_H}_d + \lfloor\frac{{P(H)_H}_d}{1024}\rfloor & \text{if} \quad H_s < {P(H)_H}_s + 42\\
+{P(H)_H}_d - \lfloor\frac{{P(H)_H}_d}{1024}\rfloor & \text{otherwise}\\
 \end{cases}
 \end{equation}
+
+The canonical gas limit of a block of header $H$ is defined as $L(H)$:
+\begin{eqnarray}
+L(H) & \equiv & \begin{cases}
+10^6 & \text{if} \quad H_i = 0\\
+L'(H) & \text{otherwise}
+\end{cases}\\
+L'(H) & \equiv & \big\lfloor \frac{1023 {P(H)_H}_l + \lfloor \frac{6}{5}{P(H)_H}_u \rfloor}{1024}\big\rfloor
+\end{eqnarray}
 
 $H_s$ is the timestamp of block $H$ and must fulfill the relation:
 \begin{equation}
@@ -356,8 +382,12 @@ Thus we are able to define the block header validity function $V(H)$:
 \begin{eqnarray}
 V(H) & \equiv & \mathtt{PoW}(H, H_n) \leqslant \frac{2^{256}}{H_d} \quad \wedge \\
 & & H_d = D(H) \quad \wedge \\
-& & H_s > {P(H)_H}_s
+& & H_l = L(H) \quad \wedge \\
+& & H_s > {P(H)_H}_s \quad \wedge \\
+& & \lVert H_x \rVert < 1024
 \end{eqnarray}
+
+Noting additionally that \textbf{extraData} must be at most 1024 bytes.
 
 \section{Gas and Payment} \label{ch:payment}
 
@@ -385,24 +415,17 @@ Formally, we consider the function $\Upsilon$, with $T$ being a transaction and 
 \boldsymbol{\sigma}' = \Upsilon(\boldsymbol{\sigma}, T)
 \end{equation}
 
-Thus $\boldsymbol{\sigma}'$ is the post-transactional state.
+Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define $\Upsilon^g$ to evaluate to the amount of gas used in the execution of a transaction, to be defined later.
 
 We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
 \begin{equation}
 g_0 \equiv \begin{cases}
-g_d + G_{create} & \text{if} \quad T_t = 0 \\
-g_d + G_{call} & \text{otherwise} \\
+\lVert T_\mathbf{i}\rVert G_{data} + G_{transaction} & \text{if} \quad T_t = 0 \\
+\lVert T_\mathbf{d}\rVert G_{data} + G_{transaction} & \text{otherwise} \\
 \end{cases}
 \end{equation}
 
-where
-\begin{equation}
-g_d \equiv \begin{cases} (\lVert T_\mathbf{i}\rVert + \lVert T_\mathbf{b}\rVert) G_{data} & \text{if} \quad T_t = 0 \\
- \lVert T_\mathbf{d}\rVert G_{data} & \text{otherwise}
- \end{cases}
-\end{equation}
-
-where $\lVert T_\mathbf{d}\rVert$, $\lVert T_\mathbf{i}\rVert$ and $\lVert T_\mathbf{b}\rVert$ are the sizes, in bytes, of the transaction's associated data, initialisation and body EVM-code, respectively and $G$ is defined in Appendix \ref{app:fees}. The portion of $g_0$ that will not be paid to the miner is $g_d$, and is removed from the system.
+where $\lVert T_\mathbf{d}\rVert$ and $\lVert T_\mathbf{i}\rVert$ are the sizes, in bytes, of the transaction's associated data and initialisation EVM-code, respectively and $G$ is defined in Appendix \ref{app:fees}.
 
 % Explain g_d reason?
 
@@ -411,7 +434,7 @@ The up-front cost $v_0$ is calculated as:
 v_0 \equiv T_g T_p + T_v
 \end{equation}
 
-the validity is determined as:
+The validity is determined as:
 \begin{equation}
 \begin{array}[t]{rcl}
 S(T) & \neq & \varnothing \quad \wedge \\
@@ -422,7 +445,9 @@ v_0 & \leq & \boldsymbol{\sigma}[S(T)]_b
 \end{array}
 \end{equation}
 
-The transaction must not require more gas to be utilised in this block than the global block limit of gas, specified at $10^6$.
+The sum of the transaction gas limit and the gas utilised in this block prior must be no greater than the block's \textbf{gasLimit}, $H_l$.
+
+% TODO: specify formally.
 
 The execution of a valid transaction begins with an irrevocable change made to the state: the nonce of the account of the sender, $S(T)$, is incremented by one and the balance is reduced by the up-front cost, $v_0$. The gas available for the proceeding computation, $g$, is defined as $T_g - g_0$. The computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
 
@@ -452,9 +477,14 @@ After the message call or contract creation is processed, the state is finalised
 \begin{eqnarray}
 \boldsymbol{\sigma}' & \equiv & \boldsymbol{\sigma}_P \quad \text{except} \\
 \boldsymbol{\sigma}'[s]_b & \equiv & \boldsymbol{\sigma}_P[s]_b + g' T_p \\
-\boldsymbol{\sigma}'[m]_b & \equiv & \boldsymbol{\sigma}_P[m]_b + (T_g - g' - g_d) T_p \\
+\boldsymbol{\sigma}'[m]_b & \equiv & \boldsymbol{\sigma}_P[m]_b + (T_g - g') T_p \\
 m & \equiv & {B_H}_b
 \end{eqnarray}
+
+And finally specify $\Upsilon^g$, the total gas used in this transaction:
+\begin{equation}
+\Upsilon^g(\boldsymbol{\sigma}, T) \equiv g_0 + g'
+\end{equation}
 
 %In the case that $s = m$ then we simply return the Ether back to the sender/miner, collapsing the exception into:
 %\begin{eqnarray}
@@ -463,11 +493,11 @@ m & \equiv & {B_H}_b
 
 \section{Contract Creation} \label{ch:create}
 
-There are number of intrinsic parameters used when creating a contract: sender ($s$), nonce ($n$), available gas ($g$), gas price ($p$), endowment ($v$) together with the two arbitrary length byte arrays, $\mathbf{i}$ for the initialisation EVM code and $\mathbf{b}$ for the EVM code of the body.
+There are number of intrinsic parameters used when creating a contract: sender ($s$), nonce ($n$), available gas ($g$), gas price ($p$), endowment ($v$) together with an arbitrary length byte array, $\mathbf{i}$, the initialisation EVM code.
 
 We define the creation function formally as the function $\Lambda$, which evaluates from these values, together with the state $\boldsymbol{\sigma}_0$ to the tuple containing the new state, additional database entries and remaining gas $(\boldsymbol{\sigma}_P, g')$, as in section \ref{ch:transactions}:
 \begin{equation}
-(\boldsymbol{\sigma}_P, g') \equiv \Lambda(\boldsymbol{\sigma}_0, s, n, g, p, v, \mathbf{i}, \mathbf{b})
+(\boldsymbol{\sigma}_P, g') \equiv \Lambda(\boldsymbol{\sigma}_0, s, n, g, p, v, \mathbf{i})
 \end{equation}
 
 The address of the new contract is defined as being the rightmost 160 bits of the SHA3 hash of RLP encoding of the structure containing only the sender and the nonce. In the unlikely event that the address is already in use, it is treated as a big-endian integer and incremented by one until an unused address is arrived at. Thus we define the creation address function $A$:
@@ -479,10 +509,10 @@ a' & = & \mathcal{B}_{96..255}\Big(\mathtt{\tiny SHA3}\Big(\mathtt{\tiny RLP}\bi
 
 where $\mathtt{\tiny SHA3}$ is the SHA3 256-bit hash function, $\mathtt{\tiny RLP}$ is the RLP encoding function, $\mathcal{B}_{a..b}(X)$ evaluates to binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$ and $\boldsymbol{\sigma}_0[x]$ is the address state of $x$ or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
 
-The account's nonce is initially defined as zero, the balance as the value passed, the storage as empty and the code hash as the SHA3 256-bit hash of the code, thus the mutated state becomes $\boldsymbol{\sigma}^*$:
+The account's nonce is initially defined as zero, the balance as the value passed, the storage as empty and the code hash as the SHA3 256-bit hash of the empty string, thus the mutated state becomes $\boldsymbol{\sigma}^*$:
 \begin{eqnarray}
 \boldsymbol{\sigma}^* & \equiv & \boldsymbol{\sigma} \quad \text{except:} \\
-\boldsymbol{\sigma}^*[A(s, \boldsymbol{\sigma}[s]_n)] & \equiv & ( 0, v, \varnothing, \mathtt{\tiny SHA3}(\mathbf{b}) )
+\boldsymbol{\sigma}^*[A(s, \boldsymbol{\sigma}[s]_n)] & \equiv & \big( 0, v, \mathtt{\tiny TRIE}(\varnothing), \mathtt{\tiny SHA3}\big(()\big) \big)
 \end{eqnarray}
 
 It is asserted that the state database will also change such that it defines the pair $(\mathtt{\tiny SHA3}(\mathbf{b}), \mathbf{b})$.
@@ -492,11 +522,16 @@ Finally, the contract is initialised through the execution of the initialising E
 Code execution depletes gas; thus it may exit before the code has come to a natural halting state. In this exceptional case we say an Out-of-Gas exception has occurred: The evaluated state is defined as being the empty set $\varnothing$ and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation. The gas remaining should be zero. If the creation was conducted as the manifestation of a transaction, then this doesn't affect payment of the intrinsic cost: it is paid regardless.
 
 If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persevere. Thus formally, we may specify the resultant state and gas as $(\boldsymbol{\sigma}_P, g')$ where:
+\begin{equation}
+(\boldsymbol{\sigma}^{**}, g', \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}^*, g, I) \\
+\end{equation}
 \begin{eqnarray}
-(\boldsymbol{\sigma}^{**}, g') & \equiv & \Xi(\boldsymbol{\sigma}^*, g, I) \\
-\boldsymbol{\sigma}_P & \equiv & \begin{cases}
-\boldsymbol{\sigma}_0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
-\boldsymbol{\sigma}^{**} & \text{otherwise}
+\quad \boldsymbol{\sigma}_P & \equiv & \begin{cases}
+\boldsymbol{\sigma}_0 & \text{if} \quad \mathbf{o} = () \\
+\begin{array}[b]{l}
+\boldsymbol{\sigma}^{**} \quad \text{except:} \\
+\boldsymbol{\sigma}_P[A(s, \boldsymbol{\sigma}[s]_n)]_{\mathbf{b}} = \mathbf{o}
+\end{array} & \text{otherwise}
 \end{cases} \\
 I_a & \equiv & a \\
 I_o & \equiv & s \\
@@ -507,7 +542,10 @@ I_v & \equiv & v \\
 I_\mathbf{b} & \equiv & \mathbf{i}
 \end{eqnarray}
 
-$I_\mathbf{d}$ evaluates to the empty tuple. $I_H$ and $I_n$ have no special treatment and are determined from the blockchain.
+$I_\mathbf{d}$ evaluates to the empty tuple. $I_H$ and $I_n$ have no special treatment and are determined from the blockchain. The exception in the determination of $\boldsymbol{\sigma}_P$ dictates that the resultant byte sequence from the execution of the initialisation code specifies the final body code for the newly-created contract's account, with $\boldsymbol{\sigma}_P[A(s, \boldsymbol{\sigma}[s]_n)]_{\mathbf{b}}$ being the newly created account's body code and $\mathbf{o}$ the output byte sequence of the code execution.
+
+\subsection{Subtleties}
+Note that while the initialisation code is executing, the newly created address exists but with no intrinsic body code. Thus any message call received by it during this time causes no code to be executed. If the initialisation execution ends with a {\small SUICIDE} instruction or normal {\small STOP} code, or if the code returned is otherwise empty, then the state changes are effectively reverted, the final state being equivalent to $\boldsymbol{\sigma}_0$, the pre-execution checkpoint state.
 
 \section{Message Call} \label{ch:call}
 
@@ -522,7 +560,7 @@ We define $\boldsymbol{\sigma}_1$, the checkpoint state as the original state bu
 \boldsymbol{\sigma}_1[r]_b & \equiv & \boldsymbol{\sigma}_1[r]_b + v
 \end{eqnarray}
 
-If the recipient account contains no code to be executed (i.e. it is not a contract), then we define the final state as being equivalent to the checkpoint state. In the case that the recipient contains code to be executed (i.e. that the account is a contract), then the contract's body code (identified as the fragment whose SHA3 hash is $\boldsymbol{\sigma}[r]_c$) is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts due to an exhausted gas supply, then no gas is refunded to the caller and the state is reverted to the point immediately prior to code execution.
+The contract's body code (identified as the fragment whose SHA3 hash is $\boldsymbol{\sigma}[r]_c$) is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts due to an exhausted gas supply, then no gas is refunded to the caller and the state is reverted to the point immediately prior to code execution.
 \begin{eqnarray}
 \boldsymbol{\sigma}_P & \equiv & \begin{cases}
 \boldsymbol{\sigma}_1 & \text{if} \quad \boldsymbol{\sigma}_1[r]_c = \varnothing \\
@@ -576,10 +614,11 @@ More formally, given an instruction, it is possible to calculate the gas cost of
 \item {\small CALL} costs $G_{call}$, though additional gas may be taken for the execution of contract body code.
 \item {\small CREATE} costs $G_{create}$, though additional gas may be taken for the execution of contract initialisation code.
 \item {\small STOP} costs $G_{stop}$ gas
+\item {\small SUICIDE} costs $G_{suicide}$ gas
 \item All other operations cost $G_{step}$ gas.
 \end{itemize}
 
-Additionally, when memory is accessed with {\small MSTORE}, {\small MSTORE8}, {\small MLOAD}, {\small RETURN}, {\small SHA3}, {\small CREATE} or {\small CALL}, the memory should be enlarged to the smallest multiple of words such that all addressed bytes now fit in it. See Appendix \ref{app:vm} for a rigorous definition of the EVM gas cost.
+Additionally, when memory is accessed with {\small MSTORE}, {\small MSTORE8}, {\small MLOAD}, {\small CALLDATACOPY}, {\small CODECOPY}, {\small RETURN}, {\small SHA3}, {\small CREATE} or {\small CALL}, the memory should be enlarged to the smallest multiple of words such that all addressed bytes now fit in it. See Appendix \ref{app:vm} for a rigorous definition of the EVM gas cost.
 
 %Whenever a higher memory index is referenced, the fee difference to take it to the higher usage from the original (lower) usage is charged. Notably, because {\small MSTORE} and {\small MLOAD} operate on word lengths, they implicitly increase the highest-accessed index to 31 greater than their target index.
 
@@ -724,10 +763,11 @@ As such given a block $B$, $B_t$ is its total difficulty, $B'$ is its parent blo
 
 \section{Block Finalisation} \label{ch:finalisation}
 
-The process of finalising a block involves three stages:
+The process of finalising a block involves four stages:
 
 \begin{enumerate}
 \item Validate (or, if mining, determine) uncles;
+\item validate (or, if mining, determine) transactions;
 \item apply rewards;
 \item verify (or, if mining, compute a valid) state and nonce.
 \end{enumerate}
@@ -739,13 +779,25 @@ The validation of uncle headers means nothing more than verifying that each uncl
 \bigwedge_{U \in B_\mathbf{U}} V(U) \; \wedge \; P(U) = P(P(B_H)) \; \wedge \; P(B_H) \neq B
 \end{equation}
 
+\subsection{Transaction Validation}
+
+The given \textbf{gasUsed} and \textbf{minGasLimit} must correspond faithfully to the transactions listed. In the case of ${B_H}_m$, the minimum gas limit, all transactions included in the transaction manifest must have a gas price, ${T_0}_p$, that is at least this value:
+\begin{equation}
+\forall_{T \in B_\mathbf{T}} {T_0}_p \geq {B_H}_m
+\end{equation}
+
+In the case of ${B_H}_u$, the total gas used in the block, it must be equal to the accumulated gas used according to the final transaction:
+\begin{equation}
+{B_H}_u = \ell(\mathbf{T})_1
+\end{equation}
+
 \subsection{Reward Application}
 
 The application of rewards to a block involves raising the balance of the accounts of the coinbase address of the block and each uncle by a certain amount. We raise the block's coinbase account by $R_b$, the block reward, and the coinbase of each uncle by $\frac{7}{8}$ of that. Formally we define the function $\Omega$:
 \begin{eqnarray}
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
 \boldsymbol{\sigma}'[{B_H}_b]_b & = & \boldsymbol{\sigma}[{B_H}_b]_b + R_b \\
-\forall U \in B_\mathbf{U}: \quad \boldsymbol{\sigma}'[U_b]_b & = & \boldsymbol{\sigma}[U_b]_b + \frac{7}{8}R_b
+\forall_{U \in B_\mathbf{U}} \quad \boldsymbol{\sigma}'[U_b]_b & = & \boldsymbol{\sigma}[U_b]_b + \frac{7}{8}R_b
 \end{eqnarray}
 
 We define the block reward as 1500 Finney:
@@ -772,11 +824,32 @@ B'_n & = & n: \quad \mathtt{PoW}(B^*, n) < \frac{2^{256}}{H_d} \\
 B^* & \equiv & B \quad \text{except:} \quad B'_r = r(\Pi(\Gamma(B), B))
 \end{eqnarray}
 
-As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of $\Omega$, the block finalisation function and $\Upsilon$, the transaction-evaluation function, both now well-defined:
+As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of $\Omega$, the block finalisation function and $\Upsilon$, the transaction-evaluation function, both now well-defined. We begin the definition by supposing we have a series of transactions $\mathbf{T}$.
+
+\begin{equation}
+\text{Let} \quad \mathbf{T} = (\mathbf{T}[0], \mathbf{T}[1], ...)
+\end{equation}
+
+These are the transactions that comprise the block, thus:
 \begin{eqnarray}
-\Pi(\boldsymbol{\sigma}, B) & \equiv & \Omega(B, \Upsilon(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...) \\
-B & \equiv & (H, (T_0, T_1, ...), \mathbf{U})
+\quad \quad B & \equiv & \Big(H, \big( \mathbf{M}[0], \mathbf{M}[1], ..., \mathbf{M}[\lVert \mathbf{T}\rVert - 1]\big), \mathbf{U}\Big) \\
+\quad \quad \mathbf{M}[n] & \equiv & (\mathbf{T}[n], \mathbf{s}[n], \mathbf{g}[n])
 \end{eqnarray}
+
+Here, $\mathbf{s}$ and $\mathbf{g}$ are the corresponding sequences of states and cumulative gas used for each transaction. $\mathbf{s}$ is defined simply as the state resulting from applying the corrresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
+\begin{equation}
+\mathbf{s}[n] = \begin{cases} \Gamma(B) & \text{if} \quad n < 0 \\ \Upsilon(\mathbf{s}[n - 1], \mathbf{T}[n]) & \text{otherwise} \end{cases}
+\end{equation}
+
+In the case of $\mathbf{g}$, we take a similar approach defining each item as the gas used in evaluatng the corresponding transaction summed with the previous item (or zero, if it's the first), giving us a running total:
+\begin{equation}
+\mathbf{g}[n] = \begin{cases} 0 & \text{if} \quad n < 0 \\ \Upsilon^g(\mathbf{s}[n - 1], \mathbf{T}[n]) + \mathbf{g}[n-1] & \text{otherwise} \end{cases}
+\end{equation}
+
+Finally, we define $\Pi$ as the new state given the block reward function $\Omega$ applied to the final transaction's resultant state, $\ell(B_\mathbf{T})_1$:
+\begin{equation}
+\Pi(\boldsymbol{\sigma}, B) \equiv \Omega(B, \ell(B_\mathbf{T})_1)
+\end{equation}
 
 Thus the complete block-transition mechanism, less $\mathtt{PoW}$, the proof-of-work function is defined.
 
@@ -932,14 +1005,16 @@ Name & Value & Description* \\
 \midrule
 $G_{step}$ & 1 & Default amount of gas to pay for execution cycle. \\
 $G_{stop}$ & 0 & Nothing paid for the {\small STOP} operation. \\
+$G_{suicide}$ & 0 & Nothing paid for the {\small SUICIDE} operation. \\
 $G_{sha3}$ & 20 & Paid for a {\small SHA3} operation. \\
 $G_{sload}$ & 20 & Paid for a {\small SLOAD} operation. \\
 $G_{sstore}$ & 100 & Paid for a normal {\small SSTORE} operation (doubled or waived sometimes). \\
 $G_{balance}$ & 20 & Paid for a {\small BALANCE} operation. \\
-$G_{create}$ & 100 & Paid for a {\small CREATE} operation and for a contract creation transaction. \\
-$G_{call}$ & 20 & Paid for a {\small CALL} operation and for a message call transaction. \\
+$G_{create}$ & 100 & Paid for a {\small CREATE} operation. \\
+$G_{call}$ & 20 & Paid for a {\small CALL} operation. \\
 $G_{memory}$ & 1 & Paid for every additional word when expanding memory. \\
-$G_{txdata}$ & 5 & Burnt (discarded from the system) for every byte of data or code for a transaction. \\
+$G_{txdata}$ & 5 & Paid for every byte of data or code for a transaction. \\
+$G_{transaction}$ & 500 & Paid for every transaction. \\
 \bottomrule
 \end{tabular*}
 
@@ -1153,6 +1228,7 @@ G_{sha3} & \text{if} \quad w = \text{\small SHA3}\\
 G_{sload} & \text{if} \quad w = \text{\small SLOAD}\\
 G_{balance} & \text{if} \quad w = \text{\small BALANCE}\\
 G_{stop} & \text{if} \quad w = \text{\small STOP}\\
+G_{suicide} & \text{if} \quad w = \text{\small SUICIDE}\\
 G_{step} & \text{otherwise}
 \end{cases} \\
 w & \equiv & \begin{cases} I_\mathbf{b}[\boldsymbol{\mu}_{pc}] & \text{if} \quad \boldsymbol{\mu}_{pc} < \lVert I_\mathbf{b} \rVert \\
@@ -1406,15 +1482,14 @@ G_{sstore} & \text{otherwise}
 \toprule
 \multicolumn{5}{c}{\textbf{f0s: System operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
-0xf0 & {\small CREATE} & 5 & 1 & Create a new contract. \\
-&&&& $\mathbf{b} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[1] \dots (\boldsymbol{\mu}_\mathbf{s}[1] + \boldsymbol{\mu}_\mathbf{s}[2] - 1) ]$ \\
-&&&& $\mathbf{i} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[3] \dots (\boldsymbol{\mu}_\mathbf{s}[3] + \boldsymbol{\mu}_\mathbf{s}[4] - 1) ]$ \\
+0xf0 & {\small CREATE} & 3 & 1 & Create a new contract. \\
+&&&& $\mathbf{i} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[1] \dots (\boldsymbol{\mu}_\mathbf{s}[1] + \boldsymbol{\mu}_\mathbf{s}[2] - 1) ]$ \\
 &&&& $(\boldsymbol{\sigma}', \boldsymbol{\mu}'_g) \equiv \Lambda(\boldsymbol{\sigma}^*, I_a, I_o, \boldsymbol{\mu}_g, I_p, \boldsymbol{\mu}_\mathbf{s}[0], \mathbf{i}, \mathbf{b})$ \\
 &&&& $\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except} \quad \boldsymbol{\sigma}^*[I_a]_n = \boldsymbol{\sigma}[I_a]_n + 1$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
 &&&& where $x=0$ if the code execution for this operation failed due to lack of gas;\\
 &&&& $x=A(I_a, \boldsymbol{\sigma}[I_a]_n)$, the address of the newly created contract, otherwise. \\
-&&&& $\boldsymbol{\mu}'_i \equiv \max(\boldsymbol{\mu}_i, \ceil{ \max(\boldsymbol{\mu}_\mathbf{s}[1] + \boldsymbol{\mu}_\mathbf{s}[2], \boldsymbol{\mu}_\mathbf{s}[3] + \boldsymbol{\mu}_\mathbf{s}[4]) \div 32 })$ \\
+&&&& $\boldsymbol{\mu}'_i \equiv \max(\boldsymbol{\mu}_i, \ceil{ (\boldsymbol{\mu}_\mathbf{s}[1] + \boldsymbol{\mu}_\mathbf{s}[2]) \div 32 })$ \\
 \midrule
 0xf1 & {\small CALL} & 7 & 1 & Message-call into contract. \\
 &&&& $\mathbf{i} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[3] \dots (\boldsymbol{\mu}_\mathbf{s}[3] + \boldsymbol{\mu}_\mathbf{s}[4] - 1) ]$ \\
@@ -1563,10 +1638,10 @@ Request the peer to send $c$ blocks in the current canonical block chain that ar
 
 The genesis block is 9 items, and is specified thus:
 \begin{equation}
-\big( \big( 0_{256}, \mathtt{\tiny SHA3}\big(\mathtt{\tiny RLP}\big( () \big)\big), 0_{160}, 0_{256}, \mathtt{\tiny SHA3}\big(\mathtt{\tiny RLP}\big( () \big)\big), 2^{22}, 0, (), \mathtt{\tiny SHA3}\big( (42) \big) \big), (), () \big)
+\big( \big( 0_{256}, \mathtt{\tiny SHA3}\big(\mathtt{\tiny RLP}\big( () \big)\big), 0_{160}, 0_{256}, 0_{256}, 2^{22}, 0, (), \mathtt{\tiny SHA3}\big( (42) \big) \big), (), () \big)
 \end{equation}
 
-Where $0_{256}$ refers to the parent and state root hashes, a 256-bit hash which is all zeroes; $0_{160}$ refers to the coinbase address, a 160-bit hash which is all zeroes; $2^{22}$ refers to the difficulty; 0 refers to the timestamp (the Unix epoch); $()$ refers to the extradata and the sequences of both uncles and transactions, all empty. $\mathtt{\tiny SHA3}\big( (42) \big)$ refers to the SHA3 hash of a byte array of length one whose first and only byte is of value 42. $\mathtt{\tiny SHA3}\big(\mathtt{\tiny RLP}\big( () \big)\big)$ values refer to the hashes of the transaction and uncle lists in RLP, both empty.
+Where $0_{256}$ refers to the parent and state and transaction root hashes, a 256-bit hash which is all zeroes; $0_{160}$ refers to the coinbase address, a 160-bit hash which is all zeroes; $2^{22}$ refers to the difficulty; 0 refers to the timestamp (the Unix epoch); $()$ refers to the extradata and the sequences of both uncles and transactions, all empty. $\mathtt{\tiny SHA3}\big( (42) \big)$ refers to the SHA3 hash of a byte array of length one whose first and only byte is of value 42. $\mathtt{\tiny SHA3}\big(\mathtt{\tiny RLP}\big( () \big)\big)$ values refer to the hashes of the transaction and uncle lists in RLP, both empty.
 
 The proof-of-concept series include a development premine, making the state root hash some value other than $0_{256}$. The latest documentation should be consulted for the value of the state root.
 
