@@ -67,7 +67,7 @@ Ethereum is a project which attempts to build the generalised technology; techno
 
 \subsection{Driving Factors} \label{ch:driving}
 
-There are many goals of this project; one key goal is to facilitate transactions between consenting individuals who would otherwise have no means to trust one another. This may be due to geographical separation, interfacing difficulty, or perhaps the incompatibility, incompetance, unwillingness, expense, uncertainty, inconvenience or corruption of existing legal systems. By specifying a state-change system through a rich and unambiguous language, and furthermore architecting a system such that we can reasonably expect that an agreement will be thus enforced autonomously, we can provide a means to this end.
+There are many goals of this project; one key goal is to facilitate transactions between consenting individuals who would otherwise have no means to trust one another. This may be due to geographical separation, interfacing difficulty, or perhaps the incompatibility, incompetence, unwillingness, expense, uncertainty, inconvenience or corruption of existing legal systems. By specifying a state-change system through a rich and unambiguous language, and furthermore architecting a system such that we can reasonably expect that an agreement will be thus enforced autonomously, we can provide a means to this end.
 
 Dealings in this proposed system would have several attributes not often found in the real word. The incorruptibility of judgement, often difficult to find, comes naturally from a disinterested algorithmic interpreter. Transparency, or being able to see exactly how a state or judgement came about through the transaction log and rules or instructional codes, never happens perfectly in human-based systems since natural language is necessarily vague, information is often lacking, and plain old prejudices are difficult to shake.
 
@@ -81,7 +81,7 @@ Hashcash, introduced by \cite{laurie2004proof}, provided the first work into the
 
 Other projects built on Bitcoin's success; the alt-coins introduced numerous other currencies through alteration to the protocol. The best known are Litecoin and Primecoin, discussed by \cite{sprankel2013technical}. Other projects sought to take the core value content mechanism of the protocol and repurpose it; \cite{aron2012bitcoin} discusses, for example, the Namecoin project which aims to provide a decentralised name-resolution system.
 
-Other projects still aim to build upon the Bitcoin network itself, leveraging the large amount of value placed in the system and the vast amount of computation that goes into the consensus mechanism. The Mastercoin project, first proposed by \cite{mastercoin2013willett}, aims to build a richer protocol involving many additional high-level features on top of the Bitcoin protocol through utilisation of a number of auxilliary parts to the core protocol. The Coloured Coins project, proposed by \cite{colouredcoins2012rosenfeld}, takes a similar but more simplified strategy, embellishing the rules of a transaction in order to break the fungibility of Bitcoin's base currency and allow the creation and tracking of tokens through a special ``chroma-wallet''-protocol-aware piece of software.
+Other projects still aim to build upon the Bitcoin network itself, leveraging the large amount of value placed in the system and the vast amount of computation that goes into the consensus mechanism. The Mastercoin project, first proposed by \cite{mastercoin2013willett}, aims to build a richer protocol involving many additional high-level features on top of the Bitcoin protocol through utilisation of a number of auxiliary parts to the core protocol. The Coloured Coins project, proposed by \cite{colouredcoins2012rosenfeld}, takes a similar but more simplified strategy, embellishing the rules of a transaction in order to break the fungibility of Bitcoin's base currency and allow the creation and tracking of tokens through a special ``chroma-wallet''-protocol-aware piece of software.
 
 Additional work has been done in the area with discarding the decentralisation foundation; Ripple, discussed by \cite{boutellier2014pirates}, has sought to create a ``federated'' system for currency exchange, effectively creating a new financial clearing system. It has demonstrated that high efficiency gains can be made if the decentralisation premise is discarded.
 
@@ -91,7 +91,7 @@ Early work on smart contracts has been done by \cite{szabo1997formalizing} and \
 
 \section{The Blockchain Paradigm} \label{ch:overview}
 
-Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissable. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg be things such as reducing an account balance without an equal and opposite increase elsewhere. A valid state transition is one which comes about through a transaction. Formally:
+Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissible. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg be things such as reducing an account balance without an equal and opposite increase elsewhere. A valid state transition is one which comes about through a transaction. Formally:
 \begin{equation}
 \boldsymbol{\sigma}_{t+1} \equiv \Upsilon(\boldsymbol{\sigma}_t, T)
 \end{equation}
@@ -115,7 +115,7 @@ This is the basis of the blockchain paradigm, a model that forms the backbone of
 
 \subsection{Value}
 
-In order to incentivise computation within the network, there needs to be an agreed method for transmitting value. To address this issue, Ethereum has an intrinsic currency, Ether, known also as {\small ETH} and sometimes refered to by the Old English \DH{}. The smallest subdenomination of Ether, and thus the one in which all integer values of the currency are counted, is the Wei. One Ether is defined as being $10^{18}$ Wei. There exist other subdenominations of Ether:
+In order to incentivise computation within the network, there needs to be an agreed method for transmitting value. To address this issue, Ethereum has an intrinsic currency, Ether, known also as {\small ETH} and sometimes referred to by the Old English \DH{}. The smallest subdenomination of Ether, and thus the one in which all integer values of the currency are counted, is the Wei. One Ether is defined as being $10^{18}$ Wei. There exist other subdenominations of Ether:
 \par`
 \begin{center}
 \begin{tabular}{rl}
@@ -151,7 +151,7 @@ Functions operating on highly structured values are denoted with an upper-case g
 
 For most functions, an uppercase letter is used, e.g. $C$, the general cost function. These may be subscripted to denote specialised variants, \eg $C_\text{\tiny SSTORE}$, the cost function for the {\tiny SSTORE} operation. For specialised and possibly externally defined functions, I may format as typewriter text, \eg the SHA3 hash function is denoted $\texttt{SHA3}$.
 
-Tuples are typically denoted with an upper-case letter, \eg $T$, is used to denote an Ethereum transaction. This symbol may, if accoringly defined, be subscripted to refer to an individual component, \eg $T_s$, denotes the timestamp of said transaction. The form of the subscript is used to denote its type; \eg uppercase subscripts refer to tuples with subscriptable components.
+Tuples are typically denoted with an upper-case letter, \eg $T$, is used to denote an Ethereum transaction. This symbol may, if accordingly defined, be subscripted to refer to an individual component, \eg $T_s$, denotes the timestamp of said transaction. The form of the subscript is used to denote its type; \eg uppercase subscripts refer to tuples with subscriptable components.
 
 Scalars and fixed-size byte sequences (or, synonymously, arrays) are denoted with a normal lower-case letter, \eg $n$ is used in the document to denote a transaction nonce. Those with a particularly special meaning may be greek, \eg $\delta$, the number of items required on the stack for a given operation.
 
@@ -236,7 +236,7 @@ Whereas a message call transaction contains:
 \item[data] An unlimited size byte array specifying the input data of the message call, formally $T_\mathbf{d}$.
 \end{description}
 
-Appendix \ref{app:signing} specifies the function mapping transactions to the sender $S$, which happens through the ECDSA of the SECP-256k1 curve, using the hash of the transaction (excepting the latter three signiture fields) as the datum to sign. For the present we simply assert that the sender of a given transaction $T$ can be represented with $S(T)$.
+Appendix \ref{app:signing} specifies the function mapping transactions to the sender $S$, which happens through the ECDSA of the SECP-256k1 curve, using the hash of the transaction (excepting the latter three signature fields) as the datum to sign. For the present we simply assert that the sender of a given transaction $T$ can be represented with $S(T)$.
 
 The function $L_T$ prepares a transaction for being transformed into an RLP-serialised byte array:
 \begin{equation}
@@ -266,9 +266,9 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[coinbase] The 160-bit address to which all fees collected from the successful mining of this block be transferred; formally $H_b$.
 \item[stateRoot] The SHA3 256-bit hash of the root node of the state trie, after all transactions are executed and finalisations applied; formally $H_r$.
 \item[transactionsHash] The SHA3 256-bit hash of the transactions list portion of this block; formally $H_t$.
-\item[difficulty] A scalar value corresonding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_d$.
+\item[difficulty] A scalar value corresponding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_d$.
 \item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.
-\item[extraData] An arbitrary byte array containing data relavant to this block. With the exception of the genesis block, this must be 32 bytes or fewer; formally $H_x$.
+\item[extraData] An arbitrary byte array containing data relevant to this block. With the exception of the genesis block, this must be 32 bytes or fewer; formally $H_x$.
 \item[nonce] A 256-bit hash which proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.
 \end{description}
 
@@ -318,7 +318,7 @@ where
 \mathbb{B}_n = \{ B: B \in \mathbb{B} \wedge \lVert B \rVert = n \}
 \end{equation}
 
-We now have a rigourous specification for the construction of a formal block structure. The RLP function $\texttt{\small RLP}$ (see Appendix \ref{app:rlp}) provides the canonical method for transforming this structure into a sequence of bytes ready for transmission over the wire or storage locally.
+We now have a rigorous specification for the construction of a formal block structure. The RLP function $\texttt{\small RLP}$ (see Appendix \ref{app:rlp}) provides the canonical method for transforming this structure into a sequence of bytes ready for transmission over the wire or storage locally.
 
 \subsubsection{Block Header Validity}
 
@@ -350,7 +350,7 @@ The nonce, $H_n$, must satisfy the relation:
 
 Where $\mathtt{PoW}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an pseudo-random number cryptographically dependent on the parameters $H$ and $H_n$. Given an approximately uniform distribution in the range $[0, 2^{256})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
 
-This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propogate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because satisfaction of this requirement depends on the contents of the block and in turn its composed transactions, creating new, valid, blocks is difficult and, over time, requires approximately the total compute power of the trustworthy portion of the mining peers.
+This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propagate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because satisfaction of this requirement depends on the contents of the block and in turn its composed transactions, creating new, valid, blocks is difficult and, over time, requires approximately the total compute power of the trustworthy portion of the mining peers.
 
 Thus we are able to define the block header validity function $V(H)$:
 \begin{eqnarray}
@@ -489,7 +489,7 @@ It is asserted that the state database will also change such that it defines the
 
 Finally, the contract is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the contract's storage can be altered, further contracts can be created and further message calls can be made. As such, the code execution function $\Xi$ evaluates to a tuple of the resultant state $\boldsymbol{\sigma}^{**}$ and available gas remaining $g'$.
 
-Code execution depletes gas; thus it may exit before the code has come to a natural halting state. In this exceptional case we say an Out-of-Gas exception has occured: The evaluated state is defined as being the empty set $\varnothing$ and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation. The gas remaining should be zero. If the creation was conducted as the manifestation of a transaction, then this doesn't affect payment of the intrinsic cost: it is paid regardless.
+Code execution depletes gas; thus it may exit before the code has come to a natural halting state. In this exceptional case we say an Out-of-Gas exception has occurred: The evaluated state is defined as being the empty set $\varnothing$ and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation. The gas remaining should be zero. If the creation was conducted as the manifestation of a transaction, then this doesn't affect payment of the intrinsic cost: it is paid regardless.
 
 If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persevere. Thus formally, we may specify the resultant state and gas as $(\boldsymbol{\sigma}_P, g')$ where:
 \begin{eqnarray}
@@ -579,7 +579,7 @@ More formally, given an instruction, it is possible to calculate the gas cost of
 \item All other operations cost $G_{step}$ gas.
 \end{itemize}
 
-Additionally, when memory is accessed with {\small MSTORE}, {\small MSTORE8}, {\small MLOAD}, {\small RETURN}, {\small SHA3}, {\small CREATE} or {\small CALL}, the memory should be enlarged to the smallest multiple of words such that all addressed bytes now fit in it. See Appendix \ref{app:vm} for a rigourous definition of the EVM gas cost.
+Additionally, when memory is accessed with {\small MSTORE}, {\small MSTORE8}, {\small MLOAD}, {\small RETURN}, {\small SHA3}, {\small CREATE} or {\small CALL}, the memory should be enlarged to the smallest multiple of words such that all addressed bytes now fit in it. See Appendix \ref{app:vm} for a rigorous definition of the EVM gas cost.
 
 %Whenever a higher memory index is referenced, the fee difference to take it to the higher usage from the original (lower) usage is charged. Notably, because {\small MSTORE} and {\small MLOAD} operate on word lengths, they implicitly increase the highest-accessed index to 31 greater than their target index.
 
@@ -708,7 +708,7 @@ However, instructions do typically alter one or several components of these valu
 
 The canonical blockchain is a path from root to leaf through the entire block tree. In order to have consensus over which path it is, conceptually we identify the path that has had the most computation done upon it, or, the \textit{heaviest} path. Clearly one factor that helps determine the heaviest path is the block number of the leaf, equivalent to the number of blocks, not counting the unmined genesis block, in the path. The longer the path, the greater the total mining effort that must have been done in order to arrive at the leaf. This is akin to existing schemes, such as that employed in Bitcoin-derived protocols.
 
-This scheme notably ignores so-called \textit{stale} blocks: valid, mined blocks, which were propogated too late into the network and thus were beaten to network consensus by a sibling block (one with the same parent). Such blocks become more common as the network propogation time approaches the ideal inter-block time. However, by counting the computation work of stale block headers, we are able to do better: we can utilise this otherwise wasted computation and put it to use in helping to butress the more popular blockchain making it a stronger choice over less popular (though potentially longer) competitors.
+This scheme notably ignores so-called \textit{stale} blocks: valid, mined blocks, which were propagated too late into the network and thus were beaten to network consensus by a sibling block (one with the same parent). Such blocks become more common as the network propagation time approaches the ideal inter-block time. However, by counting the computation work of stale block headers, we are able to do better: we can utilise this otherwise wasted computation and put it to use in helping to buttress the more popular blockchain making it a stronger choice over less popular (though potentially longer) competitors.
 
 This increases overall network security by making it much harder for an adversary to silently mine a canonical blockchain (which, it is assumed, would contain different transactions to the current consensus) and dump it on the network with the effect of overriding existing blocks and reversing the transactions within.
 
@@ -821,7 +821,7 @@ $\mathtt{BE}(X)$ evaluates to the value equal to X when interpreted as a big-end
 
 For the release series, we use a more complex proof-of-work. This has yet to be formally defined, but involves two components; firstly that it concerns contract processing, and by extension the evaluation of programs on the EVM. Secondly that it concerns the utilisation of either the blockchain or the full state trie.
 
-As an overview, the output of the function is based upon the system state, defined as the hash of the root node of the state trie. A set of transactions, pseudo-randomly determined from the nonce value and selected from the last $N$ blocks is taken. $N$ is large enough and the selection criteria are such that execution of the transactions requires some non-negligable amount of processing by the EVM. Whenever code is executed on the EVM, it is pseudo-randomly (seeded again by the nonce) corrupted before alteration. Corruption could involve switching addresses with other transactions or rotating them through in the state trie (perhaps to the next address with the same order of magnitude of funds), rotating through instructions that have equivalent stack behaviour (e.g. swapping {\small ADD} for {\small SUB} or {\small GT} for {\small EQ}), or more destructive techniques such as randomly changing opcodes. This results in a problem that both require generalised computation hardware and is sequentially memory (and perhaps even disk) hard.
+As an overview, the output of the function is based upon the system state, defined as the hash of the root node of the state trie. A set of transactions, pseudo-randomly determined from the nonce value and selected from the last $N$ blocks is taken. $N$ is large enough and the selection criteria are such that execution of the transactions requires some non-negligible amount of processing by the EVM. Whenever code is executed on the EVM, it is pseudo-randomly (seeded again by the nonce) corrupted before alteration. Corruption could involve switching addresses with other transactions or rotating them through in the state trie (perhaps to the next address with the same order of magnitude of funds), rotating through instructions that have equivalent stack behaviour (e.g. swapping {\small ADD} for {\small SUB} or {\small GT} for {\small EQ}), or more destructive techniques such as randomly changing opcodes. This results in a problem that both require generalised computation hardware and is sequentially memory (and perhaps even disk) hard.
 
 Any specialised hardware to perform this task could also be leveraged to speed up (and thus drive down costs) of general Ethereum transaction processing.
 
@@ -894,7 +894,7 @@ Useful corrections and suggestions were provided by a number of others from the 
 
 \item[Transaction] A piece of data, signed by an External Actor. It represents either a Message or a new Autonomous Object. Transactions are recorded into each block of the blockchain.
 
-\item[Autonomous Object] A virtual object existant only within the hypothetical state of Ethereum.  Has an intrinsic address. Incorporated only as the state of the storage component of the VM.
+\item[Autonomous Object] A virtual object existent only within the hypothetical state of Ethereum.  Has an intrinsic address. Incorporated only as the state of the storage component of the VM.
 
 \item[Storage State] The information particular to a given Autonomous Object that is maintained between the times that it runs.
 
@@ -910,7 +910,7 @@ Useful corrections and suggestions were provided by a number of others from the 
 
 \item[App] An end-user-visible application hosted in the Ethereum Browser.
 
-\item[Ethereum Browser] (aka Ethereum Reference Client) A cross-platform GUI of an interface similar to a simplified browser (ala Chrome) that is able to host sandboxed applications whose backend is purely on the Ethereum protocol.
+\item[Ethereum Browser] (aka Ethereum Reference Client) A cross-platform GUI of an interface similar to a simplified browser (a la Chrome) that is able to host sandboxed applications whose backend is purely on the Ethereum protocol.
 
 \item[Ethereum Virtual Machine] (aka EVM) The virtual machine that forms the key part of the execution model for a contract's program code.
 
@@ -1024,7 +1024,7 @@ f(t) & \equiv & \begin{cases} 2 & \text{if} \quad t \\ 0 & \text{otherwise} \end
 Thus the high nibble of the first byte contains two flags; the lowest bit encoding the oddness of the length and the second-lowest encoding the flag $t$. The low nibble of the first byte is zero in the case of an even number of nibbles and the first nibble in the case of an odd number. All remaining nibbles (now an even number) fit properly into the remaining bytes.
 
 \section{Modified Merkle Patricia Tree}\label{app:trie}
-The modified Merkle Patricia tree (trie) provides a persistent data structure to map between arbitrary-length binary data (byte arrays). It is defined in terms of a mutable data structure to map between 256-bit binary fragments and arbitrary-length binary data, typically implemented as a database. The core of the trie, and its sole rquirement in terms of the protocol specification is to provide a single 32-byte value that identifies a given set of key-value pairs. It is left as an implementation consideration to store and maintain the structure of the trie in a manner the allows effective and efficient realisation of the protocol.
+The modified Merkle Patricia tree (trie) provides a persistent data structure to map between arbitrary-length binary data (byte arrays). It is defined in terms of a mutable data structure to map between 256-bit binary fragments and arbitrary-length binary data, typically implemented as a database. The core of the trie, and its sole requirement in terms of the protocol specification is to provide a single 32-byte value that identifies a given set of key-value pairs. It is left as an implementation consideration to store and maintain the structure of the trie in a manner the allows effective and efficient realisation of the protocol.
 
 Formally, we assume the input value $\mathfrak{I}$, a set containing pairs of byte sequences:
 \begin{equation}
@@ -1086,7 +1086,7 @@ I_1 & \text{if} \quad \exists I: I \in \mathfrak{I} \wedge \lVert I_0 \rVert = i
 \end{equation}
 
 \subsection{Trie Database}
-Thus no explicit assumptions are made concerning what data is stored and what is not, since that is an implementation-specific consideration; we simply define the identity function mapping the key-value set $\mathfrak{I}$ to a 32-byte hash and assert that only a single such hash exists for any $\mathfrak{I}$, which though not strictly true is accurate within acceptable precision. In reality, a sensible implemention will not fully recompute the trie root hash for each set.
+Thus no explicit assumptions are made concerning what data is stored and what is not, since that is an implementation-specific consideration; we simply define the identity function mapping the key-value set $\mathfrak{I}$ to a 32-byte hash and assert that only a single such hash exists for any $\mathfrak{I}$, which though not strictly true is accurate within acceptable precision. In reality, a sensible implementation will not fully recompute the trie root hash for each set.
 
 A reasonable implementation will maintain a database of nodes determined from the computation of various tries or, more formally, it will memoise the function $c$. This strategy uses the nature of the trie to both easily recall the contents of any previous key-value set and to store multiple such sets in a very efficient manner. Due to the dependency relationship, Merkle-proofs may be constructed with an $O(\log N)$ space requirement that can demonstrate a particular leaf must exist within a trie of a given root hash.
 
@@ -1110,7 +1110,7 @@ For a given private key, $p_r$, the Ethereum address $A(p_r)$ (a 160-bit value) 
 A(p_r) = \mathcal{B}_{96..255}\big(\mathtt{\tiny SHA3}\big( \mathtt{\small ECDSAPUBKEY}(p_r) \big) \big)
 \end{equation}
 
-The message hash, $h(T)$, to be signed is the SHA3 hash of the transaction without the latter three signiture components, formally described as $T_r$, $T_s$ and $T_w$:
+The message hash, $h(T)$, to be signed is the SHA3 hash of the transaction without the latter three signature components, formally described as $T_r$, $T_s$ and $T_w$:
 \begin{eqnarray}
 L_S(T) & \equiv & \begin{cases}
 (T_n, T_v, T_p, T_g, T_t, T_\mathbf{b}, T_\mathbf{i}) & \text{if} \; T_t = 0\\
@@ -1431,7 +1431,7 @@ G_{sstore} & \text{otherwise}
 %The Low-level Lisp-like Language is a language created in order to efficiently author low-level programs (contracts) without having to resort to EVM-Assembly.
 
 \section{Wire Protocol}\label{app:wire}
-The wire-protocol specifies a network-level protocol for how two peers can communicate. It includes handshake procedures and the means for transfering information such as peers, blocks and transactions. Peer-to-peer communications between nodes running Ethereum clients are designed to be governed by a simple wire-protocol making use of existing Ethereum technologies and standards such as RLP wherever practical.
+The wire-protocol specifies a network-level protocol for how two peers can communicate. It includes handshake procedures and the means for transferring information such as peers, blocks and transactions. Peer-to-peer communications between nodes running Ethereum clients are designed to be governed by a simple wire-protocol making use of existing Ethereum technologies and standards such as RLP wherever practical.
 
 Ethereum nodes may connect to each other over TCP only. Peers are free to advertise and accept connections on any port(s) they wish, however, a default port on which the connection may be listened and made will be 30303.
 
@@ -1530,8 +1530,8 @@ Specify a block or blocks that the peer should know about. The items in the list
 & \multicolumn{3}{p{0.8\columnwidth}}{
 Request the peer to send $c$ blocks in the current canonical block chain that are children of one of a number of given blocks, according to a preferential order with $p_0$ being the most prefered. If the designated parent is the present block chain head, an empty reply should be sent. If none of the parents are in the current canonical block chain, then a NotInChain message should be sent along with $p_n$, the least preferential parent. If no parents are passed, then a reply need not be made.
 \begin{itemize}
-\item $p_0$, $p_1$, ... are the SHA3 hashes of the parents of blocks that we should be informed of with a \textsc{Blocks} reply. Typically, these will be specificed in increasing age (or decreasing block number).
-\item $c$ is the number of children blocks of the most prefered parent that we should be informed of through the corresponding \textsc{Blocks} reply.
+\item $p_0$, $p_1$, ... are the SHA3 hashes of the parents of blocks that we should be informed of with a \textsc{Blocks} reply. Typically, these will be specified in increasing age (or decreasing block number).
+\item $c$ is the number of children blocks of the most preferred parent that we should be informed of through the corresponding \textsc{Blocks} reply.
 \end{itemize}
 }\\
 \midrule
