@@ -325,8 +325,6 @@ Furthermore:
 
 Thus $\texttt{\small TRIE}(L_S(\boldsymbol{\sigma}))$ is the root node hash of the Merkle Patricia tree structure containing the key-value pairs of the state $\boldsymbol{\sigma}$ with values encoded using RLP, and $P(B_H)$ is the parent block of $B$, defined directly.
 
-TODO: Remove extrameous references to number.
-
 \subsubsection{Serialisation}
 
 The function $L_B$ and $L_H$ are the preparation functions for a block and block header respectively. Much like the transaction receipt preparation function $L_R$, we assert the types and order of the structure for when the RLP transformation is required:
@@ -560,7 +558,7 @@ I_v & \equiv & v \\
 I_\mathbf{b} & \equiv & \mathbf{i}
 \end{eqnarray}
 
-$I_\mathbf{d}$ evaluates to the empty tuple. $I_H$ and $I_n$ have no special treatment and are determined from the blockchain. The exception in the determination of $\boldsymbol{\sigma}_P$ dictates that the resultant byte sequence from the execution of the initialisation code specifies the final body code for the newly-created contract's account, with $\boldsymbol{\sigma}_P[A(s, \boldsymbol{\sigma}[s]_n)]_{\mathbf{b}}$ being the newly created account's body code and $\mathbf{o}$ the output byte sequence of the code execution.
+$I_\mathbf{d}$ evaluates to the empty tuple. $I_H$ has no special treatment and are determined from the blockchain. The exception in the determination of $\boldsymbol{\sigma}_P$ dictates that the resultant byte sequence from the execution of the initialisation code specifies the final body code for the newly-created contract's account, with $\boldsymbol{\sigma}_P[A(s, \boldsymbol{\sigma}[s]_n)]_{\mathbf{b}}$ being the newly created account's body code and $\mathbf{o}$ the output byte sequence of the code execution.
 
 \subsection{Subtleties}
 Note that while the initialisation code is executing, the newly created address exists but with no intrinsic body code. Thus any message call received by it during this time causes no code to be executed. If the initialisation execution ends with a {\small SUICIDE} instruction or normal {\small STOP} code, or if the code returned is otherwise empty, then the state changes are effectively reverted, the final state being equivalent to $\boldsymbol{\sigma}_0$, the pre-execution checkpoint state.
@@ -652,8 +650,7 @@ In addition to the system state $\boldsymbol{\sigma}$, and the remaining gas for
 \item $I_s$, the address of the account which caused the code to be executing; if the execution agent is a transaction, this would be the transaction sender.
 \item $I_v$, the value, in Wei, passed to this account as part of the same procedure as execution; if the execution agent is a transaction, this would be the transaction value.
 \item $I_\mathbf{b}$, the byte array that is the machine code to be executed.
-\item $I_H$, the block header of the previous block.
-\item $I_n$, the block number of the current block.
+\item $I_H$, the block header of the present block.
 \end{itemize}
 
 The execution model defines the function $\Xi$, which can compute the resultant state $\boldsymbol{\sigma}'$ and the remaining gas $g'$, given these definitions:
@@ -1403,14 +1400,13 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_H}_t$ \\
 \midrule
 0x43 & {\small NUMBER} & 0 & 1 & Get the block's number. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv n({I_H})$ \\
-&&&& $n(I_H)$ is the total number of ancestor blocks of the current block. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_H}_i$ \\
 \midrule
 0x44 & {\small DIFFICULTY} & 0 & 1 & Get the block's difficulty. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_H}_d$ \\
 \midrule
 0x45 & {\small GASLIMIT} & 0 & 1 & Get the block's gas limit. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv 10^6$ \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_H}_l$ \\
 &&&& Presently, the gas limit is hard-coded in the protocol. \\
 \bottomrule
 \end{tabular*}
