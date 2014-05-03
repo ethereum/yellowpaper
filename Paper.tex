@@ -163,7 +163,7 @@ Square brackets are used to index into and reference individual components or su
 
 In the case of the global state $\boldsymbol{\sigma}$, which is a sequence of accounts, themselves tuples, the square brackets are used to reference an individual account.
 
-When considering variants of existing values, I follow the rule that within a given scope for definition, if we assume that the unmodified `input' value be $\Box$ then the modified and utilisable value is denoted as $\Box'$, and intermediate values would be $\Box^*$,  $\Box^{**}$ \&c. On very particular occasions, in order to maximise readability and only if unambiguous in meaning, I may use alpha-numeric subscripts to denote intermediate values, especially those of particular note.
+When considering variants of existing values, I follow the rule that within a given scope for definition, if we assume that the unmodified `input' value be denoted by the placeholder $\Box$ then the modified and utilisable value is denoted as $\Box'$, and intermediate values would be $\Box^*$,  $\Box^{**}$ \&c. On very particular occasions, in order to maximise readability and only if unambiguous in meaning, I may use alpha-numeric subscripts to denote intermediate values, especially those of particular note.
 
 When considering the use of existing functions, given a function $f$, the function $f^*$ denotes a similar, element-wise version of the function mapping instead between sequences. It is formally defined in section \ref{ch:block}.
 
@@ -198,24 +198,21 @@ L_S(\boldsymbol{\sigma}) \equiv \{ p(a): \boldsymbol{\sigma}[a] \neq \varnothing
 \end{equation}
 where
 \begin{equation}
-p(a) \equiv \begin{cases}
-\big(a, \texttt{\small RLP}\big( (\boldsymbol{\sigma}[a]_n, \boldsymbol{\sigma}[a]_b) \big) \big) & \text{if} \; \boldsymbol{\sigma}[a]_s = \varnothing\\
-\big(a, \texttt{\small RLP}\big( (\boldsymbol{\sigma}[a]_n, \boldsymbol{\sigma}[a]_b, \boldsymbol{\sigma}[a]_s, \boldsymbol{\sigma}[a]_c) \big) \big) & \text{otherwise}
-\end{cases}
+p(a) \equiv  \big(a, \texttt{\small RLP}\big( (\boldsymbol{\sigma}[a]_n, \boldsymbol{\sigma}[a]_b, \boldsymbol{\sigma}[a]_s, \boldsymbol{\sigma}[a]_c) \big) \big)
 \end{equation}
+
 This function, $L_S$, is used alongside the trie function to provide a short identity (hash) of the world state. We assume:
 \begin{equation}
 \forall a: \boldsymbol{\sigma}[a] = \varnothing \; \vee \; (a \in \mathbb{B}_{20} \; \wedge \; v(\boldsymbol{\sigma}[a]))
 \end{equation}
-
-Where $v$ is the account validity function:
+where $v$ is the account validity function:
 \begin{eqnarray}
 \quad v(x) & \equiv & x_n \in \mathbb{P} \wedge x_b \in \mathbb{P} \wedge x_s \in \mathbb{B}_{32} \wedge x_c \in \mathbb{B}_{32}
 \end{eqnarray}
 
 \subsection{The Transaction} \label{ch:transaction}
 
-A transaction (formally, $T$) is a single cryptographically signed instruction sent by an actor external to Ethereum. An external actor can be a person (via a mobile device or desktop computer) or could be from a piece of automated software running on a server. There are two types of transactions: those which result in message calls and those which result in the creation of new contracts. Both types specify a number of common fields:
+A transaction (formally, $T$) is a single cryptographically-signed instruction sent by an actor external to Ethereum. An external actor can be a person (via a mobile device or desktop computer) or could be from a piece of automated software running on a server. There are two types of transactions: those which result in message calls and those which result in the creation of new contracts. Both types specify a number of common fields:
 
 \begin{description}
 \item[nonce] A scalar value equal to the number of transactions sent by the sender; formally $T_n$.
@@ -234,13 +231,13 @@ Additionally, a contract-creation transaction contains:
 
 \textbf{init} is an EVM-code fragment; it returns the \textbf{body}, a second fragment of code that executed each time the account receives a message call (either through a transaction or due to the internal execution of code). \textbf{init} is executed only once at contract creation and that gets discarded immediately thereafter.
 
-Whereas a message call transaction contains:
+However, a message call transaction contains:
 
 \begin{description}
 \item[data] An unlimited size byte array specifying the input data of the message call, formally $T_\mathbf{d}$.
 \end{description}
 
-Appendix \ref{app:signing} specifies the function mapping transactions to the sender $S$, which happens through the ECDSA of the SECP-256k1 curve, using the hash of the transaction (excepting the latter three signature fields) as the datum to sign. For the present we simply assert that the sender of a given transaction $T$ can be represented with $S(T)$.
+Appendix \ref{app:signing} specifies the function, $S$, which maps transactions to the sender, and happens through the ECDSA of the SECP-256k1 curve, using the hash of the transaction (excepting the latter three signature fields) as the datum to sign. For the present we simply assert that the sender of a given transaction $T$ can be represented with $S(T)$.
 
 The function $L_T$ prepares a transaction for being transformed into an RLP-serialised byte array:
 \begin{equation}
@@ -256,13 +253,13 @@ Here, we assume all components are interpreted by the RLP as integer values, wit
 T_n \in \mathbb{P} & \wedge & T_v \in \mathbb{P} & \wedge & T_p \in \mathbb{P} & \wedge \\
 T_g \in \mathbb{P} & \wedge & T_w \in \mathbb{P} & \wedge & T_r \in \mathbb{P} & \wedge \\
 T_s \in \mathbb{P} & \wedge & T_\mathbf{d} \in \mathbb{B} & \wedge & T_\mathbf{i} \in \mathbb{B} & \wedge \\
-T_t \in \mathbb{B}_{20} &&&&\\
+T_t \in \mathbb{B}_{20} &&&&
 \end{array}
 \end{equation}
 
 \subsection{The Block} \label{ch:block}
 
-The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with a set of transactions, $\mathbf{T}$, and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{uncles}). The block header contains several pieces of information:
+The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{R}$, and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{uncles}). The block header contains several pieces of information:
 
 \begin{description}
 \item[parentHash] The SHA3 256-bit hash of the parent block, in its entirety; formally $H_p$.
@@ -280,40 +277,62 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[nonce] A 256-bit hash which proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.
 \end{description}
 
-The other two components in the block are simply a list of uncle block headers (of the same format as above) and a list of the transaction information (as defined previously). Formally, we can refer to a block $B$:
+The other two components in the block are simply a list of uncle block headers (of the same format as above) and a series of the transaction \textit{receipts}. Formally, we can refer to a block $B$:
 \begin{equation}
-B \equiv (B_H, B_\mathbf{T}, B_\mathbf{U})
+B \equiv (B_H, B_\mathbf{R}, B_\mathbf{U})
 \end{equation}
+
+\subsubsection{Transaction Manifest}
+
+The transaction receipt is a tuple of three items comprising the transaction, $R_T$, together with the post-transaction state, $R_{\boldsymbol{\sigma}}$, and the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_u$:
+\begin{equation}
+R \equiv (R_T, R_{\boldsymbol{\sigma}}, R_u)
+\end{equation}
+
+The function $L_R$ trivially prepares a transaction receipt for being transformed into an RLP-serialised byte array:
+\begin{equation}
+L_R(R) \equiv (L_T(R_T), \mathtt{\small TRIE}(L_S(R_{\boldsymbol{\sigma}})), R_u)
+\end{equation}
+thus the post-transaction state, $R_{\boldsymbol{\sigma}}$ is encoded into a trie structure, the root of which forms the second item.
+
+We assert $R_u$, the cumulative gas used is a positive integer:
+\begin{equation}
+R_u \in \mathbb{P}
+\end{equation}
+
+For convenience, I also name $B_\mathbf{T}$ the series of transactions encoded by the transaction receipts $B_\mathbf{R}$:
+\begin{equation}
+B_\mathbf{T} \equiv (B_\mathbf{R}[0]_T, B_\mathbf{R}[1]_T, ...)
+\end{equation}
+
+Notably $B_\mathbf{T}$ does not get serialised into the block by the block preparation function $L_B$; it is merely a convenience equivalence.
+
+\subsubsection{Holistic Validity}
 
 We can assert its validity if and only if it satisfies several conditions: It must be internally consistent with the uncle and transaction block hashes and the given transactions $B_\mathbf{T}$, when executed in order on the base state $\boldsymbol{\sigma}$ (derived from the final state of the parent block), result in a new state of the identity $H_r$:
 \begin{equation}
 \begin{array}[t]{lclc}
 H_u &\equiv& \mathtt{\small SHA3}(\mathtt{\small RLP}(L_H^*(B_\mathbf{U}))) & \wedge \\
-H_t &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert: (i, B_\mathbf{T}[i])\}) & \wedge \\
+H_t &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert: (i, B_\mathbf{R}[i])\}) & \wedge \\
 H_r &\equiv& \mathtt{\small TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) &
 \end{array}
 \end{equation}
 
-where $s[i]$ equals the root of the state trie immediately after the execution of the transaction $B_\mathbf{T}[i]$, and $g[i]$ the total gas used immediately after said transaction.
-
-% TODO: formal.
-
 Furthermore:
-
 \begin{equation}
 \mathtt{\small TRIE}(L_S(\boldsymbol{\sigma})) = {P(B_H)_H}_r
 \end{equation}
 
 Thus $\texttt{\small TRIE}(L_S(\boldsymbol{\sigma}))$ is the root node hash of the Merkle Patricia tree structure containing the key-value pairs of the state $\boldsymbol{\sigma}$ with values encoded using RLP, and $P(B_H)$ is the parent block of $B$, defined directly.
 
-TODO: Transaction manifest more than just transactions: $(T[i], s[i], g[i])$
-
 TODO: Remove extrameous references to number.
 
-The function $L_B$ and $L_H$ are the preparation functions for a block and block header respectively. Much like the transaction preparation function $L_T$, we assert the types and order of the structure for when the RLP transformation is required:
+\subsubsection{Serialisation}
+
+The function $L_B$ and $L_H$ are the preparation functions for a block and block header respectively. Much like the transaction receipt preparation function $L_R$, we assert the types and order of the structure for when the RLP transformation is required:
 \begin{eqnarray}
 \quad L_H(H) & \equiv & (H_p, H_u, H_b, H_r, H_t, H_d, H_s, H_x, H_n) \\
-\quad L_B(B) & \equiv & \big( L_H(B_H), L_T^*(B_\mathbf{T}), L_H^*(B_\mathbf{U}) \big)
+\quad L_B(B) & \equiv & \big( L_H(B_H), L_R^*(B_\mathbf{R}), L_H^*(B_\mathbf{U}) \big)
 \end{eqnarray}
 
 With $L_T^*$ and $L_H^*$ being element-wise sequence transformations, thus:
@@ -441,13 +460,12 @@ S(T) & \neq & \varnothing \quad \wedge \\
 \boldsymbol{\sigma}[S(T)] & \neq & \varnothing \quad \wedge \\
 T_n & = & \boldsymbol{\sigma}[S(T)]_n \quad \wedge \\
 g_0 & \leq & T_g \quad \wedge \\ 
-v_0 & \leq & \boldsymbol{\sigma}[S(T)]_b
+v_0 & \leq & \boldsymbol{\sigma}[S(T)]_b \\
+T_l \leq {B_H}_l - \ell(B_\mathbf{T})_2
 \end{array}
 \end{equation}
 
-The sum of the transaction gas limit and the gas utilised in this block prior must be no greater than the block's \textbf{gasLimit}, $H_l$.
-
-% TODO: specify formally.
+Note the final condition; the sum of the transaction's gas limit, $T_l$, and the gas utilised in this block prior, given by $\ell(B_\mathbf{T})_2$, must be no greater than the block's \textbf{gasLimit}, ${B_H}_l$:
 
 The execution of a valid transaction begins with an irrevocable change made to the state: the nonce of the account of the sender, $S(T)$, is incremented by one and the balance is reduced by the up-front cost, $v_0$. The gas available for the proceeding computation, $g$, is defined as $T_g - g_0$. The computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
 
@@ -519,7 +537,7 @@ It is asserted that the state database will also change such that it defines the
 
 Finally, the contract is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the contract's storage can be altered, further contracts can be created and further message calls can be made. As such, the code execution function $\Xi$ evaluates to a tuple of the resultant state $\boldsymbol{\sigma}^{**}$ and available gas remaining $g'$.
 
-Code execution depletes gas; thus it may exit before the code has come to a natural halting state. In this exceptional case we say an Out-of-Gas exception has occurred: The evaluated state is defined as being the empty set $\varnothing$ and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation. The gas remaining should be zero. If the creation was conducted as the manifestation of a transaction, then this doesn't affect payment of the intrinsic cost: it is paid regardless.
+Code execution depletes gas; thus it may exit before the code has come to a natural halting state. In this exceptional case we say an Out-of-Gas exception has occurred: The evaluated state is defined as being the empty set $\varnothing$ and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation. The gas remaining should be zero. If the creation was conducted as the receiptation of a transaction, then this doesn't affect payment of the intrinsic cost: it is paid regardless.
 
 If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persevere. Thus formally, we may specify the resultant state and gas as $(\boldsymbol{\sigma}_P, g')$ where:
 \begin{equation}
@@ -781,14 +799,16 @@ The validation of uncle headers means nothing more than verifying that each uncl
 
 \subsection{Transaction Validation}
 
-The given \textbf{gasUsed} and \textbf{minGasLimit} must correspond faithfully to the transactions listed. In the case of ${B_H}_m$, the minimum gas limit, all transactions included in the transaction manifest must have a gas price, ${T_0}_p$, that is at least this value:
+%where $s[i]$ equals the root of the state trie immediately after the execution of the transaction $B_\mathbf{T}[i]$, and $g[i]$ the total gas used immediately after said transaction.
+
+The given \textbf{gasUsed} and \textbf{minGasLimit} must correspond faithfully to the transactions listed. In the case of ${B_H}_m$, the minimum gas limit, all transactions included in the transaction receipt must have a gas price, ${T_0}_p$, that is at least this value:
 \begin{equation}
-\forall_{T \in B_\mathbf{T}} {T_0}_p \geq {B_H}_m
+\forall_{T \in B_\mathbf{T}} T_p \geq {B_H}_m
 \end{equation}
 
 In the case of ${B_H}_u$, the total gas used in the block, it must be equal to the accumulated gas used according to the final transaction:
 \begin{equation}
-{B_H}_u = \ell(\mathbf{T})_1
+{B_H}_u = \ell(\mathbf{R})_u
 \end{equation}
 
 \subsection{Reward Application}
@@ -824,31 +844,25 @@ B'_n & = & n: \quad \mathtt{PoW}(B^*, n) < \frac{2^{256}}{H_d} \\
 B^* & \equiv & B \quad \text{except:} \quad B'_r = r(\Pi(\Gamma(B), B))
 \end{eqnarray}
 
-As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of $\Omega$, the block finalisation function and $\Upsilon$, the transaction-evaluation function, both now well-defined. We begin the definition by supposing we have a series of transactions $\mathbf{T}$.
+As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of $\Omega$, the block finalisation function and $\Upsilon$, the transaction-evaluation function, both now well-defined.
 
+As previously detailed, $\mathbf{R}[n]_{\boldsymbol{\sigma}}$ and $\mathbf{R}[n]_u$ are the $n$th corresponding states and cumulative gas used after each transaction. The former is defined simply as the state resulting from applying the corrresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
 \begin{equation}
-\text{Let} \quad \mathbf{T} = (\mathbf{T}[0], \mathbf{T}[1], ...)
+B_\mathbf{R}[n]_{\boldsymbol{\sigma}} = \begin{cases} \Gamma(B) & \text{if} \quad n < 0 \\ \Upsilon(B_\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n]) & \text{otherwise} \end{cases}
 \end{equation}
 
-These are the transactions that comprise the block, thus:
-\begin{eqnarray}
-\quad \quad B & \equiv & \Big(H, \big( \mathbf{M}[0], \mathbf{M}[1], ..., \mathbf{M}[\lVert \mathbf{T}\rVert - 1]\big), \mathbf{U}\Big) \\
-\quad \quad \mathbf{M}[n] & \equiv & (\mathbf{T}[n], \mathbf{s}[n], \mathbf{g}[n])
-\end{eqnarray}
-
-Here, $\mathbf{s}$ and $\mathbf{g}$ are the corresponding sequences of states and cumulative gas used for each transaction. $\mathbf{s}$ is defined simply as the state resulting from applying the corrresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
+In the case of $\mathbf{g}$, we take a similar approach defining each item as the gas used in evaluating the corresponding transaction summed with the previous item (or zero, if it is the first), giving us a running total:
 \begin{equation}
-\mathbf{s}[n] = \begin{cases} \Gamma(B) & \text{if} \quad n < 0 \\ \Upsilon(\mathbf{s}[n - 1], \mathbf{T}[n]) & \text{otherwise} \end{cases}
-\end{equation}
-
-In the case of $\mathbf{g}$, we take a similar approach defining each item as the gas used in evaluatng the corresponding transaction summed with the previous item (or zero, if it's the first), giving us a running total:
-\begin{equation}
-\mathbf{g}[n] = \begin{cases} 0 & \text{if} \quad n < 0 \\ \Upsilon^g(\mathbf{s}[n - 1], \mathbf{T}[n]) + \mathbf{g}[n-1] & \text{otherwise} \end{cases}
+B_\mathbf{R}[n]_u = \begin{cases} 0 & \text{if} \quad n < 0 \\
+\begin{array}[b]{l}
+\Upsilon^g(B_\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n])\\ \quad + B_\mathbf{R}[n-1]_u
+\end{array}
+ & \text{otherwise} \end{cases}
 \end{equation}
 
 Finally, we define $\Pi$ as the new state given the block reward function $\Omega$ applied to the final transaction's resultant state, $\ell(B_\mathbf{T})_1$:
 \begin{equation}
-\Pi(\boldsymbol{\sigma}, B) \equiv \Omega(B, \ell(B_\mathbf{T})_1)
+\Pi(\boldsymbol{\sigma}, B) \equiv \Omega(B, \ell(B_\mathbf{T})_{\boldsymbol{\sigma}})
 \end{equation}
 
 Thus the complete block-transition mechanism, less $\mathtt{PoW}$, the proof-of-work function is defined.
@@ -924,8 +938,6 @@ Providing random numbers within a deterministic system is, naturally, an impossi
 This strategy does have a downside: a miner with sufficient power could alter any of the above values in order to deliver a seed in order to alter the outcome of the pseudorandom-based executions. For a more secure pseudo-random offering, all involved parties could agree on a number of data feed contracts; these could be combined along with the block timestamp and hashed to produce the first number in the series. By spreading the inputs and thus the trust between numerous parties the likelihood of a malicious miner altering the outcome becomes increasingly less likely.
 
 \section{Future Directions} \label{ch:future}
-
-Rather than being hard-specified in the protocol, the block limit will become based upon some fixed ratio about a long-term moving average of actual gas usage in blocks, allowing it to slowly increase according to the network's ability to manage the transaction volume.
 
 The state database won't be forced to maintain all past state trie structures into the future. It should maintain an age for each node and eventually discard nodes that are neither recent enough nor checkpoints; checkpoints, or a set of nodes in the database that allow a particular block's state trie to be traversed, could be used to place a maximum limit on the amount of computation needed in order to retrieve any state throughout the blockchain.
 
@@ -1222,7 +1234,7 @@ The general gas cost function, $C$, is defined as:
 \begin{eqnarray}
 C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) & \equiv & G_{memory}(\boldsymbol{\mu}'_i - \boldsymbol{\mu}_i) + \begin{cases}
 C_\text{\tiny SSTORE}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SSTORE} \\
-G_{call} & \text{if} \quad w = \text{\small CALL}\\
+G_{call} + \boldsymbol{\mu}_\mathbf{s}[0] & \text{if} \quad w = \text{\small CALL}\\
 G_{create} & \text{if} \quad w = \text{\small CREATE}\\
 G_{sha3} & \text{if} \quad w = \text{\small SHA3}\\
 G_{sload} & \text{if} \quad w = \text{\small SLOAD}\\
@@ -1494,9 +1506,8 @@ G_{sstore} & \text{otherwise}
 0xf1 & {\small CALL} & 7 & 1 & Message-call into contract. \\
 &&&& $\mathbf{i} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[3] \dots (\boldsymbol{\mu}_\mathbf{s}[3] + \boldsymbol{\mu}_\mathbf{s}[4] - 1) ]$ \\
 &&&& $\mathbf{o} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[5] \dots (\boldsymbol{\mu}_\mathbf{s}[5] + \boldsymbol{\mu}_\mathbf{s}[6] - 1) ]$ \\
-&&&& Let $g_k = \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] = 0 \\ \boldsymbol{\mu}_g - \min(\boldsymbol{\mu}_g, \boldsymbol{\mu}_\mathbf{s}[2]) & \text{otherwise} \end{cases}$ \\
-&&&& $(\boldsymbol{\sigma}', g', \mathbf{o}) \equiv \Theta(\boldsymbol{\sigma}, I_a, I_o, \boldsymbol{\mu}_\mathbf{s}[0], g, I_p, \boldsymbol{\mu}_g - g_k, \boldsymbol{\mu}_\mathbf{s}[1], \mathbf{i})$ \\
-&&&& $\boldsymbol{\mu}'_g \equiv g' + g_k$ \\
+&&&& $(\boldsymbol{\sigma}', g', \mathbf{o}) \equiv \Theta(\boldsymbol{\sigma}, I_a, I_o, \boldsymbol{\mu}_\mathbf{s}[1], \boldsymbol{\mu}_\mathbf{s}[0], I_p, \boldsymbol{\mu}_\mathbf{s}[2], \mathbf{i})$ \\
+&&&& $\boldsymbol{\mu}'_g \equiv \boldsymbol{\mu}_g + g'$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
 &&&& where $x=0$ if the code execution for this operation failed due to lack of gas;\\
 &&&& $x=1$ otherwise. \\
@@ -1645,5 +1656,8 @@ Where $0_{256}$ refers to the parent and state and transaction root hashes, a 25
 
 The proof-of-concept series include a development premine, making the state root hash some value other than $0_{256}$. The latest documentation should be consulted for the value of the state root.
 
+\section{Javascript API}\label{app:jsapi}
+
+Yet TODO.
 \end{document}
 
