@@ -1284,7 +1284,7 @@ Here given are the various exceptions to the state transition rules given in sec
 0x06 & {\small MOD} & 2 & 1 & Modulo remainder operation. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0\\ \boldsymbol{\mu}_\mathbf{s}[0] \bmod \boldsymbol{\mu}_\mathbf{s}[1] & \text{otherwise}\end{cases}$  \\
 \midrule
-0x07 & {\small SMOD} & 2 & 1 & Modulo remainder operation. \\
+0x07 & {\small SMOD} & 2 & 1 & Signed modulo remainder operation. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0\\ \boldsymbol{\mu}_\mathbf{s}[0] \bmod \boldsymbol{\mu}_\mathbf{s}[1] & \text{otherwise}\end{cases}$  \\
 &&&& Where all values are treated as signed 256-bit integers for the purposes of this operation. \\
 \midrule
@@ -1301,10 +1301,18 @@ Here given are the various exceptions to the state transition rules given in sec
 0x0b & {\small GT} & 2 & 1 & Greater-than comparision. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
-0x0c & {\small EQ} & 2 & 1 & Equality comparision. \\
+0x0c & {\small SLT} & 2 & 1 & Signed less-than comparision. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] < \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
+&&&& Where all values are treated as signed 256-bit integers for the purposes of this operation. \\
+\midrule
+0x0d & {\small SGT} & 2 & 1 & Signed greater-than comparision. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
+&&&& Where all values are treated as signed 256-bit integers for the purposes of this operation. \\
+\midrule
+0x0e & {\small EQ} & 2 & 1 & Equality comparision. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] = \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
-0x0d & {\small NOT} & 1 & 1 & Simple not operator. \\
+0x0f & {\small NOT} & 1 & 1 & Simple not operator. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] = 0 \\ 0 & \text{otherwise} \end{cases}$ \\
 \end{tabular*}
 
