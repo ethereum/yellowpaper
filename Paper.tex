@@ -458,12 +458,12 @@ S(T) & \neq & \varnothing \quad \wedge \\
 \boldsymbol{\sigma}[S(T)] & \neq & \varnothing \quad \wedge \\
 T_n & = & \boldsymbol{\sigma}[S(T)]_n \quad \wedge \\
 g_0 & \leq & T_g \quad \wedge \\ 
-v_0 & \leq & \boldsymbol{\sigma}[S(T)]_b \\
-T_l \leq {B_H}_l - \ell(B_\mathbf{T})_2
+v_0 & \leq & \boldsymbol{\sigma}[S(T)]_b \quad \wedge \\
+T_l & \leq & {B_H}_l - \ell(B_\mathbf{R})_u
 \end{array}
 \end{equation}
 
-Note the final condition; the sum of the transaction's gas limit, $T_l$, and the gas utilised in this block prior, given by $\ell(B_\mathbf{T})_2$, must be no greater than the block's \textbf{gasLimit}, ${B_H}_l$:
+Note the final condition; the sum of the transaction's gas limit, $T_l$, and the gas utilised in this block prior, given by $\ell(B_\mathbf{R})_u$, must be no greater than the block's \textbf{gasLimit}, ${B_H}_l$:
 
 The execution of a valid transaction begins with an irrevocable change made to the state: the nonce of the account of the sender, $S(T)$, is incremented by one and the balance is reduced by the up-front cost, $v_0$. The gas available for the proceeding computation, $g$, is defined as $T_g - g_0$. The computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
 
@@ -800,7 +800,7 @@ The validation of uncle headers means nothing more than verifying that each uncl
 
 The given \textbf{gasUsed} and \textbf{minGasLimit} must correspond faithfully to the transactions listed. In the case of ${B_H}_m$, the minimum gas limit, all transactions included in the transaction receipt must have a gas price, ${T_0}_p$, that is at least this value:
 \begin{equation}
-\forall_{T \in B_\mathbf{T}} T_p \geq {B_H}_m
+\forall \; T \in B_\mathbf{T}: T_p \geq {B_H}_m
 \end{equation}
 
 In the case of ${B_H}_u$, the total gas used in the block, it must be equal to the accumulated gas used according to the final transaction:
@@ -857,9 +857,9 @@ B_\mathbf{R}[n]_u = \begin{cases} 0 & \text{if} \quad n < 0 \\
  & \text{otherwise} \end{cases}
 \end{equation}
 
-Finally, we define $\Pi$ as the new state given the block reward function $\Omega$ applied to the final transaction's resultant state, $\ell(B_\mathbf{T})_1$:
+Finally, we define $\Pi$ as the new state given the block reward function $\Omega$ applied to the final transaction's resultant state, $\ell(B_\mathbf{R})_{\boldsymbol{\sigma}}$:
 \begin{equation}
-\Pi(\boldsymbol{\sigma}, B) \equiv \Omega(B, \ell(B_\mathbf{T})_{\boldsymbol{\sigma}})
+\Pi(\boldsymbol{\sigma}, B) \equiv \Omega(B, \ell(B_\mathbf{R})_{\boldsymbol{\sigma}})
 \end{equation}
 
 Thus the complete block-transition mechanism, less $\mathtt{PoW}$, the proof-of-work function is defined.
