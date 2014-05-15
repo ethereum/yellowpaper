@@ -1655,7 +1655,7 @@ The genesis block is 13 items, and is specified thus:
 \big( \big( 0_{256}, \mathtt{\tiny SHA3}\big(\mathtt{\tiny RLP}\big( () \big)\big), 0_{160}, stateRoot, 0_{256}, 2^{22}, 0, 0, 1000000, 0, 0, (), \mathtt{\tiny SHA3}\big( (42) \big) \big), (), () \big)
 \end{equation}
 
-Where $0_{256}$ refers to the parent and state and transaction root hashes, a 256-bit hash which is all zeroes; $0_{160}$ refers to the coinbase address, a 160-bit hash which is all zeroes; $2^{22}$ refers to the difficulty; 0 refers to the timestamp (the Unix epoch); $()$ refers to the extradata and the sequences of both uncles and transactions, all empty. $\mathtt{\tiny SHA3}\big( (42) \big)$ refers to the SHA3 hash of a byte array of length one whose first and only byte is of value 42. $\mathtt{\tiny SHA3}\big(\mathtt{\tiny RLP}\big( () \big)\big)$ values refer to the hashes of the transaction and uncle lists in RLP, both empty.
+Where $0_{256}$ refers to the parent and state and transaction root hashes, a 256-bit hash which is all zeroes; $0_{160}$ refers to the coinbase address, a 160-bit hash which is all zeroes; $2^{22}$ refers to the difficulty; 0 refers to the timestamp (the Unix epoch); $()$ refers to the extradata and the sequences of both uncles and transactions, all empty. $\mathtt{\tiny SHA3}\big( (42) \big)$ refers to the SHA3 hash of a byte array of length one whose first and only byte is of value 42. $\mathtt{\tiny SHA3}\big(\mathtt{\tiny RLP}\big( () \big)\big)$ value refers to the hash of the uncle lists in RLP, both empty lists.
 
 The proof-of-concept series include a development premine, making the state root hash some value $stateRoot$. The latest documentation should be consulted for the value of the state root.
 
