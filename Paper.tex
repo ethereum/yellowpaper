@@ -242,8 +242,8 @@ Appendix \ref{app:signing} specifies the function, $S$, which maps transactions 
 The function $L_T$ prepares a transaction for being transformed into an RLP-serialised byte array:
 \begin{equation}
 L_T(T) \equiv \begin{cases}
-(T_n, T_v, T_t, T_p, T_g, T_\mathbf{i}, T_w, T_r, T_s) & \text{if} \; T_t = 0\\
-(T_n, T_v, T_t, T_p, T_g, T_\mathbf{d}, T_w, T_r, T_s) & \text{otherwise} 
+(T_n, T_p, T_g, T_t, T_v, T_\mathbf{i}, T_w, T_r, T_s) & \text{if} \; T_t = 0\\
+(T_n, T_p, T_g, T_t, T_v, T_\mathbf{d}, T_w, T_r, T_s) & \text{otherwise} 
 \end{cases}
 \end{equation}
 
