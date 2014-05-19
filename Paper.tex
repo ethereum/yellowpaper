@@ -1093,10 +1093,10 @@ There is no specific canonical encoding format for signed or floating-point valu
 \section{Hex-Prefix Encoding}\label{app:hexprefix}
 Hex-prefix encoding is an efficient method of encoding an arbitrary number of nibbles as a byte array. It is able to store an additional flag which, when used in the context of the trie (the only context in which it is used), disambiguates between node types.
 
-It is defined as the function $\mathtt{\tiny HP}$ which maps from a sequence of nibbles (represented by the set $\mathbb{E}$) together with a boolean value to a sequence of bytes (represented by the set $\mathbb{B}$):
+It is defined as the function $\mathtt{\tiny HP}$ which maps from a sequence of nibbles (represented by the set $\mathbb{Y}$) together with a boolean value to a sequence of bytes (represented by the set $\mathbb{B}$):
 
 \begin{eqnarray}
-\mathtt{\tiny HP}(\mathbf{x}, t): \mathbf{x} \in \mathbb{E} & \equiv & \begin{cases}
+\mathtt{\tiny HP}(\mathbf{x}, t): \mathbf{x} \in \mathbb{Y} & \equiv & \begin{cases}
 (16f(t), 16\mathbf{x}[0] + \mathbf{x}[1], 16\mathbf{x}[2] + \mathbf{x}[3], ...) &
 \text{if} \quad \lVert \mathbf{x} \rVert \; \text{is even} \\
 (16(f(t) + 1) + \mathbf{x}[0], 16\mathbf{x}[1] + \mathbf{x}[2], 16\mathbf{x}[3] + \mathbf{x}[4], ...) &
