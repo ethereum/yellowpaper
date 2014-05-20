@@ -374,6 +374,7 @@ The canonical gas limit of a block of header $H$ is defined as $L(H)$:
 \begin{eqnarray}
 L(H) & \equiv & \begin{cases}
 10^6 & \text{if} \quad H_i = 0\\
+10^4 & \text{if} \quad L'(H) < 10^4\\
 L'(H) & \text{otherwise}
 \end{cases}\\
 L'(H) & \equiv & \big\lfloor \frac{1023 {P(H)_H}_l + \lfloor \frac{6}{5}{P(H)_H}_u \rfloor}{1024}\big\rfloor
