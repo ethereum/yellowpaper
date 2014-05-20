@@ -268,11 +268,11 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[stateRoot] The SHA3 256-bit hash of the root node of the state trie, after all transactions are executed and finalisations applied; formally $H_r$.
 \item[transactionsTrie] The SHA3 256-bit hash of the root node of the trie structure populated with each transaction in the transactions list portion of the block; formally $H_t$.
 \item[difficulty] A scalar value corresponding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_d$.
-\item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.
 \item[number] A scalar value equal to the number of ancestor blocks. The genesis block has a number of zero; formally $H_i$.
 \item[minGasPrice] A scalar value equal to the minimum price of gas a transaction must have provided in order to be sufficient for inclusion by this miner in this block; formally $H_m$.
 \item[gasLimit] A scalar value equal to the current limit of gas expenditure per block; formally $H_l$.
 \item[gasUsed] A scalar value equal to the total gas used in transactions in this block; formally $H_u$.
+\item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.
 \item[extraData] An arbitrary byte array containing data relevant to this block. With the exception of the genesis block, this must be 32 bytes or fewer; formally $H_x$.
 \item[nonce] A 256-bit hash which proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.
 \end{description}
