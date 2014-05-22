@@ -239,7 +239,6 @@ However, a message call transaction contains:
 
 Appendix \ref{app:signing} specifies the function, $S$, which maps transactions to the sender, and happens through the ECDSA of the SECP-256k1 curve, using the hash of the transaction (excepting the latter three signature fields) as the datum to sign. For the present we simply assert that the sender of a given transaction $T$ can be represented with $S(T)$.
 
-The function $L_T$ prepares a transaction for being transformed into an RLP-serialised byte array:
 \begin{equation}
 L_T(T) \equiv \begin{cases}
 (T_n, T_p, T_g, T_t, T_v, T_\mathbf{i}, T_w, T_r, T_s) & \text{if} \; T_t = 0\\
@@ -1198,8 +1197,9 @@ A(p_r) = \mathcal{B}_{96..255}\big(\mathtt{\tiny SHA3}\big( \mathtt{\small ECDSA
 The message hash, $h(T)$, to be signed is the SHA3 hash of the transaction without the latter three signature components, formally described as $T_r$, $T_s$ and $T_w$:
 \begin{eqnarray}
 L_S(T) & \equiv & \begin{cases}
-(T_n, T_v, T_p, T_g, T_t, T_\mathbf{b}, T_\mathbf{i}) & \text{if} \; T_t = 0\\
-(T_n, T_v, T_p, T_g, T_t, T_\mathbf{d}) & \text{otherwise} \end{cases} \\
+(T_n, T_p, T_g, T_t, T_v, T_\mathbf{i}) & \text{if} \; T_t = 0\\
+(T_n, T_p, T_g, T_t, T_v, T_\mathbf{d}) & \text{otherwise} 
+\end{cases} \\
 h(T) & \equiv & \mathtt{\small SHA3}( L_S(T) )
 \end{eqnarray}
 
