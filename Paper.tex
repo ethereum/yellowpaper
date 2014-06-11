@@ -437,8 +437,8 @@ Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define $\Up
 We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
 \begin{equation}
 g_0 \equiv \begin{cases}
-\lVert T_\mathbf{i}\rVert G_{data} + G_{transaction} & \text{if} \quad T_t = 0 \\
-\lVert T_\mathbf{d}\rVert G_{data} + G_{transaction} & \text{otherwise} \\
+\lVert T_\mathbf{i}\rVert G_{txdata} + G_{transaction} & \text{if} \quad T_t = 0 \\
+\lVert T_\mathbf{d}\rVert G_{txdata} + G_{transaction} & \text{otherwise} \\
 \end{cases}
 \end{equation}
 
