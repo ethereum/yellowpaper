@@ -373,7 +373,7 @@ The canonical gas limit of a block of header $H$ is defined as $L(H)$:
 \begin{eqnarray}
 L(H) & \equiv & \begin{cases}
 10^6 & \text{if} \quad H_i = 0\\
-10^4 & \text{if} \quad L'(H) < 10^4\\
+125000 & \text{if} \quad L'(H) < 125000\\
 L'(H) & \text{otherwise}
 \end{cases}\\
 L'(H) & \equiv & \big\lfloor \frac{1023 {P(H)_H}_l + \lfloor \frac{6}{5}{P(H)_H}_u \rfloor}{1024}\big\rfloor
@@ -995,6 +995,8 @@ Useful corrections and suggestions were provided by a number of others from the 
 \item[Ethereum Browser] (aka Ethereum Reference Client) A cross-platform GUI of an interface similar to a simplified browser (a la Chrome) that is able to host sandboxed applications whose backend is purely on the Ethereum protocol.
 
 \item[Ethereum Virtual Machine] (aka EVM) The virtual machine that forms the key part of the execution model for an Account's associated EVM Code.
+
+\item[Ethereum Runtime Environment] (aka ERE) The environment which is provided to an Autonomous Object executing in the EVM. Includes the EVM but also the structure of the world state on which the EVM relies for certain I/O instructions including CALL \& CREATE.
 
 \item[EVM Code] The bytecode that the EVM can natively execute. Used to formally specify the meaning and ramifications of a message to an Account.
 
