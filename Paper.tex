@@ -186,7 +186,7 @@ The account state comprises the first two, and potentially the last two, of the 
 \begin{description}
 \item[nonce] A scalar value equal to the number of transactions sent from this address or, in the case of accounts with associated code, the number of contract-creations made by this account. For account of address $a$ in state $\boldsymbol{\sigma}$, this would be formally denoted $\boldsymbol{\sigma}[a]_n$.
 \item[balance] A scalar value equal to the number of Wei owned by this address. Formally denoted $\boldsymbol{\sigma}[a]_b$.
-\item[stateRoot] A 256-bit hash of the root node of a trie structure that encodes the storage contents of the account, itself a simple mapping between byte arrays of size 32. The hash is formally denoted $\boldsymbol{\sigma}[a]_s$. Since I typically wish to refer not to the trie's root hash but to the underlying set of key/value pairs stored within, I define a convenient equi	valence $\texttt{\small TRIE}(\boldsymbol{\sigma}[a]_\mathbf{s}) \equiv \boldsymbol{\sigma}[a]_s$. It shall be understood that $\boldsymbol{\sigma}[a]_\mathbf{s}$ is not a `physical' member of the account and does not contribute to its later serialisation.
+\item[stateRoot] A 256-bit hash of the root node of a trie structure that encodes the storage contents of the account, itself a simple mapping between byte arrays of size 32. The hash is formally denoted $\boldsymbol{\sigma}[a]_s$. Since I typically wish to refer not to the trie's root hash but to the underlying set of key/value pairs stored within, I define a convenient equivalence $\texttt{\small TRIE}(\boldsymbol{\sigma}[a]_\mathbf{s}) \equiv \boldsymbol{\sigma}[a]_s$. It shall be understood that $\boldsymbol{\sigma}[a]_\mathbf{s}$ is not a `physical' member of the account and does not contribute to its later serialisation.
 \item[codeHash] The hash of the EVM code of this account---this is the code that gets executed should this address receive a message call; it is immutable and thus, unlike all other fields, cannot be changed after construction. All such code fragments are contained in the state database under their corresponding hashes for later retrieval. This hash is formally denoted $\boldsymbol{\sigma}[a]_c$, and thus the code may be denoted as $\mathbf{b}$, given that $\texttt{\small SHA3}(\mathbf{b}) = \boldsymbol{\sigma}[a]_c$.
 \end{description}
 
@@ -216,10 +216,10 @@ A transaction (formally, $T$) is a single cryptographically-signed instruction s
 
 \begin{description}
 \item[nonce] A scalar value equal to the number of transactions sent by the sender; formally $T_n$.
-\item[value] A scalar value equal to the number of Wei to be transferred to the message call's recipient or, in the case of contract creation, as an endowment to the newly created account; formally $T_v$.
 \item[gasPrice] A scalar value equal to the number of Wei to be paid per unit of \textit{gas} for all computation costs incurred as a result of the execution of this transaction; formally $T_p$.
 \item[gasLimit] A scalar value equal to the maximum amount of gas that should be used in executing this transaction. This is paid up-front, before any computation is done and may not be increased later; formally $T_g$.
 \item[to] The 160-bit address of the message call's recipient or the zero address for a contract creation transaction; formally $T_t$.
+\item[value] A scalar value equal to the number of Wei to be transferred to the message call's recipient or, in the case of contract creation, as an endowment to the newly created account; formally $T_v$.
 \item[v, r, s] Values corresponding to the signature of the transaction and used to determine the sender of the transaction; formally $T_w$, $T_r$ and $T_s$. This is expanded in Appendix \ref{app:signing}.
 \end{description}
 
@@ -229,7 +229,7 @@ Additionally, a contract creation transaction contains:
 \item[init] An unlimited size byte array specifying the EVM-code for the account initialisation procedure, formally $T_\mathbf{i}$.
 \end{description}
 
-\textbf{init} is an EVM-code fragment; it returns the \textbf{body}, a second fragment of code that executed each time the account receives a message call (either through a transaction or due to the internal execution of code). \textbf{init} is executed only once at account creation and gets discarded immediately thereafter.
+\textbf{init} is an EVM-code fragment; it returns the \textbf{body}, a second fragment of code that executes each time the account receives a message call (either through a transaction or due to the internal execution of code). \textbf{init} is executed only once at account creation and gets discarded immediately thereafter.
 
 However, a message call transaction contains:
 
@@ -342,7 +342,9 @@ The component types are defined thus:
 \begin{array}[t]{lclclcl}
 H_p \in \mathbb{B}_{32} & \wedge & H_u \in \mathbb{B}_{32} & \wedge & H_b \in \mathbb{B}_{20} & \wedge \\
 H_r \in \mathbb{B}_{32} & \wedge & H_t \in \mathbb{B}_{32} & \wedge & H_d \in \mathbb{P} & \wedge \\
-H_s \in \mathbb{P} & \wedge & H_x \in \mathbb{B} & \wedge & H_b \in \mathbb{B}_{32} &&
+H_i \in \mathbb{P} & \wedge & H_m \in \mathbb{P} & \wedge & H_l \in \mathbb{P} & \wedge \\
+H_u \in \mathbb{P} & \wedge & H_s \in \mathbb{P} & \wedge & H_x \in \mathbb{B} & \wedge \\
+H_n \in \mathbb{B}_{32} &&&&
 \end{array}
 \end{equation}
 
@@ -603,7 +605,7 @@ The execution model specifies how the system state is altered given a series of 
 
 The EVM is a simple stack-based architecture. The word size of the machine (and thus size of stack item) is 256-bit. This was chosen to facilitate the SHA3-256 hash scheme and elliptic-curve computations. The memory model is a simple word-addressed byte array. The stack has an unlimited size. The machine also has an independent storage model; this is similar in concept to the memory but rather than a byte array, it is a word-addressable word array. Unlike memory, which is volatile, storage is non volatile and is maintained as part of the system state. All locations in both storage and memory are well-defined initially as zero.
 
-The machine does not follow the standard von Neumann architecture. Rather than storing program code in generally-accessible memory or storage, it is stored separately in a virtual ROM interactable only though a specialised instruction.
+The machine does not follow the standard von Neumann architecture. Rather than storing program code in generally-accessible memory or storage, it is stored separately in a virtual ROM interactable only through a specialised instruction.
 
 The machine can have exceptional execution for several reasons, including stack underflows and invalid instructions. These unambiguously and validly result in immediate halting of the machine with all state changes left intact. The one piece of exceptional execution that does not leave state changes intact is the out-of-gas (OOG) exception. Here, the machine halts immediately and reports the issue to the execution agent (either the transaction processor or, recursively, the spawning execution environment) and which will deal with it separately.
 
