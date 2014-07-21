@@ -312,9 +312,15 @@ We can assert its validity if and only if it satisfies several conditions: It mu
 \begin{equation}
 \begin{array}[t]{lclc}
 H_u &\equiv& \mathtt{\small SHA3}(\mathtt{\small RLP}(L_H^*(B_\mathbf{U}))) & \wedge \\
-H_t &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert: (i, B_\mathbf{R}[i])\}) & \wedge \\
+H_t &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert, i \in \mathbb{P}: p(i, L_R(B_\mathbf{R}[i])\})) & \wedge \\
 H_r &\equiv& \mathtt{\small TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) &
 \end{array}
+\end{equation}
+
+where $p(k, v)$ is simply the pairwise RLP transformation, in this case, the first being the index of the transaction in the block and the second being the transaction receipt:
+
+\begin{equation}
+P(k, v) \equiv \big( \mathtt{\small RLP}(k), \mathtt{\small RLP}(v) \big)
 \end{equation}
 
 Furthermore:
@@ -381,7 +387,7 @@ L'(H) & \text{otherwise}
 L'(H) & \equiv & \big\lfloor \frac{1023 {P(H)_H}_l + \lfloor \frac{6}{5}{P(H)_H}_u \rfloor}{1024}\big\rfloor
 \end{eqnarray}
 
-$H_s$ is the timestamp of block $H$ and must fulfill the relation:
+$H_s$ is the timestamp of block $H$ and must fulfil the relation:
 \begin{equation}
 H_s > {P(H)_H}_s
 \end{equation}
@@ -395,7 +401,7 @@ The nonce, $H_n$, must satisfy the relation:
 
 Where $\mathtt{PoW}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an pseudo-random number cryptographically dependent on the parameters $H$ and $H_n$. Given an approximately uniform distribution in the range $[0, 2^{256})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
 
-This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propagate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because satisfaction of this requirement depends on the contents of the block and in turn its composed transactions, creating new, valid, blocks is difficult and, over time, requires approximately the total compute power of the trustworthy portion of the mining peers.
+This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propagate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because its satisfaction depends on the contents of the block and in turn its composed transactions, creating new, valid, blocks is difficult and, over time, requires approximately the total compute power of the trustworthy portion of the mining peers.
 
 Thus we are able to define the block header validity function $V(H)$:
 \begin{eqnarray}
@@ -800,7 +806,7 @@ The validation of uncle headers means nothing more than verifying that each uncl
 
 %where $s[i]$ equals the root of the state trie immediately after the execution of the transaction $B_\mathbf{T}[i]$, and $g[i]$ the total gas used immediately after said transaction.
 
-The given \textbf{gasUsed} and \textbf{minGasLimit} must correspond faithfully to the transactions listed. In the case of ${B_H}_m$, the minimum gas limit, all transactions included in the transaction receipt must have a gas price, ${T_0}_p$, that is at least this value:
+The given \textbf{gasUsed} and \textbf{minGasPrice} must correspond faithfully to the transactions listed. In the case of ${B_H}_m$, the minimum gas price, all transactions included in the transaction receipt must have a gas price, ${T_0}_p$, that is at least this value:
 \begin{equation}
 \forall \; T \in B_\mathbf{T}: T_p \geq {B_H}_m
 \end{equation}
