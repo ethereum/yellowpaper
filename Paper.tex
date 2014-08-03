@@ -870,7 +870,7 @@ B^* & \equiv & B \quad \text{except:} \quad B'_r = r(\Pi(\Gamma(B), B))
 
 As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of $\Omega$, the block finalisation function and $\Upsilon$, the transaction-evaluation function, both now well-defined.
 
-As previously detailed, $\mathbf{R}[n]_{\boldsymbol{\sigma}}$ and $\mathbf{R}[n]_u$ are the $n$th corresponding states and cumulative gas used after each transaction. The former is defined simply as the state resulting from applying the corrresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
+As previously detailed, $\mathbf{R}[n]_{\boldsymbol{\sigma}}$ and $\mathbf{R}[n]_u$ are the $n$th corresponding states and cumulative gas used after each transaction. The former is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
 \begin{equation}
 B_\mathbf{R}[n]_{\boldsymbol{\sigma}} = \begin{cases} \Gamma(B) & \text{if} \quad n < 0 \\ \Upsilon(B_\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n]) & \text{otherwise} \end{cases}
 \end{equation}
