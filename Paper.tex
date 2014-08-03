@@ -40,7 +40,7 @@
 \title{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ {\smaller \textbf{Proof-of-Concept V}}}
 \author{
     Dr. Gavin Wood\\
-    Co-Founder \& CTO, Ethereum Project\\
+    Co-Founder \& Lead, Ethereum Project\\
     gavin@ethereum.org
 }
 \begin{document}
@@ -501,7 +501,7 @@ We define the checkpoint state $\boldsymbol{\sigma}_0$:
 Evaluating $\boldsymbol{\sigma}_P$ from $\boldsymbol{\sigma}_0$ depends on the transaction type; either contract creation or message call; we define the pairing of post-execution provisional state ($\boldsymbol{\sigma}_P$) and remaining gas ($g'$):
 \begin{equation}
 (\boldsymbol{\sigma}_P, g') \equiv \begin{cases}
-\Lambda(\boldsymbol{\sigma}_0, S(T), T_o, g, T_p, T_v, T_\mathbf{i}, T_\mathbf{b}) & \text{if} \quad T_t = 0 \\
+\Lambda(\boldsymbol{\sigma}_0, S(T), T_o, g, T_p, T_v, T_\mathbf{i}) & \text{if} \quad T_t = 0 \\
 \Theta_{0,1}(\boldsymbol{\sigma}_0, S(T), T_o, T_t, g, T_p, T_v, T_\mathbf{d}) & \text{otherwise}
 \end{cases}
 \end{equation}
@@ -533,48 +533,51 @@ And finally specify $\Upsilon^g$, the total gas used in this transaction:
 
 \section{Contract Creation} \label{ch:create}
 
-There are number of intrinsic parameters used when creating an account: sender ($s$), nonce ($n$), available gas ($g$), gas price ($p$), endowment ($v$) together with an arbitrary length byte array, $\mathbf{i}$, the initialisation EVM code.
+There are number of intrinsic parameters used when creating an account: sender ($s$), original transactor ($o$), available gas ($g$), gas price ($p$), endowment ($v$) together with an arbitrary length byte array, $\mathbf{i}$, the initialisation EVM code.
 
-We define the creation function formally as the function $\Lambda$, which evaluates from these values, together with the state $\boldsymbol{\sigma}_0$ to the tuple containing the new state, additional database entries and remaining gas $(\boldsymbol{\sigma}_P, g')$, as in section \ref{ch:transactions}:
+We define the creation function formally as the function $\Lambda$, which evaluates from these values, together with the state $\boldsymbol{\sigma}$ to the tuple containing the new state, additional database entries and remaining gas $(\boldsymbol{\sigma}', g')$, as in section \ref{ch:transactions}:
 \begin{equation}
-(\boldsymbol{\sigma}_P, g') \equiv \Lambda(\boldsymbol{\sigma}_0, s, n, g, p, v, \mathbf{i})
+(\boldsymbol{\sigma}', g') \equiv \Lambda(\boldsymbol{\sigma}, s, o, g, p, v, \mathbf{i})
 \end{equation}
 
 The address of the new account is defined as being the rightmost 160 bits of the SHA3 hash of RLP encoding of the structure containing only the sender and the nonce. In the unlikely event that the address is already in use, it is treated as a big-endian integer and incremented by one until an unused address is arrived at. Thus we define the creation address function $A$:
 \begin{eqnarray}
 A(s, n) & \equiv & a \quad \text{where:} \\
-a & = & \arg \min_x : x \geqslant a' \wedge \boldsymbol{\sigma}_0[x] = \varnothing \\
+a & = & \arg \min_x : x \geqslant a' \wedge \boldsymbol{\sigma}[x] = \varnothing \\
 a' & = & \mathcal{B}_{96..255}\Big(\mathtt{\tiny SHA3}\Big(\mathtt{\tiny RLP}\big(\;(s, n)\;\big)\Big)\Big)
 \end{eqnarray}
 
-where $\mathtt{\tiny SHA3}$ is the SHA3 256-bit hash function, $\mathtt{\tiny RLP}$ is the RLP encoding function, $\mathcal{B}_{a..b}(X)$ evaluates to binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$ and $\boldsymbol{\sigma}_0[x]$ is the address state of $x$ or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
+where $\mathtt{\tiny SHA3}$ is the SHA3 256-bit hash function, $\mathtt{\tiny RLP}$ is the RLP encoding function, $\mathcal{B}_{a..b}(X)$ evaluates to binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$ and $\boldsymbol{\sigma}[x]$ is the address state of $x$ or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
 
 The account's nonce is initially defined as zero, the balance as the value passed, the storage as empty and the code hash as the SHA3 256-bit hash of the empty string, thus the mutated state becomes $\boldsymbol{\sigma}^*$:
-\begin{eqnarray}
-\boldsymbol{\sigma}^* & \equiv & \boldsymbol{\sigma} \quad \text{except:} \\
-\boldsymbol{\sigma}^*[a] & \equiv & \big( 0, v, \mathtt{\tiny TRIE}(\varnothing), \mathtt{\tiny SHA3}\big(()\big) \big)
-\end{eqnarray}
+\begin{equation}
+\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except:}
+\end{equation}
+\begin{equation}
+\boldsymbol{\sigma}^*[A(s, \boldsymbol{\sigma}[s]_n - 1)] \equiv \big( 0, v, \mathtt{\tiny TRIE}(\varnothing), \mathtt{\tiny SHA3}\big(()\big) \big)
+\end{equation}
 
-where $a$ is the address of the new account, as defined above. It is asserted that the state database will also change such that it defines the pair $(\mathtt{\tiny SHA3}(\mathbf{b}), \mathbf{b})$.
+where $a$ is the address of the new account, as defined above.
+% It is asserted that the state database will also change such that it defines the pair $(\mathtt{\tiny SHA3}(\mathbf{b}), \mathbf{b})$.
 
-Finally, the account is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the account's storage can be altered, further accounts can be created and further message calls can be made. As such, the code execution function $\Xi$ evaluates to a tuple of the resultant state $\boldsymbol{\sigma}^{**}$ and available gas remaining $g'$.
+Finally, the account is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the account's storage can be altered, further accounts can be created and further message calls can be made. As such, the code execution function $\Xi$ evaluates to a tuple of the resultant state $\boldsymbol{\sigma}^{**}$, available gas remaining $g'$ and the body code of the account $\mathbf{b}$.
 
-Code execution depletes gas; thus it may exit before the code has come to a natural halting state. In this exceptional case we say an Out-of-Gas exception has occurred: The evaluated state is defined as being the empty set $\varnothing$ and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation. The gas remaining should be zero. If the creation was conducted as the receiptation of a transaction, then this doesn't affect payment of the intrinsic cost: it is paid regardless.
+Code execution depletes gas; thus it may exit before the code has come to a natural halting state. In this exceptional case we say an Out-of-Gas exception has occurred: The evaluated state is defined as being the empty set $\varnothing$ and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation. The gas remaining should be zero. If the creation was conducted as the reception of a transaction, then this doesn't affect payment of the intrinsic cost: it is paid regardless.
 
-If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persevere. Thus formally, we may specify the resultant state and gas as $(\boldsymbol{\sigma}_P, g')$ where:
+If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persevere. Thus formally, we may specify the resultant state and gas as $(\boldsymbol{\sigma}', g')$ where:
 \begin{equation}
 (\boldsymbol{\sigma}^{**}, g', \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}^*, g, I) \\
 \end{equation}
 \begin{eqnarray}
-\quad \boldsymbol{\sigma}_P & \equiv & \begin{cases}
+\quad \boldsymbol{\sigma}' & \equiv & \begin{cases}
 \boldsymbol{\sigma}^{**} & \text{if} \quad \boldsymbol{\sigma}^{**}[a] = \varnothing \\
 \begin{array}[b]{l}
 \boldsymbol{\sigma}^{**} \quad \text{except:} \\
-\boldsymbol{\sigma}_P[a]_{\mathbf{b}} = \mathbf{o}
+\boldsymbol{\sigma}'[a]_{\mathbf{b}} = \mathbf{o}
 \end{array} & \text{otherwise}
 \end{cases} \\
 I_a & \equiv & a \\
-I_o & \equiv & s \\
+I_o & \equiv & o \\
 I_p & \equiv & p \\
 I_\mathbf{d} & \equiv & () \\
 I_s & \equiv & s \\
@@ -582,7 +585,7 @@ I_v & \equiv & v \\
 I_\mathbf{b} & \equiv & \mathbf{i}
 \end{eqnarray}
 
-$I_\mathbf{d}$ evaluates to the empty tuple. $I_H$ has no special treatment and are determined from the blockchain. The exception in the determination of $\boldsymbol{\sigma}_P$ dictates that the resultant byte sequence from the execution of the initialisation code specifies the final body code for the newly-created account, with $\boldsymbol{\sigma}_P[A(s, \boldsymbol{\sigma}[s]_n)]_{\mathbf{b}}$ being the newly created account's body code and $\mathbf{o}$ the output byte sequence of the code execution.
+$I_\mathbf{d}$ evaluates to the empty tuple. $I_H$ has no special treatment and are determined from the blockchain. The exception in the determination of $\boldsymbol{\sigma}'$ dictates that the resultant byte sequence from the execution of the initialisation code specifies the final body code for the newly-created account, with $\boldsymbol{\sigma}'[A(s, \boldsymbol{\sigma}[s]_n)]_{\mathbf{b}}$ being the newly created account's body code and $\mathbf{o}$ the output byte sequence of the code execution.
 
 \subsection{Subtleties}
 Note that while the initialisation code is executing, the newly created address exists but with no intrinsic body code. Thus any message call received by it during this time causes no code to be executed. If the initialisation execution ends with a {\small SUICIDE} instruction, no code is set. For a normal {\small STOP} code, or if the code returned is otherwise empty, then the state is left with a zombie account, and any remaining balance will be locked into the account forever.
@@ -591,7 +594,7 @@ Note that while the initialisation code is executing, the newly created address 
 
 In the case of executing a message call, several parameters are required: sender ($s$), transaction originator ($o$), recipient ($r$), available gas ($g$), value ($v$) and gas price ($p$) together with an arbitrary length byte array, $\mathbf{d}$, the input data of the call. Aside from evaluating to a new state and additional database entries, message calls also have an extra component---the output data denoted by the byte array $\mathbf{o}$. This is ignored when executing transactions, however message calls can be initiated due to VM-code execution and in this case this information is used.
 \begin{equation}
-(\boldsymbol{\sigma}_P, g', \mathbf{o}) \equiv \Theta(\boldsymbol{\sigma}, s, o, r, g, p, v, \mathbf{d})
+(\boldsymbol{\sigma}', g', \mathbf{o}) \equiv \Theta(\boldsymbol{\sigma}, s, o, r, g, p, v, \mathbf{d})
 \end{equation}
 
 We define $\boldsymbol{\sigma}_1$, the checkpoint state as the original state but with the value transferred to the recipient:
@@ -602,7 +605,7 @@ We define $\boldsymbol{\sigma}_1$, the checkpoint state as the original state bu
 
 The account's associated code (identified as the fragment whose SHA3 hash is $\boldsymbol{\sigma}[r]_c$) is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts due to an exhausted gas supply, then no gas is refunded to the caller and the state is reverted to the point immediately prior to code execution.
 \begin{eqnarray}
-\boldsymbol{\sigma}_P & \equiv & \begin{cases}
+\boldsymbol{\sigma}' & \equiv & \begin{cases}
 \boldsymbol{\sigma}_1 & \text{if} \quad \boldsymbol{\sigma}_1[r]_c = \varnothing \\
 \boldsymbol{\sigma}_1 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
 \boldsymbol{\sigma}^{**} & \text{otherwise}
@@ -1526,7 +1529,7 @@ G_{sstore} & \text{otherwise}
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0xf0 & {\small CREATE} & 3 & 1 & Create a new account with associated code. \\
 &&&& $\mathbf{i} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[1] \dots (\boldsymbol{\mu}_\mathbf{s}[1] + \boldsymbol{\mu}_\mathbf{s}[2] - 1) ]$ \\
-&&&& $(\boldsymbol{\sigma}', \boldsymbol{\mu}'_g) \equiv \begin{cases}\Lambda(\boldsymbol{\sigma}^*, I_a, I_o, \boldsymbol{\mu}_g, I_p, \boldsymbol{\mu}_\mathbf{s}[0], \mathbf{i}, \mathbf{b}) & \text{when} \quad \boldsymbol{\mu}_\mathbf{s}[0] \leqslant \boldsymbol{\sigma}[I_a]_b \\ (\boldsymbol{\sigma}, \boldsymbol{\mu}_g) & \text{otherwise} \end{cases}$ \\
+&&&& $(\boldsymbol{\sigma}', \boldsymbol{\mu}'_g) \equiv \begin{cases}\Lambda(\boldsymbol{\sigma}^*, I_a, I_o, \boldsymbol{\mu}_g, I_p, \boldsymbol{\mu}_\mathbf{s}[0], \mathbf{i}) & \text{when} \quad \boldsymbol{\mu}_\mathbf{s}[0] \leqslant \boldsymbol{\sigma}[I_a]_b \\ (\boldsymbol{\sigma}, \boldsymbol{\mu}_g) & \text{otherwise} \end{cases}$ \\
 &&&& $\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except} \quad \boldsymbol{\sigma}^*[I_a]_n = \boldsymbol{\sigma}[I_a]_n + 1 \wedge \boldsymbol{\sigma}^*[I_a]_b = \boldsymbol{\sigma}[I_a]_b - \boldsymbol{\mu}_\mathbf{s}[0]$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
 &&&& where $x=0$ if the code execution for this operation failed due to lack of gas or \\
