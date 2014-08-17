@@ -608,7 +608,7 @@ In the case of executing a message call, several parameters are required: sender
 We define $\boldsymbol{\sigma}_1$, the checkpoint state as the original state but with the value transferred to the recipient:
 \begin{eqnarray}
 \boldsymbol{\sigma}_1 & \equiv & \boldsymbol{\sigma} \quad \text{except:} \\
-\boldsymbol{\sigma}_1[r]_b & \equiv & \boldsymbol{\sigma}_1[r]_b + v
+\boldsymbol{\sigma}_1[r]_b & \equiv & \boldsymbol{\sigma}[r]_b + v
 \end{eqnarray}
 
 The account's associated code (identified as the fragment whose SHA3 hash is $\boldsymbol{\sigma}[r]_c$) is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts due to an exhausted gas supply, then no gas is refunded to the caller and the state is reverted to the point immediately prior to code execution.
