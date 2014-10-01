@@ -1509,8 +1509,8 @@ G_{sstore} & \text{otherwise}
 0x5a & {\small PC} & 0 & 1 & Get the program counter. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_{pc}$ \\
 \midrule
-0x5b & {\small MSIZE} & 0 & 1 & Get the size of active memory. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_{i}$ \\
+0x5b & {\small MSIZE} & 0 & 1 & Get the size of active memory in bytes. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv 32\boldsymbol{\mu}_{i}$ \\
 \midrule
 0x5c & {\small GAS} & 0 & 1 & Get the amount of available gas. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_{g}$ \\
