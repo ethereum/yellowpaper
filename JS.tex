@@ -1,0 +1,102 @@
+\section{Javascript API}\label{app:jsapi}
+
+The JavaScript API provides a consistent API across multiple scenarios including each of the clients' web-based in-process \DH{}App frameworks and the out-of-process RPC-based infrastructure. All key access takes places though the special \texttt{eth} object, part of the global namespace.
+
+\subsection{Values}
+There are no special object types in the API; all values are strings. As strings, values may be of several forms, and are interpreted by the API according to a series of rules:
+
+\begin{enumerate}
+\item If the string contains only digits from 0-9, then it is interpreted as a decimal integer;
+\item if the string begins with the characters \texttt{0x}, then it is interpreted as a hexadecimal integer;
+\item it is interpreted as a binary string otherwise.
+\end{enumerate}
+
+The only exception to this are for parameters that expect a binary string; in this case the string is always interpreted as such.
+
+Values are implicitly converted between integers and hashes/byte-arrays; when this happens, integers are interpreted as big-endian as is standard for Ethereum. The following forms are allowed; they are all interpreted in the same way:
+
+\begin{enumerate}
+\item \texttt{"4276803"}
+\item \texttt{"0x414243"}
+\item \texttt{"ABC"}
+\end{enumerate}
+
+In each case, they are interpreted as the number 4276803. The first two values may be alternated between with the additional String methods \texttt{bin()} and \texttt{unbin()}.
+
+As byte arrays, values may be concatenated with the \texttt{+} operator as is normal for strings.
+
+Strings also have a number of additional methods to help with conversion and alignment when switching between addresses, 256-bit integers and free-form byte-arrays for transaction data:
+
+\begin{itemize}
+\item \texttt{bin()}: Converts the string to binary format.
+\item \texttt{pad(l)}: Converts the string to binary format (ready for data parameters) and pads with zeroes until it is of width \texttt{l}. Will pad to the left if the original string is numeric, or to the right if binary. If \texttt{l} is less than the width of the string, it is resized accordingly.
+\item \texttt{pad(a, b)}: Converts the string to binary format (ready for data parameters) and pads with zeroes on the left size until it is of width \texttt{a}. Then pads with zeroes on the right side until it has grown to size \texttt{b}. If \texttt{b} is less hat the width of the string, it is resized accordingly.
+\item \texttt{unbin()}: Converts the string from binary format to hex format.
+\item \texttt{unpad()}: Converts the string from binary format to hex format, first removing any zeroes from the right side.
+\item \texttt{dec()}: Converts the string to decimal format (typically from hex).
+\end{itemize}
+
+\subsection{The \texttt{eth} object}
+
+\subsubsection{Properties}
+
+For each such item, there is also an asynchronous method, taking a parameter of the callback function, itself taking a single parameter of the property's return value and of the same name but prefixed with get and recapitalised, e.g. \texttt{getCoinbase(fn)}.
+
+\begin{itemize}
+\item \texttt{coinbase} Returns the coinbase address of the client.
+\item \texttt{isListening} Returns true if and only if the client is actively listening for network connections.
+\item \texttt{isMining} Returns true if and only if the client is actively mining new blocks.
+\item \texttt{gasPrice} Returns the client's present price of gas.
+\item \texttt{key} Returns the special key-pair object corresponding to the preferred account owned by the client.
+\item \texttt{keys} Returns a list of the special key-pair objects corresponding to all accounts owned by the client.
+\item \texttt{peerCount} Returns the number of peers currently connected to the client.
+\end{itemize}
+
+\subsubsection{Synchronous Getters}
+For each such item, there is also an asynchronous method, taking an additional parameter of the callback function, itself taking a single parameter of the synchronous method's return value and of the same name but prefixed with get and recapitalised, e.g. \texttt{getBalanceAt(a, fn)}.
+
+\begin{itemize}
+\item \texttt{balanceAt(a)} Returns the balance of the account of address given by the address \texttt{a}.
+\item \texttt{storageAt(a, x)} Returns the value in storage at position given by the number x of the account of address given by the address \texttt{a}.
+\item \texttt{txCountAt(a)} Returns the number of transactions send from the account of address given by \texttt{a}.
+\item \texttt{isContractAt(a)} Returns true if the account of address given by \texttt{a} has associated code.
+\end{itemize}
+
+\subsubsection{Transactions}
+
+\begin{itemize}
+\item \texttt{create(sec, xEndowment, bCode, xGas, xGasPrice, fn)} Creates a new contract-creation transaction, given parameters:
+\begin{itemize}
+\item \texttt{sec}, the secret-key for the sender;
+\item \texttt{xEndowment}, the number equal to the account's endowment;
+\item \texttt{bCode}, the binary string (byte array) of EVM-bytecode for the initialisation of the account;
+\item \texttt{xGas}, the number equal to the amount of gas to purchase for the transaction (unused gas is refunded);
+\item \texttt{xGasPrice}, the number equal to the price of gas for this transaction. Returns the special address object representing the new account; and
+\item \texttt{fn}, the callback function, called on completion of the transaction.
+\end{itemize}
+\item \texttt{transact(sec, xValue, aDest, bData, xGas, xGasPrice, fn)} Creates a new message-call transaction, given parameters:
+\begin{itemize}
+\item \texttt{sec}, the secret-key for the sender;
+\item \texttt{xValue}, the value transferred for the transaction (in Wei);
+\item \texttt{aDest}, the address representing the destination address of the message;
+\item \texttt{bData}, the binary string (byte array), containing the associated data of the message;
+\item \texttt{xGas}, the amount of gas to purchase for the transaction (unused gas is refunded);
+\item \texttt{xGasPrice}, the price of gas for this transaction; and
+\item \texttt{fn}, the callback function, called on completion of the transaction.
+\end{itemize}
+\end{itemize}
+
+\subsubsection{Events}
+
+\begin{itemize}
+\item \texttt{watch(a, fn)}: Registers \texttt{fn} as a callback for whenever anything about the state of the account at address \texttt{a} changes, and also on the initial load.
+\item \texttt{watch(a, x, fn)}: Registers \texttt{fn} as a callback for whenever the storage location \texttt{x} of the account at address \texttt{a} changes, and also on the initial load.
+\item \texttt{newBlock(fn)}: Registers \texttt{fn} as a callback for whenever the state changes, and also on the initial load.
+\end{itemize}
+
+\subsubsection{Misc}
+
+\begin{itemize}
+\item \texttt{secretToAddress(a)}: Determines the address from the secret key \texttt{a}.
+\end{itemize}
+

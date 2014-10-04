@@ -1,0 +1,116 @@
+\section{Wire Protocol}\label{app:wire}
+The wire-protocol specifies a network-level protocol for how two peers can communicate. It includes handshake procedures and the means for transferring information such as peers, blocks and transactions. Peer-to-peer communications between nodes running Ethereum clients are designed to be governed by a simple wire-protocol making use of existing Ethereum technologies and standards such as RLP wherever practical.
+
+Ethereum nodes may connect to each other over TCP only. Peers are free to advertise and accept connections on any port(s) they wish, however, a default port on which the connection may be listened and made will be 30303.
+
+Though TCP provides a connection-oriented medium, Ethereum nodes communicate in terms of packets. These packets are formed as a 4-byte synchronisation token (0x22400891), a 4-byte "payload size", to be interpreted as a big-endian integer and finally an N-byte \textbf{RLP-serialised} data structure, where N is the aforementioned "payload size". To be clear, the payload size specifies the number of bytes in the packet ''following'' the first 8.
+
+There are a number of different types of message that may be sent. This ``type'' is always determined by the first entry of the structure, represented as a scalar. The structure of each message type is described below.
+
+\begin{tabular*}{\columnwidth}[h]{rlll}
+\toprule
+\multicolumn{4}{c}{\textbf{00s: Session control}} \vspace{5pt} \\
+\textbf{Value} & \textbf{Mnemonic} & \textbf{Expected Reply} & \textbf{Packet Format} \vspace{5pt} \\
+0x00 & \textsc{Hello} & & $(\text{0x}00, v \in \mathbb{P}, n \in \mathbb{P}, \mathbf{i} \in \mathbb{B}, c \in \mathbb{P}, p \in \mathbb{P}, u \in \mathbb{B}_{64})$ \\
+& \multicolumn{3}{p{0.8\columnwidth}}{
+This is the first packet sent over the connection, and sent once by both sides. No other messages may be sent until a \textsc{Hello} is received.
+\begin{itemize}
+\item $v$ is the Protocol Version. See the latest documentation for which version is current.
+\item $n$ is the Network Id should be 0.
+\item $\mathbf{i}$ is the Client Id and specifies the client software identity as a human-readable string (e.g. ``Ethereum(++)/1.0.0'').
+\item $c$ is the client's Capabilities and specifies the capabilities of the client as a set of flags; presently three bits are used:
+\begin{description}
+\item[0x01] Client provides peer discovery service;
+\item[0x02] Client provides transaction relaying service;
+\item[0x04] Client provides block-chain querying service.
+\end{description}
+\item $p$ is the Listen Port and specifies the port that the client is listening on (on the interface that the present connection traverses). If 0 it indicates the client is not listening.
+\item $u$ is the Unique Identity of the node and specifies a 512-bit hash that identifies this node.
+\end{itemize}
+}\\
+\midrule
+0x01 & \textsc{Disconnect} && $(\text{0x}01, r \in \mathbb{P})$ \\
+& \multicolumn{3}{p{0.8\columnwidth}}{
+Inform the peer that a disconnection is imminent; if received, a peer should disconnect immediately. When sending, well-behaved hosts give their peers a fighting chance (read: wait 2 seconds) to disconnect to before disconnecting themselves.
+\begin{itemize}
+\item $r$ is an integer specifying one of a number of reasons for disconnect:
+\begin{description}
+\item[0x00] Disconnect requested;
+\item[0x01] TCP sub-system error;
+\item[0x02] Bad protocol;
+\item[0x03] Useless peer;
+\item[0x04] Too many peers;
+\item[0x05] Already connected;
+\item[0x06] Incompatible network protocols;
+\item[0x07] Client quitting.
+\end{description}
+\end{itemize}
+}\\
+\midrule
+0x02 & \textsc{Ping} & \textsc{Pong} & $(\text{0x}02)$ \\
+& \multicolumn{3}{p{0.8\columnwidth}}{Requests an immediate reply of \textsc{Pong} from the peer.}\\
+\midrule
+0x03 & \textsc{Pong} && $(\text{0x}03)$ \\
+& \multicolumn{3}{p{0.8\columnwidth}}{Reply to peer's \textsc{Ping} packet.}\\
+\bottomrule
+\end{tabular*}
+
+
+\begin{tabular*}{\columnwidth}[h]{rlll}
+\toprule
+\multicolumn{4}{c}{\textbf{10s: Information}} \vspace{5pt} \\
+\textbf{Value} & \textbf{Mnemonic} & \textbf{Expected Reply} & \textbf{Packet Format} \vspace{5pt} \\
+0x10 & \textsc{GetPeers} & \textsc{Peers} & $(\text{0x}10)$ \\
+& \multicolumn{3}{p{0.8\columnwidth}}{Request the peer to enumerate some known peers for us to connect to. This should include the peer itself.}\\
+\midrule
+0x11 & \textsc{Peers} & & $(\text{0x}11, (a_0 \in \mathbb{B}_4, p_0 \in \mathbb{P}, i_0 \in \mathbb{B}_{64}), (a_1 \in \mathbb{B}_4, p_1 \in \mathbb{P}, i_1 \in \mathbb{B}_{64}), ...)$ \\
+& \multicolumn{3}{p{0.8\columnwidth}}{
+Specifies a number of known peers. 
+\begin{itemize}
+\item $a_0$, $a_1$, ... is the node's IPv4 address, a 4-byte array that should be interpreted as the IP address $a_0[0]$.$a_0[1]$.$a_0[2]$.$a_0[3]$.
+\item $p_0$, $p_1$, ... is the node's Port and is an integer.
+\item $i_0$, $i_1$, ... is the node's Unique Identifier and is the 512-bit hash that serves to identify the node.
+\end{itemize}
+}\\
+\midrule
+0x12 & \textsc{Transactions} & & $(\text{0x}12, L_T(T_0), L_T(T_1), ...)$ \\
+& \multicolumn{3}{p{0.8\columnwidth}}{
+where $L_T$ is the transaction preparation function, as specified in section \ref{ch:block}.
+
+Specify a transaction or transactions that the peer should make sure is included on its transaction queue. The items in the list (following the first item 0x12) are transactions in the format described in the main Ethereum specification.
+\begin{itemize}
+\item $T_0$, $T_1$, ... are the transactions that should be assimilated.
+\end{itemize}
+}\\
+\midrule
+0x13 & \textsc{Blocks} && $(\text{0x}13, L_B(b_0), L_B(b_1), ...)$ \\
+& \multicolumn{3}{p{0.8\columnwidth}}{
+Where $L_B$ is the block preparation function, as specified in section \ref{ch:block}.
+
+Specify a block or blocks that the peer should know about. The items in the list (following the first item, 0x13) are blocks as described in the format described in the main specification.
+\begin{itemize}
+\item $b_0$, $b_1$, ... are the blocks that should be assimilated.
+\end{itemize}
+}\\
+\midrule
+0x14 & \textsc{GetChain} & \textsc{Blocks} or \textsc{NotInChain} & $(\text{0x}14, p_0 \in \mathbb{B}_{32}, p_1 \in \mathbb{B}_{32}, ..., c \in \mathbb{P})$ \\
+& \multicolumn{3}{p{0.8\columnwidth}}{
+Request the peer to send $c$ blocks in the current canonical block chain that are children of one of a number of given blocks, according to a preferential order with $p_0$ being the most prefered. If the designated parent is the present block chain head, an empty reply should be sent. If none of the parents are in the current canonical block chain, then a NotInChain message should be sent along with $p_n$, the least preferential parent. If no parents are passed, then a reply need not be made.
+\begin{itemize}
+\item $p_0$, $p_1$, ... are the SHA3 hashes of the parents of blocks that we should be informed of with a \textsc{Blocks} reply. Typically, these will be specified in increasing age (or decreasing block number).
+\item $c$ is the number of children blocks of the most preferred parent that we should be informed of through the corresponding \textsc{Blocks} reply.
+\end{itemize}
+}\\
+\midrule
+0x15 & \textsc{NotInChain} && $(\text{0x}15, p \in \mathbb{B}_{32})$ \\
+& \multicolumn{3}{p{0.8\columnwidth}}{Inform the peer that a particular block was not found in its block chain.
+\begin{itemize}
+\item $p$ is the SHA3 hash of the block that was not found in the block chain. Typically, this will be the least preferential (oldest) block hash given in a previous \textsc{GetChain} message.
+\end{itemize}
+}\\
+\midrule
+0x16 & \textsc{GetTransactions} & \textsc{Transactions} & $(\text{0x}16)$ \\
+& \multicolumn{3}{p{0.8\columnwidth}}{Request the peer to send all transactions currently in the queue. See \textsc{Transactions}.}\\
+\bottomrule
+\end{tabular*}
+
