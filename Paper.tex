@@ -1610,7 +1610,10 @@ G_{sstore} & \text{otherwise}
 &&&& $\boldsymbol{\mu}'_i \equiv \max(\boldsymbol{\mu}_i, \ceil{ \max(\boldsymbol{\mu}_\mathbf{s}[3] + \boldsymbol{\mu}_\mathbf{s}[4], \boldsymbol{\mu}_\mathbf{s}[5] + \boldsymbol{\mu}_\mathbf{s}[6]) \div 32 })$ \\
 &&&& Thus the operand order is: gas, to, value, in offset, in size, out offset, out size. \\
 \midrule
-0xf2 & {\small RETURN} & 2 & 0 & Halt execution returning output data. \\
+0xf2 & {\small CALLCODE} & 7 & 1 & Message-call into this account with alternative account's code. \\
+&&&& Same as CALL to this account, except that the code is exchanged for $\boldsymbol{\sigma}[\boldsymbol{\mu}_s[1]]_c$. \\
+\midrule
+0xf3 & {\small RETURN} & 2 & 0 & Halt execution returning output data. \\
 &&&& $H_{\text{\tiny RETURN}}(\boldsymbol{\mu}) \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[0] \dots ( \boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1] - 1 ) ]$ \\
 &&&& This has the effect of halting the execution at this point with output defined.\\
 &&&& See section \ref{ch:model}. \\
