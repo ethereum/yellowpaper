@@ -1466,13 +1466,6 @@ Here given are the various exceptions to the state transition rules given in sec
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x50 & {\small POP} & 1 & 0 & Remove item from stack. \\
 \midrule
-0x51 & {\small DUP} & 1 & 2 & Duplicate stack item. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0]$ \\
-\midrule
-0x52 & {\small SWAP} & 2 & 2 & Exchange stack items. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[1]$ \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[1] \equiv \boldsymbol{\mu}_\mathbf{s}[0]$ \\
-\midrule
 0x53 & {\small MLOAD} & 1 & 1 & Load word from memory. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[0] \dots (\boldsymbol{\mu}_\mathbf{s}[0] + 31) ]$ \\
 &&&& $\boldsymbol{\mu}'_i \equiv \max(\boldsymbol{\mu}_i, \ceil{ (\boldsymbol{\mu}_\mathbf{s}[0] + 32) \div 32 })$ \\
@@ -1540,6 +1533,54 @@ G_{sstore} & \text{otherwise}
 \bottomrule
 \end{tabular*}
 
+\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\toprule
+\multicolumn{5}{c}{\textbf{80s: Duplication Operations}} \vspace{5pt} \\
+\textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
+0x80 & {\small DUP1} & 1 & 2 & Duplicate 1st stack item. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0]$ \\
+\midrule
+0x81 & {\small DUP2} & 2 & 3 & Duplicate 2nd stack item. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[1]$ \\
+\midrule
+\multicolumn{1}{c}{\vdots} & \multicolumn{1}{c}{\vdots} & \vdots & \vdots & \multicolumn{1}{c}{\vdots} \\
+\midrule
+0x8f & {\small DUP16} & 16 & 17 & Duplicate 16th stack item. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[15]$ \\
+\bottomrule
+\end{tabular*}
+
+\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\toprule
+\multicolumn{5}{c}{\textbf{90s: Exchange Operations}} \vspace{5pt} \\
+\textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
+0x90 & {\small SWAP1} & 2 & 2 & Exchange 1st and 2nd stack items. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[1]$ \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[1] \equiv \boldsymbol{\mu}_\mathbf{s}[0]$ \\
+\midrule
+0x91 & {\small SWAP2} & 3 & 3 & Exchange 1st and 3rd stack items. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[2]$ \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[2] \equiv \boldsymbol{\mu}_\mathbf{s}[0]$ \\
+\midrule
+\multicolumn{1}{c}{\vdots} & \multicolumn{1}{c}{\vdots} & \vdots & \vdots & \multicolumn{1}{c}{\vdots} \\
+\midrule
+0x9f & {\small SWAP16} & 17 & 17 & Exchange 1st and 17th stack items. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[16]$ \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[16] \equiv \boldsymbol{\mu}_\mathbf{s}[0]$ \\
+\bottomrule
+\end{tabular*}
+
+\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\toprule
+\multicolumn{5}{c}{\textbf{a0s: Logging Operations}} \vspace{5pt} \\
+\textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
+0xa0 & {\small LOG0} & 2 & 0 & Append log record with no topics. \\
+\midrule
+0xa1 & {\small LOG1} & 3 & 0 & Append log record with one topic. \\
+\midrule
+0xa4 & {\small LOG4} & 6 & 0 & Append log record with four topics. \\
+\bottomrule
+\end{tabular*}
 
 \begin{tabular*}{\columnwidth}[h]{rlrrl}
 \toprule
