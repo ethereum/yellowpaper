@@ -1432,6 +1432,14 @@ Here given are the various exceptions to the state transition rules given in sec
 0x3a & {\small GASPRICE} & 0 & 1 & Get price of gas in current environment. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_p$ \\
 &&&& This is gas price specified by the originating transaction.\\
+\midrule
+0x3b & {\small EXTCODESIZE} & 0 & 1 & Get size of an account's code. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \lVert \boldsymbol{\sigma}[\boldsymbol{\mu}_s[0]]_c \rVert$ \\
+\midrule
+0x3c & {\small EXTCODECOPY} & 0 & 4 & Copy an account's code to memory. \\
+&&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_\mathbf{s}[3] - 1\} } \boldsymbol{\mu}'_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[1] + i ] \equiv
+\begin{cases} \mathbf{c}[\boldsymbol{\mu}_\mathbf{s}[2] + i] & \text{if} \quad i < \lVert \mathbf{c} \rVert \\ \text{\small STOP} & \text{otherwise} \end{cases}$\\
+&&&& where $\mathbf{c} \equiv \boldsymbol{\sigma}[\boldsymbol{\mu}_s[0]]_c$ \\
 \bottomrule
 \end{tabular*}
 
@@ -1466,22 +1474,22 @@ Here given are the various exceptions to the state transition rules given in sec
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x50 & {\small POP} & 1 & 0 & Remove item from stack. \\
 \midrule
-0x53 & {\small MLOAD} & 1 & 1 & Load word from memory. \\
+0x51 & {\small MLOAD} & 1 & 1 & Load word from memory. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[0] \dots (\boldsymbol{\mu}_\mathbf{s}[0] + 31) ]$ \\
 &&&& $\boldsymbol{\mu}'_i \equiv \max(\boldsymbol{\mu}_i, \ceil{ (\boldsymbol{\mu}_\mathbf{s}[0] + 32) \div 32 })$ \\
 \midrule
-0x54 & {\small MSTORE} & 2 & 0 & Save word to memory. \\
+0x52 & {\small MSTORE} & 2 & 0 & Save word to memory. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[0] \dots (\boldsymbol{\mu}_\mathbf{s}[0] + 31) ] \equiv \boldsymbol{\mu}_\mathbf{s}[1]$ \\
 &&&& $\boldsymbol{\mu}'_i \equiv \max(\boldsymbol{\mu}_i, \ceil{ (\boldsymbol{\mu}_\mathbf{s}[0] + 32) \div 32 })$ \\
 \midrule
-0x55 & {\small MSTORE8} & 2 & 0 & Save byte to memory. \\
+0x53 & {\small MSTORE8} & 2 & 0 & Save byte to memory. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[0] ] \equiv (\boldsymbol{\mu}_\mathbf{s}[1] \bmod 256) $ \\
 &&&& $\boldsymbol{\mu}'_i \equiv \max(\boldsymbol{\mu}_i, \ceil{ (\boldsymbol{\mu}_\mathbf{s}[0] + 1) \div 32 })$ \\
 \midrule
-0x56 & {\small SLOAD} & 1 & 1 & Load word from storage. \\
+0x54 & {\small SLOAD} & 1 & 1 & Load word from storage. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\sigma}[I_a]_\mathbf{s}[\boldsymbol{\mu}_\mathbf{s}[0]]$ \\
 \midrule
-0x57 & {\small SSTORE} & 2 & 0 & Save word to storage. \\
+0x55 & {\small SSTORE} & 2 & 0 & Save word to storage. \\
 &&&& $\boldsymbol{\sigma}'[I_a]_\mathbf{s}[ \boldsymbol{\mu}_\mathbf{s}[0] ] \equiv \boldsymbol{\mu}_\mathbf{s}[1] $ \\
 &&&& $C_{\text{\tiny SSTORE}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
 2G_{sstore} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \; \wedge \; \boldsymbol{\sigma}[I_a]_\mathbf{s}[\boldsymbol{\mu}_\mathbf{s}[0]] = 0 \\
@@ -1489,22 +1497,25 @@ Here given are the various exceptions to the state transition rules given in sec
 G_{sstore} & \text{otherwise}
 \end{cases}$ \\
 \midrule
-0x58 & {\small JUMP} & 1 & 0 & Alter the program counter. \\
+0x56 & {\small JUMP} & 1 & 0 & Alter the program counter. \\
 &&&& $J_{\text{\tiny JUMP}}(\boldsymbol{\mu}) \equiv \boldsymbol{\mu}_\mathbf{s}[0] $ \\
 &&&& This has the effect of writing said value to $\boldsymbol{\mu}_{pc}$. See section \ref{ch:model}. \\
 \midrule
-0x59 & {\small JUMPI} & 2 & 0 & Conditionally alter the program counter. \\
+0x57 & {\small JUMPI} & 2 & 0 & Conditionally alter the program counter. \\
 &&&& $J_{\text{\tiny JUMPI}}(\boldsymbol{\mu}) \equiv \begin{cases} \boldsymbol{\mu}_\mathbf{s}[0] & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \\ \boldsymbol{\mu}_{pc} + 1 & \text{otherwise} \end{cases} $ \\
 &&&& This has the effect of writing said value to $\boldsymbol{\mu}_{pc}$. See section \ref{ch:model}. \\
 \midrule
-0x5a & {\small PC} & 0 & 1 & Get the program counter. \\
+0x58 & {\small PC} & 0 & 1 & Get the program counter. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_{pc}$ \\
 \midrule
-0x5b & {\small MSIZE} & 0 & 1 & Get the size of active memory in bytes. \\
+0x59 & {\small MSIZE} & 0 & 1 & Get the size of active memory in bytes. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv 32\boldsymbol{\mu}_{i}$ \\
 \midrule
-0x5c & {\small GAS} & 0 & 1 & Get the amount of available gas. \\
+0x5a & {\small GAS} & 0 & 1 & Get the amount of available gas. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_{g}$ \\
+\midrule
+0x5b & {\small JUMPDEST} & 0 & 1 & Mark a valid destination for jumps. \\
+&&&& TODO \\
 \bottomrule
 \end{tabular*}
 
@@ -1575,10 +1586,13 @@ G_{sstore} & \text{otherwise}
 \multicolumn{5}{c}{\textbf{a0s: Logging Operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0xa0 & {\small LOG0} & 2 & 0 & Append log record with no topics. \\
+&&&& TODO \\
 \midrule
 0xa1 & {\small LOG1} & 3 & 0 & Append log record with one topic. \\
+&&&& TODO \\
 \midrule
 0xa4 & {\small LOG4} & 6 & 0 & Append log record with four topics. \\
+&&&& TODO \\
 \bottomrule
 \end{tabular*}
 
@@ -1612,6 +1626,7 @@ G_{sstore} & \text{otherwise}
 \midrule
 0xf2 & {\small CALLCODE} & 7 & 1 & Message-call into this account with alternative account's code. \\
 &&&& Same as CALL to this account, except that the code is exchanged for $\boldsymbol{\sigma}[\boldsymbol{\mu}_s[1]]_c$. \\
+&&&& TODO \\
 \midrule
 0xf3 & {\small RETURN} & 2 & 0 & Halt execution returning output data. \\
 &&&& $H_{\text{\tiny RETURN}}(\boldsymbol{\mu}) \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[0] \dots ( \boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1] - 1 ) ]$ \\
