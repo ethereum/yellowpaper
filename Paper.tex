@@ -1302,7 +1302,7 @@ Here given are the various exceptions to the state transition rules given in sec
 \begin{tabular*}{\columnwidth}[h]{rlrrl}
 \toprule
 \multicolumn{5}{c}{\textbf{0s: Stop and Arithmetic Operations}} \\
-\multicolumn{5}{l}{All arithmetic is modulo $2^{256}$.} \vspace{5pt} \\
+\multicolumn{5}{l}{All arithmetic is modulo $2^{256}$ unless otherwise noted.} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x00 & {\small STOP} & 0 & 0 & Halts execution. \\
 &&&& $\boldsymbol{\mu}'_R = []$ \\
@@ -1330,49 +1330,57 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0\\ \mathbf{sgn} (\boldsymbol{\mu}_\mathbf{s}[0]) |\boldsymbol{\mu}_\mathbf{s}[0]| \bmod |\boldsymbol{\mu}_\mathbf{s}[1]| & \text{otherwise}\end{cases}$  \\
 &&&& Where all values are treated as signed 256-bit integers for the purposes of this operation. \\
 \midrule
-0x08 & {\small EXP} & 2 & 1 & Exponential operation. \\
+0x08 & {\small ADDMOD} & 3 & 1 & Modulo addition operation. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1] \mod \boldsymbol{\mu}_\mathbf{s}[2]$ \\
+\midrule
+0x09 & {\small MULMOD} & 3 & 1 & Modulo multiplication operation. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0] \times \boldsymbol{\mu}_\mathbf{s}[1] \mod \boldsymbol{\mu}_\mathbf{s}[2]$ \\
+\midrule
+0x0a & {\small EXP} & 2 & 1 & Exponential operation. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0] ^ {\boldsymbol{\mu}_\mathbf{s}[1] }$ \\
 \midrule
-0x09 & {\small NEG} & 1 & 1 & Negation operation. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv -\boldsymbol{\mu}_\mathbf{s}[0]$ \\
-&&&& Where all values are treated as signed 256-bit integers for the purposes of this operation. \\
-\midrule
-0x0a & {\small LT} & 2 & 1 & Less-than comparision. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] < \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
-\midrule
-0x0b & {\small GT} & 2 & 1 & Greater-than comparision. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
-\midrule
-0x0c & {\small SLT} & 2 & 1 & Signed less-than comparision. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] < \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
-&&&& Where all values are treated as signed 256-bit integers for the purposes of this operation. \\
-\midrule
-0x0d & {\small SGT} & 2 & 1 & Signed greater-than comparision. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
-&&&& Where all values are treated as signed 256-bit integers for the purposes of this operation. \\
-\midrule
-0x0e & {\small EQ} & 2 & 1 & Equality comparision. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] = \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
-\midrule
-0x0f & {\small NOT} & 1 & 1 & Simple not operator. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] = 0 \\ 0 & \text{otherwise} \end{cases}$ \\
+0x0b & {\small SIGNEXTEND} & 2 & 1 & Extend length of two's complement signed integer. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \mathtt{\tiny SIGNEXTEND}(\boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[1]) $ \\
 \end{tabular*}
 
 \begin{tabular*}{\columnwidth}[h]{rlrrl}
 \toprule
-\multicolumn{5}{c}{\textbf{10s: Bitwise Logic Operations}} \\
+\multicolumn{5}{c}{\textbf{10s: Comparison \& Bitwise Logic Operations}} \\
 \multicolumn{5}{l}{$\boldsymbol{\mu}_\mathbf{s}[0]_i$ gives the $i$th bit (counting from zero) of $\boldsymbol{\mu}_\mathbf{s}[0]$} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
-0x10 & {\small AND} & 2 & 1 & Bitwise AND operation. \\
+0x10 & {\small LT} & 2 & 1 & Less-than comparision. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] < \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
+\midrule
+0x11 & {\small GT} & 2 & 1 & Greater-than comparision. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
+\midrule
+0x12 & {\small SLT} & 2 & 1 & Signed less-than comparision. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] < \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
+&&&& Where all values are treated as signed 256-bit integers for the purposes of this operation. \\
+\midrule
+0x13 & {\small SGT} & 2 & 1 & Signed greater-than comparision. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
+&&&& Where all values are treated as signed 256-bit integers for the purposes of this operation. \\
+\midrule
+0x14 & {\small EQ} & 2 & 1 & Equality comparision. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] = \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
+\midrule
+0x15 & {\small ISZERO} & 1 & 1 & Simple not operator. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] = 0 \\ 0 & \text{otherwise} \end{cases}$ \\
+\midrule
+0x16 & {\small AND} & 2 & 1 & Bitwise AND operation. \\
 &&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \boldsymbol{\mu}_\mathbf{s}[0]_i \wedge \boldsymbol{\mu}_\mathbf{s}[1]_i$ \\
 \midrule
-0x11 & {\small OR} & 2 & 1 & Bitwise OR operation. \\
+0x17 & {\small OR} & 2 & 1 & Bitwise OR operation. \\
 &&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \boldsymbol{\mu}_\mathbf{s}[0]_i \vee \boldsymbol{\mu}_\mathbf{s}[1]_i$ \\
 \midrule
-0x12 & {\small XOR} & 2 & 1 & Bitwise XOR operation. \\
+0x18 & {\small XOR} & 2 & 1 & Bitwise XOR operation. \\
 &&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \boldsymbol{\mu}_\mathbf{s}[0]_i \oplus \boldsymbol{\mu}_\mathbf{s}[1]_i$ \\
 \midrule
-0x13 & {\small BYTE} & 2 & 1 & Retrieve single byte from word. \\
+0x19 & {\small NOT} & 1 & 1 & Bitwise NOT operation. \\
+&&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0]_i = 0 \\ 0 & \text{otherwise} \end{cases}$ \\
+\midrule
+0x1a & {\small BYTE} & 2 & 1 & Retrieve single byte from word. \\
 &&&& $\forall i \in [0..7]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \begin{cases} \boldsymbol{\mu}_\mathbf{s}[1]_{(i + 8\boldsymbol{\mu}_\mathbf{s}[0])} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] < 32 \\ 0 & \text{otherwise} \end{cases} $\\
 &&&& For Nth byte, we count from the left (i.e. N=0 would be the most significant in big endian). \\
 \bottomrule
