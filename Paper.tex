@@ -1140,12 +1140,9 @@ y(\mathfrak{I}) & = & \{ (\mathbf{k}_0' \in \mathbb{Y}, \mathbf{v}_0 \in \mathbb
 \end{cases}
 \end{eqnarray}
 
-We define the function $\texttt{\small TRIE}$, which evaluates to the root of the trie that represents this set when encoded in this structure. The empty trie is defined as being a the empty byte sequence, $()$:
+We define the function $\texttt{\small TRIE}$, which evaluates to the root of the trie that represents this set when encoded in this structure:
 \begin{equation}
-\texttt{\small TRIE}(\mathfrak{I}) \equiv \begin{cases}
-() & \text{if} \quad \mathfrak{I} = \varnothing \\
-\texttt{\small KEC}(c(\mathfrak{I}, 0)) & \text{otherwise}
-\end{cases}
+\texttt{\small TRIE}(\mathfrak{I}) \equiv \texttt{\small KEC}(c(\mathfrak{I}, 0))
 \end{equation}
 
 We also assume a function $n$, the trie's node cap function. When composing a node, we use RLP to encode the structure. As a means of reducing storage complexity, for nodes whose composed RLP is fewer than 32 bytes, we store the RLP directly; for those larger we assert prescience of the byte array whose Keccak hash evaluates to our reference. Thus we define in terms of $c$, the node composition function:
