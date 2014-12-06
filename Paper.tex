@@ -825,9 +825,22 @@ The process of finalising a block involves four stages:
 
 \subsection{Uncle Validation}
 
-The validation of uncle headers means nothing more than verifying that each uncle header is both a valid header and satisfies the relation of uncle to the present block. Formally:
+The validation of uncle headers means nothing more than verifying that each uncle header is both a valid header and satisfies the relation of $N$th-generation uncle to the present block where $N \leq 6$. Formally:
 \begin{equation}
-\bigwedge_{U \in B_\mathbf{U}} V(U) \; \wedge \; P(U) = P(P(B_H)) \; \wedge \; P(B_H) \neq B
+\bigwedge_{U \in B_\mathbf{U}} V(U) \; \wedge \; k(U, P(B_H), 6)
+\end{equation}
+
+where $k$ denotes the ``is-kin'' property:
+\begin{equation}
+k(U, H, n) \equiv \begin{cases} false & \text{if} \quad n = 0 \\ 
+s(U, H) &\\
+\quad \vee \; u(U, P(H), n - 1) & \text{otherwise}
+\end{cases}
+\end{equation}
+
+and $s$ denotes the ``is-sibling'' property:
+\begin{equation}
+s(U, H) \equiv (P(H) = P(U)\; \wedge \; H \neq U)
 \end{equation}
 
 \subsection{Transaction Validation}
