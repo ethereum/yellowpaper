@@ -149,7 +149,7 @@ The two sets of highly structured, `top-level', state values, are denoted with b
 
 Functions operating on highly structured values are denoted with an upper-case greek letter, \eg $\Upsilon$, the Ethereum state transition function.
 
-For most functions, an uppercase letter is used, e.g. $C$, the general cost function. These may be subscripted to denote specialised variants, \eg $C_\text{\tiny SSTORE}$, the cost function for the {\tiny SSTORE} operation. For specialised and possibly externally defined functions, I may format as typewriter text, \eg the SHA3 hash function is denoted $\texttt{SHA3}$.
+For most functions, an uppercase letter is used, e.g. $C$, the general cost function. These may be subscripted to denote specialised variants, \eg $C_\text{\tiny SSTORE}$, the cost function for the {\tiny SSTORE} operation. For specialised and possibly externally defined functions, I may format as typewriter text, \eg the Keccak-256 hash function (as per the winning entry to the SHA-3 contest) is denoted $\texttt{KEC}$ (and generally referred to as plain Keccak).
 
 Tuples are typically denoted with an upper-case letter, \eg $T$, is used to denote an Ethereum transaction. This symbol may, if accordingly defined, be subscripted to refer to an individual component, \eg $T_s$, denotes the timestamp of said transaction. The form of the subscript is used to denote its type; \eg uppercase subscripts refer to tuples with subscriptable components.
 
@@ -181,13 +181,13 @@ Having introduced the basic concepts behind Ethereum, we will discuss the meanin
 
 The world state (\textit{state}), is a mapping between addresses (160-bit identifiers) and account states (a data structure serialised as RLP, see Appendix \ref{app:rlp}). Though not stored on the blockchain, it is assumed that the implementation will maintain this mapping in a modified Merkle Patricia tree (\textit{trie}, see Appendix \ref{app:trie}). The trie requires a simple database backend that maintains a mapping of bytearrays to bytearrays; we name this underlying database the state database. This has a number of benefits; firstly the root node of this structure is cryptographically dependent on all internal data and as such its hash can be used as a secure identity for the entire system state. Secondly, being an immutable data structure, it allows any previous state (whose root hash is known) to be recalled by simply altering the root hash accordingly. Since we store all such root hashes in the blockchain, we are able to trivially revert to old states.
 
-The account state comprises the first two, and potentially the last two, of the following fields:
+The account state comprises the following four fields:
 
 \begin{description}
 \item[nonce] A scalar value equal to the number of transactions sent from this address or, in the case of accounts with associated code, the number of contract-creations made by this account. For account of address $a$ in state $\boldsymbol{\sigma}$, this would be formally denoted $\boldsymbol{\sigma}[a]_n$.
 \item[balance] A scalar value equal to the number of Wei owned by this address. Formally denoted $\boldsymbol{\sigma}[a]_b$.
 \item[stateRoot] A 256-bit hash of the root node of a trie structure that encodes the storage contents of the account (a mapping between 256-bit integer values), encoded into the trie as a mapping from a byte array of size 32 to an RLP-encoded integer. The hash is formally denoted $\boldsymbol{\sigma}[a]_s$.
-\item[codeHash] The hash of the EVM code of this account---this is the code that gets executed should this address receive a message call; it is immutable and thus, unlike all other fields, cannot be changed after construction. All such code fragments are contained in the state database under their corresponding hashes for later retrieval. This hash is formally denoted $\boldsymbol{\sigma}[a]_c$, and thus the code may be denoted as $\mathbf{b}$, given that $\texttt{\small SHA3}(\mathbf{b}) = \boldsymbol{\sigma}[a]_c$.
+\item[codeHash] The hash of the EVM code of this account---this is the code that gets executed should this address receive a message call; it is immutable and thus, unlike all other fields, cannot be changed after construction. All such code fragments are contained in the state database under their corresponding hashes for later retrieval. This hash is formally denoted $\boldsymbol{\sigma}[a]_c$, and thus the code may be denoted as $\mathbf{b}$, given that $\texttt{\small KEC}(\mathbf{b}) = \boldsymbol{\sigma}[a]_c$.
 \end{description}
 
 Since I typically wish to refer not to the trie's root hash but to the underlying set of key/value pairs stored within, I define a convenient equivalence:
@@ -207,7 +207,7 @@ k \in \mathbb{B}_{32} \quad \wedge \quad v \in \mathbb{P}
 
 It shall be understood that $\boldsymbol{\sigma}[a]_\mathbf{s}$ is not a `physical' member of the account and does not contribute to its later serialisation.
 
-If the \textbf{codeHash} field is the SHA3 hash of the empty string, i.e. $\boldsymbol{\sigma}[a]_c = \texttt{\small SHA3}\big(()\big)$, then the node represents a simple account, sometimes referred to as a ``non-contract'' account.
+If the \textbf{codeHash} field is the Keccak hash of the empty string, i.e. $\boldsymbol{\sigma}[a]_c = \texttt{\small KEC}\big(()\big)$, then the node represents a simple account, sometimes referred to as a ``non-contract'' account.
 
 Thus we may define a world-state collapse function $L_S$:
 \begin{equation}
@@ -278,11 +278,11 @@ T_t \in \mathbb{B}_{20} &&&&
 The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{R}$, and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{uncles}). The block header contains several pieces of information:
 
 \begin{description}
-\item[parentHash] The SHA3 256-bit hash of the parent block, in its entirety; formally $H_p$.
-\item[unclesHash] The SHA3 256-bit hash of the uncles list portion of this block; formally $H_u$.
+\item[parentHash] The Keccak 256-bit hash of the parent block, in its entirety; formally $H_p$.
+\item[unclesHash] The Keccak 256-bit hash of the uncles list portion of this block; formally $H_u$.
 \item[coinbase] The 160-bit address to which all fees collected from the successful mining of this block be transferred; formally $H_b$.
-\item[stateRoot] The SHA3 256-bit hash of the root node of the state trie, after all transactions are executed and finalisations applied; formally $H_r$.
-\item[transactionsTrie] The SHA3 256-bit hash of the root node of the trie structure populated with each transaction in the transactions list portion of the block; formally $H_t$.
+\item[stateRoot] The Keccak 256-bit hash of the root node of the state trie, after all transactions are executed and finalisations applied; formally $H_r$.
+\item[transactionsTrie] The Keccak 256-bit hash of the root node of the trie structure populated with each transaction in the transactions list portion of the block; formally $H_t$.
 \item[difficulty] A scalar value corresponding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_d$.
 \item[number] A scalar value equal to the number of ancestor blocks. The genesis block has a number of zero; formally $H_i$.
 \item[minGasPrice] A scalar value equal to the minimum price of gas a transaction must have provided in order to be sufficient for inclusion by this miner in this block; formally $H_m$.
@@ -328,7 +328,7 @@ Notably $B_\mathbf{T}$ does not get serialised into the block by the block prepa
 We can assert its validity if and only if it satisfies several conditions: It must be internally consistent with the uncle and transaction block hashes and the given transactions $B_\mathbf{T}$, when executed in order on the base state $\boldsymbol{\sigma}$ (derived from the final state of the parent block), result in a new state of the identity $H_r$:
 \begin{equation}
 \begin{array}[t]{lclc}
-H_u &\equiv& \mathtt{\small SHA3}(\mathtt{\small RLP}(L_H^*(B_\mathbf{U}))) & \wedge \\
+H_u &\equiv& \mathtt{\small Keccak}(\mathtt{\small RLP}(L_H^*(B_\mathbf{U}))) & \wedge \\
 H_t &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert, i \in \mathbb{P}: p(i, L_R(B_\mathbf{R}[i])\})) & \wedge \\
 H_r &\equiv& \mathtt{\small TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) &
 \end{array}
@@ -381,7 +381,7 @@ We now have a rigorous specification for the construction of a formal block stru
 
 We define $P(B_H)$ to be the parent block of $B$, formally:
 \begin{equation}
-P(H) \equiv B': \mathtt{\tiny SHA3}(\mathtt{\tiny RLP}(B')) = H_p
+P(H) \equiv B': \mathtt{\tiny Keccak}(\mathtt{\tiny RLP}(B')) = H_p
 \end{equation}
 
 The canonical difficulty of a block of header $H$ is defined as $D(H)$:
@@ -548,23 +548,23 @@ We define the creation function formally as the function $\Lambda$, which evalua
 (\boldsymbol{\sigma}', g', \mathbf{s}) \equiv \Lambda(\boldsymbol{\sigma}, s, o, g, p, v, \mathbf{i})
 \end{equation}
 
-The address of the new account is defined as being the rightmost 160 bits of the SHA3 hash of RLP encoding of the structure containing only the sender and the nonce. In the unlikely event that the address is already in use, it is treated as a big-endian integer and incremented by one until an unused address is arrived at. Thus we define the creation address function $A$:
+The address of the new account is defined as being the rightmost 160 bits of the Keccak hash of RLP encoding of the structure containing only the sender and the nonce. In the unlikely event that the address is already in use, it is treated as a big-endian integer and incremented by one until an unused address is arrived at. Thus we define the creation address function $A$:
 \begin{eqnarray}
-A(s, n) & \equiv & \mathcal{B}_{96..255}\Big(\mathtt{\tiny SHA3}\Big(\mathtt{\tiny RLP}\big(\;(s, n)\;\big)\Big)\Big)
+A(s, n) & \equiv & \mathcal{B}_{96..255}\Big(\mathtt{\tiny Keccak}\Big(\mathtt{\tiny RLP}\big(\;(s, n)\;\big)\Big)\Big)
 \end{eqnarray}
 
-where $\mathtt{\tiny SHA3}$ is the SHA3 256-bit hash function, $\mathtt{\tiny RLP}$ is the RLP encoding function, $\mathcal{B}_{a..b}(X)$ evaluates to binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$ and $\boldsymbol{\sigma}[x]$ is the address state of $x$ or $\varnothing$ if none exists. Note, as defined directly, we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
+where $\mathtt{\tiny Keccak}$ is the Keccak 256-bit hash function, $\mathtt{\tiny RLP}$ is the RLP encoding function, $\mathcal{B}_{a..b}(X)$ evaluates to binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$ and $\boldsymbol{\sigma}[x]$ is the address state of $x$ or $\varnothing$ if none exists. Note, as defined directly, we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
 
-The account's nonce is initially defined as zero, the balance as the value passed, the storage as empty and the code hash as the SHA3 256-bit hash of the empty string, thus the mutated state becomes $\boldsymbol{\sigma}^*$:
+The account's nonce is initially defined as zero, the balance as the value passed, the storage as empty and the code hash as the Keccak 256-bit hash of the empty string, thus the mutated state becomes $\boldsymbol{\sigma}^*$:
 \begin{equation}
 \boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except:}
 \end{equation}
 \begin{equation}
-\boldsymbol{\sigma}^*[A(s, \boldsymbol{\sigma}[s]_n - 1)] \equiv \big( 0, v, \mathtt{\tiny TRIE}(\varnothing), \mathtt{\tiny SHA3}\big(()\big) \big)
+\boldsymbol{\sigma}^*[A(s, \boldsymbol{\sigma}[s]_n - 1)] \equiv \big( 0, v, \mathtt{\tiny TRIE}(\varnothing), \mathtt{\tiny Keccak}\big(()\big) \big)
 \end{equation}
 
 where $a$ is the address of the new account, as defined above.
-% It is asserted that the state database will also change such that it defines the pair $(\mathtt{\tiny SHA3}(\mathbf{b}), \mathbf{b})$.
+% It is asserted that the state database will also change such that it defines the pair $(\mathtt{\tiny Keccak}(\mathbf{b}), \mathbf{b})$.
 
 Finally, the account is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the account's storage can be altered, further accounts can be created and further message calls can be made. As such, the code execution function $\Xi$ evaluates to a tuple of the resultant state $\boldsymbol{\sigma}^{**}$, available gas remaining $g'$, the suicide list $\mathbf{s}$ and the body code of the account $\mathbf{b}$.
 
@@ -609,7 +609,7 @@ We define $\boldsymbol{\sigma}_1$, the checkpoint state as the original state bu
 \boldsymbol{\sigma}_1[r]_b & \equiv & \boldsymbol{\sigma}[r]_b + v
 \end{eqnarray}
 
-The account's associated code (identified as the fragment whose SHA3 hash is $\boldsymbol{\sigma}[r]_c$) is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts due to an exhausted gas supply, then no gas is refunded to the caller and the state is reverted to the point immediately prior to code execution.
+The account's associated code (identified as the fragment whose Keccak hash is $\boldsymbol{\sigma}[r]_c$) is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts due to an exhausted gas supply, then no gas is refunded to the caller and the state is reverted to the point immediately prior to code execution.
 \begin{eqnarray}
 \boldsymbol{\sigma}' & \equiv & \begin{cases}
 \boldsymbol{\sigma}_1 & \text{if} \quad \boldsymbol{\sigma}_1[r]_c = \varnothing \\
@@ -623,10 +623,10 @@ I_p & \equiv & p \\
 I_\mathbf{d} & \equiv & \mathbf{d} \\
 I_s & \equiv & s \\
 I_v & \equiv & v \\
-\text{Let} \quad \mathtt{\tiny SHA3}(I_\mathbf{b}) & = & \boldsymbol{\sigma}[r]_c
+\text{Let} \quad \mathtt{\tiny Keccak}(I_\mathbf{b}) & = & \boldsymbol{\sigma}[r]_c
 \end{eqnarray}
 
-It is assumed that the client will have stored the pair $(\mathtt{\tiny SHA3}(I_\mathbf{b}), I_\mathbf{b})$ at some point prior in order to make the determination of $I_\mathbf{b}$ feasible.
+It is assumed that the client will have stored the pair $(\mathtt{\tiny Keccak}(I_\mathbf{b}), I_\mathbf{b})$ at some point prior in order to make the determination of $I_\mathbf{b}$ feasible.
 
 \section{Execution Model} \label{ch:model}
 
@@ -634,7 +634,7 @@ The execution model specifies how the system state is altered given a series of 
 
 \subsection{Basics}
 
-The EVM is a simple stack-based architecture. The word size of the machine (and thus size of stack item) is 256-bit. This was chosen to facilitate the SHA3-256 hash scheme and elliptic-curve computations. The memory model is a simple word-addressed byte array. The stack has an unlimited size. The machine also has an independent storage model; this is similar in concept to the memory but rather than a byte array, it is a word-addressable word array. Unlike memory, which is volatile, storage is non volatile and is maintained as part of the system state. All locations in both storage and memory are well-defined initially as zero.
+The EVM is a simple stack-based architecture. The word size of the machine (and thus size of stack item) is 256-bit. This was chosen to facilitate the Keccak-256 hash scheme and elliptic-curve computations. The memory model is a simple word-addressed byte array. The stack has an unlimited size. The machine also has an independent storage model; this is similar in concept to the memory but rather than a byte array, it is a word-addressable word array. Unlike memory, which is volatile, storage is non volatile and is maintained as part of the system state. All locations in both storage and memory are well-defined initially as zero.
 
 The machine does not follow the standard von Neumann architecture. Rather than storing program code in generally-accessible memory or storage, it is stored separately in a virtual ROM interactable only through a specialised instruction.
 
@@ -642,7 +642,7 @@ The machine can have exceptional execution for several reasons, including stack 
 
 \subsection{Fees Overview}
 
-Fees (denominated in gas) are charged under three distinct circumstances, all three as prerequisite to the execution of an operation. The first and most common is the fee intrinsic to the computation of the operation. Most operations require a single gas fee to be paid for their execution; exceptions include {\small SSTORE}, {\small SLOAD}, {\small CALL}, {\small CREATE}, {\small BALANCE} and {\small SHA3}. Secondly, gas may be deducted in order to form the payment for a subordinate message call or contract creation; this forms part of the payment for {\small CREATE} and {\small CALL}. Finally, gas may be paid due to an increase in the usage of the memory.
+Fees (denominated in gas) are charged under three distinct circumstances, all three as prerequisite to the execution of an operation. The first and most common is the fee intrinsic to the computation of the operation. Most operations require a single gas fee to be paid for their execution; exceptions include {\small SSTORE}, {\small SLOAD}, {\small CALL}, {\small CREATE}, {\small BALANCE} and {\small Keccak}. Secondly, gas may be deducted in order to form the payment for a subordinate message call or contract creation; this forms part of the payment for {\small CREATE} and {\small CALL}. Finally, gas may be paid due to an increase in the usage of the memory.
 
 Over a account's execution, the total fee for memory-usage payable is proportional to smallest multiple of 32 bytes that are required such that all memory indices (whether for read or write) are included in the range. This is paid for on a just-in-time basis; as such, referencing an area of memory at least 32 bytes greater than any previously indexed memory will certainly result in an additional memory usage fee. Due to this fee it is highly unlikely addresses will ever go above 32-bit bounds since at the present price of Ether and default gas price, that would cost around US\$20M for the memory fee alone. That said, implementations must be able to manage this eventuality.
 
@@ -651,7 +651,7 @@ Storage fees have a slightly nuanced behaviour---to incentivise minimisation of 
 %More formally, given an instruction, it is possible to calculate the gas cost of executing it as follows:
 %
 %\begin{itemize}
-%\item {\small SHA3} costs $G_{sha3}$ gas
+%\item {\small Keccak} costs $G_{sha3}$ gas
 %\item {\small SLOAD} costs $G_{sload}$ gas
 %\item {\small BALANCE} costs $G_{balance}$ gas
 %\item {\small SSTORE} costs $d.G_{sstore}$ gas where:
@@ -667,7 +667,7 @@ Storage fees have a slightly nuanced behaviour---to incentivise minimisation of 
 %\item All other operations cost $G_{step}$ gas.
 %\end{itemize}
 %
-%Additionally, when memory is accessed with {\small MSTORE}, {\small MSTORE8}, {\small MLOAD}, {\small CALLDATACOPY}, {\small CODECOPY}, {\small RETURN}, {\small SHA3}, {\small CREATE} or {\small CALL}, the memory should be enlarged to the smallest multiple of words such that all addressed bytes now fit in it.
+%Additionally, when memory is accessed with {\small MSTORE}, {\small MSTORE8}, {\small MLOAD}, {\small CALLDATACOPY}, {\small CODECOPY}, {\small RETURN}, {\small Keccak}, {\small CREATE} or {\small CALL}, the memory should be enlarged to the smallest multiple of words such that all addressed bytes now fit in it.
 
 See Appendix \ref{app:vm} for a rigorous definition of the EVM gas cost.
 
@@ -926,16 +926,16 @@ As of the proof-of-concept (PoC) series of the Ethereum software, the proof-of-w
 
 \subsubsection{PoC Series}
 
-For the PoC series, we use a simplified proof-of-work. This is not ASIC resistant and is meant merely as a placeholder. It utilises the bare SHA3 hash function to secure the block chain by requiring the SHA3 hash of the concatenation of the nonce and the header's SHA3 hash to be sufficiently low.
+For the PoC series, we use a simplified proof-of-work. This is not ASIC resistant and is meant merely as a placeholder. It utilises the bare Keccak hash function to secure the block chain by requiring the Keccak hash of the concatenation of the nonce and the header's Keccak hash to be sufficiently low.
 
 It is formally defined as $\mathtt{PoW}$:
 \begin{equation}
-\mathtt{PoW}(H, n) \equiv \mathtt{BE}(\mathtt{\tiny SHA3}(\mathtt{\tiny SHA3}(\mathtt{\tiny RLP}(H_{\hcancel{n}})) \circ n))
+\mathtt{PoW}(H, n) \equiv \mathtt{BE}(\mathtt{\tiny Keccak}(\mathtt{\tiny Keccak}(\mathtt{\tiny RLP}(H_{\hcancel{n}})) \circ n))
 \end{equation}
 
 where:
 $\mathtt{\tiny RLP}(H_{\hcancel{n}})$ is the RLP encoding of the block header $H$, not including the final nonce component;
-$\mathtt{\tiny SHA3}$ is the SHA3 hash function accepting an arbitrary length series of bytes and evaluating to a series of 32 bytes (i.e. 256-bit);
+$\mathtt{\tiny Keccak}$ is the Keccak hash function accepting an arbitrary length series of bytes and evaluating to a series of 32 bytes (i.e. 256-bit);
 $n$ is the nonce, a series of 32 bytes;
 $\circ$ is the series concatenation operator;
 $\mathtt{BE}(X)$ evaluates to the value equal to X when interpreted as a big-endian-encoded integer.
@@ -1056,7 +1056,7 @@ Name & Value & Description* \\
 $G_{step}$ & 1 & Default amount of gas to pay for execution cycle. \\
 $G_{stop}$ & 0 & Nothing paid for the {\small STOP} operation. \\
 $G_{suicide}$ & 0 & Nothing paid for the {\small SUICIDE} operation. \\
-$G_{sha3}$ & 20 & Paid for a {\small SHA3} operation. \\
+$G_{sha3}$ & 20 & Paid for a {\small Keccak} operation. \\
 $G_{sload}$ & 20 & Paid for a {\small SLOAD} operation. \\
 $G_{sstore}$ & 100 & Paid for a normal {\small SSTORE} operation (doubled or waived sometimes). \\
 $G_{balance}$ & 20 & Paid for a {\small BALANCE} operation. \\
@@ -1175,16 +1175,16 @@ We define the function $\texttt{\small TRIE}$, which evaluates to the root of th
 \begin{equation}
 \texttt{\small TRIE}(\mathfrak{I}) \equiv \begin{cases}
 () & \text{if} \quad \mathfrak{I} = \varnothing \\
-\texttt{\small SHA3}(c(\mathfrak{I}, 0)) & \text{otherwise}
+\texttt{\small KEC}(c(\mathfrak{I}, 0)) & \text{otherwise}
 \end{cases}
 \end{equation}
 
-We also assume a function $n$, the trie's node cap function. When composing a node, we use RLP to encode the structure. As a means of reducing storage complexity, for nodes whose composed RLP is fewer than 32 bytes, we store the RLP directly; for those larger we assert prescience of the byte array whose SHA3 hash evaluates to our reference. Thus we define in terms of $c$, the node composition function:
+We also assume a function $n$, the trie's node cap function. When composing a node, we use RLP to encode the structure. As a means of reducing storage complexity, for nodes whose composed RLP is fewer than 32 bytes, we store the RLP directly; for those larger we assert prescience of the byte array whose Keccak hash evaluates to our reference. Thus we define in terms of $c$, the node composition function:
 \begin{equation}
 n(\mathfrak{I}, i) \equiv \begin{cases}
 () & \text{if} \quad \mathfrak{I} = \varnothing \\
 c(\mathfrak{I}, i) & \text{if} \quad \lVert c(\mathfrak{I}, i)\rVert < 32 \\
-\texttt{\small SHA3}(c(\mathfrak{I}, i)) & \text{otherwise}
+\texttt{\small KEC}(c(\mathfrak{I}, i)) & \text{otherwise}
 \end{cases}
 \end{equation}
 
@@ -1211,7 +1211,7 @@ I_1 & \text{if} \quad \exists I: I \in \mathfrak{I} \wedge \lVert I_0 \rVert = i
 \end{equation}
 
 \subsection{Trie Database}
-Thus no explicit assumptions are made concerning what data is stored and what is not, since that is an implementation-specific consideration; we simply define the identity function mapping the key-value set $\mathfrak{I}$ to a 32-byte hash and assert that only a single such hash exists for any $\mathfrak{I}$, which though not strictly true is accurate within acceptable precision given the SHA3 hash's collision resistance. In reality, a sensible implementation will not fully recompute the trie root hash for each set.
+Thus no explicit assumptions are made concerning what data is stored and what is not, since that is an implementation-specific consideration; we simply define the identity function mapping the key-value set $\mathfrak{I}$ to a 32-byte hash and assert that only a single such hash exists for any $\mathfrak{I}$, which though not strictly true is accurate within acceptable precision given the Keccak hash's collision resistance. In reality, a sensible implementation will not fully recompute the trie root hash for each set.
 
 A reasonable implementation will maintain a database of nodes determined from the computation of various tries or, more formally, it will memoise the function $c$. This strategy uses the nature of the trie to both easily recall the contents of any previous key-value set and to store multiple such sets in a very efficient manner. Due to the dependency relationship, Merkle-proofs may be constructed with an $O(\log N)$ space requirement that can demonstrate a particular leaf must exist within a trie of a given root hash.
 
@@ -1230,18 +1230,18 @@ We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARESTOR
 
 Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer $< 2^{256}$). It is assumed that $v$ is the `recovery id', a 2-bit value specifying the sign and finiteness of the curve point; unlike some implementations which keep this value in the range of $[27, 30]$, we subtract the lower bound thus reducing it to a pure 2-bit value in the range $[0, 3]$.
 
-For a given private key, $p_r$, the Ethereum address $A(p_r)$ (a 160-bit value) to which it corresponds is defined as the right most 160-bits of the SHA3 hash of the corresponding ECDSA public key:
+For a given private key, $p_r$, the Ethereum address $A(p_r)$ (a 160-bit value) to which it corresponds is defined as the right most 160-bits of the Keccak hash of the corresponding ECDSA public key:
 \begin{equation}
-A(p_r) = \mathcal{B}_{96..255}\big(\mathtt{\tiny SHA3}\big( \mathtt{\small ECDSAPUBKEY}(p_r) \big) \big)
+A(p_r) = \mathcal{B}_{96..255}\big(\mathtt{\tiny Keccak}\big( \mathtt{\small ECDSAPUBKEY}(p_r) \big) \big)
 \end{equation}
 
-The message hash, $h(T)$, to be signed is the SHA3 hash of the transaction without the latter three signature components, formally described as $T_r$, $T_s$ and $T_w$:
+The message hash, $h(T)$, to be signed is the Keccak hash of the transaction without the latter three signature components, formally described as $T_r$, $T_s$ and $T_w$:
 \begin{eqnarray}
 L_S(T) & \equiv & \begin{cases}
 (T_n, T_p, T_g, T_t, T_v, T_\mathbf{i}) & \text{if} \; T_t = 0\\
 (T_n, T_p, T_g, T_t, T_v, T_\mathbf{d}) & \text{otherwise} 
 \end{cases} \\
-h(T) & \equiv & \mathtt{\small SHA3}( L_S(T) )
+h(T) & \equiv & \mathtt{\small Keccak}( L_S(T) )
 \end{eqnarray}
 
 The signed transaction $G(T, p_r)$ is defined as:
@@ -1252,7 +1252,7 @@ G(T, p_r) \equiv T \quad \text{except} \\
 gc
 We may then define the sender function $S$ of the transaction as:
 \begin{equation}
-S(T) \equiv \mathcal{B}_{96..255}\big(\mathtt{\tiny SHA3}\big( \mathtt{\small ECDSARESTORE}(h(T), T_w, T_r, T_s) \big) \big)
+S(T) \equiv \mathcal{B}_{96..255}\big(\mathtt{\tiny Keccak}\big( \mathtt{\small ECDSARESTORE}(h(T), T_w, T_r, T_s) \big) \big)
 \end{equation}
 
 The assertion that the sender of the a signed transaction equals the address of the signer should be self-evident:
@@ -1275,7 +1275,7 @@ C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) & \equiv & G_{memory}(\boldsymbol{\m
 C_\text{\tiny SSTORE}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SSTORE} \\
 G_{call} + \boldsymbol{\mu}_\mathbf{s}[0] & \text{if} \quad w = \text{\small CALL}\\
 G_{create} & \text{if} \quad w = \text{\small CREATE}\\
-G_{sha3} & \text{if} \quad w = \text{\small SHA3}\\
+G_{sha3} & \text{if} \quad w = \text{\small Keccak}\\
 G_{sload} & \text{if} \quad w = \text{\small SLOAD}\\
 G_{balance} & \text{if} \quad w = \text{\small BALANCE}\\
 G_{stop} & \text{if} \quad w = \text{\small STOP}\\
@@ -1388,10 +1388,10 @@ Here given are the various exceptions to the state transition rules given in sec
 
 \begin{tabular*}{\columnwidth}[h]{rlrrl}
 \toprule
-\multicolumn{5}{c}{\textbf{20s: SHA3}} \vspace{5pt} \\
+\multicolumn{5}{c}{\textbf{20s: Keccak}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
-0x20 & {\small SHA3} & 2 & 1 & Compute SHA3-256 hash. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \mathtt{\tiny SHA3}(\boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[0] \dots (\boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1] - 1) ])$ \\
+0x20 & {\small Keccak} & 2 & 1 & Compute Keccak-256 hash. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \mathtt{\tiny Keccak}(\boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[0] \dots (\boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1] - 1) ])$ \\
 &&&& $\boldsymbol{\mu}'_i \equiv \max(\boldsymbol{\mu}_i, \ceil{ (\boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1]) \div 32 })$ \\
 \bottomrule
 \end{tabular*}
@@ -1655,10 +1655,10 @@ G_{sstore} & \text{otherwise}
 
 The genesis block is 13 items, and is specified thus:
 \begin{equation}
-\big( \big( 0_{256}, \mathtt{\tiny SHA3}\big(\mathtt{\tiny RLP}\big( () \big)\big), 0_{160}, stateRoot, 0, 2^{22}, 0, 0, 1000000, 0, 0, 0, \mathtt{\tiny SHA3}\big( (42) \big) \big), (), () \big)
+\big( \big( 0_{256}, \mathtt{\tiny Keccak}\big(\mathtt{\tiny RLP}\big( () \big)\big), 0_{160}, stateRoot, 0, 2^{22}, 0, 0, 1000000, 0, 0, 0, \mathtt{\tiny Keccak}\big( (42) \big) \big), (), () \big)
 \end{equation}
 
-Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $0_{160}$ refers to the coinbase address, a 160-bit hash which is all zeroes; $2^{22}$ refers to the difficulty; 0 refers to the timestamp (the Unix epoch); the transaction trie root and extradata are both $0$, being equivalent to the empty byte array. The sequences of both uncles and transactions are empty and represented by $()$. $\mathtt{\tiny SHA3}\big( (42) \big)$ refers to the SHA3 hash of a byte array of length one whose first and only byte is of value 42. $\mathtt{\tiny SHA3}\big(\mathtt{\tiny RLP}\big( () \big)\big)$ value refers to the hash of the uncle lists in RLP, both empty lists.
+Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $0_{160}$ refers to the coinbase address, a 160-bit hash which is all zeroes; $2^{22}$ refers to the difficulty; 0 refers to the timestamp (the Unix epoch); the transaction trie root and extradata are both $0$, being equivalent to the empty byte array. The sequences of both uncles and transactions are empty and represented by $()$. $\mathtt{\tiny Keccak}\big( (42) \big)$ refers to the Keccak hash of a byte array of length one whose first and only byte is of value 42. $\mathtt{\tiny Keccak}\big(\mathtt{\tiny RLP}\big( () \big)\big)$ value refers to the hash of the uncle lists in RLP, both empty lists.
 
 The proof-of-concept series include a development premine, making the state root hash some value $stateRoot$. The latest documentation should be consulted for the value of the state root.
 
