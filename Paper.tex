@@ -841,7 +841,7 @@ The given \textbf{gasUsed} must correspond faithfully to the transactions listed
 
 \subsection{Reward Application}
 
-The application of rewards to a block involves raising the balance of the accounts of the coinbase address of the block and each uncle by a certain amount. We raise the block's coinbase account by $R_b$; for each uncle, we raise the block's coinbase by an additional $\frac{1}{8}$ of the block reward and the coinbase of the uncle by $\frac{3}{4}$ of the reward. Formally we define the function $\Omega$:
+The application of rewards to a block involves raising the balance of the accounts of the coinbase address of the block and each uncle by a certain amount. We raise the block's coinbase account by $R_b$; for each uncle, we raise the block's coinbase by an additional $\frac{1}{32}$ of the block reward and the coinbase of the uncle by $\frac{15}{16}$ of the reward. Formally we define the function $\Omega$:
 \begin{eqnarray}
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
 \boldsymbol{\sigma}'[{B_H}_b]_b & = & \boldsymbol{\sigma}[{B_H}_b]_b + (1 + \frac{|B_\mathbf{U}|}{32})R_b \\
