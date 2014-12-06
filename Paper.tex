@@ -285,7 +285,6 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[transactionsTrie] The Keccak 256-bit hash of the root node of the trie structure populated with each transaction in the transactions list portion of the block; formally $H_t$.
 \item[difficulty] A scalar value corresponding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_d$.
 \item[number] A scalar value equal to the number of ancestor blocks. The genesis block has a number of zero; formally $H_i$.
-\item[minGasPrice] A scalar value equal to the minimum price of gas a transaction must have provided in order to be sufficient for inclusion by this miner in this block; formally $H_m$.
 \item[gasLimit] A scalar value equal to the current limit of gas expenditure per block; formally $H_l$.
 \item[gasUsed] A scalar value equal to the total gas used in transactions in this block; formally $H_u$.
 \item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.
@@ -350,7 +349,7 @@ Thus $\texttt{\small TRIE}(L_S(\boldsymbol{\sigma}))$ is the root node hash of t
 
 The function $L_B$ and $L_H$ are the preparation functions for a block and block header respectively. Much like the transaction receipt preparation function $L_R$, we assert the types and order of the structure for when the RLP transformation is required:
 \begin{eqnarray}
-\quad L_H(H) & \equiv & (\begin{array}[t]{l}H_p, H_u, H_b, H_r, H_t, H_d,\\ H_i, H_m, H_l, H_u, H_s, H_x, H_n \; )\end{array} \\
+\quad L_H(H) & \equiv & (\begin{array}[t]{l}H_p, H_u, H_b, H_r, H_t, H_d,\\ H_i, H_l, H_u, H_s, H_x, H_n \; )\end{array} \\
 \quad L_B(B) & \equiv & \big( L_H(B_H), L_R^*(B_\mathbf{R}), L_H^*(B_\mathbf{U}) \big)
 \end{eqnarray}
 
@@ -364,9 +363,8 @@ The component types are defined thus:
 \begin{array}[t]{lclclcl}
 H_p \in \mathbb{B}_{32} & \wedge & H_u \in \mathbb{B}_{32} & \wedge & H_b \in \mathbb{B}_{20} & \wedge \\
 H_r \in \mathbb{B}_{32} & \wedge & H_t \in \mathbb{B}_{32} & \wedge & H_d \in \mathbb{P} & \wedge \\
-H_i \in \mathbb{P} & \wedge & H_m \in \mathbb{P} & \wedge & H_l \in \mathbb{P} & \wedge \\
-H_u \in \mathbb{P} & \wedge & H_s \in \mathbb{P} & \wedge & H_x \in \mathbb{B} & \wedge \\
-H_n \in \mathbb{B}_{32} &&&&
+H_i \in \mathbb{P} & \wedge & H_u \in \mathbb{P} & \wedge & H_l \in \mathbb{P} & \wedge \\
+H_s \in \mathbb{P} & \wedge & H_x \in \mathbb{B} & \wedge & H_n \in \mathbb{B}_{32}
 \end{array}
 \end{equation}
 
@@ -837,12 +835,7 @@ The validation of uncle headers means nothing more than verifying that each uncl
 
 %where $s[i]$ equals the root of the state trie immediately after the execution of the transaction $B_\mathbf{T}[i]$, and $g[i]$ the total gas used immediately after said transaction.
 
-The given \textbf{gasUsed} and \textbf{minGasPrice} must correspond faithfully to the transactions listed. In the case of ${B_H}_m$, the minimum gas price, all transactions included in the transaction receipt must have a gas price, ${T_0}_p$, that is at least this value:
-\begin{equation}
-\forall \; T \in B_\mathbf{T}: T_p \geq {B_H}_m
-\end{equation}
-
-In the case of ${B_H}_u$, the total gas used in the block, it must be equal to the accumulated gas used according to the final transaction:
+The given \textbf{gasUsed} must correspond faithfully to the transactions listed: ${B_H}_u$, the total gas used in the block, must be equal to the accumulated gas used according to the final transaction:
 \begin{equation}
 {B_H}_u = \ell(\mathbf{R})_u
 \end{equation}
