@@ -37,7 +37,7 @@
 \newcommand*\ie{i.e.\@\xspace}
 %\renewcommand{\itemhook}{\setlength{\topsep}{0pt}  \setlength{\itemsep}{0pt}\setlength{\leftmargin}{15pt}}
 
-\title{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ {\smaller \textbf{Proof-of-Concept VI}}}
+\title{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ {\smaller \textbf{Final Draft - WiP}}}
 \author{
     Dr. Gavin Wood\\
     Co-Founder \& Lead, Ethereum Project\\
@@ -1037,41 +1037,6 @@ Useful corrections and suggestions were provided by a number of others from the 
 
 \end{description}
 
-\section{Fee Schedule}\label{app:fees}
-
-The fee schedule $G$ is a tuple of 10 scalar values corresponding to the relative costs, in gas, of a number of abstract operations that a transaction may effect.
-
-\begin{tabular*}{\columnwidth}[h]{lrl}
-\toprule
-Name & Value & Description* \\
-\midrule
-$G_{step}$ & 1 & Default amount of gas to pay for execution cycle. \\
-$G_{balance}$ & 20 & Paid for a {\small BALANCE} operation. \\
-$G_{stop}$ & 0 & Nothing paid for the {\small STOP} operation. \\
-$G_{sha3}$ & 20 & Paid for a {\small SHA3} operation. \\
-$G_{suicide}$ & 0 & Nothing paid for the {\small SUICIDE} operation. \\
-$G_{sload}$ & 20 & Paid for a {\small SLOAD} operation. \\
-$G_{sset}$ & 300 & Paid for an {\small SSTORE} operation when the storage value is set to non-zero from zero. \\
-$G_{sreset}$ & 100 & Paid for an {\small SSTORE} operation when the storage value's zeroness remains unchanged. \\
-$G_{sclear}$ & 0 & Nothing paid for an {\small SSTORE} operation when the storage value is set to zero from non-zero. \\
-$R_{sclear}$ & 150 & Refund given (added into refund counter) when the storage value is set to zero from non-zero. \\
-$G_{create}$ & 100 & Paid for a {\small CREATE} operation. \\
-$G_{call}$ & 20 & Paid for a {\small CALL} operation. \\
-$G_{exp}$ & 1 & Partial payment for an {\small EXP} operation. \\
-$G_{expbyte}$ & 1 & Partial payment when multiplied by $\lceil\log_{256}(exponent)\rceil$ for the {\small EXP} operation. \\
-$G_{memory}$ & 1 & Paid for every additional word when expanding memory. \\
-$G_{txdatazero}$ & 1 & Paid for every zero byte of data or code for a transaction. \\
-$G_{txdatanonzero}$ & 5 & Paid for every non-zero byte of data or code for a transaction. \\
-$G_{transaction}$ & 500 & Paid for every transaction. \\
-$G_{log}$ & 1 & Partial payment for a {\small LOG} operation. \\
-$G_{logdata}$ & 1 & Paid for each byte in a {\small LOG} operation's data. \\
-$G_{logtopic}$ & 1 & Paid for each topic of a {\small LOG} operation. \\
-$G_{copy}$ & 1 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
-
-%extern u256 const c_copyGas;			///< Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
-\bottomrule
-\end{tabular*}
-
 \section{Recursive Length Prefix}\label{app:rlp}
 This is a serialisation method for encoding arbitrarily structured binary data (byte arrays).
 
@@ -1264,6 +1229,41 @@ The assertion that the sender of the a signed transaction equals the address of 
 \forall T: \forall p_r: S(G(T, p_r)) \equiv A(p_r)
 \end{equation}
 
+\section{Fee Schedule}\label{app:fees}
+
+The fee schedule $G$ is a tuple of 10 scalar values corresponding to the relative costs, in gas, of a number of abstract operations that a transaction may effect.
+
+\begin{tabular*}{\columnwidth}[h]{lrl}
+\toprule
+Name & Value & Description* \\
+\midrule
+$G_{step}$ & 1 & Default amount of gas to pay for execution cycle. \\
+$G_{balance}$ & 20 & Paid for a {\small BALANCE} operation. \\
+$G_{stop}$ & 0 & Nothing paid for the {\small STOP} operation. \\
+$G_{sha3}$ & 20 & Paid for a {\small SHA3} operation. \\
+$G_{suicide}$ & 0 & Nothing paid for the {\small SUICIDE} operation. \\
+$G_{sload}$ & 20 & Paid for a {\small SLOAD} operation. \\
+$G_{sset}$ & 300 & Paid for an {\small SSTORE} operation when the storage value is set to non-zero from zero. \\
+$G_{sreset}$ & 100 & Paid for an {\small SSTORE} operation when the storage value's zeroness remains unchanged. \\
+$G_{sclear}$ & 0 & Nothing paid for an {\small SSTORE} operation when the storage value is set to zero from non-zero. \\
+$R_{sclear}$ & 150 & Refund given (added into refund counter) when the storage value is set to zero from non-zero. \\
+$G_{create}$ & 100 & Paid for a {\small CREATE} operation. \\
+$G_{call}$ & 20 & Paid for a {\small CALL} operation. \\
+$G_{exp}$ & 1 & Partial payment for an {\small EXP} operation. \\
+$G_{expbyte}$ & 1 & Partial payment when multiplied by $\lceil\log_{256}(exponent)\rceil$ for the {\small EXP} operation. \\
+$G_{memory}$ & 1 & Paid for every additional word when expanding memory. \\
+$G_{txdatazero}$ & 1 & Paid for every zero byte of data or code for a transaction. \\
+$G_{txdatanonzero}$ & 5 & Paid for every non-zero byte of data or code for a transaction. \\
+$G_{transaction}$ & 500 & Paid for every transaction. \\
+$G_{log}$ & 1 & Partial payment for a {\small LOG} operation. \\
+$G_{logdata}$ & 1 & Paid for each byte in a {\small LOG} operation's data. \\
+$G_{logtopic}$ & 1 & Paid for each topic of a {\small LOG} operation. \\
+$G_{copy}$ & 1 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
+
+%extern u256 const c_copyGas;			///< Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
+\bottomrule
+\end{tabular*}
+
 \section{Virtual Machine Specification}\label{app:vm}
 
 When interpreting 256-bit binary values as integers, the representation is big-endian.
@@ -1277,6 +1277,15 @@ The general gas cost function, $C$, is defined as:
 \begin{eqnarray}
 C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) & \equiv & G_{memory}(\boldsymbol{\mu}'_i - \boldsymbol{\mu}_i) + \begin{cases}
 C_\text{\tiny SSTORE}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SSTORE} \\
+C_\text{\tiny EXP}(\boldsymbol{\mu}) & \text{if} \quad w = \text{\small EXP} \\
+G_{step} + G_{copy}\times\boldsymbol{\mu}_\mathbf{s}[2] & \text{if} \quad w = \text{\small CALLDATACOPY} \\
+G_{step} + G_{copy}\times\boldsymbol{\mu}_\mathbf{s}[2] & \text{if} \quad w = \text{\small CODECOPY} \\
+G_{step} + G_{copy}\times\boldsymbol{\mu}_\mathbf{s}[3] & \text{if} \quad w = \text{\small EXTCODECOPY} \\
+G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1] & \text{if} \quad w = \text{\small LOG0} \\
+G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+G_{logtopic} & \text{if} \quad w = \text{\small LOG1} \\
+G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+2G_{logtopic} & \text{if} \quad w = \text{\small LOG2} \\
+G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+3G_{logtopic} & \text{if} \quad w = \text{\small LOG3} \\
+G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+4G_{logtopic} & \text{if} \quad w = \text{\small LOG4} \\
 G_{call} + \boldsymbol{\mu}_\mathbf{s}[0] & \text{if} \quad w = \text{\small CALL}\\
 G_{create} & \text{if} \quad w = \text{\small CREATE}\\
 G_{sha3} & \text{if} \quad w = \text{\small SHA3}\\
@@ -1291,7 +1300,7 @@ w & \equiv & \begin{cases} I_\mathbf{b}[\boldsymbol{\mu}_{pc}] & \text{if} \quad
 \end{cases}
 \end{eqnarray}
 
-where $C_\text{\tiny SSTORE}$ is specified in the appropriate section below. Note the memory cost component, given as the product of $G_{memory}$ and the maximum of 0 and the ceiling of the number of words in size that the memory must be over the current number of words, $\boldsymbol{\mu}_i$ in order that all accesses reference valid memory whether for read or write. Such accesses must be for non-zero number of bytes. Referencing a zero length range (e.g. by attempting to pass it as the input range to a CALL) does not require memory to be extended to the beginning of the range. $\boldsymbol{\mu}'_i$ is defined as this new maximum number of words of active memory; special-cases are given where these two are not equal.
+where $C_\text{\tiny SSTORE}$ is specified in the appropriate section below. Note the memory cost component, given as the product of $G_{memory}$ and the maximum of 0 \& the ceiling of the number of words in size that the memory must be over the current number of words, $\boldsymbol{\mu}_i$ in order that all accesses reference valid memory whether for read or write. Such accesses must be for non-zero number of bytes. Referencing a zero length range (e.g. by attempting to pass it as the input range to a CALL) does not require memory to be extended to the beginning of the range. $\boldsymbol{\mu}'_i$ is defined as this new maximum number of words of active memory; special-cases are given where these two are not equal.
 
 While defining the instruction set, we defined the memory-expansion for range function, $M$, thus:
 
