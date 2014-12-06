@@ -844,9 +844,11 @@ The given \textbf{gasUsed} must correspond faithfully to the transactions listed
 The application of rewards to a block involves raising the balance of the accounts of the coinbase address of the block and each uncle by a certain amount. We raise the block's coinbase account by $R_b$; for each uncle, we raise the block's coinbase by an additional $\frac{1}{8}$ of the block reward and the coinbase of the uncle by $\frac{3}{4}$ of the reward. Formally we define the function $\Omega$:
 \begin{eqnarray}
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
-\boldsymbol{\sigma}'[{B_H}_b]_b & = & \boldsymbol{\sigma}[{B_H}_b]_b + (1 + \frac{|B_\mathbf{U}|}{8})R_b \\
-\forall_{U \in B_\mathbf{U}} \quad \boldsymbol{\sigma}'[U_b]_b & = & \boldsymbol{\sigma}[U_b]_b + \frac{3}{4}R_b
+\boldsymbol{\sigma}'[{B_H}_b]_b & = & \boldsymbol{\sigma}[{B_H}_b]_b + (1 + \frac{|B_\mathbf{U}|}{32})R_b \\
+\forall_{U \in B_\mathbf{U}} \quad \boldsymbol{\sigma}'[U_b]_b & = & \boldsymbol{\sigma}[U_b]_b + \frac{15}{16}R_b
 \end{eqnarray}
+
+If there are collisions of the coinbase addresses between uncles and the block (i.e. two uncles with the same coinbase address or an uncle with the same coinbase address as the present block), additions are applied cumulatively.
 
 We define the block reward as 1500 Finney:
 \begin{equation}
