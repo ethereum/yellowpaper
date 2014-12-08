@@ -601,16 +601,25 @@ In the case of executing a message call, several parameters are required: sender
 (\boldsymbol{\sigma}', g', \mathbf{s}, \mathbf{o}) \equiv \Theta(\boldsymbol{\sigma}, s, o, r, g, p, v, \mathbf{d})
 \end{equation}
 
-We define $\boldsymbol{\sigma}_1$, the checkpoint state as the original state but with the value transferred to the recipient:
-\begin{eqnarray}
-\boldsymbol{\sigma}_1 & \equiv & \boldsymbol{\sigma} \quad \text{except:} \\
-\boldsymbol{\sigma}_1[r]_b & \equiv & \boldsymbol{\sigma}[r]_b + v
-\end{eqnarray}
+We define $\boldsymbol{\sigma}_1$, the checkpoint state as the original state but with the value transferred to the recipient.
+\begin{equation}
+\boldsymbol{\sigma}_1[r]_b \equiv \boldsymbol{\sigma}[r]_b + v
+\end{equation}
+
+Throughout the present work, it is assumed that if $\boldsymbol{\sigma}_1[r]$ was originally undefined, it will be created as an account with no code or state and zero balance and nonce. Thus the previous equation should be taken to mean:
+\begin{equation}
+\boldsymbol{\sigma}_1 \equiv \boldsymbol{\sigma} \quad \text{except:} \\
+\end{equation}
+\begin{equation}
+\begin{cases}
+\boldsymbol{\sigma}_1[r] \equiv (v, 0, \mathtt{\tiny KEC}(()), \mathtt{\tiny TRIE}(())) & \text{if} \quad \boldsymbol{\sigma}[r] = \varnothing \\
+\boldsymbol{\sigma}_1[r]_b \equiv \boldsymbol{\sigma}[r]_b + v & \text{otherwise}
+\end{cases}
+\end{equation}
 
 The account's associated code (identified as the fragment whose Keccak hash is $\boldsymbol{\sigma}[r]_c$) is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts due to an exhausted gas supply, then no gas is refunded to the caller and the state is reverted to the point immediately prior to code execution.
 \begin{eqnarray}
 \boldsymbol{\sigma}' & \equiv & \begin{cases}
-\boldsymbol{\sigma}_1 & \text{if} \quad \boldsymbol{\sigma}_1[r]_c = \varnothing \\
 \boldsymbol{\sigma}_1 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
 \boldsymbol{\sigma}^{**} & \text{otherwise}
 \end{cases} \\
@@ -802,7 +811,7 @@ This scheme notably ignores so-called \textit{stale} blocks: valid, mined blocks
 
 This increases overall network security by making it much harder for an adversary to silently mine a canonical blockchain (which, it is assumed, would contain different transactions to the current consensus) and dump it on the network with the effect of overriding existing blocks and reversing the transactions within.
 
-In order to validate the extra computation, a given block $B$ may include the block headers from any known uncle blocks (i.e. blocks whose parent is equivalent to the grandparent of $B$). Since a block header includes the nonce, a proof-of-work, then the header alone is enough to validate the computation done. Any such blocks contribute toward the total computation or \textit{total difficulty} of a chain that includes them. To incentivise computation and inclusion, a reward is given both to the miner of the stale block and the miner of the block that references it.
+In order to validate the extra computation, a given block $B$ may include the block headers from any known uncle blocks (i.e. blocks whose parent is equivalent to the $N$th generation grandparent of $B$, for a limited set of $N$). Since a block header includes the nonce, a proof-of-work, then the header alone is enough to validate the computation done. Any such blocks contribute toward the total computation or \textit{total difficulty} of a chain that includes them. To incentivise computation and inclusion, a reward is given both to the miner of the stale block and the miner of the block that references it.
 
 Thus we define the total difficulty of block $B$ recursively as:
 \begin{eqnarray}
