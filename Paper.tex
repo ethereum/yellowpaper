@@ -248,7 +248,7 @@ Additionally, a contract creation transaction contains:
 
 \textbf{init} is an EVM-code fragment; it returns the \textbf{body}, a second fragment of code that executes each time the account receives a message call (either through a transaction or due to the internal execution of code). \textbf{init} is executed only once at account creation and gets discarded immediately thereafter.
 
-However, a message call transaction contains:
+In contrast, a message call transaction contains:
 
 \begin{description}
 \item[data] An unlimited size byte array specifying the input data of the message call, formally $T_\mathbf{d}$.
@@ -324,7 +324,7 @@ Notably $B_\mathbf{T}$ does not get serialised into the block by the block prepa
 
 \subsubsection{Holistic Validity}
 
-We can assert its validity if and only if it satisfies several conditions: It must be internally consistent with the uncle and transaction block hashes and the given transactions $B_\mathbf{T}$, when executed in order on the base state $\boldsymbol{\sigma}$ (derived from the final state of the parent block), result in a new state of the identity $H_r$:
+We can assert a block's validity if and only if it satisfies several conditions: It must be internally consistent with the uncle and transaction block hashes and the given transactions $B_\mathbf{T}$, when executed in order on the base state $\boldsymbol{\sigma}$ (derived from the final state of the parent block), result in a new state of the identity $H_r$:
 \begin{equation}
 \begin{array}[t]{lclc}
 H_u &\equiv& \mathtt{\small Keccak}(\mathtt{\small RLP}(L_H^*(B_\mathbf{U}))) & \wedge \\
@@ -335,7 +335,7 @@ H_r &\equiv& \mathtt{\small TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) &
 
 where $p(k, v)$ is simply the pairwise RLP transformation, in this case, the first being the index of the transaction in the block and the second being the transaction receipt:
 \begin{equation}
-P(k, v) \equiv \big( \mathtt{\small RLP}(k), \mathtt{\small RLP}(v) \big)
+p(k, v) \equiv \big( \mathtt{\small RLP}(k), \mathtt{\small RLP}(v) \big)
 \end{equation}
 
 Furthermore:
@@ -624,7 +624,7 @@ The account's associated code (identified as the fragment whose Keccak hash is $
 \boldsymbol{\sigma}^{**} & \text{otherwise}
 \end{cases} \\
 (\boldsymbol{\sigma}^{**}, g', \mathbf{s}, \mathbf{o}) & \equiv & \Xi(\boldsymbol{\sigma}_1, g, I) \\
-I_a & \equiv & a \\
+I_a & \equiv & r \\
 I_o & \equiv & o \\
 I_p & \equiv & p \\
 I_\mathbf{d} & \equiv & \mathbf{d} \\
@@ -651,7 +651,7 @@ The machine can have exceptional execution for several reasons, including stack 
 
 Fees (denominated in gas) are charged under three distinct circumstances, all three as prerequisite to the execution of an operation. The first and most common is the fee intrinsic to the computation of the operation. Most operations require a single gas fee to be paid for their execution; exceptions include {\small SSTORE}, {\small SLOAD}, {\small CALL}, {\small CREATE}, {\small BALANCE} and {\small Keccak}. Secondly, gas may be deducted in order to form the payment for a subordinate message call or contract creation; this forms part of the payment for {\small CREATE} and {\small CALL}. Finally, gas may be paid due to an increase in the usage of the memory.
 
-Over a account's execution, the total fee for memory-usage payable is proportional to smallest multiple of 32 bytes that are required such that all memory indices (whether for read or write) are included in the range. This is paid for on a just-in-time basis; as such, referencing an area of memory at least 32 bytes greater than any previously indexed memory will certainly result in an additional memory usage fee. Due to this fee it is highly unlikely addresses will ever go above 32-bit bounds since at the present price of Ether and default gas price, that would cost around US\$20M for the memory fee alone. That said, implementations must be able to manage this eventuality.
+Over an account's execution, the total fee for memory-usage payable is proportional to smallest multiple of 32 bytes that are required such that all memory indices (whether for read or write) are included in the range. This is paid for on a just-in-time basis; as such, referencing an area of memory at least 32 bytes greater than any previously indexed memory will certainly result in an additional memory usage fee. Due to this fee it is highly unlikely addresses will ever go above 32-bit bounds since at the present price of Ether and default gas price, that would cost around US\$20M for the memory fee alone. That said, implementations must be able to manage this eventuality.
 
 Storage fees have a slightly nuanced behaviour---to incentivise minimisation of the use of storage (which corresponds directly to a larger state database on all nodes), the execution fee for an operation that clears an entry in the storage is waived; in fact, it is effectively paid up-front since the initial usage of a storage location costs twice as much as the normal usage.
 
@@ -704,7 +704,7 @@ The execution model defines the function $\Xi$, which can compute the resultant 
 
 We must now define the $\Xi$ function. In most practical implementations this will be modelled as an iterative progression of the pair comprising the full system state, $\boldsymbol{\sigma}$ and the machine state, $\boldsymbol{\mu}$. Formally, we define it recursively with a function $X$. This uses an iterator function $O$ (which defines the result of a single cycle of the state machine) together with functions $Z$ which determines if the present state is an exceptional halting state of the machine and $H$, specifying the output data of the instruction if and only if the present state is a normal halting state of the machine. The empty sequence, denoted $()$, is not equal to the empty set, denoted $\varnothing$.
 \begin{eqnarray}
-\Xi(\boldsymbol{\sigma}, g, I) & \equiv & X_{0,1,2,4}\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, \emptyset, I)\big) \\
+\Xi(\boldsymbol{\sigma}, g, I) & \equiv & X_{0,1,2,4}\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, \varnothing, I)\big) \\
 \boldsymbol{\mu}_g & \equiv & g \\
 \boldsymbol{\mu}_{pc} & \equiv & 0 \\
 \boldsymbol{\mu}_\mathbf{m} & \equiv & (0, 0, ...) \\
@@ -713,7 +713,7 @@ We must now define the $\Xi$ function. In most practical implementations this wi
 \end{eqnarray}
 \begin{equation}
 X\big( (\boldsymbol{\sigma}, \boldsymbol{\mu}, \mathbf{s}, I) \big) \equiv \begin{cases}
-\big(\boldsymbol{\sigma}, \boldsymbol{\mu}, \emptyset, I, ()\big) & \text{if} \quad Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I)\\
+\big(\boldsymbol{\sigma}, \boldsymbol{\mu}, \varnothing, I, ()\big) & \text{if} \quad Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I)\\
 O(\boldsymbol{\sigma}, \boldsymbol{\mu}, \mathbf{s}, I) \cdot \mathbf{o} & \text{if} \quad \mathbf{o} \neq \varnothing\\
 X\big(O(\boldsymbol{\sigma}, \boldsymbol{\mu}, \mathbf{s}, I)\big) & \text{otherwise}\\
 \end{cases}
@@ -1057,7 +1057,7 @@ Useful corrections and suggestions were provided by a number of others from the 
 
 \item[EVM Assembly] The human-readable form of EVM-code.
 
-\item[LLL] The Lisp-like Low-level Language, a human-writable language used for authoring simple contracts and general low-level language toolkit for trans-piling to.
+\item[LLL] The Lisp-like Low-level Language, a human-writable language used for authoring simple contracts and general low-level language toolkit for transpiling to.
 
 \end{description}
 
@@ -1093,7 +1093,7 @@ R_b(\mathbf{x}) & \equiv & \begin{cases}
 (128 + \lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{else if} \quad \lVert \mathbf{x} \rVert < 56 \\
 \big(183 + \big\lVert \mathtt{\tiny BE}(\lVert \mathbf{x} \rVert) \big\rVert \big) \cdot \mathtt{\tiny BE}(\lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{otherwise}
 \end{cases} \\
-\mathtt{\tiny BE}(x) & \equiv & (b_0, b_1, ...): b_0 \neq 0 \wedge \sum^{n = 0}_{n < \lVert \mathbf{b} \rVert} b_n256^{\lVert \mathbf{b} \rVert - 1 - n} \\
+\mathtt{\tiny BE}(x) & \equiv & (b_0, b_1, ...): b_0 \neq 0 \wedge \sum_{n = 0}^{\lVert \mathbf{b} \rVert - 1} b_n256^{\lVert \mathbf{b} \rVert - 1 - n} \\
 (a) \cdot (b, c) \cdot (d, e) & = & (a, b, c, d, e)
 \end{eqnarray}
 
@@ -1142,7 +1142,7 @@ f(t) & \equiv & \begin{cases} 2 & \text{if} \quad t \\ 0 & \text{otherwise} \end
 Thus the high nibble of the first byte contains two flags; the lowest bit encoding the oddness of the length and the second-lowest encoding the flag $t$. The low nibble of the first byte is zero in the case of an even number of nibbles and the first nibble in the case of an odd number. All remaining nibbles (now an even number) fit properly into the remaining bytes.
 
 \section{Modified Merkle Patricia Tree}\label{app:trie}
-The modified Merkle Patricia tree (trie) provides a persistent data structure to map between arbitrary-length binary data (byte arrays). It is defined in terms of a mutable data structure to map between 256-bit binary fragments and arbitrary-length binary data, typically implemented as a database. The core of the trie, and its sole requirement in terms of the protocol specification is to provide a single value that identifies a given set of key-value pairs, which may either a 32 byte sequence or the empty byte sequence. It is left as an implementation consideration to store and maintain the structure of the trie in a manner the allows effective and efficient realisation of the protocol.
+The modified Merkle Patricia tree (trie) provides a persistent data structure to map between arbitrary-length binary data (byte arrays). It is defined in terms of a mutable data structure to map between 256-bit binary fragments and arbitrary-length binary data, typically implemented as a database. The core of the trie, and its sole requirement in terms of the protocol specification is to provide a single value that identifies a given set of key-value pairs; this value may either be a 32 byte sequence or the empty byte sequence. It is left as an implementation consideration to store and maintain the structure of the trie in a manner that allows effective and efficient realisation of the protocol.
 
 Formally, we assume the input value $\mathfrak{I}$, a set containing pairs of byte sequences:
 \begin{equation}
@@ -1151,7 +1151,7 @@ Formally, we assume the input value $\mathfrak{I}$, a set containing pairs of by
 
 When considering such a sequence, we use the common numeric subscript notation to refer to a tuple's key or value, thus:
 \begin{equation}
-\forall_{I: \in \mathfrak{I}} I \equiv (I_0, I_1)
+\forall_{I \in \mathfrak{I}} I \equiv (I_0, I_1)
 \end{equation}
 
 Any series of bytes may also trivially be viewed as a series of nibbles, given an endian-specific notation; here we assume big-endian. Thus:
@@ -1239,7 +1239,7 @@ The signed transaction $G(T, p_r)$ is defined as:
 G(T, p_r) \equiv T \quad \text{except} \\
 (T_w, T_r, T_s) = \mathtt{\small ECDSASIGN}(h(T), p_r)
 \end{eqnarray}
-gc
+
 We may then define the sender function $S$ of the transaction as:
 \begin{equation}
 S(T) \equiv \mathcal{B}_{96..255}\big(\mathtt{\tiny Keccak}\big( \mathtt{\small ECDSARESTORE}(h(T), T_w, T_r, T_s) \big) \big)
@@ -1451,7 +1451,8 @@ Here given are the various exceptions to the state transition rules given in sec
 \midrule
 0x32 & {\small ORIGIN} & 0 & 1 & Get execution origination address. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_o$ \\
-&&&& This is the sender of original transaction; it is never an account with non-empty associated code. \\
+&&&& This is the sender of original transaction; it is never an account with non-empty \\
+&&&& associated code. \\
 \midrule
 0x33 & {\small CALLER} & 0 & 1 & Get caller address. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_c$ \\
@@ -1653,7 +1654,7 @@ G_{sstore} & \text{otherwise}
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0xf0 & {\small CREATE} & 3 & 1 & Create a new account with associated code. \\
 &&&& $\mathbf{i} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[1] \dots (\boldsymbol{\mu}_\mathbf{s}[1] + \boldsymbol{\mu}_\mathbf{s}[2] - 1) ]$ \\
-&&&& $(\boldsymbol{\sigma}', \boldsymbol{\mu}'_g, \mathbf{s}^+) \equiv \begin{cases}\Lambda(\boldsymbol{\sigma}^*, I_a, I_o, \boldsymbol{\mu}_g, I_p, \boldsymbol{\mu}_\mathbf{s}[0], \mathbf{i}) & \text{when} \quad \boldsymbol{\mu}_\mathbf{s}[0] \leqslant \boldsymbol{\sigma}[I_a]_b \\ \big(\boldsymbol{\sigma}, \boldsymbol{\mu}_g, \emptyset\big) & \text{otherwise} \end{cases}$ \\
+&&&& $(\boldsymbol{\sigma}', \boldsymbol{\mu}'_g, \mathbf{s}^+) \equiv \begin{cases}\Lambda(\boldsymbol{\sigma}^*, I_a, I_o, \boldsymbol{\mu}_g, I_p, \boldsymbol{\mu}_\mathbf{s}[0], \mathbf{i}) & \text{when} \quad \boldsymbol{\mu}_\mathbf{s}[0] \leqslant \boldsymbol{\sigma}[I_a]_b \\ \big(\boldsymbol{\sigma}, \boldsymbol{\mu}_g, \varnothing\big) & \text{otherwise} \end{cases}$ \\
 &&&& $\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except} \quad \boldsymbol{\sigma}^*[I_a]_n = \boldsymbol{\sigma}[I_a]_n + 1 \wedge \boldsymbol{\sigma}^*[I_a]_b = \boldsymbol{\sigma}[I_a]_b - \boldsymbol{\mu}_\mathbf{s}[0]$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
 &&&& $\mathbf{s}' \equiv \mathbf{s} \cup \mathbf{s}^+$ \\
@@ -1665,7 +1666,7 @@ G_{sstore} & \text{otherwise}
 0xf1 & {\small CALL} & 7 & 1 & Message-call into an account. \\
 &&&& $\mathbf{i} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[3] \dots (\boldsymbol{\mu}_\mathbf{s}[3] + \boldsymbol{\mu}_\mathbf{s}[4] - 1) ]$ \\
 &&&& $\mathbf{o} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[5] \dots (\boldsymbol{\mu}_\mathbf{s}[5] + \boldsymbol{\mu}_\mathbf{s}[6] - 1) ]$ \\
-&&&& $(\boldsymbol{\sigma}', g', \mathbf{s}^+, \mathbf{o}) \equiv \begin{cases}\Theta(\boldsymbol{\sigma}^*, I_a, I_o, \boldsymbol{\mu}_\mathbf{s}[1], \boldsymbol{\mu}_\mathbf{s}[0], I_p, \boldsymbol{\mu}_\mathbf{s}[2], \mathbf{i}) & \text{when} \quad \boldsymbol{\mu}_\mathbf{s}[2] \leqslant \boldsymbol{\sigma}[I_a]_b \\ (\boldsymbol{\sigma}, g, \emptyset, \mathbf{o}) & \text{otherwise} \end{cases}$ \\
+&&&& $(\boldsymbol{\sigma}', g', \mathbf{s}^+, \mathbf{o}) \equiv \begin{cases}\Theta(\boldsymbol{\sigma}^*, I_a, I_o, \boldsymbol{\mu}_\mathbf{s}[1], \boldsymbol{\mu}_\mathbf{s}[0], I_p, \boldsymbol{\mu}_\mathbf{s}[2], \mathbf{i}) & \text{when} \quad \boldsymbol{\mu}_\mathbf{s}[2] \leqslant \boldsymbol{\sigma}[I_a]_b \\ (\boldsymbol{\sigma}, g, \varnothing, \mathbf{o}) & \text{otherwise} \end{cases}$ \\
 &&&& $\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except} \quad \boldsymbol{\sigma}^*[I_a]_b = \boldsymbol{\sigma}[I_a]_b - \boldsymbol{\mu}_\mathbf{s}[2]$ \\
 &&&& $\boldsymbol{\mu}'_g \equiv \boldsymbol{\mu}_g + g'$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
