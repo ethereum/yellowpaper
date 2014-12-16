@@ -471,6 +471,11 @@ A \equiv (A_\mathbf{s}, A_\mathbf{l}, A_r)
 
 The tuple contents include $A_\mathbf{s}$, the suicide set: a set of accounts that will be discarded following the transaction's completion. $A_\mathbf{l}$ is the log series: this is a series of archived and indexable `checkpoints' in VM code execution that allow for contract-calls to be easily tracked by onlookers external to the Ethereum world (such as decentralised application front-ends). Finally there is $A_r$, the refund balance, increased through using the {\small SSTORE} instruction in order to reset contract storage to zero from some non-zero value. Though not immediately refunded, it is allowed to partially offset the total execution costs.
 
+For brevity, we define the empty substate $A^0$ to have no suicides, no logs and a zero refund balance:
+\begin{equation}
+A^0 \equiv (\varnothing, (), 0)
+\end{equation}
+
 \subsection{Execution}
 We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
 \begin{equation}
@@ -560,53 +565,55 @@ These are used to help define the transaction receipt, discussed later.
 
 \section{Contract Creation} \label{ch:create}
 
-There are number of intrinsic parameters used when creating an account: sender ($s$), original transactor ($o$), available gas ($g$), gas price ($p$), endowment ($v$) together with an arbitrary length byte array, $\mathbf{i}$, the initialisation EVM code and finally the present depth of the message-call/contract-creation stack ($d$).
+There are number of intrinsic parameters used when creating an account: sender ($s$), original transactor ($o$), available gas ($g$), gas price ($p$), endowment ($v$) together with an arbitrary length byte array, $\mathbf{i}$, the initialisation EVM code and finally the present depth of the message-call/contract-creation stack ($e$).
 
 We define the creation function formally as the function $\Lambda$, which evaluates from these values, together with the state $\boldsymbol{\sigma}$ to the tuple containing the new state, remaining gas and accrued transaction substate $(\boldsymbol{\sigma}', g', A)$, as in section \ref{ch:transactions}:
 \begin{equation}
-(\boldsymbol{\sigma}', g', A) \equiv \Lambda(\boldsymbol{\sigma}, s, o, g, p, v, \mathbf{i}, d)
+(\boldsymbol{\sigma}', g', A) \equiv \Lambda(\boldsymbol{\sigma}, s, o, g, p, v, \mathbf{i}, e)
 \end{equation}
 
-The address of the new account is defined as being the rightmost 160 bits of the Keccak hash of RLP encoding of the structure containing only the sender and the nonce. Thus we define the creation address function $A$:
-\begin{eqnarray}
-A(s, n) & \equiv & \mathcal{B}_{96..255}\Big(\mathtt{\tiny KEC}\Big(\mathtt{\tiny RLP}\big(\;(s, n)\;\big)\Big)\Big)
-\end{eqnarray}
+The address of the new account is defined as being the rightmost 160 bits of the Keccak hash of RLP encoding of the structure containing only the sender and the nonce. Thus we define the resultant address for the new account $a$:
+\begin{equation}
+a \equiv \mathcal{B}_{96..255}\Big(\mathtt{\tiny KEC}\Big(\mathtt{\tiny RLP}\big(\;(s, \boldsymbol{\sigma}[s]_n - 1)\;\big)\Big)\Big)
+\end{equation}
 
-where $\mathtt{\tiny KEC}$ is the Keccak 256-bit hash function, $\mathtt{\tiny RLP}$ is the RLP encoding function, $\mathcal{B}_{a..b}(X)$ evaluates to binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$ and $\boldsymbol{\sigma}[x]$ is the address state of $x$ or $\varnothing$ if none exists. Note, as defined directly, we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
+where $\mathtt{\tiny KEC}$ is the Keccak 256-bit hash function, $\mathtt{\tiny RLP}$ is the RLP encoding function, $\mathcal{B}_{a..b}(X)$ evaluates to binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$ and $\boldsymbol{\sigma}[x]$ is the address state of $x$ or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
 
 The account's nonce is initially defined as zero, the balance as the value passed, the storage as empty and the code hash as the Keccak 256-bit hash of the empty string, thus the mutated state becomes $\boldsymbol{\sigma}^*$:
 \begin{equation}
 \boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except:}
 \end{equation}
 \begin{equation}
-\boldsymbol{\sigma}^*[A(s, \boldsymbol{\sigma}[s]_n - 1)] \equiv \big( 0, v + v', \mathtt{\tiny TRIE}(\varnothing), \mathtt{\tiny KEC}\big(()\big) \big)
+\boldsymbol{\sigma}^*[a] \equiv \big( 0, v + v', \mathtt{\tiny TRIE}(\varnothing), \mathtt{\tiny KEC}\big(()\big) \big)
 \end{equation}
 
-where $v'$ is the account's pre-existing value, in the event it was previously in existance:
-
+where $v'$ is the account's pre-existing value, in the event it was previously in existence:
 \begin{equation}
-v' \equiv 
+v' \equiv \begin{cases}
+0 & \text{if} \quad \boldsymbol{\sigma}[a] = \varnothing\\
+\boldsymbol{\sigma}[a]_b & \text{otherwise}
+\end{cases}
 \end{equation}
 
-where $a$ is the address of the new account, as defined above.
-% It is asserted that the state database will also change such that it defines the pair $(\mathtt{\tiny KEC}(\mathbf{b}), \mathbf{b})$.
+%It is asserted that the state database will also change such that it defines the pair $(\mathtt{\tiny KEC}(\mathbf{b}), \mathbf{b})$.
 
-Finally, the account is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the account's storage can be altered, further accounts can be created and further message calls can be made. As such, the code execution function $\Xi$ evaluates to a tuple of the resultant state $\boldsymbol{\sigma}^{**}$, available gas remaining $g'$, the suicide list $\mathbf{s}$ and the body code of the account $\mathbf{b}$.
+Finally, the account is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the account's storage can be altered, further accounts can be created and further message calls can be made. As such, the code execution function $\Xi$ evaluates to a tuple of the resultant state $\boldsymbol{\sigma}^{**}$, available gas remaining $g'$, the accrued substate $A$ and the body code of the account $\mathbf{b}$.
 
-Code execution depletes gas; thus it may exit before the code has come to a natural halting state. In this exceptional case we say an Out-of-Gas exception has occurred: The evaluated state is defined as being the empty set $\varnothing$ and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation. The gas remaining should be zero. If the creation was conducted as the reception of a transaction, then this doesn't affect payment of the intrinsic cost: it is paid regardless.
+Code execution depletes gas; thus it may exit before the code has come to a natural halting state. In this (and several other) exceptional cases we say an Out-of-Gas exception has occurred: The evaluated state is defined as being the empty set $\varnothing$ and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation. The gas remaining should be zero in any such exceptional condition. If the creation was conducted as the reception of a transaction, then this doesn't affect payment of the intrinsic cost: it is paid regardless.
 
-If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persevere. Thus formally, we may specify the resultant state, gas and suicide list as $(\boldsymbol{\sigma}', g', \mathbf{s})$ where:
+If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persevere. Thus formally, we may specify the resultant state, gas and substate as $(\boldsymbol{\sigma}', g', A)$ where:
 
-\textit{TODO: rollback when $\mathbf{o} = \varnothing$ or is it sigma? clear this up, formally define and normalise into message-call and execution overview.}
 \begin{equation}
-(\boldsymbol{\sigma}^{**}, g^{**}, \mathbf{s}, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}^*, g, I) \\
+(\boldsymbol{\sigma}^{**}, g^{**}, A, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}^*, g, I) \\
 \end{equation}
 \begin{eqnarray}
 \quad g' & \equiv & \begin{cases}
+0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
 g^{**} & \text{if} \quad g^{**} < c \\
 g^{**} - c & \text{otherwise} \\
 \end{cases} \\
 \quad \boldsymbol{\sigma}' & \equiv & \begin{cases}
+\boldsymbol{\sigma}^* & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
 \boldsymbol{\sigma}^{**} & \text{if} \quad a \notin \mathbf{s} \vee g^{**} < c \\
 \begin{array}[b]{l}
 \boldsymbol{\sigma}^{**} \quad \text{except:} \\
@@ -619,7 +626,8 @@ I_p & \equiv & p \\
 I_\mathbf{d} & \equiv & () \\
 I_s & \equiv & s \\
 I_v & \equiv & v \\
-I_\mathbf{b} & \equiv & \mathbf{i}
+I_\mathbf{b} & \equiv & \mathbf{i} \\
+I_e & \equiv & e
 \end{eqnarray}
 
 where $c$ is the code-deposit cost:
@@ -627,17 +635,19 @@ where $c$ is the code-deposit cost:
 c \equiv G_{createdata} \times |\mathbf{o}|
 \end{equation}
 
-$I_\mathbf{d}$ evaluates to the empty tuple. $I_H$ has no special treatment and is determined from the blockchain. The exception in the determination of $\boldsymbol{\sigma}'$ dictates that the resultant byte sequence from the execution of the initialisation code specifies the final body code for the newly-created account, with $\boldsymbol{\sigma}'[A(s, \boldsymbol{\sigma}[s]_n)]_{\mathbf{b}}$ being the newly created account's body code and $\mathbf{o}$ the output byte sequence of the code execution.
+$I_\mathbf{d}$ evaluates to the empty tuple as there is no input data to this call. $I_H$ has no special treatment and is determined from the blockchain. The exception in the determination of $\boldsymbol{\sigma}'$ dictates that the resultant byte sequence from the execution of the initialisation code specifies the final body code for the newly-created account, with $\boldsymbol{\sigma}'[a]_{\mathbf{b}}$ being the newly created account's body code and $\mathbf{o}$ the output byte sequence of the code execution.
 
-No code is deposited in the state if the newly created account was suicided or if the gas does not cover the additional per-byte contract deposit fee.
+No code is deposited in the state if the gas does not cover the additional per-byte contract deposit fee.
 
 \subsection{Subtleties}
 Note that while the initialisation code is executing, the newly created address exists but with no intrinsic body code. Thus any message call received by it during this time causes no code to be executed. If the initialisation execution ends with a {\small SUICIDE} instruction, the matter is moot since the account will be deleted before the transaction is completed. For a normal {\small STOP} code, or if the code returned is otherwise empty, then the state is left with a zombie account, and any remaining balance will be locked into the account forever.
 
 \section{Message Call} \label{ch:call}
-In the case of executing a message call, several parameters are required: sender ($s$), transaction originator ($o$), recipient ($r$), available gas ($g$), value ($v$) and gas price ($p$) together with an arbitrary length byte array, $\mathbf{d}$, the input data of the call. Aside from evaluating to a new state and suicide list, message calls also have an extra component---the output data denoted by the byte array $\mathbf{o}$. This is ignored when executing transactions, however message calls can be initiated due to VM-code execution and in this case this information is used.
+In the case of executing a message call, several parameters are required: sender ($s$), transaction originator ($o$), recipient ($r$), available gas ($g$), value ($v$) and gas price ($p$) together with an arbitrary length byte array, $\mathbf{d}$, the input data of the call and finally the present depth of the message-call/contract-creation stack ($e$).
+
+Aside from evaluating to a new state and transaction substate, message calls also have an extra component---the output data denoted by the byte array $\mathbf{o}$. This is ignored when executing transactions, however message calls can be initiated due to VM-code execution and in this case this information is used.
 \begin{equation}
-(\boldsymbol{\sigma}', g', \mathbf{s}, \mathbf{o}) \equiv \Theta(\boldsymbol{\sigma}, s, o, r, g, p, v, \mathbf{d})
+(\boldsymbol{\sigma}', g', A, \mathbf{o}) \equiv \Theta(\boldsymbol{\sigma}, s, o, r, g, p, v, \mathbf{d}, e)
 \end{equation}
 
 We define $\boldsymbol{\sigma}_1$, the checkpoint state as the original state but with the value transferred to the recipient.
@@ -656,7 +666,8 @@ Throughout the present work, it is assumed that if $\boldsymbol{\sigma}_1[r]$ wa
 \end{cases}
 \end{equation}
 
-The account's associated code (identified as the fragment whose Keccak hash is $\boldsymbol{\sigma}[r]_c$) is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts due to an exhausted gas supply, then no gas is refunded to the caller and the state is reverted to the point immediately prior to code execution.
+The account's associated code (identified as the fragment whose Keccak hash is $\boldsymbol{\sigma}[r]_c$) is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts due in an exceptional fashion (i.e. due to an exhausted gas supply, stack underflow, invalid jump destination or invalid instruction), then no gas is refunded to the caller and the state is reverted to the point immediately prior to code execution (i.e. $\boldsymbol{\sigma}_1$).
+
 \begin{eqnarray}
 \boldsymbol{\sigma}' & \equiv & \begin{cases}
 \boldsymbol{\sigma}_1 & \text{if} \quad \mathbf{o} = \varnothing \\
@@ -666,9 +677,11 @@ The account's associated code (identified as the fragment whose Keccak hash is $
 I_a & \equiv & a \\
 I_o & \equiv & o \\
 I_p & \equiv & p \\
+I_d & \equiv & d \\
 I_\mathbf{d} & \equiv & \mathbf{d} \\
 I_s & \equiv & s \\
 I_v & \equiv & v \\
+I_e & \equiv & e \\
 \text{Let} \quad \mathtt{\tiny KEC}(I_\mathbf{b}) & = & \boldsymbol{\sigma}[r]_c
 \end{eqnarray}
 
@@ -732,6 +745,7 @@ In addition to the system state $\boldsymbol{\sigma}$, and the remaining gas for
 \item $I_v$, the value, in Wei, passed to this account as part of the same procedure as execution; if the execution agent is a transaction, this would be the transaction value.
 \item $I_\mathbf{b}$, the byte array that is the machine code to be executed.
 \item $I_H$, the block header of the present block.
+\item $I_e$, the depth of the present message-call or contract-creation (i.e. the number of {\small CALL}s or {\small CREATE}s being executed at present).
 \end{itemize}
 
 The execution model defines the function $\Xi$, which can compute the resultant state $\boldsymbol{\sigma}'$, the remaining gas $g'$, the suicide list $\mathbf{s}$ and the resultant output, $\mathbf{o}$, given these definitions:
@@ -741,9 +755,11 @@ The execution model defines the function $\Xi$, which can compute the resultant 
 
 \subsection{Execution Overview}
 
-We must now define the $\Xi$ function. In most practical implementations this will be modelled as an iterative progression of the pair comprising the full system state, $\boldsymbol{\sigma}$ and the machine state, $\boldsymbol{\mu}$. Formally, we define it recursively with a function $X$. This uses an iterator function $O$ (which defines the result of a single cycle of the state machine) together with functions $Z$ which determines if the present state is an exceptional halting state of the machine and $H$, specifying the output data of the instruction if and only if the present state is a normal halting state of the machine. The empty sequence, denoted $()$, is not equal to the empty set, denoted $\varnothing$.
+We must now define the $\Xi$ function. In most practical implementations this will be modelled as an iterative progression of the pair comprising the full system state, $\boldsymbol{\sigma}$ and the machine state, $\boldsymbol{\mu}$. Formally, we define it recursively with a function $X$. This uses an iterator function $O$ (which defines the result of a single cycle of the state machine) together with functions $Z$ which determines if the present state is an exceptional halting state of the machine and $H$, specifying the output data of the instruction if and only if the present state is a normal halting state of the machine.
+
+The empty sequence, denoted $()$, is not equal to the empty set, denoted $\varnothing$; this is important when interpreting the output of $H$, which evaluates to $\varnothing$ when execution is to continue but a series (potentially empty) when execution should halt.
 \begin{eqnarray}
-\Xi(\boldsymbol{\sigma}, g, I) & \equiv & X_{0,1,2,4}\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, \varnothing, I)\big) \\
+\Xi(\boldsymbol{\sigma}, g, I) & \equiv & X_{0,1,2,4}\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A^0, I)\big) \\
 \boldsymbol{\mu}_g & \equiv & g \\
 \boldsymbol{\mu}_{pc} & \equiv & 0 \\
 \boldsymbol{\mu}_\mathbf{m} & \equiv & (0, 0, ...) \\
@@ -751,14 +767,12 @@ We must now define the $\Xi$ function. In most practical implementations this wi
 \boldsymbol{\mu}_\mathbf{s} & \equiv & ()
 \end{eqnarray}
 \begin{equation}
-X\big( (\boldsymbol{\sigma}, \boldsymbol{\mu}, \mathbf{s}, I) \big) \equiv \begin{cases}
-\big(\boldsymbol{\sigma}, \boldsymbol{\mu}, \varnothing, I, ()\big) & \text{if} \quad Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I)\\
-O(\boldsymbol{\sigma}, \boldsymbol{\mu}, \mathbf{s}, I) \cdot \mathbf{o} & \text{if} \quad \mathbf{o} \neq \varnothing\\
-X\big(O(\boldsymbol{\sigma}, \boldsymbol{\mu}, \mathbf{s}, I)\big) & \text{otherwise}\\
+X\big( (\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \big) \equiv \begin{cases}
+\big(\varnothing, \boldsymbol{\mu}, A^0, I, ()\big) & \text{if} \quad Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I)\\
+O(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \cdot \mathbf{o} & \text{if} \quad \mathbf{o} \neq \varnothing\\
+X\big(O(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I)\big) & \text{otherwise}\\
 \end{cases}
 \end{equation}
-
-TODO: MUCH MORE DISCUSSION OF THIS
 
 where
 \begin{eqnarray}
@@ -768,6 +782,9 @@ where
 
 Note that we must drop the fourth value in the tuple returned by $X$ to correctly evaluate $\Xi$, hence the subscript $X_{0,1,2,4}$.
 
+$X$ is thus cycled (recursively here, but implementations are generally expected to use a simple iterative loop) until either $Z$ becomes true indicating that the present state is exceptional and that the machine must be halted and any changes discarded or until $H$ becomes a series (rather than the empty set) indicating that the machine has reached a controlled halt.
+
+\subsubsection{Machine State}
 The machine state $\boldsymbol{\mu}$ is defined as the tuple $(g, pc, \mathbf{m}, i, \mathbf{s})$ which are the gas available, the program counter, the memory contents, the active number of words in memory (counting continuously from position 0), and the stack contents. The memory contents $\boldsymbol{\mu}_\mathbf{m}$ are a series of zeroes of size $2^{256}$.
 
 For the ease of reading, the instruction mnemonics, written in small-caps (\eg \space {\small ADD}), should be interpreted as their numeric equivalents; the full table of instructions and their specifics is given in Appendix \ref{app:vm}.
@@ -789,13 +806,15 @@ Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv
 \begin{array}[t]{l}
 \boldsymbol{\mu}_g < C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \quad \vee \\
 \mathbf{\delta}_w = \varnothing \quad \vee \\
-\lVert\boldsymbol{\mu}_\mathbf{s}\rVert < \mathbf{\delta}_w
+\lVert\boldsymbol{\mu}_\mathbf{s}\rVert < \mathbf{\delta}_w \quad \vee \\
+w = \text{\small JUMP} \wedge Z_\text{JUMP}(\boldsymbol{\mu}) \quad \vee \\
+w = \text{\small JUMPI} \wedge Z_\text{JUMPI}(\boldsymbol{\mu}) \quad \vee \\
+( w \in \{ \text{\small CALL}, \text{\small CALLCODE}, \text{\small CREATE} \} \quad \wedge \\
+\quad I_e = 1024 )
 \end{array}
 \end{equation}
 
-This states that the execution is in an exceptional halting state if there is insufficient gas, if the instruction is invalid (and therefore its $\delta$ subscript is undefined) or if there are insufficient stack items. The astute reader will realise that this implies that no instruction can, through its execution, cause an exceptional halt.
-
-\textit{TODO: JUMP not onto valid JUMPDEST.}
+This states that the execution is in an exceptional halting state if there is insufficient gas, if the instruction is invalid (and therefore its $\delta$ subscript is undefined), if there are insufficient stack items, if a {\small JUMP}/{\small JUMPI} destination is invalid ($Z_\text{JUMP}$/$Z_\text{JUMPI}$ are the test functions, defined in the instruction set appendix) or if a {\small CALL}, {\small CALLCODE} or {\small CREATE} instruction is executed when the call stack limit of 1024 is reached. The astute reader will realise that this implies that no instruction can, through its execution, cause an exceptional halt.
 
 \subsubsection{Normal Halting}
 
@@ -910,7 +929,7 @@ The application of rewards to a block involves raising the balance of the accoun
 \begin{eqnarray}
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
 \boldsymbol{\sigma}'[{B_H}_b]_b & = & \boldsymbol{\sigma}[{B_H}_b]_b + (1 + \frac{|B_\mathbf{U}|}{32})R_b \\
-\forall_{U \in B_\mathbf{U}} \quad \boldsymbol{\sigma}'[U_b]_b & = & \boldsymbol{\sigma}[U_b]_b + \frac{15}{16}R_b
+\forall_{U \in B_\mathbf{U}} \; \boldsymbol{\sigma}'[U_b]_b & = & \boldsymbol{\sigma}[U_b]_b + \frac{15}{16}R_b
 \end{eqnarray}
 
 If there are collisions of the coinbase addresses between uncles and the block (i.e. two uncles with the same coinbase address or an uncle with the same coinbase address as the present block), additions are applied cumulatively.
