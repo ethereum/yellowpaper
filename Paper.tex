@@ -833,7 +833,7 @@ The data-returning halt operation, \text{\small RETURN}, has a special function 
 
 Stack items are added or removed from the left-most, lower-indexed portion of the series; all other items remain unchanged:
 \begin{eqnarray}
-O\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, \mathbf{s}, I)\big) & \equiv & (\boldsymbol{\sigma}', \boldsymbol{\mu}', \mathbf{s}', I) \\
+O\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I)\big) & \equiv & (\boldsymbol{\sigma}', \boldsymbol{\mu}', A', I) \\
 \Delta & \equiv & \mathbf{\alpha}_w - \mathbf{\delta}_w \\
 \lVert\boldsymbol{\mu}'_\mathbf{s}\rVert & \equiv & \lVert\boldsymbol{\mu}_\mathbf{s}\rVert + \Delta \\
 \quad \forall x \in [\mathbf{\alpha}_w, \lVert\boldsymbol{\mu}'_\mathbf{s}\rVert): \boldsymbol{\mu}'_\mathbf{s}[x] & \equiv & \boldsymbol{\mu}_\mathbf{s}[x+\Delta]
@@ -859,7 +859,7 @@ In general, we assume the memory, suicide list and system state don't change:
 \begin{eqnarray}
 \boldsymbol{\mu}'_\mathbf{m} & \equiv & \boldsymbol{\mu}_\mathbf{m} \\
 \boldsymbol{\mu}'_i & \equiv & \boldsymbol{\mu}_i \\
-\mathbf{s}' & \equiv & \mathbf{s} \\
+A' & \equiv & A \\
 \boldsymbol{\sigma}' & \equiv & \boldsymbol{\sigma}
 \end{eqnarray}
 
@@ -1401,10 +1401,10 @@ s & \text{if} \quad l = 0 \\
 As previously specified in section \ref{ch:model}, these definitions take place in the final context there. In particular we assume $O$ is the EVM state-progression function and define the terms pertaining to the next cycle's state $(\boldsymbol{\sigma}', \boldsymbol{\mu}')$ such that:
 
 \begin{equation}
-O(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv (\boldsymbol{\sigma}', \boldsymbol{\mu}', I) \quad \text{with exceptions, as noted}
+O(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \equiv (\boldsymbol{\sigma}', \boldsymbol{\mu}', A', I) \quad \text{with exceptions, as noted}
 \end{equation}
 
-Here given are the various exceptions to the state transition rules given in section \ref{ch:model} specified for each instruction, together with the additional instruction-specific definitions of $J$ and $C$. For each instruction, also specified is $\alpha$, the additional items placed on the stack and $\delta$, the items removed from stack, as defined in section \ref{ch:model}.
+Here given are the various exceptions to the state transition rules given in section \ref{ch:model} specified for each instruction, together with the additional instruction-specific definitions of $J$, $Z$ and $C$. For each instruction, also specified is $\alpha$, the additional items placed on the stack and $\delta$, the items removed from stack, as defined in section \ref{ch:model}.
 
 \begin{tabular*}{\columnwidth}[h]{rlrrl}
 \toprule
@@ -1607,9 +1607,13 @@ Here given are the various exceptions to the state transition rules given in sec
 0x55 & {\small SSTORE} & 2 & 0 & Save word to storage. \\
 &&&& $\boldsymbol{\sigma}'[I_a]_\mathbf{s}[ \boldsymbol{\mu}_\mathbf{s}[0] ] \equiv \boldsymbol{\mu}_\mathbf{s}[1] $ \\
 &&&& $C_{\text{\tiny SSTORE}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
-2G_{sstore} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \; \wedge \; \boldsymbol{\sigma}[I_a]_\mathbf{s}[\boldsymbol{\mu}_\mathbf{s}[0]] = 0 \\
-0 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \boldsymbol{\sigma}[I_a]_\mathbf{s}[\boldsymbol{\mu}_\mathbf{s}[0]] \neq 0 \\
-G_{sstore} & \text{otherwise}
+G_{sset} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \; \wedge \; \boldsymbol{\sigma}[I_a]_\mathbf{s}[\boldsymbol{\mu}_\mathbf{s}[0]] = 0 \\
+G_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \boldsymbol{\sigma}[I_a]_\mathbf{s}[\boldsymbol{\mu}_\mathbf{s}[0]] \neq 0 \\
+G_{sreset} & \text{otherwise}
+\end{cases}$ \\
+&&&& $A'_{r} \equiv A_{r} + \begin{cases}
+R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \boldsymbol{\sigma}[I_a]_\mathbf{s}[\boldsymbol{\mu}_\mathbf{s}[0]] \neq 0 \\
+0 & \text{otherwise}
 \end{cases}$ \\
 \midrule
 0x56 & {\small JUMP} & 1 & 0 & Alter the program counter. \\
@@ -1717,7 +1721,7 @@ G_{sstore} & \text{otherwise}
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0xf0 & {\small CREATE} & 3 & 1 & Create a new account with associated code. \\
 &&&& $\mathbf{i} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[1] \dots (\boldsymbol{\mu}_\mathbf{s}[1] + \boldsymbol{\mu}_\mathbf{s}[2] - 1) ]$ \\
-&&&& $(\boldsymbol{\sigma}', \boldsymbol{\mu}'_g, \mathbf{s}^+) \equiv \begin{cases}\Lambda(\boldsymbol{\sigma}^*, I_a, I_o, \boldsymbol{\mu}_g, I_p, \boldsymbol{\mu}_\mathbf{s}[0], \mathbf{i}) & \text{when} \quad \boldsymbol{\mu}_\mathbf{s}[0] \leqslant \boldsymbol{\sigma}[I_a]_b \\ \big(\boldsymbol{\sigma}, \boldsymbol{\mu}_g, \varnothing\big) & \text{otherwise} \end{cases}$ \\
+&&&& $(\boldsymbol{\sigma}', \boldsymbol{\mu}'_g, \mathbf{s}^+) \equiv \begin{cases}\Lambda(\boldsymbol{\sigma}^*, I_a, I_o, \boldsymbol{\mu}_g, I_p, \boldsymbol{\mu}_\mathbf{s}[0], \mathbf{i}, I_e + 1) & \text{when} \quad \boldsymbol{\mu}_\mathbf{s}[0] \leqslant \boldsymbol{\sigma}[I_a]_b \\ \big(\boldsymbol{\sigma}, \boldsymbol{\mu}_g, \varnothing\big) & \text{otherwise} \end{cases}$ \\
 &&&& $\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except} \quad \boldsymbol{\sigma}^*[I_a]_n = \boldsymbol{\sigma}[I_a]_n + 1 \wedge \boldsymbol{\sigma}^*[I_a]_b = \boldsymbol{\sigma}[I_a]_b - \boldsymbol{\mu}_\mathbf{s}[0]$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
 &&&& $\mathbf{s}' \equiv \mathbf{s} \cup \mathbf{s}^+$ \\
@@ -1729,7 +1733,7 @@ G_{sstore} & \text{otherwise}
 0xf1 & {\small CALL} & 7 & 1 & Message-call into an account. \\
 &&&& $\mathbf{i} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[3] \dots (\boldsymbol{\mu}_\mathbf{s}[3] + \boldsymbol{\mu}_\mathbf{s}[4] - 1) ]$ \\
 &&&& $\mathbf{o} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[5] \dots (\boldsymbol{\mu}_\mathbf{s}[5] + \boldsymbol{\mu}_\mathbf{s}[6] - 1) ]$ \\
-&&&& $(\boldsymbol{\sigma}', g', \mathbf{s}^+, \mathbf{o}) \equiv \begin{cases}\Theta(\boldsymbol{\sigma}^*, I_a, I_o, \boldsymbol{\mu}_\mathbf{s}[1], \boldsymbol{\mu}_\mathbf{s}[0], I_p, \boldsymbol{\mu}_\mathbf{s}[2], \mathbf{i}) & \text{when} \quad \boldsymbol{\mu}_\mathbf{s}[2] \leqslant \boldsymbol{\sigma}[I_a]_b \\ (\boldsymbol{\sigma}, g, \varnothing, \mathbf{o}) & \text{otherwise} \end{cases}$ \\
+&&&& $(\boldsymbol{\sigma}', g', \mathbf{s}^+, \mathbf{o}) \equiv \begin{cases}\Theta(\boldsymbol{\sigma}^*, I_a, I_o, \boldsymbol{\mu}_\mathbf{s}[1], \boldsymbol{\mu}_\mathbf{s}[0], I_p, \boldsymbol{\mu}_\mathbf{s}[2], \mathbf{i}, I_e + 1) & \text{when} \quad \boldsymbol{\mu}_\mathbf{s}[2] \leqslant \boldsymbol{\sigma}[I_a]_b \\ (\boldsymbol{\sigma}, g, \varnothing, \mathbf{o}) & \text{otherwise} \end{cases}$ \\
 &&&& $\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except} \quad \boldsymbol{\sigma}^*[I_a]_b = \boldsymbol{\sigma}[I_a]_b - \boldsymbol{\mu}_\mathbf{s}[2]$ \\
 &&&& $\boldsymbol{\mu}'_g \equiv \boldsymbol{\mu}_g + g'$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
@@ -1750,7 +1754,7 @@ G_{sstore} & \text{otherwise}
 &&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[1])$ \\
 \midrule
 0xff & {\small SUICIDE} & 1 & 0 & Halt execution and register account for later deletion. \\
-&&&& $\mathbf{s}' \equiv \mathbf{s} \cup \{ I_a \}$ \\
+&&&& $A'_\mathbf{s} \equiv A_\mathbf{s} \cup \{ I_a \}$ \\
 &&&& $\boldsymbol{\sigma}'[\boldsymbol{\mu}_\mathbf{s}[0]]_b \equiv \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[0]]_b + \boldsymbol{\sigma}[I_a]_b$ \\
 &&&& $\boldsymbol{\sigma}'[I_a]_b \equiv 0$ \\\bottomrule
 \end{tabular*}
