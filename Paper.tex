@@ -282,7 +282,7 @@ T_t \in \begin{cases} \mathbb{B}_{0} & \text{if} \quad T_t = \varnothing \\
 
 The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$, and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{uncles}). The block header contains several pieces of information:
 
-\textit{TODO: Introduce logs}
+%\textit{TODO: Introduce logs}
 
 \begin{description}
 \item[parentHash] The Keccak 256-bit hash of the parent block's header, in its entirety; formally $H_p$.
@@ -301,39 +301,43 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[nonce] A 256-bit hash which proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.
 \end{description}
 
-The other two components in the block are simply a list of uncle block headers (of the same format as above) and a series of the transaction \textit{receipts}. Formally, we can refer to a block $B$:
+The other two components in the block are simply a list of uncle block headers (of the same format as above) and a series of the transactions. Formally, we can refer to a block $B$:
 \begin{equation}
-B \equiv (B_H, B_\mathbf{R}, B_\mathbf{U})
+B \equiv (B_H, B_\mathbf{T}, B_\mathbf{U})
 \end{equation}
 
 \subsubsection{Transaction Receipt}
 
-The transaction receipt is a tuple of three items comprising the transaction, $R_T$, together with the post-transaction state, $R_{\boldsymbol{\sigma}}$, and the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_u$:
+The transaction receipt is a tuple of four items comprising the post-transaction state, $R_{\boldsymbol{\sigma}}$, the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_u$, the set of logs created through execution of the transaction, $R_\mathbf{l}$ and the Bloom filter composed from information in those logs, $R_b$:
 \begin{equation}
-R \equiv (R_T, R_{\boldsymbol{\sigma}}, R_u)
+R \equiv (R_{\boldsymbol{\sigma}}, R_u, R_b, R_\mathbf{l})
 \end{equation}
 
 The function $L_R$ trivially prepares a transaction receipt for being transformed into an RLP-serialised byte array:
 \begin{equation}
-L_R(R) \equiv (L_T(R_T), \mathtt{\small TRIE}(L_S(R_{\boldsymbol{\sigma}})), R_u)
+L_R(R) \equiv (\mathtt{\small TRIE}(L_S(R_{\boldsymbol{\sigma}})), R_u, R_b, R_\mathbf{l})
 \end{equation}
-thus the post-transaction state, $R_{\boldsymbol{\sigma}}$ is encoded into a trie structure, the root of which forms the second item.
+thus the post-transaction state, $R_{\boldsymbol{\sigma}}$ is encoded into a trie structure, the root of which forms the first item.
 
-We assert $R_u$, the cumulative gas used is a positive integer:
+We assert $R_u$, the cumulative gas used is a positive integer and that the logs Bloom, $R_b$, is a hash of size 64 bytes:
 \begin{equation}
-R_u \in \mathbb{P}
+R_u \in \mathbb{P} \quad \wedge \quad R_b \in \mathbb{B}_{32}
 \end{equation}
 
-For convenience, I also name $B_\mathbf{T}$ the series of transactions encoded by the transaction receipts $B_\mathbf{R}$:
+%Notably $B_\mathbf{T}$ does not get serialised into the block by the block preparation function $L_B$; it is merely a convenience equivalence.
+
+The log entries, $R_\mathbf{l}$, is a series of log entries, termed, for example, $(O_0, O_1, ...)$. A log entry, $O$, is a tuple of a logger's address, $O_a$, a series of 32-bytes log topics, $O_\mathbf{t}$ and some number of bytes of data, $O_\mathbf{d}$:
+
 \begin{equation}
-B_\mathbf{T} \equiv (B_\mathbf{R}[0]_T, B_\mathbf{R}[1]_T, ...)
+O \equiv (O_a, ({O_\mathbf{t}}_0, {O_\mathbf{t}}_1, ...), O_\mathbf{d})
 \end{equation}
-
-Notably $B_\mathbf{T}$ does not get serialised into the block by the block preparation function $L_B$; it is merely a convenience equivalence.
+\begin{equation}
+O_a \in \mathbb{B}_{20} \quad \wedge \quad \forall_{t \in O_\mathbf{t}}: t \in \mathbb{B}_{32} \quad \wedge \quad O_\mathbf{d} \in \mathbb{B}
+\end{equation}
 
 \subsubsection{Holistic Validity}
 
-We can assert its validity if and only if it satisfies several conditions: It must be internally consistent with the uncle and transaction block hashes and the given transactions $B_\mathbf{T}$, when executed in order on the base state $\boldsymbol{\sigma}$ (derived from the final state of the parent block), result in a new state of the identity $H_r$:
+We can assert a block's validity if and only if it satisfies several conditions: it must be internally consistent with the uncle and transaction block hashes and the given transactions $B_\mathbf{T}$, when executed in order on the base state $\boldsymbol{\sigma}$ (derived from the final state of the parent block), result in a new state of the identity $H_r$:
 \begin{equation}
 \begin{array}[t]{lclc}
 H_u &\equiv& \mathtt{\small KEC}(\mathtt{\small RLP}(L_H^*(B_\mathbf{U}))) & \wedge \\
