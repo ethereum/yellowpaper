@@ -280,14 +280,18 @@ T_t \in \begin{cases} \mathbb{B}_{0} & \text{if} \quad T_t = \varnothing \\
 
 \subsection{The Block} \label{ch:block}
 
-The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{R}$, and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{uncles}). The block header contains several pieces of information:
+The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$, and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{uncles}). The block header contains several pieces of information:
+
+\textit{TODO: Introduce logs}
 
 \begin{description}
-\item[parentHash] The Keccak 256-bit hash of the parent block, in its entirety; formally $H_p$.
+\item[parentHash] The Keccak 256-bit hash of the parent block's header, in its entirety; formally $H_p$.
 \item[unclesHash] The Keccak 256-bit hash of the uncles list portion of this block; formally $H_u$.
-\item[coinbase] The 160-bit address to which all fees collected from the successful mining of this block be transferred; formally $H_b$.
+\item[coinbase] The 160-bit address to which all fees collected from the successful mining of this block be transferred; formally $H_c$.
 \item[stateRoot] The Keccak 256-bit hash of the root node of the state trie, after all transactions are executed and finalisations applied; formally $H_r$.
-\item[transactionsTrie] The Keccak 256-bit hash of the root node of the trie structure populated with each transaction in the transactions list portion of the block; formally $H_t$.
+\item[transactionsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with each transaction in the transactions list portion of the block; formally $H_t$.
+\item[receiptsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with the receipts of each transaction in the transactions list portion of the block; formally $H_e$.
+\item[logsBloom] The Bloom filter composed from indexable information (logger address and log topics) contained in each log entry from the receipt of each transaction in the transactions list; formally $H_b$.
 \item[difficulty] A scalar value corresponding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_d$.
 \item[number] A scalar value equal to the number of ancestor blocks. The genesis block has a number of zero; formally $H_i$.
 \item[gasLimit] A scalar value equal to the current limit of gas expenditure per block; formally $H_l$.
@@ -354,7 +358,7 @@ Thus $\texttt{\small TRIE}(L_S(\boldsymbol{\sigma}))$ is the root node hash of t
 
 The function $L_B$ and $L_H$ are the preparation functions for a block and block header respectively. Much like the transaction receipt preparation function $L_R$, we assert the types and order of the structure for when the RLP transformation is required:
 \begin{eqnarray}
-\quad L_H(H) & \equiv & (\begin{array}[t]{l}H_p, H_u, H_b, H_r, H_t, H_d,\\ H_i, H_l, H_u, H_s, H_x, H_n \; )\end{array} \\
+\quad L_H(H) & \equiv & (\begin{array}[t]{l}H_p, H_u, H_c, H_t, H_e, H_b, H_t, H_d,\\ H_i, H_l, H_u, H_s, H_x, H_n \; )\end{array} \\
 \quad L_B(B) & \equiv & \big( L_H(B_H), L_R^*(B_\mathbf{R}), L_H^*(B_\mathbf{U}) \big)
 \end{eqnarray}
 
@@ -366,7 +370,7 @@ f^*\big( (x_0, x_1, ...) \big) \equiv \big( f(x_0), f(x_1), ... \big) \quad \tex
 The component types are defined thus:
 \begin{equation}
 \begin{array}[t]{lclclcl}
-H_p \in \mathbb{B}_{32} & \wedge & H_u \in \mathbb{B}_{32} & \wedge & H_b \in \mathbb{B}_{20} & \wedge \\
+H_p \in \mathbb{B}_{32} & \wedge & H_u \in \mathbb{B}_{32} & \wedge & H_c \in \mathbb{B}_{20} & \wedge \\
 H_r \in \mathbb{B}_{32} & \wedge & H_t \in \mathbb{B}_{32} & \wedge & H_d \in \mathbb{P} & \wedge \\
 H_i \in \mathbb{P} & \wedge & H_u \in \mathbb{P} & \wedge & H_l \in \mathbb{P} & \wedge \\
 H_s \in \mathbb{P} & \wedge & H_x \in \mathbb{B} & \wedge & H_n \in \mathbb{B}_{32}
@@ -391,7 +395,7 @@ The canonical difficulty of a block of header $H$ is defined as $D(H)$:
 \begin{equation}
 D(H) \equiv \begin{cases}
 2^{22} & \text{if} \quad H_i = 0\\
-{P(H)_H}_d + \lfloor\frac{{P(H)_H}_d}{1024}\rfloor & \text{if} \quad H_s < {P(H)_H}_s + 42\\
+{P(H)_H}_d + \lfloor\frac{{P(H)_H}_d}{1024}\rfloor & \text{if} \quad H_s < {P(H)_H}_s + 8\\
 {P(H)_H}_d - \lfloor\frac{{P(H)_H}_d}{1024}\rfloor & \text{otherwise}\\
 \end{cases}
 \end{equation}
@@ -979,8 +983,8 @@ The given \textbf{gasUsed} must correspond faithfully to the transactions listed
 The application of rewards to a block involves raising the balance of the accounts of the coinbase address of the block and each uncle by a certain amount. We raise the block's coinbase account by $R_b$; for each uncle, we raise the block's coinbase by an additional $\frac{1}{32}$ of the block reward and the coinbase of the uncle by $\frac{15}{16}$ of the reward. Formally we define the function $\Omega$:
 \begin{eqnarray}
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
-\boldsymbol{\sigma}'[{B_H}_b]_b & = & \boldsymbol{\sigma}[{B_H}_b]_b + (1 + \frac{|B_\mathbf{U}|}{32})R_b \\
-\forall_{U \in B_\mathbf{U}} \; \boldsymbol{\sigma}'[U_b]_b & = & \boldsymbol{\sigma}[U_b]_b + \frac{15}{16}R_b
+\boldsymbol{\sigma}'[{B_H}_c]_b & = & \boldsymbol{\sigma}[{B_H}_c]_b + (1 + \frac{|B_\mathbf{U}|}{32})R_b \\
+\forall_{U \in B_\mathbf{U}} \; \boldsymbol{\sigma}'[U_c]_b & = & \boldsymbol{\sigma}[U_c]_b + \frac{15}{16}R_b
 \end{eqnarray}
 
 If there are collisions of the coinbase addresses between uncles and the block (i.e. two uncles with the same coinbase address or an uncle with the same coinbase address as the present block), additions are applied cumulatively.
@@ -1000,7 +1004,7 @@ We may now define the function, $\Gamma$, that maps a block $B$ to its initiatio
 \end{cases}
 \end{equation}
 
-Here, $\mathtt{\small TRIE}(L_S(\boldsymbol{\sigma}_i))$ means the hash of the root node of a trie of state $\boldsymbol{\sigma}_i$; it is assumed that implementations will store this in the state database, trivial and efficient since the trie is by nature a mutable data structure.
+Here, $\mathtt{\small TRIE}(L_S(\boldsymbol{\sigma}_i))$ means the hash of the root node of a trie of state $\boldsymbol{\sigma}_i$; it is assumed that implementations will store this in the state database, trivial and efficient since the trie is by nature an immutable data structure.
 
 And finally define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
 \begin{eqnarray}
