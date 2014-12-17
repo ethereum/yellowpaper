@@ -807,14 +807,71 @@ Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv
 \boldsymbol{\mu}_g < C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \quad \vee \\
 \mathbf{\delta}_w = \varnothing \quad \vee \\
 \lVert\boldsymbol{\mu}_\mathbf{s}\rVert < \mathbf{\delta}_w \quad \vee \\
-w = \text{\small JUMP} \wedge Z_\text{JUMP}(\boldsymbol{\mu}) \quad \vee \\
-w = \text{\small JUMPI} \wedge Z_\text{JUMPI}(\boldsymbol{\mu}) \quad \vee \\
+( w \in \{ \text{\small JUMP}, \text{\small JUMPI} \} \quad \wedge \\ \quad \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \\
 ( w \in \{ \text{\small CALL}, \text{\small CALLCODE}, \text{\small CREATE} \} \quad \wedge \\
 \quad I_e = 1024 )
 \end{array}
 \end{equation}
 
-This states that the execution is in an exceptional halting state if there is insufficient gas, if the instruction is invalid (and therefore its $\delta$ subscript is undefined), if there are insufficient stack items, if a {\small JUMP}/{\small JUMPI} destination is invalid ($Z_\text{JUMP}$/$Z_\text{JUMPI}$ are the test functions, defined in the instruction set appendix) or if a {\small CALL}, {\small CALLCODE} or {\small CREATE} instruction is executed when the call stack limit of 1024 is reached. The astute reader will realise that this implies that no instruction can, through its execution, cause an exceptional halt.
+This states that the execution is in an exceptional halting state if there is insufficient gas, if the instruction is invalid (and therefore its $\delta$ subscript is undefined), if there are insufficient stack items, if a {\small JUMP}/{\small JUMPI} destination is invalid or if a {\small CALL}, {\small CALLCODE} or {\small CREATE} instruction is executed when the call stack limit of 1024 is reached. The astute reader will realise that this implies that no instruction can, through its execution, cause an exceptional halt.
+
+\subsubsection{Jump Destination Validity}
+
+We previously used $D$ as the function to determine the set of valid jump destinations given the code that is being run. We define this as:
+
+\begin{itemize}
+\item Any position in the code occupied by a {\small JUMPDEST} instruction.
+\item Any position $p$ in the code such that there exists a {\small PUSH} of the value $p$ immediately followed by a {\small JUMP} or {\small JUMPI}.
+\end{itemize}
+
+All such positions must be on valid instruction boundaries, rather than sitting in the data portion of {\small PUSH} operations and must appear within the explicitly defined portion of the code (rather than in the implicitly defined {\small STOP} operations that trail it).
+
+Formally:
+\begin{equation}
+D(\mathbf{c}) \equiv (D_J(\mathbf{c, 0}) \cup D_P(\mathbf{c, 0})) \cap Y(\mathbf{c}, 0)
+\end{equation}
+
+where:
+\begin{equation}
+Y(\mathbf{c}, i) \equiv \begin{cases}
+\{\} & \text{if} \quad i \geqslant |\mathbf{c}| \\
+\{ i \} \cup Y(\mathbf{c}, N(i, \mathbf{c}[i])) & \text{otherwise} \\
+\end{cases}
+\end{equation}
+\begin{equation}
+D_J(\mathbf{c}, i) \equiv \begin{cases}
+\{\} & \text{if} \quad i \geqslant |\mathbf{c}|  \\
+\{ i \} \cup D_J(\mathbf{c}, N(i, \mathbf{c}[i])) & \mathbf{c}[i] = \text{\small JUMPDEST} \\
+D_J(\mathbf{c}, N(i, \mathbf{c}[i])) & \text{otherwise} \\
+\end{cases}
+\end{equation}
+\begin{equation}
+D_P(\mathbf{c}, i) \equiv \begin{cases}
+\{\} & \text{if} \quad i \geqslant |\mathbf{c}|  \\
+\{ p \} \cup D_P(\mathbf{c}, n) & \mathbf{c}[i] \in [\text{\small PUSH1}, \text{\small PUSH32}] \quad \wedge \\ & \mathbf{c}[n] \in \{ \text{\small JUMP}, \text{\small JUMPI} \} \\
+D_P(\mathbf{c}, n) & \text{otherwise}
+\end{cases}
+\end{equation}
+
+where, for the purposes of the final equation, $n$ is the next instruction index and $p$ is the {\small PUSH}$x$ instruction's associated data (the following $x$ bytes interpreted as a big endian unsigned):
+\begin{equation}
+n \equiv N(i, \mathbf{c}[i]) \\
+\end{equation}
+\begin{equation}
+p \equiv \begin{cases}
+\mathbf{c}[i + 1] & \text{if}\quad \mathbf{c}[i] = \text{\small PUSH1} \\
+2^8\mathbf{c}[i + 1] + \mathbf{c}[i + 2] & \text{if}\quad \mathbf{c}[i] = \text{\small PUSH2} \\
+\quad\quad\vdots & \quad\quad\vdots \\
+2^{240}\mathbf{c}[i + 1] + ... + \mathbf{c}[i + 32] & \text{if}\quad \mathbf{c}[i] = \text{\small PUSH32} \\
+\end{cases}
+\end{equation}
+
+and $N$ is the next valid instruction position in the code, skipping the data of a {\small PUSH} instruction, if any:
+\begin{equation}
+N(i, w) \equiv \begin{cases}
+i + w - \text{\small PUSH1} + 2 & \text{if} \quad w \in [\text{\small PUSH1}, \text{\small PUSH32}] \\
+i + 1 & \text{otherwise} \end{cases}
+\end{equation}
 
 \subsubsection{Normal Halting}
 
@@ -845,15 +902,9 @@ The gas is reduced by the instruction's gas cost and for most instructions, the 
 \quad \boldsymbol{\mu}'_{pc} & \equiv & \begin{cases}
 J_{\text{JUMP}}(\boldsymbol{\mu}) & \text{if} \quad w = \text{\small JUMP} \\
 J_{\text{JUMPI}}(\boldsymbol{\mu}) & \text{if} \quad w = \text{\small JUMPI} \\
-\boldsymbol{\mu}_{pc} + p & \text{if} \quad w \in [\text{\small PUSH1}, \text{\small PUSH32}] \\
-\boldsymbol{\mu}_{pc} + 1 & \text{otherwise}
+N(\boldsymbol{\mu}_{pc}, w) & \text{otherwise}
 \end{cases}
 \end{eqnarray}
-
-where $p$ is the byte size of the push instruction, defined as:
-\begin{equation}
-p \equiv w - \text{\small PUSH1} + 2
-\end{equation}
 
 In general, we assume the memory, suicide list and system state don't change:
 \begin{eqnarray}
@@ -1404,7 +1455,7 @@ As previously specified in section \ref{ch:model}, these definitions take place 
 O(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \equiv (\boldsymbol{\sigma}', \boldsymbol{\mu}', A', I) \quad \text{with exceptions, as noted}
 \end{equation}
 
-Here given are the various exceptions to the state transition rules given in section \ref{ch:model} specified for each instruction, together with the additional instruction-specific definitions of $J$, $Z$ and $C$. For each instruction, also specified is $\alpha$, the additional items placed on the stack and $\delta$, the items removed from stack, as defined in section \ref{ch:model}.
+Here given are the various exceptions to the state transition rules given in section \ref{ch:model} specified for each instruction, together with the additional instruction-specific definitions of $J$ and $C$. For each instruction, also specified is $\alpha$, the additional items placed on the stack and $\delta$, the items removed from stack, as defined in section \ref{ch:model}.
 
 \begin{tabular*}{\columnwidth}[h]{rlrrl}
 \toprule
@@ -1623,6 +1674,7 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 0x57 & {\small JUMPI} & 2 & 0 & Conditionally alter the program counter. \\
 &&&& $J_{\text{\tiny JUMPI}}(\boldsymbol{\mu}) \equiv \begin{cases} \boldsymbol{\mu}_\mathbf{s}[0] & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \\ \boldsymbol{\mu}_{pc} + 1 & \text{otherwise} \end{cases} $ \\
 &&&& This has the effect of writing said value to $\boldsymbol{\mu}_{pc}$. See section \ref{ch:model}. \\
+&&&& $Z_{\text{\tiny JUMPI}}(\boldsymbol{\mu}) $ \\
 \midrule
 0x58 & {\small PC} & 0 & 1 & Get the program counter. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_{pc}$ \\
@@ -1633,8 +1685,8 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 0x5a & {\small GAS} & 0 & 1 & Get the amount of available gas. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_{g}$ \\
 \midrule
-0x5b & {\small JUMPDEST} & 0 & 1 & Mark a valid destination for jumps. \\
-&&&& \textit{TODO} \\
+0x5b & {\small JUMPDEST} & 0 & 0 & Mark a valid destination for jumps. \\
+&&&& This operation has no effect on machine state during execution. \\
 \bottomrule
 \end{tabular*}
 
