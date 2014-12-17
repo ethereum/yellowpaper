@@ -518,7 +518,7 @@ Evaluating $\boldsymbol{\sigma}_P$ from $\boldsymbol{\sigma}_0$ depends on the t
 \begin{equation}
 (\boldsymbol{\sigma}_P, g', A) \equiv \begin{cases}
 \Lambda(\boldsymbol{\sigma}_0, S(T), T_o, &\\ \quad\quad g, T_p, T_v, T_\mathbf{i}, 0) & \text{if} \quad T_t = \varnothing \\
-\Theta_{3}(\boldsymbol{\sigma}_0, S(T), T_o, &\\ \quad\quad T_t, g, T_p, T_v, T_\mathbf{d}, 0) & \text{otherwise}
+\Theta_{3}(\boldsymbol{\sigma}_0, S(T), T_o, &\\ \quad\quad T_t, T_t, g, T_p, T_v, T_\mathbf{d}, 0) & \text{otherwise}
 \end{cases}
 \end{equation}
 
@@ -643,11 +643,11 @@ No code is deposited in the state if the gas does not cover the additional per-b
 Note that while the initialisation code is executing, the newly created address exists but with no intrinsic body code. Thus any message call received by it during this time causes no code to be executed. If the initialisation execution ends with a {\small SUICIDE} instruction, the matter is moot since the account will be deleted before the transaction is completed. For a normal {\small STOP} code, or if the code returned is otherwise empty, then the state is left with a zombie account, and any remaining balance will be locked into the account forever.
 
 \section{Message Call} \label{ch:call}
-In the case of executing a message call, several parameters are required: sender ($s$), transaction originator ($o$), recipient ($r$), available gas ($g$), value ($v$) and gas price ($p$) together with an arbitrary length byte array, $\mathbf{d}$, the input data of the call and finally the present depth of the message-call/contract-creation stack ($e$).
+In the case of executing a message call, several parameters are required: sender ($s$), transaction originator ($o$), recipient ($r$), the account whose code is to be executed ($c$, usually the same as recipient), available gas ($g$), value ($v$) and gas price ($p$) together with an arbitrary length byte array, $\mathbf{d}$, the input data of the call and finally the present depth of the message-call/contract-creation stack ($e$).
 
 Aside from evaluating to a new state and transaction substate, message calls also have an extra component---the output data denoted by the byte array $\mathbf{o}$. This is ignored when executing transactions, however message calls can be initiated due to VM-code execution and in this case this information is used.
 \begin{equation}
-(\boldsymbol{\sigma}', g', A, \mathbf{o}) \equiv \Theta(\boldsymbol{\sigma}, s, o, r, g, p, v, \mathbf{d}, e)
+(\boldsymbol{\sigma}', g', A, \mathbf{o}) \equiv \Theta(\boldsymbol{\sigma}, s, o, r, c, g, p, v, \mathbf{d}, e)
 \end{equation}
 
 We define $\boldsymbol{\sigma}_1$, the checkpoint state as the original state but with the value transferred to the recipient.
@@ -666,7 +666,7 @@ Throughout the present work, it is assumed that if $\boldsymbol{\sigma}_1[r]$ wa
 \end{cases}
 \end{equation}
 
-The account's associated code (identified as the fragment whose Keccak hash is $\boldsymbol{\sigma}[r]_c$) is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts due in an exceptional fashion (i.e. due to an exhausted gas supply, stack underflow, invalid jump destination or invalid instruction), then no gas is refunded to the caller and the state is reverted to the point immediately prior to code execution (i.e. $\boldsymbol{\sigma}_1$).
+The account's associated code (identified as the fragment whose Keccak hash is $\boldsymbol{\sigma}[c]_c$) is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts due in an exceptional fashion (i.e. due to an exhausted gas supply, stack underflow, invalid jump destination or invalid instruction), then no gas is refunded to the caller and the state is reverted to the point immediately prior to code execution (i.e. $\boldsymbol{\sigma}_1$).
 
 \begin{eqnarray}
 \boldsymbol{\sigma}' & \equiv & \begin{cases}
@@ -682,7 +682,7 @@ I_\mathbf{d} & \equiv & \mathbf{d} \\
 I_s & \equiv & s \\
 I_v & \equiv & v \\
 I_e & \equiv & e \\
-\text{Let} \quad \mathtt{\tiny KEC}(I_\mathbf{b}) & = & \boldsymbol{\sigma}[r]_c
+\text{Let} \quad \mathtt{\tiny KEC}(I_\mathbf{b}) & = & \boldsymbol{\sigma}[c]_c
 \end{eqnarray}
 
 It is assumed that the client will have stored the pair $(\mathtt{\tiny KEC}(I_\mathbf{b}), I_\mathbf{b})$ at some point prior in order to make the determination of $I_\mathbf{b}$ feasible.
@@ -1785,7 +1785,7 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 0xf1 & {\small CALL} & 7 & 1 & Message-call into an account. \\
 &&&& $\mathbf{i} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[3] \dots (\boldsymbol{\mu}_\mathbf{s}[3] + \boldsymbol{\mu}_\mathbf{s}[4] - 1) ]$ \\
 &&&& $\mathbf{o} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[5] \dots (\boldsymbol{\mu}_\mathbf{s}[5] + \boldsymbol{\mu}_\mathbf{s}[6] - 1) ]$ \\
-&&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\Theta(\boldsymbol{\sigma}^*, I_a, I_o, \boldsymbol{\mu}_\mathbf{s}[1], \boldsymbol{\mu}_\mathbf{s}[0], I_p, \boldsymbol{\mu}_\mathbf{s}[2], \mathbf{i}, I_e + 1) & \text{when} \quad \boldsymbol{\mu}_\mathbf{s}[2] \leqslant \boldsymbol{\sigma}[I_a]_b \\ (\boldsymbol{\sigma}, g, \varnothing, \mathbf{o}) & \text{otherwise} \end{cases}$ \\
+&&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\Theta(\boldsymbol{\sigma}^*, I_a, I_o, \boldsymbol{\mu}_\mathbf{s}[1], \boldsymbol{\mu}_\mathbf{s}[1], \boldsymbol{\mu}_\mathbf{s}[0], I_p, \boldsymbol{\mu}_\mathbf{s}[2], \mathbf{i}, I_e + 1) & \text{when} \quad \boldsymbol{\mu}_\mathbf{s}[2] \leqslant \boldsymbol{\sigma}[I_a]_b \\ (\boldsymbol{\sigma}, g, \varnothing, \mathbf{o}) & \text{otherwise} \end{cases}$ \\
 &&&& $\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except} \quad \boldsymbol{\sigma}^*[I_a]_b = \boldsymbol{\sigma}[I_a]_b - \boldsymbol{\mu}_\mathbf{s}[2]$ \\
 &&&& $\boldsymbol{\mu}'_g \equiv \boldsymbol{\mu}_g + g'$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
@@ -1796,8 +1796,11 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& Thus the operand order is: gas, to, value, in offset, in size, out offset, out size. \\
 \midrule
 0xf2 & {\small CALLCODE} & 7 & 1 & Message-call into this account with alternative account's code. \\
-&&&& Same as CALL to this account, except that the code is exchanged for $\boldsymbol{\sigma}[\boldsymbol{\mu}_s[1]]_c$. \\
-&&&& \textit{TODO} \\
+&&&& Exactly equivalent to {\small CALL} except: \\
+&&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\Theta(\boldsymbol{\sigma}^*, I_a, I_o, I_a, \boldsymbol{\mu}_\mathbf{s}[1], \boldsymbol{\mu}_\mathbf{s}[0], I_p, \boldsymbol{\mu}_\mathbf{s}[2], \mathbf{i}, I_e + 1) & \text{when} \quad \boldsymbol{\mu}_\mathbf{s}[2] \leqslant \boldsymbol{\sigma}[I_a]_b \\ (\boldsymbol{\sigma}, g, \varnothing, \mathbf{o}) & \text{otherwise} \end{cases}$ \\
+&&&& Note the change in the fourth parameter to the call $\Theta$ from the 2nd stack value $\boldsymbol{\mu}_\mathbf{s}[1]$\\
+&&&& (as in {\small CALL}) to the present address $I_a$. This means that the recipient is in fact the\\
+&&&& same account as at present, simply that the code is overridden altered.\\
 \midrule
 0xf3 & {\small RETURN} & 2 & 0 & Halt execution returning output data. \\
 &&&& $H_{\text{\tiny RETURN}}(\boldsymbol{\mu}) \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[0] \dots ( \boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1] - 1 ) ]$ \\
