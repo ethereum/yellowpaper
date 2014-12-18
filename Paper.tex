@@ -1350,11 +1350,25 @@ It is assumed that the sender has a valid private key $p_r$, a randomly selected
 We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARESTORE}$ and $\mathtt{\small ECDSAPUBKEY}$. These are formally defined in the literature.
 \begin{eqnarray}
 \mathtt{\small ECDSAPUBKEY}(p_r \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64} \\
-\mathtt{\small ECDSASIGN}(e \in \mathbb{B}_{32}, p_r \in \mathbb{B}_{32}) & \equiv & (v \in \mathbb{B}_{2}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) \\
-\mathtt{\small ECDSARESTORE}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{2}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64}
+\mathtt{\small ECDSASIGN}(e \in \mathbb{B}_{32}, p_r \in \mathbb{B}_{32}) & \equiv & (v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) \\
+\mathtt{\small ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64}
 \end{eqnarray}
 
-Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer $< 2^{256}$). It is assumed that $v$ is the `recovery id', a 2-bit value specifying the sign and finiteness of the curve point; unlike some implementations which keep this value in the range of $[27, 30]$, we subtract the lower bound thus reducing it to a pure 2-bit value in the range $[0, 3]$.
+Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer $< 2^{256}$). It is assumed that $v$ is the `recovery id', a 1 byte value specifying the sign and finiteness of the curve point; unlike some implementations which keep this value in the range of $[27, 30]$, we subtract the lower bound thus reducing it to a pure 2-bit value in the range $[0, 3]$.
+
+We declare that a signature is invalid unless the following are true:
+\begin{eqnarray}
+v &<& 27\\
+v &>& 28\\
+r &>=& \mathtt{\tiny secp256k1n}\\
+s &>=& \mathtt{\tiny secp256k1p}\\
+\end{eqnarray}
+
+where:
+\begin{eqnarray}
+\mathtt{\tiny secp256k1n} &=& 115792089237316195423570985008687907852837564279074904382605163141518161494337\\
+\mathtt{\tiny secp256k1p} &=& 2^{256} - 2^{32} - 977\\
+\end{eqnarray}
 
 For a given private key, $p_r$, the Ethereum address $A(p_r)$ (a 160-bit value) to which it corresponds is defined as the right most 160-bits of the Keccak hash of the corresponding ECDSA public key:
 \begin{equation}
@@ -1372,13 +1386,13 @@ h(T) & \equiv & \mathtt{\small KEC}( L_S(T) )
 
 The signed transaction $G(T, p_r)$ is defined as:
 \begin{eqnarray}
-G(T, p_r) \equiv T \quad \text{except} \\
+G(T, p_r) \equiv T \quad \text{except:} \\
 (T_w, T_r, T_s) = \mathtt{\small ECDSASIGN}(h(T), p_r)
 \end{eqnarray}
-gc
+
 We may then define the sender function $S$ of the transaction as:
 \begin{equation}
-S(T) \equiv \mathcal{B}_{96..255}\big(\mathtt{\tiny KEC}\big( \mathtt{\small ECDSARESTORE}(h(T), T_w, T_r, T_s) \big) \big)
+S(T) \equiv \mathcal{B}_{96..255}\big(\mathtt{\tiny KEC}\big( \mathtt{\small ECDSARECOVER}(h(T), T_w, T_r, T_s) \big) \big)
 \end{equation}
 
 The assertion that the sender of the a signed transaction equals the address of the signer should be self-evident:
