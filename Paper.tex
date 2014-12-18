@@ -337,7 +337,7 @@ O_a \in \mathbb{B}_{20} \quad \wedge \quad \forall_{t \in O_\mathbf{t}}: t \in \
 
 We define the Bloom filter function, $M$, to reduce a log entry include a single 64-byte hash:
 \begin{equation}
-M(O) \equiv h: m(O_a) \; \vee \; \bigvee_{t \in O_\mathbf{t}} ( M_{3:512}(t) )
+M(O) \equiv \bigvee_{t \in \{O_a\} \cup O_\mathbf{t}} \big( M_{3:512}(t) \big)
 \end{equation}
 
 where $M_{3:512}$ is a specialised Bloom filter that sets three bits out of 512, given an arbitrary byte series. It does this through taking the low-order 9 bits of each of the first three pairs of bytes in a Keccak-256 hash of the byte series. Formally:
