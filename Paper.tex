@@ -696,7 +696,11 @@ The account's associated code (identified as the fragment whose Keccak hash is $
 \boldsymbol{\sigma}_1 & \text{if} \quad \mathbf{o} = \varnothing \\
 \boldsymbol{\sigma}^{**} & \text{otherwise}
 \end{cases} \\
-(\boldsymbol{\sigma}^{**}, g', \mathbf{s}, \mathbf{o}) & \equiv & \Xi(\boldsymbol{\sigma}_1, g, I) \\
+(\boldsymbol{\sigma}^{**}, g', \mathbf{s}, \mathbf{o}) & \equiv & \begin{cases}
+\Xi_{\mathtt{ECREC}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad a = 1 \\
+\Xi_{\mathtt{SHA256}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad a = 2 \\
+\Xi_{\mathtt{RIP160}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad a = 3 \\
+\Xi(\boldsymbol{\sigma}_1, g, I) & \text{otherwise} \end{cases} \\
 I_a & \equiv & a \\
 I_o & \equiv & o \\
 I_p & \equiv & p \\
@@ -705,10 +709,14 @@ I_\mathbf{d} & \equiv & \mathbf{d} \\
 I_s & \equiv & s \\
 I_v & \equiv & v \\
 I_e & \equiv & e \\
-\text{Let} \quad \mathtt{\tiny KEC}(I_\mathbf{b}) & = & \boldsymbol{\sigma}[c]_c
+\text{Let} \; \mathtt{\tiny KEC}(I_\mathbf{b}) & = & \boldsymbol{\sigma}[c]_c
 \end{eqnarray}
 
 It is assumed that the client will have stored the pair $(\mathtt{\tiny KEC}(I_\mathbf{b}), I_\mathbf{b})$ at some point prior in order to make the determination of $I_\mathbf{b}$ feasible.
+
+As can be seen, there are three exceptions to the usage of the general execution framework $\Xi$ for evaluation of the message call: these are three so-called `precompiled' contracts, meant as a preliminary piece of architecture that may later become \textit{native extensions}. The three contracts in addresses 1, 2 and 3 execute the elliptic curve public key recovery function, the SHA2 256-bit hash scheme and the RIPEMD 160-bit hash scheme respectively.
+
+Their full formal definition is in Appendix \ref{app:precompiled}.
 
 \section{Execution Model} \label{ch:model}
 
@@ -1341,6 +1349,8 @@ Thus no explicit assumptions are made concerning what data is stored and what is
 
 A reasonable implementation will maintain a database of nodes determined from the computation of various tries or, more formally, it will memoise the function $c$. This strategy uses the nature of the trie to both easily recall the contents of any previous key-value set and to store multiple such sets in a very efficient manner. Due to the dependency relationship, Merkle-proofs may be constructed with an $O(\log N)$ space requirement that can demonstrate a particular leaf must exist within a trie of a given root hash.
 
+\section{Precompiled Contracts}\label{app:precompiled}
+
 \section{Signing Transactions}\label{app:signing}
 
 The method of signing transactions is similar to the `Electrum style signatures'; it utilises the SECP-256k1 curve as described by \cite{gura2004comparing}.
@@ -1416,7 +1426,7 @@ $G_{sload}$ & 20 & Paid for a {\small SLOAD} operation. \\
 $G_{sset}$ & 300 & Paid for an {\small SSTORE} operation when the storage value is set to non-zero from zero. \\
 $G_{sreset}$ & 100 & Paid for an {\small SSTORE} operation when the storage value's zeroness remains unchanged. \\
 $G_{sclear}$ & 0 & Nothing paid for an {\small SSTORE} operation when the storage value is set to zero from non-zero. \\
-$R_{sclear}$ & 150 & Refund given (added into refund counter) when the storage value is set to zero from non-zero. \\
+$R_{sclear}$ & 100 & Refund given (added into refund counter) when the storage value is set to zero from non-zero. \\
 $G_{create}$ & 100 & Paid for a {\small CREATE} operation. \\
 $G_{createdata}$ & 5 & Paid per byte for a {\small CREATE} operation to succeed in placing code into state. \\
 $G_{call}$ & 20 & Paid for a {\small CALL} operation. \\
@@ -1487,7 +1497,6 @@ s & \text{if} \quad l = 0 \\
 \subsection{Instruction Set}
 
 As previously specified in section \ref{ch:model}, these definitions take place in the final context there. In particular we assume $O$ is the EVM state-progression function and define the terms pertaining to the next cycle's state $(\boldsymbol{\sigma}', \boldsymbol{\mu}')$ such that:
-
 \begin{equation}
 O(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \equiv (\boldsymbol{\sigma}', \boldsymbol{\mu}', A', I) \quad \text{with exceptions, as noted}
 \end{equation}
