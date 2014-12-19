@@ -248,7 +248,7 @@ Additionally, a contract creation transaction contains:
 
 \textbf{init} is an EVM-code fragment; it returns the \textbf{body}, a second fragment of code that executes each time the account receives a message call (either through a transaction or due to the internal execution of code). \textbf{init} is executed only once at account creation and gets discarded immediately thereafter.
 
-However, a message call transaction contains:
+In contrast, a message call transaction contains:
 
 \begin{description}
 \item[data] An unlimited size byte array specifying the input data of the message call, formally $T_\mathbf{d}$.
@@ -363,7 +363,7 @@ H_r &\equiv& \mathtt{\small TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) &
 
 where $p(k, v)$ is simply the pairwise RLP transformation, in this case, the first being the index of the transaction in the block and the second being the transaction receipt:
 \begin{equation}
-P(k, v) \equiv \big( \mathtt{\small RLP}(k), \mathtt{\small RLP}(v) \big)
+p(k, v) \equiv \big( \mathtt{\small RLP}(k), \mathtt{\small RLP}(v) \big)
 \end{equation}
 
 Furthermore:
@@ -734,7 +734,7 @@ The machine can have exceptional execution for several reasons, including stack 
 
 Fees (denominated in gas) are charged under three distinct circumstances, all three as prerequisite to the execution of an operation. The first and most common is the fee intrinsic to the computation of the operation. Most operations require a single gas fee to be paid for their execution; exceptions include {\small SSTORE}, {\small SLOAD}, {\small CALL}, {\small CREATE}, {\small BALANCE} and {\small SHA3}. Secondly, gas may be deducted in order to form the payment for a subordinate message call or contract creation; this forms part of the payment for {\small CREATE} and {\small CALL}. Finally, gas may be paid due to an increase in the usage of the memory.
 
-Over a account's execution, the total fee for memory-usage payable is proportional to smallest multiple of 32 bytes that are required such that all memory indices (whether for read or write) are included in the range. This is paid for on a just-in-time basis; as such, referencing an area of memory at least 32 bytes greater than any previously indexed memory will certainly result in an additional memory usage fee. Due to this fee it is highly unlikely addresses will ever go above 32-bit bounds since at the present price of Ether and default gas price, that would cost around US\$20M for the memory fee alone. That said, implementations must be able to manage this eventuality.
+Over an account's execution, the total fee for memory-usage payable is proportional to smallest multiple of 32 bytes that are required such that all memory indices (whether for read or write) are included in the range. This is paid for on a just-in-time basis; as such, referencing an area of memory at least 32 bytes greater than any previously indexed memory will certainly result in an additional memory usage fee. Due to this fee it is highly unlikely addresses will ever go above 32-bit bounds since at the present price of Ether and default gas price, that would cost around US\$20M for the memory fee alone. That said, implementations must be able to manage this eventuality.
 
 Storage fees have a slightly nuanced behaviour---to incentivise minimisation of the use of storage (which corresponds directly to a larger state database on all nodes), the execution fee for an operation that clears an entry in the storage is not only waived, a qualified refund is given; in fact, this refund is effectively paid up-front since the initial usage of a storage location costs substantially more than normal usage.
 
@@ -1201,7 +1201,7 @@ Useful corrections and suggestions were provided by a number of others from the 
 
 \item[EVM Assembly] The human-readable form of EVM-code.
 
-\item[LLL] The Lisp-like Low-level Language, a human-writable language used for authoring simple contracts and general low-level language toolkit for trans-piling to.
+\item[LLL] The Lisp-like Low-level Language, a human-writable language used for authoring simple contracts and general low-level language toolkit for trans-compiling to.
 
 \end{description}
 
@@ -1237,7 +1237,7 @@ R_b(\mathbf{x}) & \equiv & \begin{cases}
 (128 + \lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{else if} \quad \lVert \mathbf{x} \rVert < 56 \\
 \big(183 + \big\lVert \mathtt{\tiny BE}(\lVert \mathbf{x} \rVert) \big\rVert \big) \cdot \mathtt{\tiny BE}(\lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{otherwise}
 \end{cases} \\
-\mathtt{\tiny BE}(x) & \equiv & (b_0, b_1, ...): b_0 \neq 0 \wedge \sum^{n = 0}_{n < \lVert \mathbf{b} \rVert} b_n256^{\lVert \mathbf{b} \rVert - 1 - n} \\
+\mathtt{\tiny BE}(x) & \equiv & (b_0, b_1, ...): b_0 \neq 0 \wedge \sum_{n = 0}^{n < \lVert \mathbf{b} \rVert - 1} b_n256^{\lVert \mathbf{b} \rVert - 1 - n} \\
 (a) \cdot (b, c) \cdot (d, e) & = & (a, b, c, d, e)
 \end{eqnarray}
 
@@ -1295,7 +1295,7 @@ Formally, we assume the input value $\mathfrak{I}$, a set containing pairs of by
 
 When considering such a sequence, we use the common numeric subscript notation to refer to a tuple's key or value, thus:
 \begin{equation}
-\forall_{I: \in \mathfrak{I}} I \equiv (I_0, I_1)
+\forall_{I \in \mathfrak{I}} I \equiv (I_0, I_1)
 \end{equation}
 
 Any series of bytes may also trivially be viewed as a series of nibbles, given an endian-specific notation; here we assume big-endian. Thus:
@@ -1658,7 +1658,8 @@ Here given are the various exceptions to the state transition rules given in sec
 \midrule
 0x32 & {\small ORIGIN} & 0 & 1 & Get execution origination address. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_o$ \\
-&&&& This is the sender of original transaction; it is never an account with non-empty associated code. \\
+&&&& This is the sender of original transaction; it is never an account with non-empty \\
+&&&& associated code. \\
 \midrule
 0x33 & {\small CALLER} & 0 & 1 & Get caller address. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_c$ \\
