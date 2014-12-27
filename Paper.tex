@@ -65,6 +65,11 @@ With ubiquitous internet connections in most places of the world, global informa
 
 Ethereum is a project which attempts to build the generalised technology; technology on which all transaction-based state machine concepts may be built. Moreover it aims to provide to the end-developer a tightly integrated end-to-end system for building software on a hitherto unexplored compute paradigm in the mainstream: a trustful object messaging compute framework.
 
+\subsection{Structure of the paper} \label{ch:structure}
+We start with...
+Then go on with ...
+Please note the appendix contains definitions of frequently used terms, ....
+
 \subsection{Driving Factors} \label{ch:driving}
 
 There are many goals of this project; one key goal is to facilitate transactions between consenting individuals who would otherwise have no means to trust one another. This may be due to geographical separation, interfacing difficulty, or perhaps the incompatibility, incompetence, unwillingness, expense, uncertainty, inconvenience or corruption of existing legal systems. By specifying a state-change system through a rich and unambiguous language, and furthermore architecting a system such that we can reasonably expect that an agreement will be thus enforced autonomously, we can provide a means to this end.
@@ -179,7 +184,7 @@ Having introduced the basic concepts behind Ethereum, we will discuss the meanin
 
 \subsection{World State} \label{ch:state}
 
-The world state (\textit{state}), is a mapping between addresses (160-bit identifiers) and account states (a data structure serialised as RLP, see Appendix \ref{app:rlp}). Though not stored on the blockchain, it is assumed that the implementation will maintain this mapping in a modified Merkle Patricia tree (\textit{trie}, see Appendix \ref{app:trie}). The trie requires a simple database backend that maintains a mapping of bytearrays to bytearrays; we name this underlying database the state database. This has a number of benefits; firstly the root node of this structure is cryptographically dependent on all internal data and as such its hash can be used as a secure identity for the entire system state. Secondly, being an immutable data structure, it allows any previous state (whose root hash is known) to be recalled by simply altering the root hash accordingly. Since we store all such root hashes in the blockchain, we are able to trivially revert to old states.
+The world state (\textit{state}), is a mapping between addresses (160-bit identifiers) and account states (a data structure serialised as Recursive Length Prefix Encoding or short-hand RLP, see Appendix \ref{app:rlp}). Though not stored on the blockchain, it is assumed that the implementation will maintain this mapping in a modified Merkle Patricia tree (\textit{trie}, see Appendix \ref{app:trie}). The trie requires a simple database backend that maintains a mapping of bytearrays to bytearrays; we name this underlying database the state database. This has a number of benefits; firstly the root node of this structure is cryptographically dependent on all internal data and as such its hash can be used as a secure identity for the entire system state. Secondly, being an immutable data structure, it allows any previous state (whose root hash is known) to be recalled by simply altering the root hash accordingly. Since we store all such root hashes in the blockchain, we are able to trivially revert to old states.
 
 The account state comprises the following four fields:
 
@@ -194,6 +199,7 @@ Since I typically wish to refer not to the trie's root hash but to the underlyin
 \begin{equation}
 \texttt{\small TRIE}\big(L_I^*(\boldsymbol{\sigma}[a]_\mathbf{s})\big) \equiv \boldsymbol{\sigma}[a]_s
 \end{equation}
+% What's the indecx I, what's the function L? The notation is confusing. Put the \equiv in quotation marks... or say by an abuse of notation, cause it's technically not an quiivalence. Also, what's TRIE? First time use.
 
 The collapse function for the set of key/value pairs in the trie, $L_I^*$, is defined as the element-wise transformation of the base function $L_I$, given as:
 \begin{equation}
