@@ -200,7 +200,7 @@ Since I typically wish to refer not to the trie's root hash but to the underlyin
 \texttt{\small TRIE}\big(L_I^*(\boldsymbol{\sigma}[a]_\mathbf{s})\big) \equiv \boldsymbol{\sigma}[a]_s
 \end{equation}
 % What's the indecx I, what's the function L? The notation is confusing. Put the \equiv in quotation marks... or say by an abuse of notation, cause it's technically not an quiivalence. Also, what's TRIE? First time use.
-
+%What is L? Is this a notation for a general transfromation?
 The collapse function for the set of key/value pairs in the trie, $L_I^*$, is defined as the element-wise transformation of the base function $L_I$, given as:
 \begin{equation}
 L_I\big( (k, v) \big) \equiv \big(k, \texttt{\small RLP}(v)\big)
@@ -243,9 +243,9 @@ A transaction (formally, $T$) is a single cryptographically-signed instruction s
 \item[gasLimit] A scalar value equal to the maximum amount of gas that should be used in executing this transaction. This is paid up-front, before any computation is done and may not be increased later; formally $T_g$.
 \item[to] The 160-bit address of the message call's recipient or, for a contract creation transaction, $\varnothing$, used here to denote the only member of $\mathbb{B}_0$ ; formally $T_t$.
 \item[value] A scalar value equal to the number of Wei to be transferred to the message call's recipient or, in the case of contract creation, as an endowment to the newly created account; formally $T_v$.
-\item[v, r, s] Values corresponding to the signature of the transaction and used to determine the sender of the transaction; formally $T_w$, $T_r$ and $T_s$. This is expanded in Appendix \ref{app:signing}.
+\item[v, r, s] Values corresponding to the signature of the transaction and used to determine the sender of the transaction; formally $T_w$, $T_r$ and $T_s$. Note the deviating index $\cdot_w$ instead of $\cdot_v$ which is already in use for the value, see previous definition above. This is expanded in Appendix \ref{app:signing}.
 \end{description}
-
+% Why do you change notation here to \mathbf cor the 
 Additionally, a contract creation transaction contains:
 
 \begin{description}
@@ -278,7 +278,9 @@ T_s \in \mathbb{P} & \wedge & T_\mathbf{d} \in \mathbb{B} & \wedge & T_\mathbf{i
 \end{array}
 \end{equation}
 
-The address hash $T_\mathbf{t}$ is slightly different: it is either a 20-byte address hash or, in the case of being a contract-creation transaction (and thus formally equal to $\varnothing$), it is the RLP empty byte-series and thus the member of $\mathbb{B}_0$:
+The address hash $T_\mathbf{t}$ 
+% no $\mathbf$?
+is slightly different: it is either a 20-byte address hash or, in the case of being a contract-creation transaction (and thus formally equal to $\varnothing$), it is the RLP empty byte-series and thus the member of $\mathbb{B}_0$:
 \begin{equation}
 T_t \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_t \neq \varnothing \\
 \mathbb{B}_{0} & \text{otherwise}\end{cases}
@@ -449,13 +451,14 @@ This mechanism enforces a homeostasis in terms of the time between blocks; a sma
 
 The nonce, $H_n$, must satisfy the relation:
 \begin{equation}
+\lable{eq:PoW}
 %\mathtt{PoW}(H, H_n) \dfrac{\leqslant}{den} \frac{2^{256}}{H_d}
 \mathtt{PoW}(H, H_n) \leqslant \frac{2^{256}}{H_d}
 \end{equation}
 
 Where $\mathtt{PoW}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an pseudo-random number cryptographically dependent on the parameters $H$ and $H_n$. Given an approximately uniform distribution in the range $[0, 2^{256})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
 
-This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propagate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because its satisfaction depends on the contents of the block and in turn its composed transactions, creating new, valid, blocks is difficult and, over time, requires approximately the total compute power of the trustworthy portion of the mining peers.
+Identity \eqref{eq:PoW} is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propagate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy requirement \eqref{eq:PoW}, and because its satisfaction depends on the contents of the block and in turn its composed transactions, creating new, valid, blocks is difficult and, over time, requires approximately the total compute power of the trustworthy portion of the mining peers.
 
 Thus we are able to define the block header validity function $V(H)$:
 \begin{eqnarray}
@@ -661,7 +664,7 @@ I_v & \equiv & v \\
 I_\mathbf{b} & \equiv & \mathbf{i} \\
 I_e & \equiv & e
 \end{eqnarray}
-
+%Could you remind of the definiton of I or introduce it.
 where $c$ is the code-deposit cost:
 \begin{equation}
 c \equiv G_{createdata} \times |\mathbf{o}|
@@ -972,7 +975,7 @@ B_t & \equiv & B'_t + B_d + \sum\limits_{U \in B_\mathbf{U}} U_d \\
 B' & \equiv & P(B_H)
 \end{eqnarray}
 
-As such given a block $B$, $B_t$ is its total difficulty, $B'$ is its parent block, $B_d$ is its difficulty and $B_\mathbf{U}$ is its set of uncle blocks.
+As such given a block $B$, $B_t$ is its total difficulty, $B'$ is its parent block, $\cdot_d$ dentotes a block's difficulty and $B_\mathbf{U}$ is its set of uncle blocks.
 
 \section{Block Finalisation} \label{ch:finalisation}
 
@@ -1216,8 +1219,6 @@ Useful corrections and suggestions were provided by a number of others from the 
 
 \item[EVM Assembly] The human-readable form of EVM-code.
 
-\item[LLL] The Lisp-like Low-level Language, a human-writable language used for authoring simple contracts and general low-level language toolkit for trans-compiling to.
-
 \end{description}
 
 \section{Recursive Length Prefix}\label{app:rlp}
@@ -1232,7 +1233,7 @@ We define the set of possible structures $\mathbb{T}$:
 
 Where $\mathbb{Y}$ is the set of bytes. Thus $\mathbb{B}$ is the set of all sequences of bytes (otherwise known as byte-arrays, and a leaf if imagined as a tree), $\mathbb{L}$ is the set of all tree-like (sub-)structures that are not a single leaf (a branch node if imagined as a tree) and $\mathbb{T}$ is the set of all byte-arrays and such structural sequences.
 
-We define the RLP function as $\mathtt{\tiny RLP}$ through two sub-functions, the first handling the instance when the value is a byte array, the second when it is a sequence of further values:
+We define the Recursive Lentth Prefix (RLP) function as $\mathtt{\tiny RLP}$ through two sub-functions, the first handling the instance when the value is a byte array, the second when it is a sequence of further values:
 \begin{equation}
 \mathtt{\tiny RLP}(\mathbf{x}) \equiv \begin{cases} R_b(\mathbf{x}) & \text{if} \quad \mathbf{x} \in \mathbb{B} \\ R_l(\mathbf{x}) & \text{otherwise} \end{cases}
 \end{equation}
@@ -1301,7 +1302,7 @@ f(t) & \equiv & \begin{cases} 2 & \text{if} \quad t \\ 0 & \text{otherwise} \end
 Thus the high nibble of the first byte contains two flags; the lowest bit encoding the oddness of the length and the second-lowest encoding the flag $t$. The low nibble of the first byte is zero in the case of an even number of nibbles and the first nibble in the case of an odd number. All remaining nibbles (now an even number) fit properly into the remaining bytes.
 
 \section{Modified Merkle Patricia Tree}\label{app:trie}
-The modified Merkle Patricia tree (trie) provides a persistent data structure to map between arbitrary-length binary data (byte arrays). It is defined in terms of a mutable data structure to map between 256-bit binary fragments and arbitrary-length binary data, typically implemented as a database. The core of the trie, and its sole requirement in terms of the protocol specification is to provide a single value that identifies a given set of key-value pairs, which may either a 32 byte sequence or the empty byte sequence. It is left as an implementation consideration to store and maintain the structure of the trie in a manner the allows effective and efficient realisation of the protocol.
+The modified Merkle Patricia tree (trie) provides a persistent data structure to map between arbitrary-length binary data (byte arrays). It is defined in terms of a mutable data structure to map between 256-bit binary fragments and arbitrary-length binary data, typically implemented as a database. The core of the trie, and its sole requirement in terms of the protocol specification is to provide a single value that identifies a given set of key-value pairs, which may either a 32 byte sequence or the empty byte sequence. It is left as an implementation consideration to store and maintain the structure of the trie in a manner that allows effective and efficient realisation of the protocol.
 
 Formally, we assume the input value $\mathfrak{I}$, a set containing pairs of byte sequences:
 \begin{equation}
@@ -1393,7 +1394,7 @@ r &=& \mathbf{d}[64..95]\\
 s &=& \mathbf{d}[96..127]
 \end{eqnarray}
 
-The two hash functions, RIPEMD-160 and SHA2-256 are more trivially defined as an almost pass-through operation. Their gas usage is dependent on the input data size, a factor rounded up to the nearest number of words.
+The two hash functions RIPEMD-160 and SHA2-256 are more trivially defined as an almost pass-through operation. Their gas usage is dependent on the input data size, a factor rounded up to the nearest number of words.
 
 \begin{eqnarray}
 \Xi_{\mathtt{SHA256}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
@@ -1429,8 +1430,7 @@ Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed fro
 
 We declare that a signature is invalid unless the following are true:
 \begin{eqnarray}
-v &<& 27\\
-v &>& 28\\
+v &<& 27 \text{ or } v &>& 28\\
 r &>=& \mathtt{\tiny secp256k1n}\\
 s &>=& \mathtt{\tiny secp256k1p}\\
 \end{eqnarray}
