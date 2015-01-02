@@ -37,7 +37,7 @@
 \newcommand*\ie{i.e.\@\xspace}
 %\renewcommand{\itemhook}{\setlength{\topsep}{0pt}  \setlength{\itemsep}{0pt}\setlength{\leftmargin}{15pt}}
 
-\title{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ {\smaller \textbf{Final Draft - WiP}}}
+\title{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ {\smaller \textbf{Final Draft - UNDER REVIEW}}}
 \author{
     Dr. Gavin Wood\\
     Co-Founder \& Lead, Ethereum Project\\
@@ -235,7 +235,7 @@ A transaction (formally, $T$) is a single cryptographically-signed instruction s
 \item[nonce] A scalar value equal to the number of transactions sent by the sender; formally $T_n$.
 \item[gasPrice] A scalar value equal to the number of Wei to be paid per unit of \textit{gas} for all computation costs incurred as a result of the execution of this transaction; formally $T_p$.
 \item[gasLimit] A scalar value equal to the maximum amount of gas that should be used in executing this transaction. This is paid up-front, before any computation is done and may not be increased later; formally $T_g$.
-\item[to] The 160-bit address of the message call's recipient or $\varnothing$ for a contract creation transaction; formally $T_t$.
+\item[to] The 160-bit address of the message call's recipient or, for a contract creation transaction, $\varnothing$, used here to denote the only member of $\mathbb{B}_0$ ; formally $T_t$.
 \item[value] A scalar value equal to the number of Wei to be transferred to the message call's recipient or, in the case of contract creation, as an endowment to the newly created account; formally $T_v$.
 \item[v, r, s] Values corresponding to the signature of the transaction and used to determine the sender of the transaction; formally $T_w$, $T_r$ and $T_s$. This is expanded in Appendix \ref{app:signing}.
 \end{description}
@@ -248,7 +248,7 @@ Additionally, a contract creation transaction contains:
 
 \textbf{init} is an EVM-code fragment; it returns the \textbf{body}, a second fragment of code that executes each time the account receives a message call (either through a transaction or due to the internal execution of code). \textbf{init} is executed only once at account creation and gets discarded immediately thereafter.
 
-However, a message call transaction contains:
+In contrast, a message call transaction contains:
 
 \begin{description}
 \item[data] An unlimited size byte array specifying the input data of the message call, formally $T_\mathbf{d}$.
@@ -272,10 +272,10 @@ T_s \in \mathbb{P} & \wedge & T_\mathbf{d} \in \mathbb{B} & \wedge & T_\mathbf{i
 \end{array}
 \end{equation}
 
-The address hash $T_\mathbf{t}$ is slightly different: it is either a 20-byte address hash or, in the case of being a contract-creation transaction (and thus formally equal to $\varnothing$), it is the RLP empty string and thus the member of $\mathbb{B}_0$:
+The address hash $T_\mathbf{t}$ is slightly different: it is either a 20-byte address hash or, in the case of being a contract-creation transaction (and thus formally equal to $\varnothing$), it is the RLP empty byte-series and thus the member of $\mathbb{B}_0$:
 \begin{equation}
-T_t \in \begin{cases} \mathbb{B}_{0} & \text{if} \quad T_t = \varnothing \\
-\mathbb{B}_{20} & \text{otherwise}\end{cases}
+T_t \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_t \neq \varnothing \\
+\mathbb{B}_{0} & \text{otherwise}\end{cases}
 \end{equation}
 
 \subsection{The Block} \label{ch:block}
@@ -308,6 +308,8 @@ B \equiv (B_H, B_\mathbf{T}, B_\mathbf{U})
 
 \subsubsection{Transaction Receipt}
 
+In order to encode information about a transaction concerning which it may be useful to form a zero-knowledge proof, or index and search, we encode a receipt of each transaction containing certain information from concerning its execution. Each receipt, denoted $B_\mathbf{R}[i]$ for the $i$th transaction) is placed in an index-keyed trie and the root recorded in the header as $H_e$.
+
 The transaction receipt is a tuple of four items comprising the post-transaction state, $R_{\boldsymbol{\sigma}}$, the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_u$, the set of logs created through execution of the transaction, $R_\mathbf{l}$ and the Bloom filter composed from information in those logs, $R_b$:
 \begin{equation}
 R \equiv (R_{\boldsymbol{\sigma}}, R_u, R_b, R_\mathbf{l})
@@ -327,7 +329,6 @@ R_u \in \mathbb{P} \quad \wedge \quad R_b \in \mathbb{B}_{64}
 %Notably $B_\mathbf{T}$ does not get serialised into the block by the block preparation function $L_B$; it is merely a convenience equivalence.
 
 The log entries, $R_\mathbf{l}$, is a series of log entries, termed, for example, $(O_0, O_1, ...)$. A log entry, $O$, is a tuple of a logger's address, $O_a$, a series of 32-bytes log topics, $O_\mathbf{t}$ and some number of bytes of data, $O_\mathbf{d}$:
-
 \begin{equation}
 O \equiv (O_a, ({O_\mathbf{t}}_0, {O_\mathbf{t}}_1, ...), O_\mathbf{d})
 \end{equation}
@@ -355,15 +356,17 @@ where $\mathcal{B}$ is the bit reference function such that $\mathcal{B}_j(\math
 We can assert a block's validity if and only if it satisfies several conditions: it must be internally consistent with the uncle and transaction block hashes and the given transactions $B_\mathbf{T}$, when executed in order on the base state $\boldsymbol{\sigma}$ (derived from the final state of the parent block), result in a new state of the identity $H_r$:
 \begin{equation}
 \begin{array}[t]{lclc}
+H_r &\equiv& \mathtt{\small TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) & \\
 H_u &\equiv& \mathtt{\small KEC}(\mathtt{\small RLP}(L_H^*(B_\mathbf{U}))) & \wedge \\
-H_t &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert, i \in \mathbb{P}: p(i, L_R(B_\mathbf{R}[i])\})) & \wedge \\
-H_r &\equiv& \mathtt{\small TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) &
+H_t &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert, i \in \mathbb{P}: p(i, L_T(B_\mathbf{T}[i]))\}) & \wedge \\
+H_e &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert, i \in \mathbb{P}: p(i, L_R(B_\mathbf{R}[i]))\}) & \wedge \\
+H_b &\equiv& \bigvee_{\mathbf{r} \in B_\mathbf{R}} \big( \mathbf{r}_b \big)
 \end{array}
 \end{equation}
 
 where $p(k, v)$ is simply the pairwise RLP transformation, in this case, the first being the index of the transaction in the block and the second being the transaction receipt:
 \begin{equation}
-P(k, v) \equiv \big( \mathtt{\small RLP}(k), \mathtt{\small RLP}(v) \big)
+p(k, v) \equiv \big( \mathtt{\small RLP}(k), \mathtt{\small RLP}(v) \big)
 \end{equation}
 
 Furthermore:
@@ -373,12 +376,14 @@ Furthermore:
 
 Thus $\texttt{\small TRIE}(L_S(\boldsymbol{\sigma}))$ is the root node hash of the Merkle Patricia tree structure containing the key-value pairs of the state $\boldsymbol{\sigma}$ with values encoded using RLP, and $P(B_H)$ is the parent block of $B$, defined directly.
 
+The values stemming from the computation of transactions, specifically the transaction receipts, $B_\mathbf{R}$, and that defined through the transactions state-accumulation function, $\Pi$, are formalised later in section \ref{sec:statenoncevalidation}.
+
 \subsubsection{Serialisation}
 
 The function $L_B$ and $L_H$ are the preparation functions for a block and block header respectively. Much like the transaction receipt preparation function $L_R$, we assert the types and order of the structure for when the RLP transformation is required:
 \begin{eqnarray}
 \quad L_H(H) & \equiv & (\begin{array}[t]{l}H_p, H_u, H_c, H_t, H_e, H_b, H_t, H_d,\\ H_i, H_l, H_u, H_s, H_x, H_n \; )\end{array} \\
-\quad L_B(B) & \equiv & \big( L_H(B_H), L_R^*(B_\mathbf{R}), L_H^*(B_\mathbf{U}) \big)
+\quad L_B(B) & \equiv & \big( L_H(B_H), L_T^*(B_\mathbf{T}), L_H^*(B_\mathbf{U}) \big)
 \end{eqnarray}
 
 With $L_T^*$ and $L_H^*$ being element-wise sequence transformations, thus:
@@ -484,7 +489,7 @@ Formally, we consider the function $\Upsilon$, with $T$ being a transaction and 
 \boldsymbol{\sigma}' = \Upsilon(\boldsymbol{\sigma}, T)
 \end{equation}
 
-Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define $\Upsilon^g$ to evaluate to the amount of gas used in the execution of a transaction, to be defined later.
+Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define $\Upsilon^g$ to evaluate to the amount of gas used in the execution of a transaction and $\Upsilon^\mathbf{l}$ to evaluate to the transaction's accrued log items, both to be formally defined later.
 
 \subsection{Substate}
 Throughout transaction execution, we accrue certain information that is acted upon immediately following the transaction. We call this \textit{transaction substate}, and represent it as $A$, which is a tuple:
@@ -637,11 +642,9 @@ g^{**} - c & \text{otherwise} \\
 \end{cases} \\
 \quad \boldsymbol{\sigma}' & \equiv & \begin{cases}
 \boldsymbol{\sigma}^* & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
-\boldsymbol{\sigma}^{**} & \text{if} \quad a \notin \mathbf{s} \vee g^{**} < c \\
-\begin{array}[b]{l}
-\boldsymbol{\sigma}^{**} \quad \text{except:} \\
-\boldsymbol{\sigma}'[a]_{\mathbf{b}} = \mathbf{o}
-\end{array} & \text{otherwise}
+\boldsymbol{\sigma}^{**} & \text{if} \quad g^{**} < c \\
+\boldsymbol{\sigma}^{**} \quad \text{except:} & \\
+\quad\boldsymbol{\sigma}'[a]_{\mathbf{b}} = \mathbf{o} & \text{otherwise}
 \end{cases} \\
 I_a & \equiv & a \\
 I_o & \equiv & o \\
@@ -696,7 +699,11 @@ The account's associated code (identified as the fragment whose Keccak hash is $
 \boldsymbol{\sigma}_1 & \text{if} \quad \mathbf{o} = \varnothing \\
 \boldsymbol{\sigma}^{**} & \text{otherwise}
 \end{cases} \\
-(\boldsymbol{\sigma}^{**}, g', \mathbf{s}, \mathbf{o}) & \equiv & \Xi(\boldsymbol{\sigma}_1, g, I) \\
+(\boldsymbol{\sigma}^{**}, g', \mathbf{s}, \mathbf{o}) & \equiv & \begin{cases}
+\Xi_{\mathtt{ECREC}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad a = 1 \\
+\Xi_{\mathtt{SHA256}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad a = 2 \\
+\Xi_{\mathtt{RIP160}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad a = 3 \\
+\Xi(\boldsymbol{\sigma}_1, g, I) & \text{otherwise} \end{cases} \\
 I_a & \equiv & a \\
 I_o & \equiv & o \\
 I_p & \equiv & p \\
@@ -705,10 +712,14 @@ I_\mathbf{d} & \equiv & \mathbf{d} \\
 I_s & \equiv & s \\
 I_v & \equiv & v \\
 I_e & \equiv & e \\
-\text{Let} \quad \mathtt{\tiny KEC}(I_\mathbf{b}) & = & \boldsymbol{\sigma}[c]_c
+\text{Let} \; \mathtt{\tiny KEC}(I_\mathbf{b}) & = & \boldsymbol{\sigma}[c]_c
 \end{eqnarray}
 
 It is assumed that the client will have stored the pair $(\mathtt{\tiny KEC}(I_\mathbf{b}), I_\mathbf{b})$ at some point prior in order to make the determination of $I_\mathbf{b}$ feasible.
+
+As can be seen, there are three exceptions to the usage of the general execution framework $\Xi$ for evaluation of the message call: these are three so-called `precompiled' contracts, meant as a preliminary piece of architecture that may later become \textit{native extensions}. The three contracts in addresses 1, 2 and 3 execute the elliptic curve public key recovery function, the SHA2 256-bit hash scheme and the RIPEMD 160-bit hash scheme respectively.
+
+Their full formal definition is in Appendix \ref{app:precompiled}.
 
 \section{Execution Model} \label{ch:model}
 
@@ -726,7 +737,7 @@ The machine can have exceptional execution for several reasons, including stack 
 
 Fees (denominated in gas) are charged under three distinct circumstances, all three as prerequisite to the execution of an operation. The first and most common is the fee intrinsic to the computation of the operation. Most operations require a single gas fee to be paid for their execution; exceptions include {\small SSTORE}, {\small SLOAD}, {\small CALL}, {\small CREATE}, {\small BALANCE} and {\small SHA3}. Secondly, gas may be deducted in order to form the payment for a subordinate message call or contract creation; this forms part of the payment for {\small CREATE} and {\small CALL}. Finally, gas may be paid due to an increase in the usage of the memory.
 
-Over a account's execution, the total fee for memory-usage payable is proportional to smallest multiple of 32 bytes that are required such that all memory indices (whether for read or write) are included in the range. This is paid for on a just-in-time basis; as such, referencing an area of memory at least 32 bytes greater than any previously indexed memory will certainly result in an additional memory usage fee. Due to this fee it is highly unlikely addresses will ever go above 32-bit bounds since at the present price of Ether and default gas price, that would cost around US\$20M for the memory fee alone. That said, implementations must be able to manage this eventuality.
+Over an account's execution, the total fee for memory-usage payable is proportional to smallest multiple of 32 bytes that are required such that all memory indices (whether for read or write) are included in the range. This is paid for on a just-in-time basis; as such, referencing an area of memory at least 32 bytes greater than any previously indexed memory will certainly result in an additional memory usage fee. Due to this fee it is highly unlikely addresses will ever go above 32-bit bounds since at the present price of Ether and default gas price, that would cost around US\$20M for the memory fee alone. That said, implementations must be able to manage this eventuality.
 
 Storage fees have a slightly nuanced behaviour---to incentivise minimisation of the use of storage (which corresponds directly to a larger state database on all nodes), the execution fee for an operation that clears an entry in the storage is not only waived, a qualified refund is given; in fact, this refund is effectively paid up-front since the initial usage of a storage location costs substantially more than normal usage.
 
@@ -1013,7 +1024,7 @@ We define the block reward as 1500 Finney:
 \text{Let} \quad R_b = 1.5 \times 10^{18}
 \end{equation}
 
-\subsection{State \& Nonce Validation}
+\subsection{State \& Nonce Validation}\label{sec:statenoncevalidation}
 
 We may now define the function, $\Gamma$, that maps a block $B$ to its initiation state:
 \begin{equation}
@@ -1034,18 +1045,24 @@ B^* & \equiv & B \quad \text{except:} \quad B'_r = r(\Pi(\Gamma(B), B))
 
 As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of $\Omega$, the block finalisation function and $\Upsilon$, the transaction-evaluation function, both now well-defined.
 
-As previously detailed, $\mathbf{R}[n]_{\boldsymbol{\sigma}}$ and $\mathbf{R}[n]_u$ are the $n$th corresponding states and cumulative gas used after each transaction. The former is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
+As previously detailed, $B_\mathbf{R}[n]_{\boldsymbol{\sigma}}$, $B_\mathbf{R}[n]_\mathbf{l}$ and $B_\mathbf{R}[n]_u$ are the $n$th corresponding states, logs and cumulative gas used after each transaction ($B_\mathbf{R}[n]_b$, the fourth component in the tuple, has already been defined in terms of the logs). The former is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
 \begin{equation}
 B_\mathbf{R}[n]_{\boldsymbol{\sigma}} = \begin{cases} \Gamma(B) & \text{if} \quad n < 0 \\ \Upsilon(B_\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n]) & \text{otherwise} \end{cases}
 \end{equation}
 
-In the case of $\mathbf{g}$, we take a similar approach defining each item as the gas used in evaluating the corresponding transaction summed with the previous item (or zero, if it is the first), giving us a running total:
+In the case of $B_\mathbf{R}[n]_u$, we take a similar approach defining each item as the gas used in evaluating the corresponding transaction summed with the previous item (or zero, if it is the first), giving us a running total:
 \begin{equation}
 B_\mathbf{R}[n]_u = \begin{cases} 0 & \text{if} \quad n < 0 \\
 \begin{array}[b]{l}
 \Upsilon^g(B_\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n])\\ \quad + B_\mathbf{R}[n-1]_u
 \end{array}
  & \text{otherwise} \end{cases}
+\end{equation}
+
+For $B_\mathbf{R}[n]_\mathbf{l}$, we utilise the $\Upsilon^\mathbf{l}$ function that we conveniently defined in the transaction execution function.
+\begin{equation}
+B_\mathbf{R}[n]_u = 
+\Upsilon^\mathbf{l}(B_\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n])
 \end{equation}
 
 Finally, we define $\Pi$ as the new state given the block reward function $\Omega$ applied to the final transaction's resultant state, $\ell(B_\mathbf{R})_{\boldsymbol{\sigma}}$:
@@ -1193,7 +1210,7 @@ Useful corrections and suggestions were provided by a number of others from the 
 
 \item[EVM Assembly] The human-readable form of EVM-code.
 
-\item[LLL] The Lisp-like Low-level Language, a human-writable language used for authoring simple contracts and general low-level language toolkit for trans-piling to.
+\item[LLL] The Lisp-like Low-level Language, a human-writable language used for authoring simple contracts and general low-level language toolkit for trans-compiling to.
 
 \end{description}
 
@@ -1229,7 +1246,7 @@ R_b(\mathbf{x}) & \equiv & \begin{cases}
 (128 + \lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{else if} \quad \lVert \mathbf{x} \rVert < 56 \\
 \big(183 + \big\lVert \mathtt{\tiny BE}(\lVert \mathbf{x} \rVert) \big\rVert \big) \cdot \mathtt{\tiny BE}(\lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{otherwise}
 \end{cases} \\
-\mathtt{\tiny BE}(x) & \equiv & (b_0, b_1, ...): b_0 \neq 0 \wedge \sum^{n = 0}_{n < \lVert \mathbf{b} \rVert} b_n256^{\lVert \mathbf{b} \rVert - 1 - n} \\
+\mathtt{\tiny BE}(x) & \equiv & (b_0, b_1, ...): b_0 \neq 0 \wedge \sum_{n = 0}^{n < \lVert \mathbf{b} \rVert - 1} b_n256^{\lVert \mathbf{b} \rVert - 1 - n} \\
 (a) \cdot (b, c) \cdot (d, e) & = & (a, b, c, d, e)
 \end{eqnarray}
 
@@ -1287,7 +1304,7 @@ Formally, we assume the input value $\mathfrak{I}$, a set containing pairs of by
 
 When considering such a sequence, we use the common numeric subscript notation to refer to a tuple's key or value, thus:
 \begin{equation}
-\forall_{I: \in \mathfrak{I}} I \equiv (I_0, I_1)
+\forall_{I \in \mathfrak{I}} I \equiv (I_0, I_1)
 \end{equation}
 
 Any series of bytes may also trivially be viewed as a series of nibbles, given an endian-specific notation; here we assume big-endian. Thus:
@@ -1340,6 +1357,54 @@ I_1 & \text{if} \quad \exists I: I \in \mathfrak{I} \wedge \lVert I_0 \rVert = i
 Thus no explicit assumptions are made concerning what data is stored and what is not, since that is an implementation-specific consideration; we simply define the identity function mapping the key-value set $\mathfrak{I}$ to a 32-byte hash and assert that only a single such hash exists for any $\mathfrak{I}$, which though not strictly true is accurate within acceptable precision given the Keccak hash's collision resistance. In reality, a sensible implementation will not fully recompute the trie root hash for each set.
 
 A reasonable implementation will maintain a database of nodes determined from the computation of various tries or, more formally, it will memoise the function $c$. This strategy uses the nature of the trie to both easily recall the contents of any previous key-value set and to store multiple such sets in a very efficient manner. Due to the dependency relationship, Merkle-proofs may be constructed with an $O(\log N)$ space requirement that can demonstrate a particular leaf must exist within a trie of a given root hash.
+
+\section{Precompiled Contracts}\label{app:precompiled}
+
+For each precompiled contract, we make use of a template function, $\Xi_{\mathtt{PRE}}$, which implements the out-of-gas checking.
+
+\begin{eqnarray}
+\Xi_{\mathtt{PRE}}(\boldsymbol{\sigma}, g, I) & \equiv & \begin{cases}
+(\varnothing, 0, A^0, ()) & \text{if} \quad g < g_r \\
+(\boldsymbol\sigma, g - g_r, A^0, \mathbf{o}) & \text{otherwise}\end{cases} \\
+\end{eqnarray}
+
+The precompiled contracts each use these definitions and provide specifications for the $\mathbf{o}$ (the output data) and $g_r$, the gas requirements.
+
+For the elliptic curve DSA recover VM execution function, we also define $\mathbf{d}$ to be the input data, well-defined for an infinite length by appending zeroes as required. Importantly in the case of an invalid signature ($\mathtt{\tiny ECDSARECOVER}(h, v, r, s) = \varnothing$), then we have no output.
+
+\begin{eqnarray}
+\Xi_{\mathtt{ECREC}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
+g_r &=& 500\\
+|\mathbf{o}| &=& \begin{cases} 0 & \text{if} \quad \mathtt{\tiny ECDSARECOVER}(h, v, r, s) = \varnothing\\ 32 & \text{otherwise} \end{cases}\\
+\text{if} \quad |\mathbf{o}| = 32: &&\\
+\mathbf{o}[0..11] &=& 0 \\
+\mathbf{o}[12..31] &=& \mathtt{\tiny KEC}\big(\mathtt{\tiny ECDSARECOVER}(h, v, r, s)\big)[12..31] \quad \text{where:}\\
+\mathbf{d}[0..(|I_\mathbf{d}|-1)] &=& I_\mathbf{d}\\
+\mathbf{d}[|I_\mathbf{d}|..] &=& (0, 0, ...) \\
+h &=& \mathbf{d}[0..31]\\
+v &=& \mathbf{d}[32..63]\\
+r &=& \mathbf{d}[64..95]\\
+s &=& \mathbf{d}[96..127]
+\end{eqnarray}
+
+The two hash functions, RIPEMD-160 and SHA2-256 are more trivially defined as an almost pass-through operation. Their gas usage is dependent on the input data size, a factor rounded up to the nearest number of words.
+
+\begin{eqnarray}
+\Xi_{\mathtt{SHA256}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
+g_r &=& 50 + 50\Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil\\
+\mathbf{o}[0..31] &=& \mathtt{\tiny SHA256}(I_\mathbf{d})\\
+\Xi_{\mathtt{RIP160}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
+g_r &=& 50 + 50\Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil\\
+\mathbf{o}[0..11] &=& 0 \\
+\mathbf{o}[12..31] &=& \mathtt{\tiny RIPEMD160}(I_\mathbf{d})\\
+\end{eqnarray}
+
+For the purposes here, we assume we have well-defined standard cryptographic functions for RIPEMD-160 and SHA2-256 of the form:
+
+\begin{eqnarray}
+\mathtt{\small SHA256}(\mathbf{i} \in \mathbb{B}) & \equiv & o \in \mathbb{B}_{32} \\
+\mathtt{\small RIPEMD160}(\mathbf{i} \in \mathbb{B}) & \equiv & o \in \mathbb{B}_{20}
+\end{eqnarray}
 
 \section{Signing Transactions}\label{app:signing}
 
@@ -1487,7 +1552,6 @@ s & \text{if} \quad l = 0 \\
 \subsection{Instruction Set}
 
 As previously specified in section \ref{ch:model}, these definitions take place in the final context there. In particular we assume $O$ is the EVM state-progression function and define the terms pertaining to the next cycle's state $(\boldsymbol{\sigma}', \boldsymbol{\mu}')$ such that:
-
 \begin{equation}
 O(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \equiv (\boldsymbol{\sigma}', \boldsymbol{\mu}', A', I) \quad \text{with exceptions, as noted}
 \end{equation}
@@ -1603,7 +1667,8 @@ Here given are the various exceptions to the state transition rules given in sec
 \midrule
 0x32 & {\small ORIGIN} & 0 & 1 & Get execution origination address. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_o$ \\
-&&&& This is the sender of original transaction; it is never an account with non-empty associated code. \\
+&&&& This is the sender of original transaction; it is never an account with non-empty \\
+&&&& associated code. \\
 \midrule
 0x33 & {\small CALLER} & 0 & 1 & Get caller address. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_c$ \\
