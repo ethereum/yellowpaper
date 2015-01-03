@@ -1690,9 +1690,13 @@ Here given are the various exceptions to the state transition rules given in sec
 \toprule
 \multicolumn{5}{c}{\textbf{40s: Block Information}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
-0x40 & {\small PREVHASH} & 0 & 1 & Get hash of most recent complete block. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_H}_p$ \\
-&&&& $I_{H_p}$ is the previous block's hash. \\
+0x40 & {\small BLOCKHASH} & 10 & 1 & Get the hash of one of the 256 most recent complete blocks. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv A(I_{H_p}, \boldsymbol{\mu}_\mathbf{s}[0], 0)$ \\
+&&&& where $A$ is the hash of a block of a particular number, up to a maximum age.\\
+&&&& For a number greater than or equal to, or less than 256 below, the present block's\\
+&&&& number, 0 is left on the stack.\\
+&&&& $P(h, n, a) \equiv \begin{cases} 0 & \text{if} \quad n > H_n \vee a = 256 \vee h = 0 \\ H_h & \text{if} \quad n = H_n \\ P(H_p, n, a + 1) & \text{otherwise} \end{cases}$ \\
+&&&& and we assert the header $H$ can be determined from the hash given: $h = H_h$ \\
 \midrule
 0x41 & {\small COINBASE} & 0 & 1 & Get the block's coinbase address. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_H}_b$ \\
