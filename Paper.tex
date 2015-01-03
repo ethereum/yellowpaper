@@ -295,7 +295,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[difficulty] A scalar value corresponding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_d$.
 \item[number] A scalar value equal to the number of ancestor blocks. The genesis block has a number of zero; formally $H_i$.
 \item[gasLimit] A scalar value equal to the current limit of gas expenditure per block; formally $H_l$.
-\item[gasUsed] A scalar value equal to the total gas used in transactions in this block; formally $H_u$.
+\item[gasUsed] A scalar value equal to the total gas used in transactions in this block; formally $H_g$.
 \item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.
 \item[extraData] An arbitrary byte array containing data relevant to this block. With the exception of the genesis block, this must be 32 bytes or fewer; formally $H_x$.
 \item[nonce] A 256-bit hash which proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.
@@ -382,7 +382,7 @@ The values stemming from the computation of transactions, specifically the trans
 
 The function $L_B$ and $L_H$ are the preparation functions for a block and block header respectively. Much like the transaction receipt preparation function $L_R$, we assert the types and order of the structure for when the RLP transformation is required:
 \begin{eqnarray}
-\quad L_H(H) & \equiv & (\begin{array}[t]{l}H_p, H_u, H_c, H_t, H_e, H_b, H_t, H_d,\\ H_i, H_l, H_u, H_s, H_x, H_n \; )\end{array} \\
+\quad L_H(H) & \equiv & (\begin{array}[t]{l}H_p, H_u, H_c, H_t, H_e, H_b, H_t, H_d,\\ H_i, H_l, H_g, H_s, H_x, H_n \; )\end{array} \\
 \quad L_B(B) & \equiv & \big( L_H(B_H), L_T^*(B_\mathbf{T}), L_H^*(B_\mathbf{U}) \big)
 \end{eqnarray}
 
@@ -396,7 +396,7 @@ The component types are defined thus:
 \begin{array}[t]{lclclcl}
 H_p \in \mathbb{B}_{32} & \wedge & H_u \in \mathbb{B}_{32} & \wedge & H_c \in \mathbb{B}_{20} & \wedge \\
 H_r \in \mathbb{B}_{32} & \wedge & H_t \in \mathbb{B}_{32} & \wedge & H_d \in \mathbb{P} & \wedge \\
-H_i \in \mathbb{P} & \wedge & H_u \in \mathbb{P} & \wedge & H_l \in \mathbb{P} & \wedge \\
+H_i \in \mathbb{P} & \wedge & H_g \in \mathbb{P} & \wedge & H_l \in \mathbb{P} & \wedge \\
 H_s \in \mathbb{P} & \wedge & H_x \in \mathbb{B} & \wedge & H_n \in \mathbb{B}_{32}
 \end{array}
 \end{equation}
