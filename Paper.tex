@@ -1498,7 +1498,8 @@ The general gas cost function, $C$, is defined as:
 \begin{eqnarray}
 C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) & \equiv & G_{memory}(\boldsymbol{\mu}'_i - \boldsymbol{\mu}_i) + \begin{cases}
 C_\text{\tiny SSTORE}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SSTORE} \\
-G_{exp} + G_{expbyte}\times\log_{256}(\boldsymbol{\mu}_\mathbf{s}[1]) & \text{if} \quad w = \text{\small EXP} \\
+G_{exp} & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_\mathbf{s}[1] = 0 \\
+G_{exp} + G_{expbyte}\times(1+\lfloor\log_{256}(\boldsymbol{\mu}_\mathbf{s}[1])\rfloor) & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_\mathbf{s}[1] > 0 \\
 G_{step} + G_{copy}\times\boldsymbol{\mu}_\mathbf{s}[2] & \text{if} \quad w = \text{\small CALLDATACOPY} \\
 G_{step} + G_{copy}\times\boldsymbol{\mu}_\mathbf{s}[2] & \text{if} \quad w = \text{\small CODECOPY} \\
 G_{step} + G_{copy}\times\boldsymbol{\mu}_\mathbf{s}[3] & \text{if} \quad w = \text{\small EXTCODECOPY} \\
