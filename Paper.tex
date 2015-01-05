@@ -703,6 +703,7 @@ The account's associated code (identified as the fragment whose Keccak hash is $
 \Xi_{\mathtt{ECREC}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad a = 1 \\
 \Xi_{\mathtt{SHA256}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad a = 2 \\
 \Xi_{\mathtt{RIP160}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad a = 3 \\
+\Xi_{\mathtt{ID}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad a = 4 \\
 \Xi(\boldsymbol{\sigma}_1, g, I) & \text{otherwise} \end{cases} \\
 I_a & \equiv & a \\
 I_o & \equiv & o \\
@@ -1380,6 +1381,15 @@ For the purposes here, we assume we have well-defined standard cryptographic fun
 \mathtt{\small SHA256}(\mathbf{i} \in \mathbb{B}) & \equiv & o \in \mathbb{B}_{32} \\
 \mathtt{\small RIPEMD160}(\mathbf{i} \in \mathbb{B}) & \equiv & o \in \mathbb{B}_{20}
 \end{eqnarray}
+
+Finally, the fourth contract, the identity function $\Xi_{\mathtt{ID}}$ simply defines the output as the input:
+
+\begin{eqnarray}
+\Xi_{\mathtt{ID}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
+g_r &=& 1 + \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil\\
+\mathbf{o} &=& I_\mathbf{d}
+\end{eqnarray}
+
 
 \section{Signing Transactions}\label{app:signing}
 
