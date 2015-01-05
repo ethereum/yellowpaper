@@ -1690,7 +1690,7 @@ Here given are the various exceptions to the state transition rules given in sec
 \toprule
 \multicolumn{5}{c}{\textbf{40s: Block Information}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
-0x40 & {\small BLOCKHASH} & 10 & 1 & Get the hash of one of the 256 most recent complete blocks. \\
+0x40 & {\small BLOCKHASH} & 1 & 1 & Get the hash of one of the 256 most recent complete blocks. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv A(I_{H_p}, \boldsymbol{\mu}_\mathbf{s}[0], 0)$ \\
 &&&& where $A$ is the hash of a block of a particular number, up to a maximum age.\\
 &&&& For a number greater than or equal to, or less than 256 below, the present block's\\
