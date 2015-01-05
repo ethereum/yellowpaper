@@ -979,7 +979,7 @@ s(U, H) \equiv (P(H) = P(U)\; \wedge \; H \neq U)
 
 The given \textbf{gasUsed} must correspond faithfully to the transactions listed: ${B_H}_u$, the total gas used in the block, must be equal to the accumulated gas used according to the final transaction:
 \begin{equation}
-{B_H}_u = \ell(\mathbf{R})_u
+{B_H}_g = \ell(\mathbf{R})_u
 \end{equation}
 
 \subsection{Reward Application}
@@ -1019,29 +1019,29 @@ B^* & \equiv & B \quad \text{except:} \quad B'_r = r(\Pi(\Gamma(B), B))
 
 As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of $\Omega$, the block finalisation function and $\Upsilon$, the transaction-evaluation function, both now well-defined.
 
-As previously detailed, $B_\mathbf{R}[n]_{\boldsymbol{\sigma}}$, $B_\mathbf{R}[n]_\mathbf{l}$ and $B_\mathbf{R}[n]_u$ are the $n$th corresponding states, logs and cumulative gas used after each transaction ($B_\mathbf{R}[n]_b$, the fourth component in the tuple, has already been defined in terms of the logs). The former is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
+As previously detailed, $\mathbf{R}[n]_{\boldsymbol{\sigma}}$, $\mathbf{R}[n]_\mathbf{l}$ and $\mathbf{R}[n]_u$ are the $n$th corresponding states, logs and cumulative gas used after each transaction ($\mathbf{R}[n]_b$, the fourth component in the tuple, has already been defined in terms of the logs). The former is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
 \begin{equation}
-B_\mathbf{R}[n]_{\boldsymbol{\sigma}} = \begin{cases} \Gamma(B) & \text{if} \quad n < 0 \\ \Upsilon(B_\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n]) & \text{otherwise} \end{cases}
+\mathbf{R}[n]_{\boldsymbol{\sigma}} = \begin{cases} \Gamma(B) & \text{if} \quad n < 0 \\ \Upsilon(\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n]) & \text{otherwise} \end{cases}
 \end{equation}
 
 In the case of $B_\mathbf{R}[n]_u$, we take a similar approach defining each item as the gas used in evaluating the corresponding transaction summed with the previous item (or zero, if it is the first), giving us a running total:
 \begin{equation}
-B_\mathbf{R}[n]_u = \begin{cases} 0 & \text{if} \quad n < 0 \\
+\mathbf{R}[n]_u = \begin{cases} 0 & \text{if} \quad n < 0 \\
 \begin{array}[b]{l}
-\Upsilon^g(B_\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n])\\ \quad + B_\mathbf{R}[n-1]_u
+\Upsilon^g(\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n])\\ \quad + \mathbf{R}[n-1]_u
 \end{array}
  & \text{otherwise} \end{cases}
 \end{equation}
 
-For $B_\mathbf{R}[n]_\mathbf{l}$, we utilise the $\Upsilon^\mathbf{l}$ function that we conveniently defined in the transaction execution function.
+For $\mathbf{R}[n]_\mathbf{l}$, we utilise the $\Upsilon^\mathbf{l}$ function that we conveniently defined in the transaction execution function.
 \begin{equation}
-B_\mathbf{R}[n]_u = 
-\Upsilon^\mathbf{l}(B_\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n])
+\mathbf{R}[n]_u = 
+\Upsilon^\mathbf{l}(\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n])
 \end{equation}
 
 Finally, we define $\Pi$ as the new state given the block reward function $\Omega$ applied to the final transaction's resultant state, $\ell(B_\mathbf{R})_{\boldsymbol{\sigma}}$:
 \begin{equation}
-\Pi(\boldsymbol{\sigma}, B) \equiv \Omega(B, \ell(B_\mathbf{R})_{\boldsymbol{\sigma}})
+\Pi(\boldsymbol{\sigma}, B) \equiv \Omega(B, \ell(\mathbf{R})_{\boldsymbol{\sigma}})
 \end{equation}
 
 Thus the complete block-transition mechanism, less $\mathtt{PoW}$, the proof-of-work function is defined.
