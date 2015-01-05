@@ -186,7 +186,7 @@ The account state comprises the following four fields:
 \begin{description}
 \item[nonce] A scalar value equal to the number of transactions sent from this address or, in the case of accounts with associated code, the number of contract-creations made by this account. For account of address $a$ in state $\boldsymbol{\sigma}$, this would be formally denoted $\boldsymbol{\sigma}[a]_n$.
 \item[balance] A scalar value equal to the number of Wei owned by this address. Formally denoted $\boldsymbol{\sigma}[a]_b$.
-\item[stateRoot] A 256-bit hash of the root node of a trie structure that encodes the storage contents of the account (a mapping between 256-bit integer values), encoded into the trie as a mapping from a byte array of size 32 to an RLP-encoded integer. The hash is formally denoted $\boldsymbol{\sigma}[a]_s$.
+\item[stateRoot] A 256-bit hash of the root node of a Merkle Patricia tree that encodes the storage contents of the account (a mapping between 256-bit integer values), encoded into the trie as a mapping from the 256-bit integer keys to the RLP-encoded 256-bit integer values. The hash is formally denoted $\boldsymbol{\sigma}[a]_s$.
 \item[codeHash] The hash of the EVM code of this account---this is the code that gets executed should this address receive a message call; it is immutable and thus, unlike all other fields, cannot be changed after construction. All such code fragments are contained in the state database under their corresponding hashes for later retrieval. This hash is formally denoted $\boldsymbol{\sigma}[a]_c$, and thus the code may be denoted as $\mathbf{b}$, given that $\texttt{\small KEC}(\mathbf{b}) = \boldsymbol{\sigma}[a]_c$.
 \end{description}
 
