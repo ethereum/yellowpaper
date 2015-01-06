@@ -1682,10 +1682,10 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_p$ \\
 &&&& This is gas price specified by the originating transaction.\\
 \midrule
-0x3b & {\small EXTCODESIZE} & 0 & 1 & Get size of an account's code. \\
+0x3b & {\small EXTCODESIZE} & 1 & 1 & Get size of an account's code. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \lVert \boldsymbol{\sigma}[\boldsymbol{\mu}_s[0]]_c \rVert$ \\
 \midrule
-0x3c & {\small EXTCODECOPY} & 0 & 4 & Copy an account's code to memory. \\
+0x3c & {\small EXTCODECOPY} & 4 & 0 & Copy an account's code to memory. \\
 &&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_\mathbf{s}[3] - 1\} } \boldsymbol{\mu}'_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[1] + i ] \equiv
 \begin{cases} \mathbf{c}[\boldsymbol{\mu}_\mathbf{s}[2] + i] & \text{if} \quad i < \lVert \mathbf{c} \rVert \\ \text{\small STOP} & \text{otherwise} \end{cases}$\\
 &&&& where $\mathbf{c} \equiv \boldsymbol{\sigma}[\boldsymbol{\mu}_s[0]]_c$ \\
