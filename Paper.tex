@@ -1580,12 +1580,11 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0] ^ {\boldsymbol{\mu}_\mathbf{s}[1] }$ \\
 \midrule
 0x0b & {\small SIGNEXTEND} & 2 & 1 & Extend length of two's complement signed integer. \\
-&&&& $ \forall i \in [0..256]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv
+&&&& $ \forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv
 \begin{cases}
-    \boldsymbol{\mu}_\mathbf{s}[1]_t &\text{if} \quad i \le t\\
+    \boldsymbol{\mu}_\mathbf{s}[1]_t &\text{if} \quad i \leqslant t \quad \text{where } t = 256 - 8(\boldsymbol{\mu}_\mathbf{s}[0] + 1)$\\
     \boldsymbol{\mu}_\mathbf{s}[1]_i &\text{otherwise}
 \end{cases} 
-\text{where } t = 256 - 8(\boldsymbol{\mu}_\mathbf{s}[0] + 1)$\\
 \end{tabular*}
 
 \begin{tabular*}{\columnwidth}[h]{rlrrl}
