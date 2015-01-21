@@ -266,10 +266,14 @@ L_T(T) \equiv \begin{cases}
 Here, we assume all components are interpreted by the RLP as integer values, with the exception of the arbitrary length byte arrays $T_\mathbf{i}$ and $T_\mathbf{d}$.
 \begin{equation}
 \begin{array}[t]{lclclc}
-T_n \in \mathbb{P} & \wedge & T_v \in \mathbb{P} & \wedge & T_p \in \mathbb{P} & \wedge \\
-T_g \in \mathbb{P} & \wedge & T_w \in \mathbb{P} & \wedge & T_r \in \mathbb{P} & \wedge \\
-T_s \in \mathbb{P} & \wedge & T_\mathbf{d} \in \mathbb{B} & \wedge & T_\mathbf{i} \in \mathbb{B}
+T_n \in \mathbb{P}_{256} & \wedge & T_v \in \mathbb{P}_5 & \wedge & T_p \in \mathbb{P}_{256} & \wedge \\
+T_g \in \mathbb{P}_{256} & \wedge & T_w \in \mathbb{P}_{256} & \wedge & T_r \in \mathbb{P}_{256} & \wedge \\
+T_s \in \mathbb{P}_{256} & \wedge & T_\mathbf{d} \in \mathbb{B} & \wedge & T_\mathbf{i} \in \mathbb{B}
 \end{array}
+\end{equation}
+where
+\begin{equation}
+\mathbb{P}_n = \{ P: P \in \mathbb{P} \wedge P < 2^n \}
 \end{equation}
 
 The address hash $T_\mathbf{t}$ is slightly different: it is either a 20-byte address hash or, in the case of being a contract-creation transaction (and thus formally equal to $\varnothing$), it is the RLP empty byte-series and thus the member of $\mathbb{B}_0$:
