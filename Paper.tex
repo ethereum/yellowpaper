@@ -1487,8 +1487,8 @@ When a 256-bit machine datum is converted to and from a 160-bit address or hash,
 
 The general gas cost function, $C$, is defined as:
 
-\begin{eqnarray}
-C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) & \equiv & G_{memory}(\boldsymbol{\mu}'_i - \boldsymbol{\mu}_i) + \begin{cases}
+\begin{equation}
+C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv C_{memory}(\boldsymbol{\mu}'_i)-C_{memory}(\boldsymbol{\mu}_i) + \begin{cases}
 C_\text{\tiny SSTORE}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SSTORE} \\
 G_{exp} & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_\mathbf{s}[1] = 0 \\
 G_{exp} + G_{expbyte}\times(1+\lfloor\log_{256}(\boldsymbol{\mu}_\mathbf{s}[1])\rfloor) & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_\mathbf{s}[1] > 0 \\
@@ -1508,13 +1508,26 @@ G_{balance} & \text{if} \quad w = \text{\small BALANCE}\\
 G_{stop} & \text{if} \quad w = \text{\small STOP}\\
 G_{suicide} & \text{if} \quad w = \text{\small SUICIDE}\\
 G_{step} & \text{otherwise}
-\end{cases} \\
-w & \equiv & \begin{cases} I_\mathbf{b}[\boldsymbol{\mu}_{pc}] & \text{if} \quad \boldsymbol{\mu}_{pc} < \lVert I_\mathbf{b} \rVert \\
+\end{cases}
+\end{equation}
+\begin{equation}
+w \equiv \begin{cases} I_\mathbf{b}[\boldsymbol{\mu}_{pc}] & \text{if} \quad \boldsymbol{\mu}_{pc} < \lVert I_\mathbf{b} \rVert\\
 \text{\small STOP} & \text{otherwise}
 \end{cases}
-\end{eqnarray}
+\end{equation}
 
-where $C_\text{\tiny SSTORE}$ is specified in the appropriate section below. Note the memory cost component, given as the product of $G_{memory}$ and the maximum of 0 \& the ceiling of the number of words in size that the memory must be over the current number of words, $\boldsymbol{\mu}_i$ in order that all accesses reference valid memory whether for read or write. Such accesses must be for non-zero number of bytes. Referencing a zero length range (e.g. by attempting to pass it as the input range to a CALL) does not require memory to be extended to the beginning of the range. $\boldsymbol{\mu}'_i$ is defined as this new maximum number of words of active memory; special-cases are given where these two are not equal.
+where:
+\begin{equation}
+C_{memory}(a) \equiv G_{memory}(a + \Big\lfloor \dfrac{a^2}{1024} \Big\rfloor)
+\end{equation}
+
+and $C_\text{\tiny SSTORE}$ is specified in the appropriate section below.
+
+Note the memory cost component, given as the product of $G_{memory}$ and the maximum of 0 \& the ceiling of the number of words in size that the memory must be over the current number of words, $\boldsymbol{\mu}_i$ in order that all accesses reference valid memory whether for read or write. Such accesses must be for non-zero number of bytes.
+
+Referencing a zero length range (e.g. by attempting to pass it as the input range to a CALL) does not require memory to be extended to the beginning of the range. $\boldsymbol{\mu}'_i$ is defined as this new maximum number of words of active memory; special-cases are given where these two are not equal.
+
+Note also that $C_{mem}$ is the memory cost function (the expansion function being the difference between the cost before and after). It is a polynomial, with the higher-order coefficient divided and floored, and thus linear up to 32KB of memory used, after which it costs substantially more.
 
 While defining the instruction set, we defined the memory-expansion for range function, $M$, thus:
 
