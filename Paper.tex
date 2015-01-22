@@ -1586,10 +1586,10 @@ TODO: Whenever a stack item is used as an address, it should be assumed it is th
 &&&& Where all values are treated as two's complement signed 256-bit integers. \\
 \midrule
 0x08 & {\small ADDMOD} & 3 & 1 & Modulo addition operation. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1] \mod \boldsymbol{\mu}_\mathbf{s}[2]$ \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] = 0\\ \boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1] \mod \boldsymbol{\mu}_\mathbf{s}[2] & \text{otherwise}\end{cases}$  \\
 \midrule
 0x09 & {\small MULMOD} & 3 & 1 & Modulo multiplication operation. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0] \times \boldsymbol{\mu}_\mathbf{s}[1] \mod \boldsymbol{\mu}_\mathbf{s}[2]$ \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] = 0\\ \boldsymbol{\mu}_\mathbf{s}[0] \times \boldsymbol{\mu}_\mathbf{s}[1] \mod \boldsymbol{\mu}_\mathbf{s}[2] & \text{otherwise}\end{cases}$  \\
 \midrule
 0x0a & {\small EXP} & 2 & 1 & Exponential operation. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0] ^ {\boldsymbol{\mu}_\mathbf{s}[1] }$ \\
