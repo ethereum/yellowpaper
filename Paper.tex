@@ -157,7 +157,7 @@ Scalars and fixed-size byte sequences (or, synonymously, arrays) are denoted wit
 
 Arbitrary-length sequences are typically denoted as a bold lower-case letter, \eg $\mathbf{o}$ is used to denote the byte-sequence given as the output data of a message call. For particularly important values, a bold uppercase letter may be used.
 
-Throughout, we assume scalars are positive integers and thus belong to the set $\mathbb{P}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{32}$. This is formally defined in section \ref{ch:block}.
+Throughout, we assume scalars are positive integers and thus belong to the set $\mathbb{P}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{32}$ and the set of all positive integers smaller than $2^{256}$ is named $\mathbb{P}_{256}$. This is formally defined in section \ref{ch:block}.
 
 Square brackets are used to index into and reference individual components or subsequences of sequences, \eg $\boldsymbol{\mu}_\mathbf{s}[0]$ denotes the first item on the machine's stack. For subsequences, ellipses are used to specify the intended range, to include elements at both limits, \eg $\boldsymbol{\mu}_\mathbf{m}[0..31]$ denotes the first 32 items of the machine's memory.
 
@@ -266,10 +266,14 @@ L_T(T) \equiv \begin{cases}
 Here, we assume all components are interpreted by the RLP as integer values, with the exception of the arbitrary length byte arrays $T_\mathbf{i}$ and $T_\mathbf{d}$.
 \begin{equation}
 \begin{array}[t]{lclclc}
-T_n \in \mathbb{P} & \wedge & T_v \in \mathbb{P} & \wedge & T_p \in \mathbb{P} & \wedge \\
-T_g \in \mathbb{P} & \wedge & T_w \in \mathbb{P} & \wedge & T_r \in \mathbb{P} & \wedge \\
-T_s \in \mathbb{P} & \wedge & T_\mathbf{d} \in \mathbb{B} & \wedge & T_\mathbf{i} \in \mathbb{B}
+T_n \in \mathbb{P}_{256} & \wedge & T_v \in \mathbb{P}_5 & \wedge & T_p \in \mathbb{P}_{256} & \wedge \\
+T_g \in \mathbb{P}_{256} & \wedge & T_w \in \mathbb{P}_{256} & \wedge & T_r \in \mathbb{P}_{256} & \wedge \\
+T_s \in \mathbb{P}_{256} & \wedge & T_\mathbf{d} \in \mathbb{B} & \wedge & T_\mathbf{i} \in \mathbb{B}
 \end{array}
+\end{equation}
+where
+\begin{equation}
+\mathbb{P}_n = \{ P: P \in \mathbb{P} \wedge P < 2^n \}
 \end{equation}
 
 The address hash $T_\mathbf{t}$ is slightly different: it is either a 20-byte address hash or, in the case of being a contract-creation transaction (and thus formally equal to $\varnothing$), it is the RLP empty byte-series and thus the member of $\mathbb{B}_0$:
