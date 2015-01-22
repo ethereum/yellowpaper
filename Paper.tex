@@ -559,6 +559,7 @@ where $g$ is the amount of gas remaining after deducting the basic amount requir
 \begin{equation}
 g \equiv T_g - g_0
 \end{equation}
+and $T_o$ is the original transactor, which can differ from the sender in the case of a message call or contract creation not directly triggered by a transaction but coming from the execution of EVM-code.
 
 Note we use $\Theta_{3}$ to denote the fact that only the first three components of the function's value are taken; the final represents the message-call's output value (a byte array) and is unused in the context of transaction evaluation.
 
