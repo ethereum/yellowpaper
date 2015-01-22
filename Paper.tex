@@ -424,7 +424,7 @@ The canonical difficulty of a block of header $H$ is defined as $D(H)$:
 \begin{equation}
 D(H) \equiv \begin{cases}
 2^{22} & \text{if} \quad H_i = 0\\
-{P(H)_H}_d + \lfloor\frac{{P(H)_H}_d}{1024}\rfloor & \text{if} \quad H_s < {P(H)_H}_s + 8\\
+{P(H)_H}_d + \lfloor\frac{{P(H)_H}_d}{1024}\rfloor & \text{if} \quad H_s < {P(H)_H}_s + 12\\
 {P(H)_H}_d - \lfloor\frac{{P(H)_H}_d}{1024}\rfloor & \text{otherwise}\\
 \end{cases}
 \end{equation}
