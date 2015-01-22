@@ -301,7 +301,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[gasLimit] A scalar value equal to the current limit of gas expenditure per block; formally $H_l$.
 \item[gasUsed] A scalar value equal to the total gas used in transactions in this block; formally $H_g$.
 \item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.
-\item[extraData] An arbitrary byte array containing data relevant to this block. With the exception of the genesis block, this must be 32 bytes or fewer; formally $H_x$.
+\item[extraData] An arbitrary byte array containing data relevant to this block. This must be 1024 bytes or fewer; formally $H_x$.
 \item[nonce] A 256-bit hash which proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.
 \end{description}
 
@@ -462,7 +462,7 @@ V(H) & \equiv & \mathtt{PoW}(H, H_n) \leqslant \frac{2^{256}}{H_d} \quad \wedge 
 & & H_d = D(H) \quad \wedge \\
 & & H_l = L(H) \quad \wedge \\
 & & H_s > {P(H)_H}_s \quad \wedge \\
-& & \lVert H_x \rVert < 1024
+& & \lVert H_x \rVert \le 1024
 \end{eqnarray}
 
 Noting additionally that \textbf{extraData} must be at most 1024 bytes.
