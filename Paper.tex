@@ -1632,7 +1632,7 @@ TODO: Whenever a stack item is used as an address, it should be assumed it is th
 &&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0]_i = 0 \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
 0x1a & {\small BYTE} & 2 & 1 & Retrieve single byte from word. \\
-&&&& $\forall i \in [0..7]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \begin{cases} \boldsymbol{\mu}_\mathbf{s}[1]_{(i + 8\boldsymbol{\mu}_\mathbf{s}[0])} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] < 32 \\ 0 & \text{otherwise} \end{cases} $\\
+&&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \begin{cases} \boldsymbol{\mu}_\mathbf{s}[1]_{(i + 8\boldsymbol{\mu}_\mathbf{s}[0])} & \text{if} \quad i < 8 \wedge \boldsymbol{\mu}_\mathbf{s}[0] < 32 \\ 0 & \text{otherwise} \end{cases} $\\
 &&&& For Nth byte, we count from the left (i.e. N=0 would be the most significant in big endian). \\
 \bottomrule
 \end{tabular*}
