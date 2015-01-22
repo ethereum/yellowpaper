@@ -151,13 +151,13 @@ Functions operating on highly structured values are denoted with an upper-case g
 
 For most functions, an uppercase letter is used, e.g. $C$, the general cost function. These may be subscripted to denote specialised variants, \eg $C_\text{\tiny SSTORE}$, the cost function for the {\tiny SSTORE} operation. For specialised and possibly externally defined functions, I may format as typewriter text, \eg the Keccak-256 hash function (as per the winning entry to the SHA-3 contest) is denoted $\texttt{KEC}$ (and generally referred to as plain Keccak).
 
-Tuples are typically denoted with an upper-case letter, \eg $T$, is used to denote an Ethereum transaction. This symbol may, if accordingly defined, be subscripted to refer to an individual component, \eg $T_s$, denotes the timestamp of said transaction. The form of the subscript is used to denote its type; \eg uppercase subscripts refer to tuples with subscriptable components.
+Tuples are typically denoted with an upper-case letter, \eg $T$, is used to denote an Ethereum transaction. This symbol may, if accordingly defined, be subscripted to refer to an individual component, \eg $T_n$, denotes the nonce of said transaction. The form of the subscript is used to denote its type; \eg uppercase subscripts refer to tuples with subscriptable components.
 
 Scalars and fixed-size byte sequences (or, synonymously, arrays) are denoted with a normal lower-case letter, \eg $n$ is used in the document to denote a transaction nonce. Those with a particularly special meaning may be greek, \eg $\delta$, the number of items required on the stack for a given operation.
 
 Arbitrary-length sequences are typically denoted as a bold lower-case letter, \eg $\mathbf{o}$ is used to denote the byte-sequence given as the output data of a message call. For particularly important values, a bold uppercase letter may be used.
 
-Throughout, we assume scalars are positive integers and thus belong to the set $\mathbb{P}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{32}$. This is formally defined in section \ref{ch:block}.
+Throughout, we assume scalars are positive integers and thus belong to the set $\mathbb{P}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{32}$ and the set of all positive integers smaller than $2^{256}$ is named $\mathbb{P}_{256}$. This is formally defined in section \ref{ch:block}.
 
 Square brackets are used to index into and reference individual components or subsequences of sequences, \eg $\boldsymbol{\mu}_\mathbf{s}[0]$ denotes the first item on the machine's stack. For subsequences, ellipses are used to specify the intended range, to include elements at both limits, \eg $\boldsymbol{\mu}_\mathbf{m}[0..31]$ denotes the first 32 items of the machine's memory.
 
@@ -186,7 +186,7 @@ The account state comprises the following four fields:
 \begin{description}
 \item[nonce] A scalar value equal to the number of transactions sent from this address or, in the case of accounts with associated code, the number of contract-creations made by this account. For account of address $a$ in state $\boldsymbol{\sigma}$, this would be formally denoted $\boldsymbol{\sigma}[a]_n$.
 \item[balance] A scalar value equal to the number of Wei owned by this address. Formally denoted $\boldsymbol{\sigma}[a]_b$.
-\item[stateRoot] A 256-bit hash of the root node of a Merkle Patricia tree that encodes the storage contents of the account (a mapping between 256-bit integer values), encoded into the trie as a mapping from the 256-bit integer keys to the RLP-encoded 256-bit integer values. The hash is formally denoted $\boldsymbol{\sigma}[a]_s$.
+\item[storageRoot] A 256-bit hash of the root node of a Merkle Patricia tree that encodes the storage contents of the account (a mapping between 256-bit integer values), encoded into the trie as a mapping from the 256-bit integer keys to the RLP-encoded 256-bit integer values. The hash is formally denoted $\boldsymbol{\sigma}[a]_s$.
 \item[codeHash] The hash of the EVM code of this account---this is the code that gets executed should this address receive a message call; it is immutable and thus, unlike all other fields, cannot be changed after construction. All such code fragments are contained in the state database under their corresponding hashes for later retrieval. This hash is formally denoted $\boldsymbol{\sigma}[a]_c$, and thus the code may be denoted as $\mathbf{b}$, given that $\texttt{\small KEC}(\mathbf{b}) = \boldsymbol{\sigma}[a]_c$.
 \end{description}
 
@@ -266,10 +266,14 @@ L_T(T) \equiv \begin{cases}
 Here, we assume all components are interpreted by the RLP as integer values, with the exception of the arbitrary length byte arrays $T_\mathbf{i}$ and $T_\mathbf{d}$.
 \begin{equation}
 \begin{array}[t]{lclclc}
-T_n \in \mathbb{P} & \wedge & T_v \in \mathbb{P} & \wedge & T_p \in \mathbb{P} & \wedge \\
-T_g \in \mathbb{P} & \wedge & T_w \in \mathbb{P} & \wedge & T_r \in \mathbb{P} & \wedge \\
-T_s \in \mathbb{P} & \wedge & T_\mathbf{d} \in \mathbb{B} & \wedge & T_\mathbf{i} \in \mathbb{B}
+T_n \in \mathbb{P}_{256} & \wedge & T_v \in \mathbb{P}_5 & \wedge & T_p \in \mathbb{P}_{256} & \wedge \\
+T_g \in \mathbb{P}_{256} & \wedge & T_w \in \mathbb{P}_{256} & \wedge & T_r \in \mathbb{P}_{256} & \wedge \\
+T_s \in \mathbb{P}_{256} & \wedge & T_\mathbf{d} \in \mathbb{B} & \wedge & T_\mathbf{i} \in \mathbb{B}
 \end{array}
+\end{equation}
+where
+\begin{equation}
+\mathbb{P}_n = \{ P: P \in \mathbb{P} \wedge P < 2^n \}
 \end{equation}
 
 The address hash $T_\mathbf{t}$ is slightly different: it is either a 20-byte address hash or, in the case of being a contract-creation transaction (and thus formally equal to $\varnothing$), it is the RLP empty byte-series and thus the member of $\mathbb{B}_0$:
@@ -297,7 +301,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[gasLimit] A scalar value equal to the current limit of gas expenditure per block; formally $H_l$.
 \item[gasUsed] A scalar value equal to the total gas used in transactions in this block; formally $H_g$.
 \item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.
-\item[extraData] An arbitrary byte array containing data relevant to this block. With the exception of the genesis block, this must be 32 bytes or fewer; formally $H_x$.
+\item[extraData] An arbitrary byte array containing data relevant to this block. This must be 1024 bytes or fewer; formally $H_x$.
 \item[nonce] A 256-bit hash which proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.
 \end{description}
 
@@ -382,7 +386,7 @@ The values stemming from the computation of transactions, specifically the trans
 
 The function $L_B$ and $L_H$ are the preparation functions for a block and block header respectively. Much like the transaction receipt preparation function $L_R$, we assert the types and order of the structure for when the RLP transformation is required:
 \begin{eqnarray}
-\quad L_H(H) & \equiv & (\begin{array}[t]{l}H_p, H_u, H_c, H_t, H_e, H_b, H_t, H_d,\\ H_i, H_l, H_g, H_s, H_x, H_n \; )\end{array} \\
+\quad L_H(H) & \equiv & (\begin{array}[t]{l}H_p, H_u, H_c, H_r, H_t, H_e, H_b, H_d,\\ H_i, H_l, H_g, H_s, H_x, H_n \; )\end{array} \\
 \quad L_B(B) & \equiv & \big( L_H(B_H), L_T^*(B_\mathbf{T}), L_H^*(B_\mathbf{U}) \big)
 \end{eqnarray}
 
@@ -395,9 +399,10 @@ The component types are defined thus:
 \begin{equation}
 \begin{array}[t]{lclclcl}
 H_p \in \mathbb{B}_{32} & \wedge & H_u \in \mathbb{B}_{32} & \wedge & H_c \in \mathbb{B}_{20} & \wedge \\
-H_r \in \mathbb{B}_{32} & \wedge & H_t \in \mathbb{B}_{32} & \wedge & H_d \in \mathbb{P} & \wedge \\
-H_i \in \mathbb{P} & \wedge & H_g \in \mathbb{P} & \wedge & H_l \in \mathbb{P} & \wedge \\
-H_s \in \mathbb{P} & \wedge & H_x \in \mathbb{B} & \wedge & H_n \in \mathbb{B}_{32}
+H_r \in \mathbb{B}_{32} & \wedge & H_t \in \mathbb{B}_{32} & \wedge & H_e \in \mathbb{B}_{32} & \wedge \\
+H_b \in \mathbb{B}_{64} & \wedge & H_d \in \mathbb{P} & \wedge & H_i \in \mathbb{P} & \wedge \\
+H_l \in \mathbb{P} & \wedge & H_g \in \mathbb{P} & \wedge & H_s \in \mathbb{P} & \wedge \\
+H_x \in \mathbb{B} & \wedge & H_n \in \mathbb{B}_{32}
 \end{array}
 \end{equation}
 
@@ -457,7 +462,7 @@ V(H) & \equiv & \mathtt{PoW}(H, H_n) \leqslant \frac{2^{256}}{H_d} \quad \wedge 
 & & H_d = D(H) \quad \wedge \\
 & & H_l = L(H) \quad \wedge \\
 & & H_s > {P(H)_H}_s \quad \wedge \\
-& & \lVert H_x \rVert < 1024
+& & \lVert H_x \rVert \le 1024
 \end{eqnarray}
 
 Noting additionally that \textbf{extraData} must be at most 1024 bytes.
@@ -554,6 +559,7 @@ where $g$ is the amount of gas remaining after deducting the basic amount requir
 \begin{equation}
 g \equiv T_g - g_0
 \end{equation}
+and $T_o$ is the original transactor, which can differ from the sender in the case of a message call or contract creation not directly triggered by a transaction but coming from the execution of EVM-code.
 
 Note we use $\Theta_{3}$ to denote the fact that only the first three components of the function's value are taken; the final represents the message-call's output value (a byte array) and is unused in the context of transaction evaluation.
 
@@ -1582,10 +1588,10 @@ TODO: Whenever a stack item is used as an address, it should be assumed it is th
 &&&& Where all values are treated as two's complement signed 256-bit integers. \\
 \midrule
 0x08 & {\small ADDMOD} & 3 & 1 & Modulo addition operation. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1] \mod \boldsymbol{\mu}_\mathbf{s}[2]$ \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] = 0\\ \boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1] \mod \boldsymbol{\mu}_\mathbf{s}[2] & \text{otherwise}\end{cases}$  \\
 \midrule
 0x09 & {\small MULMOD} & 3 & 1 & Modulo multiplication operation. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0] \times \boldsymbol{\mu}_\mathbf{s}[1] \mod \boldsymbol{\mu}_\mathbf{s}[2]$ \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] = 0\\ \boldsymbol{\mu}_\mathbf{s}[0] \times \boldsymbol{\mu}_\mathbf{s}[1] \mod \boldsymbol{\mu}_\mathbf{s}[2] & \text{otherwise}\end{cases}$  \\
 \midrule
 0x0a & {\small EXP} & 2 & 1 & Exponential operation. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0] ^ {\boldsymbol{\mu}_\mathbf{s}[1] }$ \\
