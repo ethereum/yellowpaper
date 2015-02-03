@@ -116,7 +116,7 @@ This is the basis of the blockchain paradigm, a model that forms the backbone of
 \subsection{Value}
 
 In order to incentivise computation within the network, there needs to be an agreed method for transmitting value. To address this issue, Ethereum has an intrinsic currency, Ether, known also as {\small ETH} and sometimes referred to by the Old English \DH{}. The smallest subdenomination of Ether, and thus the one in which all integer values of the currency are counted, is the Wei. One Ether is defined as being $10^{18}$ Wei. There exist other subdenominations of Ether:
-\par`
+\par
 \begin{center}
 \begin{tabular}{rl}
 \toprule
@@ -224,7 +224,7 @@ This function, $L_S$, is used alongside the trie function to provide a short ide
 \end{equation}
 where $v$ is the account validity function:
 \begin{eqnarray}
-\quad v(x) & \equiv & x_n \in \mathbb{P} \wedge x_b \in \mathbb{P} \wedge x_s \in \mathbb{B}_{32} \wedge x_c \in \mathbb{B}_{32}
+\quad v(x) & \equiv & x_n \in \mathbb{P}_{256} \wedge x_b \in \mathbb{P}_{256} \wedge x_s \in \mathbb{B}_{32} \wedge x_c \in \mathbb{B}_{32}
 \end{eqnarray}
 
 \subsection{The Transaction} \label{ch:transaction}
