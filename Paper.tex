@@ -631,7 +631,7 @@ v' \equiv \begin{cases}
 
 %It is asserted that the state database will also change such that it defines the pair $(\mathtt{\tiny KEC}(\mathbf{b}), \mathbf{b})$.
 
-Finally, the account is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the account's storage can be altered, further accounts can be created and further message calls can be made. As such, the code execution function $\Xi$ evaluates to a tuple of the resultant state $\boldsymbol{\sigma}^{**}$, available gas remaining $g'$, the accrued substate $A$ and the body code of the account $\mathbf{b}$.
+Finally, the account is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the account's storage can be altered, further accounts can be created and further message calls can be made. As such, the code execution function $\Xi$ evaluates to a tuple of the resultant state $\boldsymbol{\sigma}^{**}$, available gas remaining $g^{**}$, the accrued substate $A$ and the body code of the account $\mathbf{b}$.
 
 Code execution depletes gas; thus it may exit before the code has come to a natural halting state. In this (and several other) exceptional cases we say an Out-of-Gas exception has occurred: The evaluated state is defined as being the empty set $\varnothing$ and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation. The gas remaining should be zero in any such exceptional condition. If the creation was conducted as the reception of a transaction, then this doesn't affect payment of the intrinsic cost: it is paid regardless.
 
@@ -650,8 +650,11 @@ g^{**} - c & \text{otherwise} \\
 \boldsymbol{\sigma}^* & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
 \boldsymbol{\sigma}^{**} & \text{if} \quad g^{**} < c \\
 \boldsymbol{\sigma}^{**} \quad \text{except:} & \\
-\quad\boldsymbol{\sigma}'[a]_{\mathbf{b}} = \mathbf{o} & \text{otherwise}
-\end{cases} \\
+\quad\boldsymbol{\sigma}'[a]_c = \texttt{\small KEC}(\mathbf{o}) & \text{otherwise}
+\end{cases}
+\end{eqnarray}
+Where $I$ contains the parameters of the execution environment as defined in section \ref{ch:model}.
+\begin{eqnarray}
 I_a & \equiv & a \\
 I_o & \equiv & o \\
 I_p & \equiv & p \\
@@ -667,7 +670,7 @@ where $c$ is the code-deposit cost:
 c \equiv G_{createdata} \times |\mathbf{o}|
 \end{equation}
 
-$I_\mathbf{d}$ evaluates to the empty tuple as there is no input data to this call. $I_H$ has no special treatment and is determined from the blockchain. The exception in the determination of $\boldsymbol{\sigma}'$ dictates that the resultant byte sequence from the execution of the initialisation code specifies the final body code for the newly-created account, with $\boldsymbol{\sigma}'[a]_{\mathbf{b}}$ being the newly created account's body code and $\mathbf{o}$ the output byte sequence of the code execution.
+$I_\mathbf{d}$ evaluates to the empty tuple as there is no input data to this call. $I_H$ has no special treatment and is determined from the blockchain. The exception in the determination of $\boldsymbol{\sigma}'$ dictates that the resultant byte sequence from the execution of the initialisation code specifies the final body code for the newly-created account, with $\boldsymbol{\sigma}'[a]_c$ being the Keccak 256-bit hash of the newly created account's body code and $\mathbf{o}$ the output byte sequence of the code execution.
 
 No code is deposited in the state if the gas does not cover the additional per-byte contract deposit fee.
 
