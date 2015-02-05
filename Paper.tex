@@ -573,7 +573,7 @@ The total refundable amount is the legitimately remaining gas $g'$, added to $A_
 The Ether for the gas is given to the miner, whose address is specified as the coinbase of the present block $B$. So we define the pre-final state $\boldsymbol{\sigma}^*$ in terms of the provisional state $\boldsymbol{\sigma}_P$:
 \begin{eqnarray}
 \boldsymbol{\sigma}^* & \equiv & \boldsymbol{\sigma}_P \quad \text{except} \\
-\boldsymbol{\sigma}^*[s]_b & \equiv & \boldsymbol{\sigma}_P[s]_b + g^* T_p \\
+\boldsymbol{\sigma}^*[S(T)]_b & \equiv & \boldsymbol{\sigma}_P[S(T)]_b + g^* T_p \\
 \boldsymbol{\sigma}^*[m]_b & \equiv & \boldsymbol{\sigma}_P[m]_b + (T_g - g^*) T_p \\
 m & \equiv & {B_H}_c
 \end{eqnarray}
