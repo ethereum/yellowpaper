@@ -420,6 +420,11 @@ We define $P(B_H)$ to be the parent block of $B$, formally:
 P(H) \equiv B': \mathtt{\tiny KEC}(\mathtt{\tiny RLP}(B'_H)) = H_p
 \end{equation}
 
+The block number is the parent's block number incremented by one:
+\begin{equation}
+H_i = {{P(H)_H}_i} + 1
+\end{equation}
+
 The canonical difficulty of a block of header $H$ is defined as $D(H)$:
 \begin{equation}
 D(H) \equiv \begin{cases}
