@@ -1674,7 +1674,7 @@ TODO: Whenever a stack item is used as an address, it should be assumed it is th
 &&&& associated code. \\
 \midrule
 0x33 & {\small CALLER} & 0 & 1 & Get caller address. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_c$ \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_s$ \\
 &&&& This is the address of the account that is directly responsible for this execution. \\
 \midrule
 0x34 & {\small CALLVALUE} & 0 & 1 & Get deposited value by the instruction/transaction responsible for this execution. \\
@@ -1727,10 +1727,10 @@ TODO: Whenever a stack item is used as an address, it should be assumed it is th
 &&&& and we assert the header $H$ can be determined from the hash given: $h = H_h$ \\
 \midrule
 0x41 & {\small COINBASE} & 0 & 1 & Get the block's coinbase address. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_H}_b$ \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_H}_c$ \\
 \midrule
 0x42 & {\small TIMESTAMP} & 0 & 1 & Get the block's timestamp. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_H}_t$ \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_H}_s$ \\
 \midrule
 0x43 & {\small NUMBER} & 0 & 1 & Get the block's number. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_H}_i$ \\
