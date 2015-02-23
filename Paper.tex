@@ -1228,7 +1228,7 @@ Formally, we define $R_b$:
 \begin{eqnarray}
 R_b(\mathbf{x}) & \equiv & \begin{cases}
 \mathbf{x} & \text{if} \quad \lVert \mathbf{x} \rVert = 1 \wedge \mathbf{x}[0] < 128 \\
-(128 + \lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{if} \quad \lVert \mathbf{x} \rVert < 56 \\
+(128 + \lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{else if} \quad \lVert \mathbf{x} \rVert < 56 \\
 \big(183 + \big\lVert \mathtt{\tiny BE}(\lVert \mathbf{x} \rVert) \big\rVert \big) \cdot \mathtt{\tiny BE}(\lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{otherwise}
 \end{cases} \\
 \mathtt{\tiny BE}(x) & \equiv & (b_0, b_1, ...): b_0 \neq 0 \wedge \sum_{n = 0}^{n < \lVert \mathbf{b} \rVert - 1} b_n256^{\lVert \mathbf{b} \rVert - 1 - n} \\
