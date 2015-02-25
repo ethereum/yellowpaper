@@ -798,9 +798,9 @@ In addition to the system state $\boldsymbol{\sigma}$, and the remaining gas for
 \item $I_e$, the depth of the present message-call or contract-creation (i.e. the number of {\small CALL}s or {\small CREATE}s being executed at present).
 \end{itemize}
 
-The execution model defines the function $\Xi$, which can compute the resultant state $\boldsymbol{\sigma}'$, the remaining gas $g'$, the suicide list $\mathbf{s}$ and the resultant output, $\mathbf{o}$, given these definitions:
+The execution model defines the function $\Xi$, which can compute the resultant state $\boldsymbol{\sigma}'$, the remaining gas $g'$, the suicide list $\mathbf{s}$, the log series $\mathbf{l}$, the refunds $r$ and the resultant output, $\mathbf{o}$, given these definitions:
 \begin{equation}
-(\boldsymbol{\sigma}', g', \mathbf{s}, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}, g, I)
+(\boldsymbol{\sigma}', g', \mathbf{s}, \mathbf{l}, r, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}, g, I)
 \end{equation}
 
 \subsection{Execution Overview}
