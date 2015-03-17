@@ -1420,7 +1420,7 @@ Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed fro
 
 We declare that a signature is invalid unless the following is true:
 \begin{equation}
-v \in \{27,28\} \quad\wedge\quad r \geqslant \mathtt{\tiny secp256k1n} \quad\wedge\quad s \geqslant \mathtt{\tiny secp256k1p}
+v \in \{27,28\} \quad\wedge\quad r < \mathtt{\tiny secp256k1n} \quad\wedge\quad s < \mathtt{\tiny secp256k1p}
 \end{equation}
 
 where:
