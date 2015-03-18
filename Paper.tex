@@ -1833,7 +1833,7 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 0x59 & {\small MSIZE} & 0 & 1 & Get the size of active memory in bytes. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv 32\boldsymbol{\mu}_{i}$ \\
 \midrule
-0x5a & {\small GAS} & 0 & 1 & Get the amount of gas available after execution of this instruction.  \\
+0x5a & {\small GAS} & 0 & 1 & Get the amount of available gas, taking into account the cost of this instruction. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_{g}$ \\
 \midrule
 0x5b & {\small JUMPDEST} & 0 & 0 & Mark a valid destination for jumps. \\
