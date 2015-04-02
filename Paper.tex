@@ -1474,30 +1474,36 @@ The fee schedule $G$ is a tuple of 10 scalar values corresponding to the relativ
 \toprule
 Name & Value & Description* \\
 \midrule
-$G_{step}$ & 1 & Default amount of gas to pay for execution cycle. \\
-$G_{balance}$ & 20 & Paid for a {\small BALANCE} operation. \\
-$G_{stop}$ & 0 & Nothing paid for the {\small STOP} operation. \\
-$G_{suicide}$ & 0 & Nothing paid for the {\small SUICIDE} operation. \\
-$G_{sload}$ & 20 & Paid for a {\small SLOAD} operation. \\
-$G_{sset}$ & 300 & Paid for an {\small SSTORE} operation when the storage value is set to non-zero from zero. \\
-$G_{sreset}$ & 100 & Paid for an {\small SSTORE} operation when the storage value's zeroness remains unchanged. \\
-$G_{sclear}$ & 0 & Nothing paid for an {\small SSTORE} operation when the storage value is set to zero from non-zero. \\
-$R_{sclear}$ & 100 & Refund given (added into refund counter) when the storage value is set to zero from non-zero. \\
-$G_{create}$ & 100 & Paid for a {\small CREATE} operation. \\
-$G_{createdata}$ & 5 & Paid per byte for a {\small CREATE} operation to succeed in placing code into state. \\
-$G_{call}$ & 20 & Paid for a {\small CALL} operation. \\
-$G_{exp}$ & 1 & Partial payment for an {\small EXP} operation. \\
-$G_{expbyte}$ & 1 & Partial payment when multiplied by $\lceil\log_{256}(exponent)\rceil$ for the {\small EXP} operation. \\
-$G_{memory}$ & 1 & Paid for every additional word when expanding memory. \\
-$G_{txdatazero}$ & 1 & Paid for every zero byte of data or code for a transaction. \\
-$G_{txdatanonzero}$ & 5 & Paid for every non-zero byte of data or code for a transaction. \\
-$G_{transaction}$ & 500 & Paid for every transaction. \\
-$G_{log}$ & 1 & Partial payment for a {\small LOG} operation. \\
-$G_{logdata}$ & 1 & Paid for each byte in a {\small LOG} operation's data. \\
-$G_{logtopic}$ & 1 & Paid for each topic of a {\small LOG} operation. \\
-$G_{sha3}$ & 10 & Paid for each {\small SHA3} operation. \\
-$G_{sha3word}$ & 10 & Paid for each word (rounded up) for input data to a {\small SHA3} operation. \\
-$G_{copy}$ & 1 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
+$G_{zero}$ & 0 & Nothing paid for operations of the set {\small $W_{zero}$}. \\
+$G_{base}$ & 2 & Amount of gas to pay for operations of the set {\small $W_{base}$}. \\
+$G_{verylow}$ & 3 & Amount of gas to pay for operations of the set {\small $W_{verylow}$}. \\
+$G_{low}$ & 5 & Amount of gas to pay for operations of the set {\small $W_{low}$}. \\
+$G_{mid}$ & 8 & Amount of gas to pay for operations of the set {\small $W_{mid}$}. \\
+$G_{high}$ & 10 & Amount of gas to pay for operations of the set {\small $W_{high}$}. \\
+$G_{ext}$ & 20 & Amount of gas to pay for operations of the set {\small $W_{ext}$}. \\
+$G_{sload}$ & 50 & Paid for a {\small SLOAD} operation. \\
+$G_{jumpdest}$ & 1 & Paid for a {\small JUMPDEST} operation. \\
+$G_{sset}$ & 20000 & Paid for an {\small SSTORE} operation when the storage value is set to non-zero from zero. \\
+$G_{sreset}$ & 5000 & Paid for an {\small SSTORE} operation when the storage value's zeroness remains unchanged. \\
+$R_{sclear}$ & 15000 & Refund given (added into refund counter) when the storage value is set to zero from non-zero. \\
+$G_{create}$ & 32000 & Paid for a {\small CREATE} operation. \\
+$G_{createdata}$ & 200 & Paid per byte for a {\small CREATE} operation to succeed in placing code into state. \\
+$G_{call}$ & 40 & Paid for a {\small CALL} operation. \\
+$G_{callvalue}$ & 9000 & Paid for a non-zero value transfer as part of the {\small CALL} operation. \\
+$G_{callstipend}$ & 2300 & A stipend for the called contract subtracted from $G_{callvalue}$. Only applicable when the transferred value is non-zero. \\
+$G_{callnewaccount}$ & 25000 & Paid for a {\small CALL} operation to a not previously excisting account. \\
+$G_{exp}$ & 10 & Partial payment for an {\small EXP} operation. \\
+$G_{expbyte}$ & 10 & Partial payment when multiplied by $\lceil\log_{256}(exponent)\rceil$ for the {\small EXP} operation. \\
+$G_{memory}$ & 3 & Paid for every additional word when expanding memory. \\
+$G_{txdatazero}$ & 4 & Paid for every zero byte of data or code for a transaction. \\
+$G_{txdatanonzero}$ & 68 & Paid for every non-zero byte of data or code for a transaction. \\
+$G_{transaction}$ & 21000 & Paid for every transaction. \\
+$G_{log}$ & 375 & Partial payment for a {\small LOG} operation. \\
+$G_{logdata}$ & 8 & Paid for each byte in a {\small LOG} operation's data. \\
+$G_{logtopic}$ & 375 & Paid for each topic of a {\small LOG} operation. \\
+$G_{sha3}$ & 30 & Paid for each {\small SHA3} operation. \\
+$G_{sha3word}$ & 6 & Paid for each word (rounded up) for input data to a {\small SHA3} operation. \\
+$G_{copy}$ & 2 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
 
 %extern u256 const c_copyGas;			///< Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
 \bottomrule
@@ -1518,22 +1524,25 @@ C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv C_{memory}(\boldsymbol{\mu}'_
 C_\text{\tiny SSTORE}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SSTORE} \\
 G_{exp} & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_\mathbf{s}[1] = 0 \\
 G_{exp} + G_{expbyte}\times(1+\lfloor\log_{256}(\boldsymbol{\mu}_\mathbf{s}[1])\rfloor) & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_\mathbf{s}[1] > 0 \\
-G_{step} + G_{copy}\times\lceil\boldsymbol{\mu}_\mathbf{s}[2] \div 32\rceil & \text{if} \quad w = \text{\small CALLDATACOPY} \\
-G_{step} + G_{copy}\times\lceil\boldsymbol{\mu}_\mathbf{s}[2] \div 32\rceil & \text{if} \quad w = \text{\small CODECOPY} \\
-G_{step} + G_{copy}\times\lceil\boldsymbol{\mu}_\mathbf{s}[3] \div 32\rceil & \text{if} \quad w = \text{\small EXTCODECOPY} \\
+G_{verylow} + G_{copy}\times\lceil\boldsymbol{\mu}_\mathbf{s}[2] \div 32\rceil & \text{if} \quad w = \text{\small CALLDATACOPY} \lor \text{\small CODECOPY} \\
+G_{ext} + G_{ext}\times\lceil\boldsymbol{\mu}_\mathbf{s}[3] \div 32\rceil & \text{if} \quad w = \text{\small EXTCODECOPY} \\
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1] & \text{if} \quad w = \text{\small LOG0} \\
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+G_{logtopic} & \text{if} \quad w = \text{\small LOG1} \\
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+2G_{logtopic} & \text{if} \quad w = \text{\small LOG2} \\
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+3G_{logtopic} & \text{if} \quad w = \text{\small LOG3} \\
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+4G_{logtopic} & \text{if} \quad w = \text{\small LOG4} \\
-G_{call} + \boldsymbol{\mu}_\mathbf{s}[0] & \text{if} \quad w = \text{\small CALL}\\
+G_{call} + \boldsymbol{\mu}_\mathbf{s}[0] & \text{if} \quad w = \text{\small CALL} \lor \text{\small CALLCODE} \\
 G_{create} & \text{if} \quad w = \text{\small CREATE}\\
 G_{sha3}+G_{sha3word} \lceil \mathbf{s}[1] \div 32 \rceil & \text{if} \quad w = \text{\small SHA3}\\
+G_{jumpdest} & \text{if} \quad w = \text{\small JUMPDEST}\\
 G_{sload} & \text{if} \quad w = \text{\small SLOAD}\\
-G_{balance} & \text{if} \quad w = \text{\small BALANCE}\\
-G_{stop} & \text{if} \quad w = \text{\small STOP}\\
-G_{suicide} & \text{if} \quad w = \text{\small SUICIDE}\\
-G_{step} & \text{otherwise}
+G_{zero} & \text{if} \quad w \in W_{zero}\\
+G_{base} & \text{if} \quad w \in W_{base}\\
+G_{verylow} & \text{if} \quad w \in W_{verylow}\\
+G_{low} & \text{if} \quad w \in W_{low}\\
+G_{mid} & \text{if} \quad w \in W_{mid}\\
+G_{high} & \text{if} \quad w \in W_{high}\\
+G_{ext} & \text{if} \quad w \in W_{ext}
 \end{cases}
 \end{equation}
 \begin{equation}
@@ -1547,7 +1556,21 @@ where:
 C_{memory}(a) \equiv G_{memory}(a + \Big\lfloor \dfrac{a^2}{1024} \Big\rfloor)
 \end{equation}
 
-and $C_\text{\tiny SSTORE}$ is specified in the appropriate section below.
+and $C_\text{\tiny SSTORE}$ is specified in the appropriate section below. We define the following subsets of instructions:
+
+$W_{zero}$ = \{{\small STOP}, {\small SUICIDE}\}
+
+$W_{base}$ = \{{\small ADDRESS}, {\small ORIGIN}, {\small CALLER}, {\small CALLVALUE}, {\small CALLDATASIZE}, {\small CODESIZE}, {\small GASPRICE}, {\small COINBASE},\newline \noindent\hspace*{1cm} {\small TIMESTAMP}, {\small NUMBER}, {\small DIFFICULTY}, {\small GASLIMIT}, {\small POP}, {\small PC}, {\small MSIZE}, {\small GAS}\}
+
+$W_{verylow}$ = \{{\small ADD}, {\small SUB}, {\small NOT}, {\small LT}, {\small GT}, {\small SLT}, {\small SGT}, {\small EQ}, {\small ISZERO}, {\small AND}, {\small OR}, {\small XOR}, {\small BYTE}, {\small CALLDATALOAD}, \newline \noindent\hspace*{1cm} {\small MLOAD}, {\small MSTORE}, {\small MSTORE8}, {\small PUSH*}, {\small DUP*}, {\small SWAP*}\}
+
+$W_{low}$ = \{{\small MUL}, {\small DIV}, {\small SDIV}, {\small MOD}, {\small SMOD}, {\small SIGNEXTEND}\}
+
+$W_{mid}$ = \{{\small ADDMOD}, {\small MULMOD}, {\small JUMP}\}
+
+$W_{high}$ = \{{\small JUMPI}\}
+
+$W_{ext}$ = \{{\small BALANCE}, {\small EXTCODESIZE}, {\small BLOCKHASH}\}
 
 Note the memory cost component, given as the product of $G_{memory}$ and the maximum of 0 \& the ceiling of the number of words in size that the memory must be over the current number of words, $\boldsymbol{\mu}_i$ in order that all accesses reference valid memory whether for read or write. Such accesses must be for non-zero number of bytes.
 
@@ -1787,7 +1810,6 @@ TODO: Whenever a stack item is used as an address, it should be assumed it is th
 &&&& $\boldsymbol{\sigma}'[I_a]_\mathbf{s}[ \boldsymbol{\mu}_\mathbf{s}[0] ] \equiv \boldsymbol{\mu}_\mathbf{s}[1] $ \\
 &&&& $C_{\text{\tiny SSTORE}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
 G_{sset} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \; \wedge \; \boldsymbol{\sigma}[I_a]_\mathbf{s}[\boldsymbol{\mu}_\mathbf{s}[0]] = 0 \\
-G_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \boldsymbol{\sigma}[I_a]_\mathbf{s}[\boldsymbol{\mu}_\mathbf{s}[0]] \neq 0 \\
 G_{sreset} & \text{otherwise}
 \end{cases}$ \\
 &&&& $A'_{r} \equiv A_{r} + \begin{cases}
