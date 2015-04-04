@@ -1268,7 +1268,7 @@ R_l(\mathbf{x}) & \equiv & \begin{cases}
 s(\mathbf{x}) & \equiv & \mathtt{\tiny RLP}(\mathbf{x}_0) \cdot \mathtt{\tiny RLP}(\mathbf{x}_1) ...
 \end{eqnarray}
 
-If RLP is used to encode a scalar, defined only as a positive integer, it must be specified as the shortest byte array such that the big-endian interpretation of it is equal. Thus the RLP of some positive integer $i$ is defined as:
+If RLP is used to encode a scalar, defined only as a positive integer ($\mathbb{P}$ or any $x$ for $\mathbb{P}_x$), it must be specified as the shortest byte array such that the big-endian interpretation of it is equal. Thus the RLP of some positive integer $i$ is defined as:
 \begin{equation}
 \mathtt{\tiny RLP}(i : i \in \mathbb{P}) \equiv \mathtt{\tiny RLP}(\mathtt{\tiny BE}(i))
 \end{equation}
