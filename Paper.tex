@@ -470,6 +470,7 @@ Thus we are able to define the block header validity function $V(H)$:
 V(H) & \equiv & \mathtt{PoW}(H, H_n) \leqslant \frac{2^{256}}{H_d} \quad \wedge \\
 & & H_d = D(H) \quad \wedge \\
 & & H_l = L(H) \quad \wedge \\
+& & H_g \le H_l  \quad \wedge \\
 & & H_s > {P(H)_H}_s \quad \wedge \\
 & & H_i = {P(H)_H}_i +1 \quad \wedge \\
 & & \lVert H_x \rVert \le 1024
@@ -1558,7 +1559,7 @@ C_{memory}(a) \equiv G_{memory}(a + \Big\lfloor \dfrac{a^2}{1024} \Big\rfloor)
 
 and $C_\text{\tiny SSTORE}$ is specified in the appropriate section below. We define the following subsets of instructions:
 
-$W_{zero}$ = \{{\small STOP}, {\small SUICIDE}\}
+$W_{zero}$ = \{{\small STOP}, {\small SUICIDE}, {\small RETURN}\}
 
 $W_{base}$ = \{{\small ADDRESS}, {\small ORIGIN}, {\small CALLER}, {\small CALLVALUE}, {\small CALLDATASIZE}, {\small CODESIZE}, {\small GASPRICE}, {\small COINBASE},\newline \noindent\hspace*{1cm} {\small TIMESTAMP}, {\small NUMBER}, {\small DIFFICULTY}, {\small GASLIMIT}, {\small POP}, {\small PC}, {\small MSIZE}, {\small GAS}\}
 
