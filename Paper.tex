@@ -470,6 +470,7 @@ Thus we are able to define the block header validity function $V(H)$:
 V(H) & \equiv & \mathtt{PoW}(H, H_n) \leqslant \frac{2^{256}}{H_d} \quad \wedge \\
 & & H_d = D(H) \quad \wedge \\
 & & H_l = L(H) \quad \wedge \\
+& & H_g \le H_l  \quad \wedge \\
 & & H_s > {P(H)_H}_s \quad \wedge \\
 & & H_i = {P(H)_H}_i +1 \quad \wedge \\
 & & \lVert H_x \rVert \le 1024
