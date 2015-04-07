@@ -290,7 +290,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 
 \begin{description}
 \item[parentHash] The Keccak 256-bit hash of the parent block's header, in its entirety; formally $H_p$.
-\item[ommersHash] The Keccak 256-bit hash of the ommers list portion of this block; formally $H_u$.
+\item[ommersHash] The Keccak 256-bit hash of the ommers list portion of this block; formally $H_o$.
 \item[coinbase] The 160-bit address to which all fees collected from the successful mining of this block be transferred; formally $H_c$.
 \item[stateRoot] The Keccak 256-bit hash of the root node of the state trie, after all transactions are executed and finalisations applied; formally $H_r$.
 \item[transactionsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with each transaction in the transactions list portion of the block; formally $H_t$.
@@ -361,7 +361,7 @@ We can assert a block's validity if and only if it satisfies several conditions:
 \begin{equation}
 \begin{array}[t]{lclc}
 H_r &\equiv& \mathtt{\small TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) & \wedge \\
-H_u &\equiv& \mathtt{\small KEC}(\mathtt{\small RLP}(L_H^*(B_\mathbf{U}))) & \wedge \\
+H_o &\equiv& \mathtt{\small KEC}(\mathtt{\small RLP}(L_H^*(B_\mathbf{U}))) & \wedge \\
 H_t &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert, i \in \mathbb{P}: p(i, L_T(B_\mathbf{T}[i]))\}) & \wedge \\
 H_e &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert, i \in \mathbb{P}: p(i, L_R(B_\mathbf{R}[i]))\}) & \wedge \\
 H_b &\equiv& \bigvee_{\mathbf{r} \in B_\mathbf{R}} \big( \mathbf{r}_b \big)
@@ -386,7 +386,7 @@ The values stemming from the computation of transactions, specifically the trans
 
 The function $L_B$ and $L_H$ are the preparation functions for a block and block header respectively. Much like the transaction receipt preparation function $L_R$, we assert the types and order of the structure for when the RLP transformation is required:
 \begin{eqnarray}
-\quad L_H(H) & \equiv & (\begin{array}[t]{l}H_p, H_u, H_c, H_r, H_t, H_e, H_b, H_d,\\ H_i, H_l, H_g, H_s, H_x, H_n \; )\end{array} \\
+\quad L_H(H) & \equiv & (\begin{array}[t]{l}H_p, H_o, H_c, H_r, H_t, H_e, H_b, H_d,\\ H_i, H_l, H_g, H_s, H_x, H_n \; )\end{array} \\
 \quad L_B(B) & \equiv & \big( L_H(B_H), L_T^*(B_\mathbf{T}), L_H^*(B_\mathbf{U}) \big)
 \end{eqnarray}
 
@@ -398,7 +398,7 @@ f^*\big( (x_0, x_1, ...) \big) \equiv \big( f(x_0), f(x_1), ... \big) \quad \tex
 The component types are defined thus:
 \begin{equation}
 \begin{array}[t]{lclclcl}
-H_p \in \mathbb{B}_{32} & \wedge & H_u \in \mathbb{B}_{32} & \wedge & H_c \in \mathbb{B}_{20} & \wedge \\
+H_p \in \mathbb{B}_{32} & \wedge & H_o \in \mathbb{B}_{32} & \wedge & H_c \in \mathbb{B}_{20} & \wedge \\
 H_r \in \mathbb{B}_{32} & \wedge & H_t \in \mathbb{B}_{32} & \wedge & H_e \in \mathbb{B}_{32} & \wedge \\
 H_b \in \mathbb{B}_{64} & \wedge & H_d \in \mathbb{P} & \wedge & H_i \in \mathbb{P} & \wedge \\
 H_l \in \mathbb{P} & \wedge & H_g \in \mathbb{P} & \wedge & H_s \in \mathbb{P} & \wedge \\
