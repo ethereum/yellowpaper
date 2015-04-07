@@ -440,9 +440,9 @@ x = {P(H)_H}_d - \lfloor\frac{{P(H)_H}_d}{2048}\rfloor
 
 The canonical gas limit $H_l$ of a block of header $H$ must fulfil the relation:
 \begin{eqnarray}
-& & H_l < {P(H)_H}_l + \lfloor\frac{{P(H)_H}_l}{1024}\rfloor  \quad \wedge \\
-& & H_l > {P(H)_H}_l - \lfloor\frac{{P(H)_H}_l}{1024}\rfloor  \quad \wedge \\
-& & H_l > 12499
+& & H_l < {P(H)_H}_l + \lfloor\frac{{P(H)_H}_l}{1024}\rfloor \quad \wedge \\
+& & H_l > {P(H)_H}_l - \lfloor\frac{{P(H)_H}_l}{1024}\rfloor \quad \wedge \\
+& & H_l \geqslant 12500
 \end{eqnarray}
 
 $H_s$ is the timestamp of block $H$ and must fulfil the relation:
@@ -469,7 +469,7 @@ V(H) & \equiv & \mathtt{PoW}(H, H_n) \leqslant \frac{2^{256}}{H_d} \quad \wedge 
 & & H_g \le H_l  \quad \wedge \\
 & & H_l < {P(H)_H}_l + \lfloor\frac{{P(H)_H}_l}{1024}\rfloor  \quad \wedge \\
 & & H_l > {P(H)_H}_l - \lfloor\frac{{P(H)_H}_l}{1024}\rfloor  \quad \wedge \\
-& & H_l > 12499  \quad \wedge \\
+& & H_l \geqslant 12500  \quad \wedge \\
 & & H_s > {P(H)_H}_s \quad \wedge \\
 & & H_i = {P(H)_H}_i +1 \quad \wedge \\
 & & \lVert H_x \rVert \le 1024
