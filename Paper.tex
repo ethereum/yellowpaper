@@ -680,7 +680,7 @@ I_e & \equiv & e
 
 where $c$ is the code-deposit cost:
 \begin{equation}
-c \equiv G_{createdata} \times |\mathbf{o}|
+c \equiv G_{codedeposit} \times |\mathbf{o}|
 \end{equation}
 
 $I_\mathbf{d}$ evaluates to the empty tuple as there is no input data to this call. $I_H$ has no special treatment and is determined from the blockchain. The exception in the determination of $\boldsymbol{\sigma}'$ dictates that the resultant byte sequence from the execution of the initialisation code specifies the final body code for the newly-created account, with $\boldsymbol{\sigma}'[a]_c$ being the Keccak 256-bit hash of the newly created account's body code and $\mathbf{o}$ the output byte sequence of the code execution.
@@ -1489,7 +1489,7 @@ $G_{sset}$ & 20000 & Paid for an {\small SSTORE} operation when the storage valu
 $G_{sreset}$ & 5000 & Paid for an {\small SSTORE} operation when the storage value's zeroness remains unchanged. \\
 $R_{sclear}$ & 15000 & Refund given (added into refund counter) when the storage value is set to zero from non-zero. \\
 $G_{create}$ & 32000 & Paid for a {\small CREATE} operation. \\
-$G_{createdata}$ & 200 & Paid per byte for a {\small CREATE} operation to succeed in placing code into state. \\
+$G_{codedeposit}$ & 200 & Paid per byte for a {\small CREATE} operation to succeed in placing code into state. \\
 $G_{call}$ & 40 & Paid for a {\small CALL} operation. \\
 $G_{callvalue}$ & 9000 & Paid for a non-zero value transfer as part of the {\small CALL} operation. \\
 $G_{callstipend}$ & 2300 & A stipend for the called contract subtracted from $G_{callvalue}$. Only applicable when the transferred value is non-zero. \\
