@@ -428,14 +428,14 @@ H_i \equiv {{P(H)_H}_i} + 1
 The canonical difficulty of a block of header $H$ is defined as $D(H)$:
 \begin{equation}
 D(H) \equiv \begin{cases}
-2^{22} & \text{if} \quad H_i = 0\\
-{P(H)_H}_d + \lfloor\frac{{P(H)_H}_d}{1024}\rfloor & \text{if} \quad H_s < {P(H)_H}_s + 8\\
-\max \{ 1024, x \} & \text{otherwise}\\
+131072 & \text{if} \quad H_i = 0\\
+{P(H)_H}_d + \lfloor\frac{{P(H)_H}_d}{2048}\rfloor & \text{if} \quad H_s < {P(H)_H}_s + 8\\
+\max \{ 131072, x \} & \text{otherwise}\\
 \end{cases}
 \end{equation}
 where:
 \begin{equation}
-x = {P(H)_H}_d - \lfloor\frac{{P(H)_H}_d}{1024}\rfloor
+x = {P(H)_H}_d - \lfloor\frac{{P(H)_H}_d}{2048}\rfloor
 \end{equation}
 
 The canonical gas limit of a block of header $H$ is defined as $L(H)$:
