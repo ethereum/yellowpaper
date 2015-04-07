@@ -223,14 +223,13 @@ This function, $L_S$, is used alongside the trie function to provide a short ide
 \forall a: \boldsymbol{\sigma}[a] = \varnothing \; \vee \; (a \in \mathbb{B}_{20} \; \wedge \; v(\boldsymbol{\sigma}[a]))
 \end{equation}
 where $v$ is the account validity function:
-\begin{eqnarray}
-v(x) \equiv x_n \in \mathbb{P}_{256} \wedge x_b \in \mathbb{P}_{256} \\ \nonumber
-\wedge x_s \in \mathbb{B}_{32} \wedge x_c \in \mathbb{B}_{32}
-\end{eqnarray}
+\begin{equation}
+\quad v(x) \equiv x_n \in \mathbb{P}_{256} \wedge x_b \in \mathbb{P}_{256} \wedge x_s \in \mathbb{B}_{32} \wedge x_c \in \mathbb{B}_{32}
+\end{equation}
 
 \subsection{The Transaction} \label{ch:transaction}
 
-A transaction (formally, $T$) is a single cryptographically-signed instruction constructed by an actor externally to the scope of Ethereum. It is assumed that the external actor will be human in nature, though software tools will be used in its construction and dissemination. There are two types of transactions: those which result in message calls and those which result in the creation of new accounts with associated code (known informally as `contract creation'). Both types specify a number of common fields:
+A transaction (formally, $T$) is a single cryptographically-signed instruction constructed by an actor externally to the scope of Ethereum. While is assumed that the ultimate external actor will be human in nature, software tools will be used in its construction and dissemination\footnote{Notably, such `tools' could ultimately become so causally removed from their human-based initiation---or humans may become so causally-neutral---that there could be a point at which they rightly be considered autonomous agents. \eg contracts may offer bounties to humans for being sent transactions to initiate their execution.}. There are two types of transactions: those which result in message calls and those which result in the creation of new accounts with associated code (known informally as `contract creation'). Both types specify a number of common fields:
 
 \begin{description}
 \item[nonce] A scalar value equal to the number of transactions sent by the sender; formally $T_n$.
@@ -1012,11 +1011,12 @@ The given \textbf{gasUsed} must correspond faithfully to the transactions listed
 
 \subsection{Reward Application}
 
-The application of rewards to a block involves raising the balance of the accounts of the coinbase address of the block and each ommer by a certain amount. We raise the block's coinbase account by $R_b$; for each ommer, we raise the block's coinbase by an additional $\frac{1}{32}$ of the block reward and the coinbase of the ommer by $\frac{15}{16}$ of the reward. Formally we define the function $\Omega$:
+The application of rewards to a block involves raising the balance of the accounts of the coinbase address of the block and each ommer by a certain amount. We raise the block's coinbase account by $R_b$; for each ommer, we raise the block's coinbase by an additional $\frac{1}{32}$ of the block reward and the coinbase of the ommer gets rewarded depending on the block number. Formally we define the function $\Omega$:
 \begin{eqnarray}
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
 \boldsymbol{\sigma}'[{B_H}_c]_b & = & \boldsymbol{\sigma}[{B_H}_c]_b + (1 + \frac{|B_\mathbf{U}|}{32})R_b \\
-\forall_{U \in B_\mathbf{U}} \; \boldsymbol{\sigma}'[U_c]_b & = & \boldsymbol{\sigma}[U_c]_b + \frac{15}{16}R_b
+\forall_{U \in B_\mathbf{U}}: \\ \nonumber
+ \boldsymbol{\sigma}'[U_c]_b & = & \boldsymbol{\sigma}[U_c]_b + (1 - \frac{1}{8} (U_i - {B_H}_i)) R_b 
 \end{eqnarray}
 
 If there are collisions of the coinbase addresses between ommers and the block (i.e. two ommers with the same coinbase address or an ommer with the same coinbase address as the present block), additions are applied cumulatively.
