@@ -1486,7 +1486,7 @@ $G_{ext}$ & 20 & Amount of gas to pay for operations of the set {\small $W_{ext}
 $G_{sload}$ & 50 & Paid for a {\small SLOAD} operation. \\
 $G_{jumpdest}$ & 1 & Paid for a {\small JUMPDEST} operation. \\
 $G_{sset}$ & 20000 & Paid for an {\small SSTORE} operation when the storage value is set to non-zero from zero. \\
-$G_{sreset}$ & 5000 & Paid for an {\small SSTORE} operation when the storage value's zeroness remains unchanged. \\
+$G_{sreset}$ & 5000 & Paid for an {\small SSTORE} operation when the storage value's zeroness remains unchanged or is set to zero. \\
 $R_{sclear}$ & 15000 & Refund given (added into refund counter) when the storage value is set to zero from non-zero. \\
 $G_{create}$ & 32000 & Paid for a {\small CREATE} operation. \\
 $G_{codedeposit}$ & 200 & Paid per byte for a {\small CREATE} operation to succeed in placing code into state. \\
