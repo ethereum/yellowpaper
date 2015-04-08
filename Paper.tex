@@ -269,7 +269,7 @@ Here, we assume all components are interpreted by the RLP as integer values, wit
 T_n \in \mathbb{P}_{256} & \wedge & T_v \in \mathbb{P}_{256} & \wedge & T_p \in \mathbb{P}_{256} & \wedge \\
 T_g \in \mathbb{P}_{256} & \wedge & T_w \in \mathbb{P}_5 & \wedge & T_r \in \mathbb{P}_{256} & \wedge \\
 T_s \in \mathbb{P}_{256} & \wedge & T_\mathbf{d} \in \mathbb{B} & \wedge & T_\mathbf{i} \in \mathbb{B}
-\end{array}
+\end{array}\dfrac{num}{den}
 \end{equation}
 where
 \begin{equation}
@@ -1165,7 +1165,7 @@ I have introduced, discussed and formally defined the protocol of Ethereum. Thro
 
 \section{Acknowledgements}
 
-Useful corrections and suggestions were provided by a number of others from the Ethereum community including Aeron Buchanan, Christoph Jentzsch, Pawe\l{} Bylica, Jutta Steiner, Gustav Simonsson, Nick Savers, Viktor Tr\'{o}n, Marko Simovic and, of course, Vitalik Buterin.
+Important maintenance, useful corrections and suggestions were provided by a number of others from the Ethereum DEV organisation and Ethereum community at large including Christoph Jentzsch, Gustav Simonsson, Aeron Buchanan, Pawe\l{} Bylica, Jutta Steiner, Nick Savers, Viktor Tr\'{o}n, Marko Simovic and, of course, Vitalik Buterin.
 
 \bibliography{Biblio}
 \bibliographystyle{plainnat}
@@ -1954,12 +1954,12 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& otherwise. \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[3], \boldsymbol{\mu}_\mathbf{s}[4]), \boldsymbol{\mu}_\mathbf{s}[5], \boldsymbol{\mu}_\mathbf{s}[6])$ \\
 &&&& Thus the operand order is: gas, to, value, in offset, in size, out offset, out size. \\
-&&&& $C_{\text{\tiny CALL}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv G_{call} + \boldsymbol{\mu}_\mathbf{s}[0] + C_{\text{\tiny CALLVALUE}}(\boldsymbol{\mu}) + C_{\text{\tiny CALLNEWACCOUNT}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$ \\
-&&&& $C_{\text{\tiny CALLVALUE}}(\boldsymbol{\mu}) \equiv \begin{cases}
+&&&& $C_{\text{\tiny CALL}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv G_{call} + \boldsymbol{\mu}_\mathbf{s}[0] + C_{\text{\tiny CALLXFER}}(\boldsymbol{\mu}) + C_{\text{\tiny CALLNEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$ \\
+&&&& $C_{\text{\tiny CALLXFER}}(\boldsymbol{\mu}) \equiv \begin{cases}
 G_{callvalue} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \neq 0 \\
 0 & \text{otherwise}
 \end{cases}$ \\
-&&&& $C_{\text{\tiny CALLNEWACCOUNT}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
+&&&& $C_{\text{\tiny CALLNEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
 G_{callnewaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[1]] = \varnothing \\
 0 & \text{otherwise}
 \end{cases}$ \\
