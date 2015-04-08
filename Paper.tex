@@ -1532,7 +1532,7 @@ G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+G_{logtopic} & \text{if}
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+2G_{logtopic} & \text{if} \quad w = \text{\small LOG2} \\
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+3G_{logtopic} & \text{if} \quad w = \text{\small LOG3} \\
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+4G_{logtopic} & \text{if} \quad w = \text{\small LOG4} \\
-G_{call} + \boldsymbol{\mu}_\mathbf{s}[0] & \text{if} \quad w = \text{\small CALL} \lor \text{\small CALLCODE} \\
+C_\text{\tiny CALL}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small CALL} \lor \text{\small CALLCODE} \\
 G_{create} & \text{if} \quad w = \text{\small CREATE}\\
 G_{sha3}+G_{sha3word} \lceil \mathbf{s}[1] \div 32 \rceil & \text{if} \quad w = \text{\small SHA3}\\
 G_{jumpdest} & \text{if} \quad w = \text{\small JUMPDEST}\\
@@ -1944,7 +1944,7 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 0xf1 & {\small CALL} & 7 & 1 & Message-call into an account. \\
 &&&& $\mathbf{i} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[3] \dots (\boldsymbol{\mu}_\mathbf{s}[3] + \boldsymbol{\mu}_\mathbf{s}[4] - 1) ]$ \\
 &&&& $\mathbf{o} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[5] \dots (\boldsymbol{\mu}_\mathbf{s}[5] + \boldsymbol{\mu}_\mathbf{s}[6] - 1) ]$ \\
-&&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}, I_a, I_o, t, t,\\ \quad \boldsymbol{\mu}_\mathbf{s}[0], I_p, \boldsymbol{\mu}_\mathbf{s}[2], \mathbf{i}, I_e + 1)\end{array} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \leqslant \boldsymbol{\sigma}[I_a]_b \;\wedge\; I_e < 1024\\ (\boldsymbol{\sigma}, g, \varnothing, \mathbf{o}) & \text{otherwise} \end{cases}$ \\
+&&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}, I_a, I_o, t, t,\\ \quad C_{\text{\tiny CALLGAS}}(\boldsymbol{\mu}), I_p, \boldsymbol{\mu}_\mathbf{s}[2], \mathbf{i}, I_e + 1)\end{array} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \leqslant \boldsymbol{\sigma}[I_a]_b \;\wedge\; I_e < 1024\\ (\boldsymbol{\sigma}, g, \varnothing, \mathbf{o}) & \text{otherwise} \end{cases}$ \\
 &&&& $\boldsymbol{\mu}'_g \equiv \boldsymbol{\mu}_g + g'$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
 &&&& $A' \equiv A \Cup A^+$ \\
@@ -1954,6 +1954,19 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& otherwise. \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[3], \boldsymbol{\mu}_\mathbf{s}[4]), \boldsymbol{\mu}_\mathbf{s}[5], \boldsymbol{\mu}_\mathbf{s}[6])$ \\
 &&&& Thus the operand order is: gas, to, value, in offset, in size, out offset, out size. \\
+&&&& $C_{\text{\tiny CALL}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv G_{call} + \boldsymbol{\mu}_\mathbf{s}[0] + C_{\text{\tiny CALLVALUE}}(\boldsymbol{\mu}) + C_{\text{\tiny CALLNEWACCOUNT}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$ \\
+&&&& $C_{\text{\tiny CALLVALUE}}(\boldsymbol{\mu}) \equiv \begin{cases}
+G_{callvalue} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \neq 0 \\
+0 & \text{otherwise}
+\end{cases}$ \\
+&&&& $C_{\text{\tiny CALLNEWACCOUNT}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
+G_{callnewaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[1]] = \varnothing \\
+0 & \text{otherwise}
+\end{cases}$ \\
+&&&& $C_{\text{\tiny CALLGAS}}(\boldsymbol{\mu}) \equiv  \begin{cases}
+\boldsymbol{\mu}_\mathbf{s}[0] + G_{callstipend} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \neq 0 \\
+0 & \text{otherwise}
+\end{cases}$ \\
 \midrule
 0xf2 & {\small CALLCODE} & 7 & 1 & Message-call into this account with alternative account's code. \\
 &&&& Exactly equivalent to {\small CALL} except: \\
