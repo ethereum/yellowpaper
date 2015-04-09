@@ -1487,11 +1487,12 @@ $G_{jumpdest}$ & 1 & Paid for a {\small JUMPDEST} operation. \\
 $G_{sset}$ & 20000 & Paid for an {\small SSTORE} operation when the storage value is set to non-zero from zero. \\
 $G_{sreset}$ & 5000 & Paid for an {\small SSTORE} operation when the storage value's zeroness remains unchanged or is set to zero. \\
 $R_{sclear}$ & 15000 & Refund given (added into refund counter) when the storage value is set to zero from non-zero. \\
+$R_{suicide}$ & 24000 & Refund given (added into refund counter) for suiciding an account. \\
 $G_{create}$ & 32000 & Paid for a {\small CREATE} operation. \\
 $G_{codedeposit}$ & 200 & Paid per byte for a {\small CREATE} operation to succeed in placing code into state. \\
 $G_{call}$ & 40 & Paid for a {\small CALL} operation. \\
 $G_{callvalue}$ & 9000 & Paid for a non-zero value transfer as part of the {\small CALL} operation. \\
-$G_{callstipend}$ & 2300 & A stipend for the called contract subtracted from $G_{callvalue}$. Only applicable when the transferred value is non-zero. \\
+$G_{callstipend}$ & 2300 & A stipend for the called contract subtracted from $G_{callvalue}$ for a non-zero value transfer. \\
 $G_{callnewaccount}$ & 25000 & Paid for a {\small CALL} operation to a not previously excisting account. \\
 $G_{exp}$ & 10 & Partial payment for an {\small EXP} operation. \\
 $G_{expbyte}$ & 10 & Partial payment when multiplied by $\lceil\log_{256}(exponent)\rceil$ for the {\small EXP} operation. \\
@@ -1984,7 +1985,11 @@ G_{callnewaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathb
 0xff & {\small SUICIDE} & 1 & 0 & Halt execution and register account for later deletion. \\
 &&&& $A'_\mathbf{s} \equiv A_\mathbf{s} \cup \{ I_a \}$ \\
 &&&& $\boldsymbol{\sigma}'[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}]_b \equiv \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}]_b + \boldsymbol{\sigma}[I_a]_b$ \\
-&&&& $\boldsymbol{\sigma}'[I_a]_b \equiv 0$ \\\bottomrule
+&&&& $\boldsymbol{\sigma}'[I_a]_b \equiv 0$ \\
+&&&& $A'_{r} \equiv A_{r} + \begin{cases}
+R_{suicide} & \text{if} \quad I_a \notin A_\mathbf{s} \\
+0 & \text{otherwise}
+\end{cases}$ \\\bottomrule
 \end{tabular*}
 
 %\section{Low-level Lisp-like Language}\label{app:lll}
