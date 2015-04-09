@@ -1416,7 +1416,10 @@ g_r &=& 1 + \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil\\
 
 The method of signing transactions is similar to the `Electrum style signatures'; it utilises the SECP-256k1 curve as described by \cite{gura2004comparing}.
 
-It is assumed that the sender has a valid private key $p_r$, a randomly selected positive integer in the range $(0, 2^{256})$ represented as a byte array of length 32 in big-endian form.
+It is assumed that the sender has a valid private key $p_r$, a randomly selected positive integer
+% to avoid line break in range definition
+
+in the range $(1, \mathtt{\tiny secp256k1n} - 1)$ represented as a byte array of length 32 in big-endian form.
 
 We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARESTORE}$ and $\mathtt{\small ECDSAPUBKEY}$. These are formally defined in the literature.
 \begin{eqnarray}
@@ -1425,17 +1428,19 @@ We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARESTOR
 \mathtt{\small ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64}
 \end{eqnarray}
 
-Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer $< 2^{256}$). It is assumed that $v$ is the `recovery id', a 1 byte value specifying the sign and finiteness of the curve point; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid.
+Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer in the aforementioned range). It is assumed that $v$ is the `recovery id', a 1 byte value specifying the sign and finiteness of the curve point; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid.
 
 We declare that a signature is invalid unless the following is true:
-\begin{equation}
-v \in \{27,28\} \quad\wedge\quad r < \mathtt{\tiny secp256k1n} \quad\wedge\quad s < \mathtt{\tiny secp256k1p}
-\end{equation}
+\begin{eqnarray}
+0 < r < \mathtt{\tiny secp256k1n} \quad\wedge\quad \\
+0 < s < \mathtt{\tiny secp256k1n} \quad\wedge\quad \\
+v \in \{27,28\}
+\end{eqnarray}
 
 where:
 \begin{eqnarray}
-\mathtt{\tiny secp256k1n} &=& 115792089237316195423570985008687907852837564279074904382605163141518161494337\\
-\mathtt{\tiny secp256k1p} &=& 2^{256} - 2^{32} - 977\\
+\mathtt{\tiny secp256k1n} &=& 115792089237316195423570985008687907852837564279074904382605163141518161494337
+%\mathtt{\tiny secp256k1p} &=& 2^{256} - 2^{32} - 977\\
 \end{eqnarray}
 
 For a given private key, $p_r$, the Ethereum address $A(p_r)$ (a 160-bit value) to which it corresponds is defined as the right most 160-bits of the Keccak hash of the corresponding ECDSA public key:
