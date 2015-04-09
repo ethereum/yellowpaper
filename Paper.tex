@@ -1084,51 +1084,28 @@ Secondly, it should not be possible to make super-linear profits, and especially
 
 One plague of the Bitcoin world is ASICs. These are specialised pieces of compute hardware that exist only to do a single task. In Bitcoin's case the task is the SHA256 hash function. While ASICs exist for a proof-of-work function, both goals are placed in jeopardy. Because of this, a proof-of-work function that is ASIC-resistant (i.e. difficult or economically inefficient to implement in specialised compute hardware) has been identified as the proverbial silver bullet.
 
-Two directions exist for ASIC resistance; firstly make it sequential memory-hard, i.e. engineer the function such that the determination of the nonce requires a lot of memory and that the memory cannot be used in parallel to discover multiple nonces simultaneously. The second is to make the type of computation it would need to do general-purpose; the meaning of ``specialised hardware''  for a general-purpose task set is, naturally, general purpose hardware and as such commodity desktop computers are likely to be pretty close to ``specialised hardware'' for the task.
+Two directions exist for ASIC resistance; firstly make it sequential memory-hard, i.e. engineer the function such that the determination of the nonce requires a lot of memory and bandwidth such that the memory cannot be used in parallel to discover multiple nonces simultaneously. The second is to make the type of computation it would need to do general-purpose; the meaning of ``specialised hardware''  for a general-purpose task set is, naturally, general purpose hardware and as such commodity desktop computers are likely to be pretty close to ``specialised hardware'' for the task.
 
 More formally, the proof-of-work function takes the form of $\mathtt{PoW}$:
 \begin{equation}
-\mathtt{PoW}(H_{\hcancel{n}}, n) < \frac{2^{256}}{H_d}
+\mathtt{PoW}(H, H_n, \mathbf{d})[0] = H_m \quad \wedge \quad \mathtt{PoW}(H, H_n, \mathbf{d})[1] \leqslant \frac{2^{256}}{H_d}
 \end{equation}
 
-Where $H_{\hcancel{n}}$ is the new block's header $H$, but \textit{without} the nonce component; $H_d$ is the new block's difficulty value (i.e. the block difficulty from section \ref{ch:ghost}).
+Where $H$ is the new block's header; $H_n$ is the nonce of the header; $\mathbf{d}$ is the DAG (a large data set neede to compute the mixHash) and $H_d$ is the new block's difficulty value (i.e. the block difficulty from section \ref{ch:ghost}).
+$\mathtt{PoW}$ is the proof-of-work function which evaluates to an array with the first item being the mixHash and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$.
+The underlying algorithm is called Ethash and is described below.
 
-As of the proof-of-concept (PoC) series of the Ethereum software, the proof-of-work function is simplistic and does not attempt to secure these goals. It will be described here for completeness.
+\subsubsection{Ethash}
+Ethash is the planned PoW algorithm for Ethereum 1.0. It is the latest version of Dagger-Hashimoto, although it can no longer appropriately be called that since many of the original features of both algorithms have been drastically changed in the last month of research and development.
+The general route that the algorithm takes is as follows:
+There exists a seed which can be computed for each block by scanning through the block headers up until that point.
+From the seed, one can compute a pseudorandom cache, $J_{cacheInit}$ bytes in intial size. Light clients store the cache.
+From the cache, we can generate a dataset, $J_{datasetInit}$ bytes in initial size, with the property that each item in the dataset depends on only a small number of items from the cache. Full clients and miners store the dataset. The dataset grows linearly with time.
+Mining involves grabbing random slices of the dataset and hashing them together. Verification can be done with low memory by using the cache to regenerate the specific pieces of the dataset that you need, so you only need to store the cache.
+The large dataset is updated once every $J_{epoch}$ blocks, so the vast majority of a miner's effort will be reading the dataset, not making changes to it.
 
-\subsubsection{PoC Series}
 
-For the PoC series, we use a simplified proof-of-work. This is not ASIC resistant and is meant merely as a placeholder. It utilises the bare Keccak hash function to secure the block chain by requiring the Keccak hash of the concatenation of the nonce and the header's Keccak hash to be sufficiently low.
 
-It is formally defined as $\mathtt{PoW}$:
-\begin{equation}
-\mathtt{PoW}(H, n) \equiv \mathtt{BE}(\mathtt{\tiny KEC}(\mathtt{\tiny KEC}(\mathtt{\tiny RLP}(H_{\hcancel{n}})) \circ n))
-\end{equation}
-
-where:
-$\mathtt{\tiny RLP}(H_{\hcancel{n}})$ is the RLP encoding of the block header $H$, not including the final nonce component;
-$\mathtt{\tiny KEC}$ is the Keccak hash function accepting an arbitrary length series of bytes and evaluating to a series of 32 bytes (i.e. 256-bit);
-$n$ is the nonce, a series of 32 bytes;
-$\circ$ is the series concatenation operator;
-$\mathtt{BE}(X)$ evaluates to the value equal to X when interpreted as a big-endian-encoded integer.
-
-\subsubsection{Release Series}
-
-For the release series, we use a more complex proof-of-work. This has yet to be formally defined, but involves two components; firstly that it concerns the evaluation of programs on the EVM. Secondly that it concerns the utilisation of either the blockchain or the full state trie.
-
-As an overview, the output of the function is based upon the system state, defined as the hash of the root node of the state trie. A set of transactions, pseudo-randomly determined from the nonce value and selected from the last $N$ blocks is taken. $N$ is large enough and the selection criteria are such that execution of the transactions requires some non-negligible amount of processing by the EVM. Whenever code is executed on the EVM, it is pseudo-randomly (seeded again by the nonce) corrupted before alteration. Corruption could involve switching addresses with other transactions or rotating them through in the state trie (perhaps to the next address with the same order of magnitude of funds), rotating through instructions that have equivalent stack behaviour (e.g. swapping {\small ADD} for {\small SUB} or {\small GT} for {\small EQ}), or more destructive techniques such as randomly changing opcodes. This results in a problem that both require generalised computation hardware and is sequentially memory (and perhaps even disk) hard.
-
-Any specialised hardware to perform this task could also be leveraged to speed up (and thus drive down costs) of general Ethereum transaction processing.
-
-%\section{User Interface}
-%
-%Browser-style.
-%Displays ETH balance (i.e. functions as a wallet).
-%Tabs or perhaps MacOS style app icons.
-%Display taken up with a single app.
-%Extensible \eg should be able to display the balances of other currencies hosted on Etheruem alongside ETH.
-%Should be able to trust certain apps with creation of transactions (and thus sending of ETH \& payment of gas).
-%Preconfigured with home app that is the Eth app store.
-%Eth app store comes preloaded with high trust for ethereum.org; apps have identity and WoT reputation.
 
 \section{Implementing Contracts}
 
