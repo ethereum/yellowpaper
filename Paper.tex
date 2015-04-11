@@ -2020,38 +2020,37 @@ $J_{datasetinit}$ & $2^{30}$ & Bytes in dataset at genesis. \\
 $J_{datasetgrowth}$ & $2^{23}$ & Dataset growth per epoch. \\
 $J_{cacheinit}$ & $2^{24}$ & Cache growth per epoch. \\
 $J_{cachegrowth}$ & $2^{17}$ & Cache growth per epoch. \\
-$J_{cachemultiplier}$ & 1024 & Size of the dataset relative to the cache. \\
 $J_{epoch}$ & 30000 & Blocks per epoch. \\
 $J_{mixbytes}$ & 128 & mix length in bytes. \\
 $J_{hashbytes}$ & 64 & Hash length in bytes. \\
-$J_{datasetparents}$ & 256 & Number of parents of each dataset element. \\
-$J_{cacherounds}$ & 3 & Number of parents of each dataset element. \\
+$J_{parents}$ & 256 & Number of parents of each dataset element. \\
+$J_{cacherounds}$ & 3 & Number of rounds in cache production. \\
 $J_{accesses}$ & 64 & Number of accesses in hashimoto loop. \\
 \bottomrule
 \end{tabular*}
 
 \subsection{Size of dataset and cache}
-The size for Ethash's cache and dataset depend on the epoch, which depends on the block number.
+The size for Ethash's cache $\mathbf{c} \in \mathbb{B}$  and dataset $\mathbf{d} \in \mathbb{B}$ depend on the epoch, which depends on the block number.
 \begin{equation}
- C_{epoch}(H_i) = \left\lfloor\frac{H_i}{J_{epoch}}\right\rfloor
+ E_{epoch}(H_i) = \left\lfloor\frac{H_i}{J_{epoch}}\right\rfloor
 \end{equation}
-The size of the dataset growth by $J_{datasetgrowth}$, and the size of the cache by $J_{cachegrowth}$, every epoch. In order to avoid regularity leading to cyclic behavior, the size must be a prime number. Therefore the size is reduced by a multiple of $J_{mixbytes}$, for the dataset, and $J_{hashbytes}$ for the cache. 
-Let $\mathbf{d}_{size} = \lVert \mathbf{d} \rVert$ be the size of the dataset. Which is calculated using
+The size of the dataset growth by $J_{datasetgrowth}$ bytes, and the size of the cache by $J_{cachegrowth}$ bytes, every epoch. In order to avoid regularity leading to cyclic behavior, the size must be a prime number. Therefore the size is reduced by a multiple of $J_{mixbytes}$, for the dataset, and $J_{hashbytes}$ for the cache. 
+Let $d_{size} = \lVert \mathbf{d} \rVert$ be the size of the dataset. Which is calculated using
 \begin{equation}
- \mathbf{d}_{size} = C_{prime}(J_{datasetinit} + J_{datasetgrowth} \cdot C_{epoch}, J_{mixbytes})
+ d_{size} = E_{prime}(J_{datasetinit} + J_{datasetgrowth} \cdot E_{epoch}, J_{mixbytes})
 \end{equation}
-The size of the cache, $\mathbf{c}_{size}$, is calculated using
+The size of the cache, $c_{size}$, is calculated using
 \begin{equation}
- \mathbf{c}_{size} = C_{prime}(J_{cacheinit} + J_{cachegrowth} \cdot C_{epoch}, J_{hashbytes})
+ c_{size} = E_{prime}(J_{cacheinit} + J_{cachegrowth} \cdot E_{epoch}, J_{hashbytes})
 \end{equation}
 \begin{equation}
- C_{prime}(x, y) = \begin{cases}
+ E_{prime}(x, y) = \begin{cases}
 x & \text{if} \quad x \in \mathbb{P} \\
-C_{prime}(x - y, y) & \text{otherwise}
+E_{prime}(x - y, y) & \text{otherwise}
 \end{cases}
 \end{equation}
 \subsection{Dataset generation}
-In order the generate the dataset we need the cache $\mathbf{c}$ which is an array of bytes. It depends on the cache size  $\mathbf{c}_{size}$ and the seed hash $\mathbf{s} \in \mathbb{B}_{32}$. 
+In order the generate the dataset we need the cache $\mathbf{c}$, which is an array of bytes. It depends on the cache size  $c_{size}$ and the seed hash $\mathbf{s} \in \mathbb{B}_{32}$. 
 \subsubsection{Seed hash}
 The seed hash is different for every epoch. For the first epoch it is the Keccak-256 hash of a series of 32 bytes of zeros. For every other epoch it is always the Keccak-256 hash of the previous seed hash:
 \begin{equation}
@@ -2059,14 +2058,14 @@ The seed hash is different for every epoch. For the first epoch it is the Keccak
 \end{equation}
 \begin{equation}
  C_{seedhash}(H_i) = \begin{cases}
-\texttt{KEC}(\mathbf{0}_{32}) & \text{if} \quad C_{epoch}(H_i) = 0 \quad  \\
+\texttt{KEC}(\mathbf{0}_{32}) & \text{if} \quad E_{epoch}(H_i) = 0 \quad  \\
 \texttt{KEC}(C_{seedhash}(H_i - J_{epoch})) & \text{otherwise}
 \end{cases}
 \end{equation}
 With $\mathbf{0}_{32}$ being 32 bytes of zeros.
 
 \subsubsection{Cache}
-The cache production process involves using the seed hash to first sequentially filling up $\mathbf{c}_{size}$ bytes of memory, then performing $J_{cacherounds}$ passes of \cite{lerner2014randmemohash} RandMemoHash algorithm:
+The cache production process involves using the seed hash to first sequentially filling up $c_{size}$ bytes of memory, then performing $J_{cacherounds}$ passes of the RandMemoHash algorithm created by \cite{lerner2014randmemohash}:
 
 The intial cache $\mathbf{c'}$, being an array of arrays of single bytes, will be constructed as follows:
 
@@ -2082,7 +2081,7 @@ Therefore $ \mathbf{c'}$ can be defined as
  \mathbf{c'}[i] = \mathbf{c}_{i} \quad \forall \quad i < n
 \end{equation}
 \begin{equation}
- n = \left\lfloor\frac{\mathbf{c}_{size}}{J_{hashbytes}}\right\rfloor
+ n = \left\lfloor\frac{c_{size}}{J_{hashbytes}}\right\rfloor
 \end{equation}
 The cache is calculated by performing $J_{cacherounds}$ rounds of the RandMemoHash algorithm to the inital cache $\mathbf{c'}$:
 \begin{equation}
@@ -2092,7 +2091,7 @@ The cache is calculated by performing $J_{cacherounds}$ rounds of the RandMemoHa
  E_{cacherounds}(\mathbf{x}, y) = \begin{cases}
 \mathbf{x} & \text{if} \quad y = 0 \quad  \\
 E_{rmh}(\mathbf{x}) & \text{if} \quad y = 1 \quad  \\
-E_{cacherounds}(\mathbf{x}, y -1 ) & \text{otherwise}
+E_{cacherounds}(E_{rmh}(\mathbf{x}), y -1 ) & \text{otherwise}
 \end{cases}
 \end{equation}
 Where a single round modifies each subset of the cache as follows:
@@ -2103,33 +2102,31 @@ Where a single round modifies each subset of the cache as follows:
   E_{rmhSingle}(\mathbf{x}, i) = \texttt{KEC512}(\mathbf{x}[(i - 1 + n) \mod n] \oplus \mathbf{x}[\mathbf{x}[i][0] \mod n) 
 \end{equation}
 \subsubsection{Full dataset calculation}
-Essentially, we combine data from $J_{datasetparents}$ pseudorandomly selected cache nodes, and hash that to compute the dataset. The entire dataset is then generated by $\mathbf{d}_{size}$ items, each $J_{hashbytes}$ bytes in size:
+Essentially, we combine data from $J_{parents}$ pseudorandomly selected cache nodes, and hash that to compute the dataset. The entire dataset is then generated by $d_{size}$ items, each $J_{hashbytes}$ bytes in size:
 \begin{equation}
- \mathbf{d}[i] = E_{datasetitem}(\mathbf{c}, i) \quad \forall \quad i < \left\lfloor\frac{\mathbf{d}_{size}}{J_{hashbytes}}\right\rfloor
+ \mathbf{d}[i] = E_{datasetitem}(\mathbf{c}, i) \quad \forall \quad i < \left\lfloor\frac{d_{size}}{J_{hashbytes}}\right\rfloor
 \end{equation}
 In order to calculate the single item we use an algorithm inspired by the FNV hash (\cite{FowlerNollVo1991FNVHash}) in some cases as a non-associative substitute for XOR.
 \begin{equation}
- E_\text{\tiny FNV}(\mathbf{x}, \mathbf{y}) = (\mathbf{x} \cdot \mathrm{0x01000193} \oplus \mathbf{y}) \mod 2^{22}
+ E_\text{\tiny FNV}(\mathbf{x}, \mathbf{y}) = (\mathbf{x} \cdot (\mathrm{0x01000193} \oplus \mathbf{y})) \mod 2^{22}
 \end{equation}
 The single item of the dataset can now be calculated as:
 \begin{equation}
- E_{datasetitem}(\mathbf{c}, i) = E_{parents}(\mathbf{c}, i, 0, \varnothing)
+ E_{datasetitem}(\mathbf{c}, i) = E_{parents}(\mathbf{c}, i, -1, \varnothing)
 \end{equation}
 \begin{equation}
   E_{parents}(\mathbf{c}, i, p, \mathbf{m}) = \begin{cases}
-E_{parents}(\mathbf{c}, i, p +1, E'_{mix}) & \text{if} \quad p < J_{datasetparents} \\
-E_{mix}(\mathbf{m}, \mathbf{c}, i, p) & \text{otherwise}
+E_{parents}(\mathbf{c}, i, p +1, E_{mix}(\mathbf{m}, \mathbf{c}, i, p + 1)) & \text{if} \quad p < J_{parents} -2 \\
+E_{mix}(\mathbf{m}, \mathbf{c}, i, p + 1) & \text{otherwise}
 \end{cases}
 \end{equation}
 \begin{equation}
- E'_{mix}(\mathbf{m}, \mathbf{c}, i, p) = \begin{cases}
-\texttt{KEC512}(\mathbf{c}[i \mod \mathbf{c}_{size}] \oplus i) & \text{if} \quad p = 0 \\
-E_{mix}(\mathbf{m}, \mathbf{c}, i, p) & \text{otherwise}
+ E_{mix}(\mathbf{m}, \mathbf{c}, i, p) = \begin{cases}
+\texttt{KEC512}(\mathbf{c}[i \mod c_{size}] \oplus i) & \text{if} \quad p = 0 \\
+E_\text{\tiny FNV}(\mathbf{m}, \mathbf{c}[(E_\text{\tiny FNV}(i \oplus p), \mathbf{m}[ \lfloor J_{hashbytes} / J_{wordbytes} \rfloor]) \mod c_{size}) & \text{otherwise}
 \end{cases}
 \end{equation}
-\begin{equation}
- E_{mix}(\mathbf{m}, \mathbf{c}, i, p) = E_\text{\tiny FNV}(\mathbf{m}, \mathbf{c}[(E_\text{\tiny FNV}(i \oplus p), \mathbf{m}[ \lfloor J_{hashbytes} / J_{wordbytes} \rfloor]) \mod \mathbf{c}_{size})
-\end{equation}
+
 
 
 \end{document}
