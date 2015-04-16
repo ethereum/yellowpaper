@@ -2037,16 +2037,16 @@ The size for Ethash's cache $\mathbf{c} \in \mathbb{B}$  and dataset $\mathbf{d}
 The size of the dataset growth by $J_{datasetgrowth}$ bytes, and the size of the cache by $J_{cachegrowth}$ bytes, every epoch. In order to avoid regularity leading to cyclic behavior, the size must be a prime number. Therefore the size is reduced by a multiple of $J_{mixbytes}$, for the dataset, and $J_{hashbytes}$ for the cache. 
 Let $d_{size} = \lVert \mathbf{d} \rVert$ be the size of the dataset. Which is calculated using
 \begin{equation}
- d_{size} = E_{prime}(J_{datasetinit} + J_{datasetgrowth} \cdot E_{epoch}, J_{mixbytes})
+ d_{size} = E_{prime}(J_{datasetinit} + J_{datasetgrowth} \cdot E_{epoch} - J_{mixbytes}, J_{mixbytes})
 \end{equation}
 The size of the cache, $c_{size}$, is calculated using
 \begin{equation}
- c_{size} = E_{prime}(J_{cacheinit} + J_{cachegrowth} \cdot E_{epoch}, J_{hashbytes})
+ c_{size} = E_{prime}(J_{cacheinit} + J_{cachegrowth} \cdot E_{epoch} - J_{hashbytes}, J_{hashbytes})
 \end{equation}
 \begin{equation}
  E_{prime}(x, y) = \begin{cases}
-x & \text{if} \quad x \in \mathbb{P} \\
-E_{prime}(x - y, y) & \text{otherwise}
+x & \text{if} \quad x / y \in \mathbb{P} \\
+E_{prime}(x - 2 \cdot y, y) & \text{otherwise}
 \end{cases}
 \end{equation}
 \subsection{Dataset generation}
