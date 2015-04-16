@@ -362,6 +362,7 @@ We can assert a block's validity if and only if it satisfies several conditions:
 \begin{array}[t]{lclc}
 H_r &\equiv& \mathtt{\small TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) & \wedge \\
 H_o &\equiv& \mathtt{\small KEC}(\mathtt{\small RLP}(L_H^*(B_\mathbf{U}))) & \wedge \\
+H_p &\equiv& \mathtt{\tiny KEC}(\mathtt{\tiny RLP}(P(H))) & \wedge \\
 H_t &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert, i \in \mathbb{P}: p(i, L_T(B_\mathbf{T}[i]))\}) & \wedge \\
 H_e &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert, i \in \mathbb{P}: p(i, L_R(B_\mathbf{R}[i]))\}) & \wedge \\
 H_b &\equiv& \bigvee_{\mathbf{r} \in B_\mathbf{R}} \big( \mathbf{r}_b \big)
