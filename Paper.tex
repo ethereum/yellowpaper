@@ -2130,24 +2130,24 @@ Essentially, we maintain a "mix" $J_{mixbytes}$ bytes wide, and repeatedly seque
 
 If the output of this algorithm is below the desired target, then the nonce is valid. Note that the extra application of \texttt{KEC} at the end ensures that there exists an intermediate nonce which can be provided to prove that at least a small amount of work was done; this quick outer PoW verification can be used for anti-DDoS purposes. It also serves to provide statistical assurance that the result is an unbiased, 256 bit number.
 
-The PoW-function can be defined as an array with the compressed mix as its first item and the Keccak-256 hash of the concatenation of the compressed mix with the seed hash as the second item:
+The PoW-function returns an array with the compressed mix as its first item and the Keccak-256 hash of the concatenation of the compressed mix with the seed hash as the second item:
 \begin{equation}
- \mathtt{PoW}(H, H_n, \mathbf{d}) = \lbrace \mathbf{m}_c(H, H_n, \mathbf{d}), \texttt{KEC}(\mathbf{s}_h(H, H_n) + \mathbf{m}_c(H, H_n, \mathbf{d})) \rbrace
+ \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d}) = \lbrace \mathbf{m}_c(\mathtt{\small KEC}(\mathtt{\small RLP}(L_H(H_{\hcancel{n}}))), H_n, \mathbf{d}), \texttt{KEC}(\mathbf{s}_h(\mathtt{\small KEC}(\mathtt{\small RLP}(L_H(H_{\hcancel{n}}))), H_n) + \mathbf{m}_c(\mathtt{\small KEC}(\mathtt{\small RLP}(L_H(H_{\hcancel{n}}))), H_n, \mathbf{d})) \rbrace
 \end{equation}
-The compressed mix $\mathbf{m}_c$ is obtained as follows:
+With $H_{\hcancel{n}}$ being the hash of the header without the nonce. The compressed mix $\mathbf{m}_c$ is obtained as follows:
 \begin{equation}
- \mathbf{m}_c(H, H_n, \mathbf{d}) = E_{compress}(E_{accesses}(\mathbf{d}, \sum_{i = 0}^{n_{mix}} \mathbf{s}_h(H, H_n), \mathbf{s}_h(H, H_n), -1), -4)
+ \mathbf{m}_c(\mathbf{h}, \mathbf{n}, \mathbf{d}) = E_{compress}(E_{accesses}(\mathbf{d}, \sum_{i = 0}^{n_{mix}} \mathbf{s}_h(\mathbf{h}, \mathbf{n}), \mathbf{s}_h(\mathbf{h}, \mathbf{h}), -1), -4)
 \end{equation}
 
 The seed hash being:
 \begin{equation}
  \mathbf{s}_h(\mathbf{h}, \mathbf{n}) = \texttt{KEC512}(\mathbf{h} + E_{revert}(\mathbf{n}))
 \end{equation}
-
-With $\mathbf{h}$ being the hash of the header without the nonce, and $E_{revert}(\mathbf{n})$ the reverted bytes sequence of the nonce $\mathbf{n}$:
+$E_{revert}(\mathbf{n})$ returns the reverted bytes sequence of the nonce $\mathbf{n}$:
 \begin{equation}
  E_{revert}(\mathbf{n})[i] = \mathbf{n}[\lVert \mathbf{n} \rVert -i]
 \end{equation}
+We note that the ``$+$''-opertor between two byte sequences results in the concatenation of both sequences.
 
 The dataset $\mathbf{d}$ is obtained as described in section \ref{dataset}.
 
@@ -2177,6 +2177,6 @@ E_{compress}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(\mathbf{m}
 \end{equation}
 
 \subsection{Mining}
-
+$$\mathtt{\small KEC}(\mathtt{\small RLP}(L_H(H_{\hcancel{n}})))$$
 
 \end{document}
