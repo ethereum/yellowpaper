@@ -1977,5 +1977,179 @@ Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $
 
 The proof-of-concept series include a development premine, making the state root hash some value $stateRoot$. The latest documentation should be consulted for the value of the state root.
 
-\end{document}
+\section{Ethash}\label{app:ethash}
+\subsection{Definitions}
+We employ the following definitions:
 
+\begin{tabular*}{\columnwidth}[h]{lrl}
+\toprule
+Name & Value & Description \\
+\midrule
+$J_{wordbytes}$ & 4  & Bytes in word. \\
+$J_{datasetinit}$ & $2^{30}$ & Bytes in dataset at genesis. \\
+$J_{datasetgrowth}$ & $2^{23}$ & Dataset growth per epoch. \\
+$J_{cacheinit}$ & $2^{24}$ & Bytes in cache at genesis. \\
+$J_{cachegrowth}$ & $2^{17}$ & Cache growth per epoch. \\
+$J_{epoch}$ & 30000 & Blocks per epoch. \\
+$J_{mixbytes}$ & 128 & mix length in bytes. \\
+$J_{hashbytes}$ & 64 & Hash length in bytes. \\
+$J_{parents}$ & 256 & Number of parents of each dataset element. \\
+$J_{cacherounds}$ & 3 & Number of rounds in cache production. \\
+$J_{accesses}$ & 64 & Number of accesses in hashimoto loop. \\
+\bottomrule
+\end{tabular*}
+
+\subsection{Size of dataset and cache}
+The size for Ethash's cache $\mathbf{c} \in \mathbb{B}$  and dataset $\mathbf{d} \in \mathbb{B}$ depend on the epoch, which in turn depends on the block number.
+\begin{equation}
+ E_{epoch}(H_i) = \left\lfloor\frac{H_i}{J_{epoch}}\right\rfloor
+\end{equation}
+The size of the dataset growth by $J_{datasetgrowth}$ bytes, and the size of the cache by $J_{cachegrowth}$ bytes, every epoch. In order to avoid regularity leading to cyclic behavior, the size must be a prime number. Therefore the size is reduced by a multiple of $J_{mixbytes}$, for the dataset, and $J_{hashbytes}$ for the cache. 
+Let $d_{size} = \lVert \mathbf{d} \rVert$ be the size of the dataset. Which is calculated using
+\begin{equation}
+ d_{size} = E_{prime}(J_{datasetinit} + J_{datasetgrowth} \cdot E_{epoch}, J_{mixbytes})
+\end{equation}
+The size of the cache, $c_{size}$, is calculated using
+\begin{equation}
+ c_{size} = E_{prime}(J_{cacheinit} + J_{cachegrowth} \cdot E_{epoch}, J_{hashbytes})
+\end{equation}
+\begin{equation}
+ E_{prime}(x, y) = \begin{cases}
+x & \text{if} \quad x \in \mathbb{P} \\
+E_{prime}(x - y, y) & \text{otherwise}
+\end{cases}
+\end{equation}
+\subsection{Dataset generation}
+In order the generate the dataset we need the cache $\mathbf{c}$, which is an array of bytes. It depends on the cache size  $c_{size}$ and the seed hash $\mathbf{s} \in \mathbb{B}_{32}$. 
+\subsubsection{Seed hash}
+The seed hash is different for every epoch. For the first epoch it is the Keccak-256 hash of a series of 32 bytes of zeros. For every other epoch it is always the Keccak-256 hash of the previous seed hash:
+\begin{equation}
+ \mathbf{s} = C_{seedhash}(H_i)
+\end{equation}
+\begin{equation}
+ C_{seedhash}(H_i) = \begin{cases}
+\texttt{KEC}(\mathbf{0}_{32}) & \text{if} \quad E_{epoch}(H_i) = 0 \quad  \\
+\texttt{KEC}(C_{seedhash}(H_i - J_{epoch})) & \text{otherwise}
+\end{cases}
+\end{equation}
+With $\mathbf{0}_{32}$ being 32 bytes of zeros.
+
+\subsubsection{Cache}
+The cache production process involves using the seed hash to first sequentially filling up $c_{size}$ bytes of memory, then performing $J_{cacherounds}$ passes of the RandMemoHash algorithm created by \cite{lerner2014randmemohash}. The intial cache $\mathbf{c'}$, being an array of arrays of single bytes, will be constructed as follows.
+
+We define the array $\mathbf{c}_{i}$, consisting of 64 single bytes,  as the $i$th element of the intial cache:
+\begin{equation}
+ \mathbf{c}_{i} = \begin{cases}
+\texttt{KEC512}(\mathbf{s}) & \text{if} \quad i = 0 \quad  \\
+\texttt{KEC512}(\mathbf{c}_{i-1}) & \text{otherwise}
+\end{cases}
+\end{equation}
+Therefore $ \mathbf{c'}$ can be defined as 
+\begin{equation}
+ \mathbf{c'}[i] = \mathbf{c}_{i} \quad \forall \quad i < n
+\end{equation}
+\begin{equation}
+ n = \left\lfloor\frac{c_{size}}{J_{hashbytes}}\right\rfloor
+\end{equation}
+The cache is calculated by performing $J_{cacherounds}$ rounds of the RandMemoHash algorithm to the inital cache $\mathbf{c'}$:
+\begin{equation}
+ \mathbf{c} = E_{cacherounds}(\mathbf{c'}, J_{cacherounds})
+\end{equation}
+\begin{equation}
+ E_{cacherounds}(\mathbf{x}, y) = \begin{cases}
+\mathbf{x} & \text{if} \quad y = 0 \quad  \\
+E_\text{\tiny RMH}(\mathbf{x}) & \text{if} \quad y = 1 \quad  \\
+E_{cacherounds}(E_\text{\tiny RMH}(\mathbf{x}), y -1 ) & \text{otherwise}
+\end{cases}
+\end{equation}
+Where a single round modifies each subset of the cache as follows:
+\begin{equation}
+ E_\text{\tiny RMH}(\mathbf{x}) = \lbrace E_{rmh}(\mathbf{x}, 0), E_{rmh}(\mathbf{x}, 1), ... , E_{rmh}(\mathbf{x}, n) \rbrace
+\end{equation}
+\begin{equation}
+  E_{rmh}(\mathbf{x}, i) = \texttt{KEC512}(\mathbf{x}[(i - 1 + n) \mod n] \oplus \mathbf{x}[\mathbf{x}[i][0] \mod n]) 
+\end{equation}
+\subsubsection{Full dataset calculation} \label{dataset} 
+Essentially, we combine data from $J_{parents}$ pseudorandomly selected cache nodes, and hash that to compute the dataset. The entire dataset is then generated by $d_{size}$ items, each $J_{hashbytes}$ bytes in size:
+\begin{equation}
+ \mathbf{d}[i] = E_{datasetitem}(\mathbf{c}, i) \quad \forall \quad i < \left\lfloor\frac{d_{size}}{J_{hashbytes}}\right\rfloor
+\end{equation}
+In order to calculate the single item we use an algorithm inspired by the FNV hash (\cite{FowlerNollVo1991FNVHash}) in some cases as a non-associative substitute for XOR.
+\begin{equation}
+ E_\text{\tiny FNV}(\mathbf{x}, \mathbf{y}) = (\mathbf{x} \cdot (\mathrm{0x01000193} \oplus \mathbf{y})) \mod 2^{22}
+\end{equation}
+The single item of the dataset can now be calculated as:
+\begin{equation}
+ E_{datasetitem}(\mathbf{c}, i) = E_{parents}(\mathbf{c}, i, -1, \varnothing)
+\end{equation}
+\begin{equation}
+  E_{parents}(\mathbf{c}, i, p, \mathbf{m}) = \begin{cases}
+E_{parents}(\mathbf{c}, i, p +1, E_{mix}(\mathbf{m}, \mathbf{c}, i, p + 1)) & \text{if} \quad p < J_{parents} -2 \\
+E_{mix}(\mathbf{m}, \mathbf{c}, i, p + 1) & \text{otherwise}
+\end{cases}
+\end{equation}
+\begin{equation}
+ E_{mix}(\mathbf{m}, \mathbf{c}, i, p) = \begin{cases}
+\texttt{KEC512}(\mathbf{c}[i \mod c_{size}] \oplus i) & \text{if} \quad p = 0 \\
+E_\text{\tiny FNV}(\mathbf{m}, \mathbf{c}[E_\text{\tiny FNV}(i \oplus p, \mathbf{m}[p \mod \lfloor J_{hashbytes} / J_{wordbytes} \rfloor]) \mod c_{size}] & \text{otherwise}
+\end{cases}
+\end{equation}
+
+\subsection{Proof-of-work function}
+Essentially, we maintain a "mix" $J_{mixbytes}$ bytes wide, and repeatedly sequentially fetch $J_{mixbytes}$ bytes from the full dataset and use the $E_\text{\tiny FNV}$ function to combine it with the mix. $J_{mixbytes}$ bytes of sequential access are used so that each round of the algorithm always fetches a full page from RAM, minimizing translation lookaside buffer misses which ASICs would theoretically be able to avoid.
+
+If the output of this algorithm is below the desired target, then the nonce is valid. Note that the extra application of \texttt{KEC} at the end ensures that there exists an intermediate nonce which can be provided to prove that at least a small amount of work was done; this quick outer PoW verification can be used for anti-DDoS purposes. It also serves to provide statistical assurance that the result is an unbiased, 256 bit number.
+
+The PoW-function returns an array with the compressed mix as its first item and the Keccak-256 hash of the concatenation of the compressed mix with the seed hash as the second item:
+\begin{equation}
+ \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d}) = \lbrace \mathbf{m}_c(\mathtt{\small KEC}(\mathtt{\small RLP}(L_H(H_{\hcancel{n}}))), H_n, \mathbf{d}), \texttt{KEC}(\mathbf{s}_h(\mathtt{\small KEC}(\mathtt{\small RLP}(L_H(H_{\hcancel{n}}))), H_n) + \mathbf{m}_c(\mathtt{\small KEC}(\mathtt{\small RLP}(L_H(H_{\hcancel{n}}))), H_n, \mathbf{d})) \rbrace
+\end{equation}
+With $H_{\hcancel{n}}$ being the hash of the header without the nonce. The compressed mix $\mathbf{m}_c$ is obtained as follows:
+\begin{equation}
+ \mathbf{m}_c(\mathbf{h}, \mathbf{n}, \mathbf{d}) = E_{compress}(E_{accesses}(\mathbf{d}, \sum_{i = 0}^{n_{mix}} \mathbf{s}_h(\mathbf{h}, \mathbf{n}), \mathbf{s}_h(\mathbf{h}, \mathbf{h}), -1), -4)
+\end{equation}
+
+The seed hash being:
+\begin{equation}
+ \mathbf{s}_h(\mathbf{h}, \mathbf{n}) = \texttt{KEC512}(\mathbf{h} + E_{revert}(\mathbf{n}))
+\end{equation}
+$E_{revert}(\mathbf{n})$ returns the reverted bytes sequence of the nonce $\mathbf{n}$:
+\begin{equation}
+ E_{revert}(\mathbf{n})[i] = \mathbf{n}[\lVert \mathbf{n} \rVert -i]
+\end{equation}
+We note that the ``$+$''-opertor between two byte sequences results in the concatenation of both sequences.
+
+The dataset $\mathbf{d}$ is obtained as described in section \ref{dataset}.
+
+The number of replicated sequences in the mix is:
+\begin{equation}
+ n_{mix} =  \left\lfloor\frac{J_{mixbytes}}{J_{hashbytes}}\right\rfloor
+\end{equation}
+In order to add random dataset nodes to the mix, the $E_{accesses}$ function is used:
+\begin{equation}
+ E_{accesses}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i) = \begin{cases}
+\mathbf{m} & \text{if} \quad i = J_{accesses} -2 \\
+E_{accesses}(E_{mixdataset}(\mathbf{d}, \mathbf{m}), \mathbf{s}, i + 1) & \text{otherwise}
+\end{cases}
+\end{equation}
+\begin{equation}
+ E_{mixdataset}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i) = E_\text{\tiny FNV}(\mathbf{m}, E_{newdata}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i)
+\end{equation}
+\begin{equation}
+ E_{newdata}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i)[j] = \mathbf{d}[E_\text{\tiny FNV}(i \oplus \mathbf{s}[0], \mathbf{m}[i \mod \left\lfloor\frac{J_{mixbytes}}{J_{wordbytes}}\right\rfloor) \mod \left\lfloor\frac{d_{size} / J_{hashbytes}}{n_{mix}}\right\rfloor \cdot n_{mix} + j]
+\end{equation}
+The mix is compressed as follows:
+\begin{equation}
+ E_{compress}(\mathbf{m}, i) = \begin{cases}
+\mathbf{m} & \text{if} \quad i \geqslant \lVert \mathbf{m} \rVert - 8 \\
+E_{compress}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(\mathbf{m}[i], \mathbf{m}[i + 1]), \mathbf{m}[i + 2]), \mathbf{m}[i + 3]), i + 4) & \text{otherwise}
+\end{cases}
+\end{equation}
+
+\subsection{Mining}
+In order to mine a valid block, one repeatedly chooses a random nonce $\mathbf{n}_{rand} \in \mathbb{B}_{8}$ and calculates the $\mathtt{PoW}$ function until
+\begin{equation}
+ \mathtt{PoW}(H_{\hcancel{n}}, \mathbf{n}_{rand}, \mathbf{d})[1] \leqslant \frac{2^{256}}{H_d}
+\end{equation}
+$H_d$ being the current difficulty of the block.
+\end{document}
