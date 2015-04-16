@@ -429,19 +429,19 @@ The canonical difficulty of a block of header $H$ is defined as $D(H)$:
 \begin{equation}
 D(H) \equiv \begin{cases}
 131072 & \text{if} \quad H_i = 0\\
-{P(H)_H}_d + \lfloor\frac{{P(H)_H}_d}{2048}\rfloor & \text{if} \quad H_s < {P(H)_H}_s + 8\\
+{P(H)_H}_d + \left\lfloor\frac{{P(H)_H}_d}{2048}\right\rfloor & \text{if} \quad H_s < {P(H)_H}_s + 8\\
 \max \{ 131072, x \} & \text{otherwise}\\
 \end{cases}
 \end{equation}
 where:
 \begin{equation}
-x = {P(H)_H}_d - \lfloor\frac{{P(H)_H}_d}{2048}\rfloor
+x = {P(H)_H}_d - \left\lfloor\frac{{P(H)_H}_d}{2048}\right\rfloor
 \end{equation}
 
 The canonical gas limit $H_l$ of a block of header $H$ must fulfil the relation:
 \begin{eqnarray}
-& & H_l < {P(H)_H}_l + \lfloor\frac{{P(H)_H}_l}{1024}\rfloor \quad \wedge \\
-& & H_l > {P(H)_H}_l - \lfloor\frac{{P(H)_H}_l}{1024}\rfloor \quad \wedge \\
+& & H_l < {P(H)_H}_l + \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor \quad \wedge \\
+& & H_l > {P(H)_H}_l - \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor \quad \wedge \\
 & & H_l \geqslant 125000
 \end{eqnarray}
 
@@ -467,8 +467,8 @@ Thus we are able to define the block header validity function $V(H)$:
 V(H) & \equiv & \mathtt{PoW}(H, H_n) \leqslant \frac{2^{256}}{H_d} \quad \wedge \\
 & & H_d = D(H) \quad \wedge \\
 & & H_g \le H_l  \quad \wedge \\
-& & H_l < {P(H)_H}_l + \lfloor\frac{{P(H)_H}_l}{1024}\rfloor  \quad \wedge \\
-& & H_l > {P(H)_H}_l - \lfloor\frac{{P(H)_H}_l}{1024}\rfloor  \quad \wedge \\
+& & H_l < {P(H)_H}_l + \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor  \quad \wedge \\
+& & H_l > {P(H)_H}_l - \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor  \quad \wedge \\
 & & H_l \geqslant 125000  \quad \wedge \\
 & & H_s > {P(H)_H}_s \quad \wedge \\
 & & H_i = {P(H)_H}_i +1 \quad \wedge \\
