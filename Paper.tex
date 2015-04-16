@@ -453,12 +453,12 @@ H_s > {P(H)_H}_s
 
 This mechanism enforces a homeostasis in terms of the time between blocks; a smaller period between the last two blocks results in an increase in the difficulty level and thus additional computation required, lengthening the likely next period. Conversely, if the period is too large, the difficulty, and expected time to the next block, is reduced.
 
-The nonce, $H_n$, must satisfy the relation:
+The nonce, $H_n$, must satisfy the relations:
 \begin{equation}
-\mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})[0] = H_m \quad \wedge \quad \mathtt{PoW}(H, H_n, \mathbf{d})[1] \leqslant \frac{2^{256}}{H_d}
+\mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})[0] = H_m \quad \wedge \quad \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})[1] \leqslant \frac{2^{256}}{H_d}
 \end{equation}
 
-Where $H_{\hcancel{n}}$ is the new block's header $H$, but \textit{without} the nonce component, $\mathbf{d}$ being the current DAG, a large data set needed to compute the mixHash, and $\mathtt{PoW}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an array with the first item being the mixHash, to proof that a correct DAG has been used, and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. Given an approximately uniform distribution in the range $[0, 2^{256})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
+Where $H_{\hcancel{n}}$ is the new block's header $H$, but \textit{without} the nonce component, $\mathbf{d}$ being the current DAG, a large data set needed to compute the mixHash, and $\mathtt{PoW}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an array with the first item being the mixHash, to proof that a correct DAG has been used, and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. Given an approximately uniform distribution in the range $[0, 2^{64})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
 
 This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propagate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because its satisfaction depends on the contents of the block and in turn its composed transactions, creating new, valid, blocks is difficult and, over time, requires approximately the total compute power of the trustworthy portion of the mining peers.
 
@@ -1042,9 +1042,10 @@ Here, $\mathtt{\small TRIE}(L_S(\boldsymbol{\sigma}_i))$ means the hash of the r
 And finally define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
 \begin{eqnarray}
 \Phi(B) & \equiv & B': \quad B' = B^* \quad \text{except:} \\
-B'_n & = & n: \quad \mathtt{PoW}(B^*, n, \mathbf{d})[1] \leqslant \frac{2^{256}}{H_d} \\
+B'_n & = & n: \quad \mathtt{PoW}(B^*_{\hcancel{n}}, n, \mathbf{d})[1] \leqslant \frac{2^{256}}{H_d} \\
 B^* & \equiv & B \quad \text{except:} \quad B'_r = r(\Pi(\Gamma(B), B))
 \end{eqnarray}
+With $\mathbf{d}$ being a dataset as specified in appendix \ref{app:dataset}.
 
 As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of $\Omega$, the block finalisation function and $\Upsilon$, the transaction-evaluation function, both now well-defined.
 
