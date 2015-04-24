@@ -302,7 +302,8 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[gasUsed] A scalar value equal to the total gas used in transactions in this block; formally $H_g$.
 \item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.
 \item[extraData] An arbitrary byte array containing data relevant to this block. This must be 1024 bytes or fewer; formally $H_x$.
-\item[nonce] A 256-bit hash which proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.
+\item[mixHash] A 256-bit hash which proves combined with the nonce that a sufficient amount of computation has been carried out on this block; formally $H_m$.
+\item[nonce] A 64-bit hash which proves combined with the mixHash that a sufficient amount of computation has been carried out on this block; formally $H_n$.
 \end{description}
 
 The other two components in the block are simply a list of ommer block headers (of the same format as above) and a series of the transactions. Formally, we can refer to a block $B$:
@@ -386,7 +387,7 @@ The values stemming from the computation of transactions, specifically the trans
 
 The function $L_B$ and $L_H$ are the preparation functions for a block and block header respectively. Much like the transaction receipt preparation function $L_R$, we assert the types and order of the structure for when the RLP transformation is required:
 \begin{eqnarray}
-\quad L_H(H) & \equiv & (\begin{array}[t]{l}H_p, H_o, H_c, H_r, H_t, H_e, H_b, H_d,\\ H_i, H_l, H_g, H_s, H_x, H_n \; )\end{array} \\
+\quad L_H(H) & \equiv & (\begin{array}[t]{l}H_p, H_o, H_c, H_r, H_t, H_e, H_b, H_d,\\ H_i, H_l, H_g, H_s, H_x, H_m, H_n \; )\end{array} \\
 \quad L_B(B) & \equiv & \big( L_H(B_H), L_T^*(B_\mathbf{T}), L_H^*(B_\mathbf{U}) \big)
 \end{eqnarray}
 
@@ -402,7 +403,7 @@ H_p \in \mathbb{B}_{32} & \wedge & H_o \in \mathbb{B}_{32} & \wedge & H_c \in \m
 H_r \in \mathbb{B}_{32} & \wedge & H_t \in \mathbb{B}_{32} & \wedge & H_e \in \mathbb{B}_{32} & \wedge \\
 H_b \in \mathbb{B}_{256} & \wedge & H_d \in \mathbb{P} & \wedge & H_i \in \mathbb{P} & \wedge \\
 H_l \in \mathbb{P} & \wedge & H_g \in \mathbb{P} & \wedge & H_s \in \mathbb{P} & \wedge \\
-H_x \in \mathbb{B} & \wedge & H_n \in \mathbb{B}_{32}
+H_x \in \mathbb{B} & \wedge & H_m \in \mathbb{B}_{32} & \wedge & H_n \in \mathbb{B}_{8}
 \end{array}
 \end{equation}
 
@@ -429,19 +430,19 @@ The canonical difficulty of a block of header $H$ is defined as $D(H)$:
 \begin{equation}
 D(H) \equiv \begin{cases}
 131072 & \text{if} \quad H_i = 0\\
-{P(H)_H}_d + \lfloor\frac{{P(H)_H}_d}{2048}\rfloor & \text{if} \quad H_s < {P(H)_H}_s + 8\\
+{P(H)_H}_d + \left\lfloor\frac{{P(H)_H}_d}{2048}\right\rfloor & \text{if} \quad H_s < {P(H)_H}_s + 8\\
 \max \{ 131072, x \} & \text{otherwise}\\
 \end{cases}
 \end{equation}
 where:
 \begin{equation}
-x = {P(H)_H}_d - \lfloor\frac{{P(H)_H}_d}{2048}\rfloor
+x = {P(H)_H}_d - \left\lfloor\frac{{P(H)_H}_d}{2048}\right\rfloor
 \end{equation}
 
 The canonical gas limit $H_l$ of a block of header $H$ must fulfil the relation:
 \begin{eqnarray}
-& & H_l < {P(H)_H}_l + \lfloor\frac{{P(H)_H}_l}{1024}\rfloor \quad \wedge \\
-& & H_l > {P(H)_H}_l - \lfloor\frac{{P(H)_H}_l}{1024}\rfloor \quad \wedge \\
+& & H_l < {P(H)_H}_l + \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor \quad \wedge \\
+& & H_l > {P(H)_H}_l - \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor \quad \wedge \\
 & & H_l \geqslant 125000
 \end{eqnarray}
 
@@ -467,8 +468,8 @@ V(H) & \equiv & \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})[0] = H_m \quad \w
 & & \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})[1] \leqslant \frac{2^{256}}{H_d} \quad \wedge \\
 & & H_d = D(H) \quad \wedge \\
 & & H_g \le H_l  \quad \wedge \\
-& & H_l < {P(H)_H}_l + \lfloor\frac{{P(H)_H}_l}{1024}\rfloor  \quad \wedge \\
-& & H_l > {P(H)_H}_l - \lfloor\frac{{P(H)_H}_l}{1024}\rfloor  \quad \wedge \\
+& & H_l < {P(H)_H}_l + \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor  \quad \wedge \\
+& & H_l > {P(H)_H}_l - \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor  \quad \wedge \\
 & & H_l \geqslant 125000  \quad \wedge \\
 & & H_s > {P(H)_H}_s \quad \wedge \\
 & & H_i = {P(H)_H}_i +1 \quad \wedge \\
@@ -1417,7 +1418,10 @@ g_r &=& 1 + \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil\\
 
 The method of signing transactions is similar to the `Electrum style signatures'; it utilises the SECP-256k1 curve as described by \cite{gura2004comparing}.
 
-It is assumed that the sender has a valid private key $p_r$, a randomly selected positive integer in the range $(0, 2^{256})$ represented as a byte array of length 32 in big-endian form.
+It is assumed that the sender has a valid private key $p_r$, a randomly selected positive integer
+% to avoid line break in range definition
+
+in the range $(1, \mathtt{\tiny secp256k1n} - 1)$ represented as a byte array of length 32 in big-endian form.
 
 We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARESTORE}$ and $\mathtt{\small ECDSAPUBKEY}$. These are formally defined in the literature.
 \begin{eqnarray}
@@ -1426,17 +1430,19 @@ We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARESTOR
 \mathtt{\small ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64}
 \end{eqnarray}
 
-Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer $< 2^{256}$). It is assumed that $v$ is the `recovery id', a 1 byte value specifying the sign and finiteness of the curve point; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid.
+Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer in the aforementioned range). It is assumed that $v$ is the `recovery id', a 1 byte value specifying the sign and finiteness of the curve point; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid.
 
 We declare that a signature is invalid unless the following is true:
-\begin{equation}
-v \in \{27,28\} \quad\wedge\quad r < \mathtt{\tiny secp256k1n} \quad\wedge\quad s < \mathtt{\tiny secp256k1p}
-\end{equation}
+\begin{eqnarray}
+0 < r < \mathtt{\tiny secp256k1n} \quad\wedge\quad \\
+0 < s < \mathtt{\tiny secp256k1n} \quad\wedge\quad \\
+v \in \{27,28\}
+\end{eqnarray}
 
 where:
 \begin{eqnarray}
-\mathtt{\tiny secp256k1n} &=& 115792089237316195423570985008687907852837564279074904382605163141518161494337\\
-\mathtt{\tiny secp256k1p} &=& 2^{256} - 2^{32} - 977\\
+\mathtt{\tiny secp256k1n} &=& 115792089237316195423570985008687907852837564279074904382605163141518161494337
+%\mathtt{\tiny secp256k1p} &=& 2^{256} - 2^{32} - 977\\
 \end{eqnarray}
 
 For a given private key, $p_r$, the Ethereum address $A(p_r)$ (a 160-bit value) to which it corresponds is defined as the right most 160-bits of the Keccak hash of the corresponding ECDSA public key:
@@ -1471,7 +1477,7 @@ The assertion that the sender of the a signed transaction equals the address of 
 
 \section{Fee Schedule}\label{app:fees}
 
-The fee schedule $G$ is a tuple of 10 scalar values corresponding to the relative costs, in gas, of a number of abstract operations that a transaction may effect.
+The fee schedule $G$ is a tuple of 31 scalar values corresponding to the relative costs, in gas, of a number of abstract operations that a transaction may effect.
 
 \begin{tabular*}{\columnwidth}[h]{lrl}
 \toprule
@@ -2001,10 +2007,10 @@ R_{suicide} & \text{if} \quad I_a \notin A_\mathbf{s} \\
 
 The genesis block is 13 items, and is specified thus:
 \begin{equation}
-\big( \big( 0_{256}, \mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big), 0_{160}, stateRoot, 0, 2^{22}, 0, 0, 3141592, 0, 0, 0, \mathtt{\tiny KEC}\big( (42) \big) \big), (), () \big)
+\big( \big( 0_{256}, \mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big), 0_{160}, stateRoot, 0, 2^{17}, 0, 0, 3141592, 0, 0, 0, \mathtt{\tiny KEC}\big( (42) \big) \big), (), () \big)
 \end{equation}
 
-Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $0_{160}$ refers to the coinbase address, a 160-bit hash which is all zeroes; $2^{22}$ refers to the difficulty; 0 refers to the timestamp (the Unix epoch); the transaction trie root and extradata are both $0$, being equivalent to the empty byte array. The sequences of both ommers and transactions are empty and represented by $()$. $\mathtt{\tiny KEC}\big( (42) \big)$ refers to the Keccak hash of a byte array of length one whose first and only byte is of value 42. $\mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big)$ value refers to the hash of the ommer lists in RLP, both empty lists.
+Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $0_{160}$ refers to the coinbase address, a 160-bit hash which is all zeroes; $2^{17}$ refers to the difficulty; 0 refers to the timestamp (the Unix epoch); the transaction trie root and extradata are both $0$, being equivalent to the empty byte array. The sequences of both ommers and transactions are empty and represented by $()$. $\mathtt{\tiny KEC}\big( (42) \big)$ refers to the Keccak hash of a byte array of length one whose first and only byte is of value 42. $\mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big)$ value refers to the hash of the ommer lists in RLP, both empty lists.
 
 The proof-of-concept series include a development premine, making the state root hash some value $stateRoot$. The latest documentation should be consulted for the value of the state root.
 
