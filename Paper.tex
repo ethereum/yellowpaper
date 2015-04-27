@@ -303,7 +303,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.
 \item[extraData] An arbitrary byte array containing data relevant to this block. This must be 1024 bytes or fewer; formally $H_x$.
 \item[mixHash] A 256-bit hash which proves combined with the nonce that a sufficient amount of computation has been carried out on this block; formally $H_m$.
-\item[nonce] A 64-bit hash which proves combined with the mixHash that a sufficient amount of computation has been carried out on this block; formally $H_n$.
+\item[nonce] A 64-bit hash which proves combined with the mix-hash that a sufficient amount of computation has been carried out on this block; formally $H_n$.
 \end{description}
 
 The other two components in the block are simply a list of ommer block headers (of the same format as above) and a series of the transactions. Formally, we can refer to a block $B$:
@@ -458,7 +458,7 @@ The nonce, $H_n$, must satisfy the relations:
 \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})[0] = H_m \quad \wedge \quad \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})[1] \leqslant \frac{2^{256}}{H_d}
 \end{equation}
 
-Where $H_{\hcancel{n}}$ is the new block's header $H$, but \textit{without} the nonce component, $\mathbf{d}$ being the current DAG, a large data set needed to compute the mixHash, and $\mathtt{PoW}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an array with the first item being the mixHash, to proof that a correct DAG has been used, and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. Given an approximately uniform distribution in the range $[0, 2^{64})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
+Where $H_{\hcancel{n}}$ is the new block's header $H$, but \textit{without} the nonce and mix-hash components, $\mathbf{d}$ being the current DAG, a large data set needed to compute the mix-hash, and $\mathtt{PoW}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an array with the first item being the mix-hash, to proof that a correct DAG has been used, and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. Given an approximately uniform distribution in the range $[0, 2^{64})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
 
 This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propagate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because its satisfaction depends on the contents of the block and in turn its composed transactions, creating new, valid, blocks is difficult and, over time, requires approximately the total compute power of the trustworthy portion of the mining peers.
 
