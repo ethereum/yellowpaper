@@ -303,7 +303,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.
 \item[extraData] An arbitrary byte array containing data relevant to this block. This must be 1024 bytes or fewer; formally $H_x$.
 \item[mixHash] A 256-bit hash which proves combined with the nonce that a sufficient amount of computation has been carried out on this block; formally $H_m$.
-\item[nonce] A 64-bit hash which proves combined with the mixHash that a sufficient amount of computation has been carried out on this block; formally $H_n$.
+\item[nonce] A 64-bit hash which proves combined with the mix-hash that a sufficient amount of computation has been carried out on this block; formally $H_n$.
 \end{description}
 
 The other two components in the block are simply a list of ommer block headers (of the same format as above) and a series of the transactions. Formally, we can refer to a block $B$:
@@ -430,19 +430,19 @@ The canonical difficulty of a block of header $H$ is defined as $D(H)$:
 \begin{equation}
 D(H) \equiv \begin{cases}
 131072 & \text{if} \quad H_i = 0\\
-{P(H)_H}_d + \lfloor\frac{{P(H)_H}_d}{2048}\rfloor & \text{if} \quad H_s < {P(H)_H}_s + 8\\
+{P(H)_H}_d + \left\lfloor\frac{{P(H)_H}_d}{2048}\right\rfloor & \text{if} \quad H_s < {P(H)_H}_s + 8\\
 \max \{ 131072, x \} & \text{otherwise}\\
 \end{cases}
 \end{equation}
 where:
 \begin{equation}
-x = {P(H)_H}_d - \lfloor\frac{{P(H)_H}_d}{2048}\rfloor
+x = {P(H)_H}_d - \left\lfloor\frac{{P(H)_H}_d}{2048}\right\rfloor
 \end{equation}
 
 The canonical gas limit $H_l$ of a block of header $H$ must fulfil the relation:
 \begin{eqnarray}
-& & H_l < {P(H)_H}_l + \lfloor\frac{{P(H)_H}_l}{1024}\rfloor \quad \wedge \\
-& & H_l > {P(H)_H}_l - \lfloor\frac{{P(H)_H}_l}{1024}\rfloor \quad \wedge \\
+& & H_l < {P(H)_H}_l + \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor \quad \wedge \\
+& & H_l > {P(H)_H}_l - \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor \quad \wedge \\
 & & H_l \geqslant 125000
 \end{eqnarray}
 
@@ -455,26 +455,27 @@ This mechanism enforces a homeostasis in terms of the time between blocks; a sma
 
 The nonce, $H_n$, must satisfy the relations:
 \begin{equation}
-\mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})[0] = H_m \quad \wedge \quad \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})[1] \leqslant \frac{2^{256}}{H_d}
+n \leqslant \frac{2^{256}}{H_d} \quad \wedge \quad m = H_m
 \end{equation}
+with $(n, m) = \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})$.
 
-Where $H_{\hcancel{n}}$ is the new block's header $H$, but \textit{without} the nonce component, $\mathbf{d}$ being the current DAG, a large data set needed to compute the mixHash, and $\mathtt{PoW}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an array with the first item being the mixHash, to proof that a correct DAG has been used, and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. Given an approximately uniform distribution in the range $[0, 2^{64})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
+Where $H_{\hcancel{n}}$ is the new block's header $H$, but \textit{without} the nonce and mix-hash components, $\mathbf{d}$ being the current DAG, a large data set needed to compute the mix-hash, and $\mathtt{PoW}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an array with the first item being the mix-hash, to proof that a correct DAG has been used, and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. Given an approximately uniform distribution in the range $[0, 2^{64})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
 
 This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propagate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because its satisfaction depends on the contents of the block and in turn its composed transactions, creating new, valid, blocks is difficult and, over time, requires approximately the total compute power of the trustworthy portion of the mining peers.
 
 Thus we are able to define the block header validity function $V(H)$:
 \begin{eqnarray}
-V(H) & \equiv & \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})[0] = H_m \quad \wedge \\
-& & \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})[1] \leqslant \frac{2^{256}}{H_d} \quad \wedge \\
+V(H) & \equiv &  n \leqslant \frac{2^{256}}{H_d} \wedge m = H_m \quad \wedge \\
 & & H_d = D(H) \quad \wedge \\
 & & H_g \le H_l  \quad \wedge \\
-& & H_l < {P(H)_H}_l + \lfloor\frac{{P(H)_H}_l}{1024}\rfloor  \quad \wedge \\
-& & H_l > {P(H)_H}_l - \lfloor\frac{{P(H)_H}_l}{1024}\rfloor  \quad \wedge \\
+& & H_l < {P(H)_H}_l + \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor  \quad \wedge \\
+& & H_l > {P(H)_H}_l - \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor  \quad \wedge \\
 & & H_l \geqslant 125000  \quad \wedge \\
 & & H_s > {P(H)_H}_s \quad \wedge \\
 & & H_i = {P(H)_H}_i +1 \quad \wedge \\
 & & \lVert H_x \rVert \le 1024
 \end{eqnarray}
+where $(n, m) = \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})$
 
 Noting additionally that \textbf{extraData} must be at most 1024 bytes.
 
@@ -1042,7 +1043,8 @@ Here, $\mathtt{\small TRIE}(L_S(\boldsymbol{\sigma}_i))$ means the hash of the r
 And finally define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
 \begin{eqnarray}
 \Phi(B) & \equiv & B': \quad B' = B^* \quad \text{except:} \\
-B'_n & = & n: \quad \mathtt{PoW}(B^*_{\hcancel{n}}, n, \mathbf{d})[1] \leqslant \frac{2^{256}}{H_d} \\
+B'_n & = & n: \quad x \leqslant \frac{2^{256}}{H_d} \\
+B'_m & = & m \quad \text{with } (x, m) = \mathtt{PoW}(B^*_{\hcancel{n}}, n, \mathbf{d}) \\
 B^* & \equiv & B \quad \text{except:} \quad B'_r = r(\Pi(\Gamma(B), B))
 \end{eqnarray}
 With $\mathbf{d}$ being a dataset as specified in appendix \ref{app:dataset}.
@@ -1387,7 +1389,10 @@ g_r &=& 1 + \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil\\
 
 The method of signing transactions is similar to the `Electrum style signatures'; it utilises the SECP-256k1 curve as described by \cite{gura2004comparing}.
 
-It is assumed that the sender has a valid private key $p_r$, a randomly selected positive integer in the range $(0, 2^{256})$ represented as a byte array of length 32 in big-endian form.
+It is assumed that the sender has a valid private key $p_r$, a randomly selected positive integer
+% to avoid line break in range definition
+
+in the range $(1, \mathtt{\tiny secp256k1n} - 1)$ represented as a byte array of length 32 in big-endian form.
 
 We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARESTORE}$ and $\mathtt{\small ECDSAPUBKEY}$. These are formally defined in the literature.
 \begin{eqnarray}
@@ -1396,17 +1401,19 @@ We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARESTOR
 \mathtt{\small ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64}
 \end{eqnarray}
 
-Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer $< 2^{256}$). It is assumed that $v$ is the `recovery id', a 1 byte value specifying the sign and finiteness of the curve point; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid.
+Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer in the aforementioned range). It is assumed that $v$ is the `recovery id', a 1 byte value specifying the sign and finiteness of the curve point; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid.
 
 We declare that a signature is invalid unless the following is true:
-\begin{equation}
-v \in \{27,28\} \quad\wedge\quad r < \mathtt{\tiny secp256k1n} \quad\wedge\quad s < \mathtt{\tiny secp256k1p}
-\end{equation}
+\begin{eqnarray}
+0 < r < \mathtt{\tiny secp256k1n} \quad\wedge\quad \\
+0 < s < \mathtt{\tiny secp256k1n} \quad\wedge\quad \\
+v \in \{27,28\}
+\end{eqnarray}
 
 where:
 \begin{eqnarray}
-\mathtt{\tiny secp256k1n} &=& 115792089237316195423570985008687907852837564279074904382605163141518161494337\\
-\mathtt{\tiny secp256k1p} &=& 2^{256} - 2^{32} - 977\\
+\mathtt{\tiny secp256k1n} &=& 115792089237316195423570985008687907852837564279074904382605163141518161494337
+%\mathtt{\tiny secp256k1p} &=& 2^{256} - 2^{32} - 977\\
 \end{eqnarray}
 
 For a given private key, $p_r$, the Ethereum address $A(p_r)$ (a 160-bit value) to which it corresponds is defined as the right most 160-bits of the Keccak hash of the corresponding ECDSA public key:
@@ -1441,7 +1448,7 @@ The assertion that the sender of the a signed transaction equals the address of 
 
 \section{Fee Schedule}\label{app:fees}
 
-The fee schedule $G$ is a tuple of 10 scalar values corresponding to the relative costs, in gas, of a number of abstract operations that a transaction may effect.
+The fee schedule $G$ is a tuple of 31 scalar values corresponding to the relative costs, in gas, of a number of abstract operations that a transaction may effect.
 
 \begin{tabular*}{\columnwidth}[h]{lrl}
 \toprule
@@ -1971,10 +1978,10 @@ R_{suicide} & \text{if} \quad I_a \notin A_\mathbf{s} \\
 
 The genesis block is 13 items, and is specified thus:
 \begin{equation}
-\big( \big( 0_{256}, \mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big), 0_{160}, stateRoot, 0, 2^{22}, 0, 0, 3141592, 0, 0, 0, \mathtt{\tiny KEC}\big( (42) \big) \big), (), () \big)
+\big( \big( 0_{256}, \mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big), 0_{160}, stateRoot, 0, 2^{17}, 0, 0, 3141592, 0, 0, 0, \mathtt{\tiny KEC}\big( (42) \big) \big), (), () \big)
 \end{equation}
 
-Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $0_{160}$ refers to the coinbase address, a 160-bit hash which is all zeroes; $2^{22}$ refers to the difficulty; 0 refers to the timestamp (the Unix epoch); the transaction trie root and extradata are both $0$, being equivalent to the empty byte array. The sequences of both ommers and transactions are empty and represented by $()$. $\mathtt{\tiny KEC}\big( (42) \big)$ refers to the Keccak hash of a byte array of length one whose first and only byte is of value 42. $\mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big)$ value refers to the hash of the ommer lists in RLP, both empty lists.
+Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $0_{160}$ refers to the coinbase address, a 160-bit hash which is all zeroes; $2^{17}$ refers to the difficulty; 0 refers to the timestamp (the Unix epoch); the transaction trie root and extradata are both $0$, being equivalent to the empty byte array. The sequences of both ommers and transactions are empty and represented by $()$. $\mathtt{\tiny KEC}\big( (42) \big)$ refers to the Keccak hash of a byte array of length one whose first and only byte is of value 42. $\mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big)$ value refers to the hash of the ommer lists in RLP, both empty lists.
 
 The proof-of-concept series include a development premine, making the state root hash some value $stateRoot$. The latest documentation should be consulted for the value of the state root.
 
