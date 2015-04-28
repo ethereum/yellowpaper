@@ -1092,10 +1092,10 @@ Two directions exist for ASIC resistance; firstly make it sequential memory-hard
 
 More formally, the proof-of-work function takes the form of $\mathtt{PoW}$:
 \begin{equation}
-\mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})[0] = H_m \quad \wedge \quad \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})[1] \leqslant \frac{2^{256}}{H_d}
+m = H_m \quad \wedge \quad n \leqslant \frac{2^{256}}{H_d} \quad \text{with} \quad (m, n) = \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})
 \end{equation}
 
-Where $H_{\hcancel{n}}$ is the new block's header but \textit{without} the nonce component; $H_n$ is the nonce of the header; $\mathbf{d}$ is a large data set needed to compute the mixHash and $H_d$ is the new block's difficulty value (i.e. the block difficulty from section \ref{ch:ghost}). $\mathtt{PoW}$ is the proof-of-work function which evaluates to an array with the first item being the mixHash and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. The underlying algorithm is called Ethash and is described below.
+Where $H_{\hcancel{n}}$ is the new block's header but \textit{without} the nonce and mix-hash components; $H_n$ is the nonce of the header; $\mathbf{d}$ is a large data set needed to compute the mixHash and $H_d$ is the new block's difficulty value (i.e. the block difficulty from section \ref{ch:ghost}). $\mathtt{PoW}$ is the proof-of-work function which evaluates to an array with the first item being the mixHash and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. The underlying algorithm is called Ethash and is described below.
 \subsubsection{Ethash}
 Ethash is the planned PoW algorithm for Ethereum 1.0. It is the latest version of Dagger-Hashimoto, introduced by \cite{dagger} and \cite{hashimoto}, although it can no longer appropriately be called that since many of the original features of both algorithms have been drastically changed in the last month of research and development. The general route that the algorithm takes is as follows:
 
