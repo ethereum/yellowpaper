@@ -303,7 +303,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.
 \item[extraData] An arbitrary byte array containing data relevant to this block. This must be 1024 bytes or fewer; formally $H_x$.
 \item[mixHash] A 256-bit hash which proves combined with the nonce that a sufficient amount of computation has been carried out on this block; formally $H_m$.
-\item[nonce] A 64-bit hash which proves combined with the mixHash that a sufficient amount of computation has been carried out on this block; formally $H_n$.
+\item[nonce] A 64-bit hash which proves combined with the mix-hash that a sufficient amount of computation has been carried out on this block; formally $H_n$.
 \end{description}
 
 The other two components in the block are simply a list of ommer block headers (of the same format as above) and a series of the transactions. Formally, we can refer to a block $B$:
@@ -453,19 +453,19 @@ H_s > {P(H)_H}_s
 
 This mechanism enforces a homeostasis in terms of the time between blocks; a smaller period between the last two blocks results in an increase in the difficulty level and thus additional computation required, lengthening the likely next period. Conversely, if the period is too large, the difficulty, and expected time to the next block, is reduced.
 
-The nonce, $H_n$, must satisfy the relation:
+The nonce, $H_n$, must satisfy the relations:
 \begin{equation}
-%\mathtt{PoW}(H, H_n) \dfrac{\leqslant}{den} \frac{2^{256}}{H_d}
-\mathtt{PoW}(H, H_n) \leqslant \frac{2^{256}}{H_d}
+n \leqslant \frac{2^{256}}{H_d} \quad \wedge \quad m = H_m
 \end{equation}
+with $(n, m) = \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})$.
 
-Where $\mathtt{PoW}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an pseudo-random number cryptographically dependent on the parameters $H$ and $H_n$. Given an approximately uniform distribution in the range $[0, 2^{256})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
+Where $H_{\hcancel{n}}$ is the new block's header $H$, but \textit{without} the nonce and mix-hash components, $\mathbf{d}$ being the current DAG, a large data set needed to compute the mix-hash, and $\mathtt{PoW}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an array with the first item being the mix-hash, to proof that a correct DAG has been used, and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. Given an approximately uniform distribution in the range $[0, 2^{64})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
 
 This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propagate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because its satisfaction depends on the contents of the block and in turn its composed transactions, creating new, valid, blocks is difficult and, over time, requires approximately the total compute power of the trustworthy portion of the mining peers.
 
 Thus we are able to define the block header validity function $V(H)$:
 \begin{eqnarray}
-V(H) & \equiv & \mathtt{PoW}(H, H_n) \leqslant \frac{2^{256}}{H_d} \quad \wedge \\
+V(H) & \equiv &  n \leqslant \frac{2^{256}}{H_d} \wedge m = H_m \quad \wedge \\
 & & H_d = D(H) \quad \wedge \\
 & & H_g \le H_l  \quad \wedge \\
 & & H_l < {P(H)_H}_l + \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor  \quad \wedge \\
@@ -475,6 +475,7 @@ V(H) & \equiv & \mathtt{PoW}(H, H_n) \leqslant \frac{2^{256}}{H_d} \quad \wedge 
 & & H_i = {P(H)_H}_i +1 \quad \wedge \\
 & & \lVert H_x \rVert \le 1024
 \end{eqnarray}
+where $(n, m) = \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})$
 
 Noting additionally that \textbf{extraData} must be at most 1024 bytes.
 
@@ -1042,9 +1043,11 @@ Here, $\mathtt{\small TRIE}(L_S(\boldsymbol{\sigma}_i))$ means the hash of the r
 And finally define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
 \begin{eqnarray}
 \Phi(B) & \equiv & B': \quad B' = B^* \quad \text{except:} \\
-B'_n & = & n: \quad \mathtt{PoW}(B^*, n) < \frac{2^{256}}{H_d} \\
+B'_n & = & n: \quad x \leqslant \frac{2^{256}}{H_d} \\
+B'_m & = & m \quad \text{with } (x, m) = \mathtt{PoW}(B^*_{\hcancel{n}}, n, \mathbf{d}) \\
 B^* & \equiv & B \quad \text{except:} \quad B'_r = r(\Pi(\Gamma(B), B))
 \end{eqnarray}
+With $\mathbf{d}$ being a dataset as specified in appendix \ref{app:dataset}.
 
 As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of $\Omega$, the block finalisation function and $\Upsilon$, the transaction-evaluation function, both now well-defined.
 
