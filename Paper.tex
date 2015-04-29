@@ -956,19 +956,15 @@ However, instructions do typically alter one or several components of these valu
 
 The canonical blockchain is a path from root to leaf through the entire block tree. In order to have consensus over which path it is, conceptually we identify the path that has had the most computation done upon it, or, the \textit{heaviest} path. Clearly one factor that helps determine the heaviest path is the block number of the leaf, equivalent to the number of blocks, not counting the unmined genesis block, in the path. The longer the path, the greater the total mining effort that must have been done in order to arrive at the leaf. This is akin to existing schemes, such as that employed in Bitcoin-derived protocols.
 
-This scheme notably ignores so-called \textit{stale} blocks: valid, mined blocks, which were propagated too late into the network and thus were beaten to network consensus by a sibling block (one with the same parent). Such blocks become more common as the network propagation time approaches the ideal inter-block time. However, by counting the computation work of stale block headers, we are able to do better: we can utilise this otherwise wasted computation and put it to use in helping to buttress the more popular blockchain making it a stronger choice over less popular (though potentially longer) competitors.
-
-This increases overall network security by making it much harder for an adversary to silently mine a canonical blockchain (which, it is assumed, would contain different transactions to the current consensus) and dump it on the network with the effect of overriding existing blocks and reversing the transactions within.
-
-In order to validate the extra computation, a given block $B$ may include the block headers from any known ommer blocks (i.e. blocks whose parent is equivalent to the $N$th generation grandparent of $B$, for a limited set of $N$). Since a block header includes the nonce, a proof-of-work, then the header alone is enough to validate the computation done. Any such blocks contribute toward the total computation or \textit{total difficulty} of a chain that includes them. To incentivise computation and inclusion, a reward is given both to the miner of the stale block and the miner of the block that references it.
+Since a block header includes the difficulty, the header alone is enough to validate the computation done. Any block contributes toward the total computation or \textit{total difficulty} of a chain.
 
 Thus we define the total difficulty of block $B$ recursively as:
 \begin{eqnarray}
-B_t & \equiv & B'_t + B_d + \sum\limits_{U \in B_\mathbf{U}} U_d \\
+B_t & \equiv & B'_t + B_d \\
 B' & \equiv & P(B_H)
 \end{eqnarray}
 
-As such given a block $B$, $B_t$ is its total difficulty, $B'$ is its parent block, $B_d$ is its difficulty and $B_\mathbf{U}$ is its set of ommer blocks.
+As such given a block $B$, $B_t$ is its total difficulty, $B'$ is its parent block and $B_d$ is its difficulty.
 
 \section{Block Finalisation} \label{ch:finalisation}
 
