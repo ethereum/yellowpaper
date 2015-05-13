@@ -1221,7 +1221,7 @@ R_b(\mathbf{x}) & \equiv & \begin{cases}
 (128 + \lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{else if} \quad \lVert \mathbf{x} \rVert < 56 \\
 \big(183 + \big\lVert \mathtt{\tiny BE}(\lVert \mathbf{x} \rVert) \big\rVert \big) \cdot \mathtt{\tiny BE}(\lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{otherwise}
 \end{cases} \\
-\mathtt{\tiny BE}(x) & \equiv & (b_0, b_1, ...): b_0 \neq 0 \wedge \sum_{n = 0}^{n < \lVert \mathbf{b} \rVert - 1} b_n256^{\lVert \mathbf{b} \rVert - 1 - n} \\
+\mathtt{\tiny BE}(x) & \equiv & (b_0, b_1, ...): b_0 \neq 0 \wedge \sum_{n = 0}^{n < \lVert \mathbf{b} \rVert - 1} b_n \cdot 256^{\lVert \mathbf{b} \rVert - 1 - n} \\
 (a) \cdot (b, c) \cdot (d, e) & = & (a, b, c, d, e)
 \end{eqnarray}
 
@@ -1264,7 +1264,7 @@ It is defined as the function $\mathtt{\tiny HP}$ which maps from a sequence of 
 (16(f(t) + 1) + \mathbf{x}[0], 16\mathbf{x}[1] + \mathbf{x}[2], 16\mathbf{x}[3] + \mathbf{x}[4], ...) &
 \text{otherwise}
 \end{cases} \\
-f(t) & \equiv & \begin{cases} 2 & \text{if} \quad t \\ 0 & \text{otherwise} \end{cases}
+f(t) & \equiv & \begin{cases} 2 & \text{if} \quad t \neq 0 \\ 0 & \text{otherwise} \end{cases}
 \end{eqnarray}
 
 Thus the high nibble of the first byte contains two flags; the lowest bit encoding the oddness of the length and the second-lowest encoding the flag $t$. The low nibble of the first byte is zero in the case of an even number of nibbles and the first nibble in the case of an odd number. All remaining nibbles (now an even number) fit properly into the remaining bytes.
