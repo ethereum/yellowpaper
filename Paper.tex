@@ -1018,7 +1018,7 @@ The application of rewards to a block involves raising the balance of the accoun
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
 \boldsymbol{\sigma}'[{B_H}_c]_b & = & \boldsymbol{\sigma}[{B_H}_c]_b + (1 + \frac{|B_\mathbf{U}|}{32})R_b \\
 \forall_{U \in B_\mathbf{U}}: \\ \nonumber
- \boldsymbol{\sigma}'[U_c]_b & = & \boldsymbol{\sigma}[U_c]_b + (1 - \frac{1}{8} (U_i - {B_H}_i)) R_b 
+ \boldsymbol{\sigma}'[U_c]_b & = & \boldsymbol{\sigma}[U_c]_b + (1 + \frac{1}{8} (U_i - {B_H}_i)) R_b 
 \end{eqnarray}
 
 If there are collisions of the coinbase addresses between ommers and the block (i.e. two ommers with the same coinbase address or an ommer with the same coinbase address as the present block), additions are applied cumulatively.
