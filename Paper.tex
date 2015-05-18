@@ -149,7 +149,7 @@ The two sets of highly structured, `top-level', state values, are denoted with b
 
 Functions operating on highly structured values are denoted with an upper-case greek letter, \eg $\Upsilon$, the Ethereum state transition function.
 
-For most functions, an uppercase letter is used, e.g. $C$, the general cost function. These may be subscripted to denote specialised variants, \eg $C_\text{\tiny SSTORE}$, the cost function for the {\tiny SSTORE} operation. For specialised and possibly externally defined functions, I may format as typewriter text, \eg the Keccak-256 hash function (as per the winning entry to the SHA-3 contest) is denoted $\texttt{KEC}$ (and generally referred to as plain Keccak).
+For most functions, an uppercase letter is used, e.g. $C$, the general cost function. These may be subscripted to denote specialised variants, \eg $C_\text{\tiny SSTORE}$, the cost function for the {\tiny SSTORE} operation. For specialised and possibly externally defined functions, I may format as typewriter text, \eg the Keccak-256 hash function (as per the winning entry to the SHA-3 contest) is denoted $\texttt{KEC}$ (and generally referred to as plain Keccak). Also $\texttt{KEC512}$ is referring to the Keccak 512 hash function.
 
 Tuples are typically denoted with an upper-case letter, \eg $T$, is used to denote an Ethereum transaction. This symbol may, if accordingly defined, be subscripted to refer to an individual component, \eg $T_n$, denotes the nonce of said transaction. The form of the subscript is used to denote its type; \eg uppercase subscripts refer to tuples with subscriptable components.
 
@@ -269,7 +269,7 @@ Here, we assume all components are interpreted by the RLP as integer values, wit
 T_n \in \mathbb{P}_{256} & \wedge & T_v \in \mathbb{P}_{256} & \wedge & T_p \in \mathbb{P}_{256} & \wedge \\
 T_g \in \mathbb{P}_{256} & \wedge & T_w \in \mathbb{P}_5 & \wedge & T_r \in \mathbb{P}_{256} & \wedge \\
 T_s \in \mathbb{P}_{256} & \wedge & T_\mathbf{d} \in \mathbb{B} & \wedge & T_\mathbf{i} \in \mathbb{B}
-\end{array}\dfrac{num}{den}
+\end{array}
 \end{equation}
 where
 \begin{equation}
@@ -756,7 +756,7 @@ The execution model specifies how the system state is altered given a series of 
 
 \subsection{Basics}
 
-The EVM is a simple stack-based architecture. The word size of the machine (and thus size of stack item) is 256-bit. This was chosen to facilitate the Keccak-256 hash scheme and elliptic-curve computations. The memory model is a simple word-addressed byte array. The stack has an unlimited size. The machine also has an independent storage model; this is similar in concept to the memory but rather than a byte array, it is a word-addressable word array. Unlike memory, which is volatile, storage is non volatile and is maintained as part of the system state. All locations in both storage and memory are well-defined initially as zero.
+The EVM is a simple stack-based architecture. The word size of the machine (and thus size of stack item) is 256-bit. This was chosen to facilitate the Keccak-256 hash scheme and elliptic-curve computations. The memory model is a simple word-addressed byte array. The stack has a maximum size of $1024$. The machine also has an independent storage model; this is similar in concept to the memory but rather than a byte array, it is a word-addressable word array. Unlike memory, which is volatile, storage is non volatile and is maintained as part of the system state. All locations in both storage and memory are well-defined initially as zero.
 
 The machine does not follow the standard von Neumann architecture. Rather than storing program code in generally-accessible memory or storage, it is stored separately in a virtual ROM interactable only through a specialised instruction.
 
@@ -764,7 +764,7 @@ The machine can have exceptional execution for several reasons, including stack 
 
 \subsection{Fees Overview}
 
-Fees (denominated in gas) are charged under three distinct circumstances, all three as prerequisite to the execution of an operation. The first and most common is the fee intrinsic to the computation of the operation. Most operations require a single gas fee to be paid for their execution; exceptions include {\small SSTORE}, {\small SLOAD}, {\small CALL}, {\small CREATE}, {\small BALANCE}, {\small EXP}, {\small LOG} and {\small SHA3}. Secondly, gas may be deducted in order to form the payment for a subordinate message call or contract creation; this forms part of the payment for {\small CREATE}, {\small CALL} and {\small CALLCODE}. Finally, gas may be paid due to an increase in the usage of the memory.
+Fees (denominated in gas) are charged under three distinct circumstances, all three as prerequisite to the execution of an operation. The first and most common is the fee intrinsic to the computation of the operation (see Appendix \ref{app:fees}). Secondly, gas may be deducted in order to form the payment for a subordinate message call or contract creation; this forms part of the payment for {\small CREATE}, {\small CALL} and {\small CALLCODE}. Finally, gas may be paid due to an increase in the usage of the memory.
 
 Over an account's execution, the total fee for memory-usage payable is proportional to smallest multiple of 32 bytes that are required such that all memory indices (whether for read or write) are included in the range. This is paid for on a just-in-time basis; as such, referencing an area of memory at least 32 bytes greater than any previously indexed memory will certainly result in an additional memory usage fee. Due to this fee it is highly unlikely addresses will ever go above 32-bit bounds. That said, implementations must be able to manage this eventuality.
 
@@ -957,19 +957,15 @@ However, instructions do typically alter one or several components of these valu
 
 The canonical blockchain is a path from root to leaf through the entire block tree. In order to have consensus over which path it is, conceptually we identify the path that has had the most computation done upon it, or, the \textit{heaviest} path. Clearly one factor that helps determine the heaviest path is the block number of the leaf, equivalent to the number of blocks, not counting the unmined genesis block, in the path. The longer the path, the greater the total mining effort that must have been done in order to arrive at the leaf. This is akin to existing schemes, such as that employed in Bitcoin-derived protocols.
 
-This scheme notably ignores so-called \textit{stale} blocks: valid, mined blocks, which were propagated too late into the network and thus were beaten to network consensus by a sibling block (one with the same parent). Such blocks become more common as the network propagation time approaches the ideal inter-block time. However, by counting the computation work of stale block headers, we are able to do better: we can utilise this otherwise wasted computation and put it to use in helping to buttress the more popular blockchain making it a stronger choice over less popular (though potentially longer) competitors.
-
-This increases overall network security by making it much harder for an adversary to silently mine a canonical blockchain (which, it is assumed, would contain different transactions to the current consensus) and dump it on the network with the effect of overriding existing blocks and reversing the transactions within.
-
-In order to validate the extra computation, a given block $B$ may include the block headers from any known ommer blocks (i.e. blocks whose parent is equivalent to the $N$th generation grandparent of $B$, for a limited set of $N$). Since a block header includes the nonce, a proof-of-work, then the header alone is enough to validate the computation done. Any such blocks contribute toward the total computation or \textit{total difficulty} of a chain that includes them. To incentivise computation and inclusion, a reward is given both to the miner of the stale block and the miner of the block that references it.
+Since a block header includes the difficulty, the header alone is enough to validate the computation done. Any block contributes toward the total computation or \textit{total difficulty} of a chain.
 
 Thus we define the total difficulty of block $B$ recursively as:
 \begin{eqnarray}
-B_t & \equiv & B'_t + B_d + \sum\limits_{U \in B_\mathbf{U}} U_d \\
+B_t & \equiv & B'_t + B_d \\
 B' & \equiv & P(B_H)
 \end{eqnarray}
 
-As such given a block $B$, $B_t$ is its total difficulty, $B'$ is its parent block, $B_d$ is its difficulty and $B_\mathbf{U}$ is its set of ommer blocks.
+As such given a block $B$, $B_t$ is its total difficulty, $B'$ is its parent block and $B_d$ is its difficulty.
 
 \section{Block Finalisation} \label{ch:finalisation}
 
@@ -1018,7 +1014,7 @@ The application of rewards to a block involves raising the balance of the accoun
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
 \boldsymbol{\sigma}'[{B_H}_c]_b & = & \boldsymbol{\sigma}[{B_H}_c]_b + (1 + \frac{|B_\mathbf{U}|}{32})R_b \\
 \forall_{U \in B_\mathbf{U}}: \\ \nonumber
- \boldsymbol{\sigma}'[U_c]_b & = & \boldsymbol{\sigma}[U_c]_b + (1 - \frac{1}{8} (U_i - {B_H}_i)) R_b 
+ \boldsymbol{\sigma}'[U_c]_b & = & \boldsymbol{\sigma}[U_c]_b + (1 + \frac{1}{8} (U_i - {B_H}_i)) R_b 
 \end{eqnarray}
 
 If there are collisions of the coinbase addresses between ommers and the block (i.e. two ommers with the same coinbase address or an ommer with the same coinbase address as the present block), additions are applied cumulatively.
@@ -1113,9 +1109,7 @@ A data feed contract is one which provides a single service: it gives access to 
 The general pattern involves a single contract within Ethereum which, when given a message call, replies with some timely information concerning an external phenomenon. An example might be the local temperature of New York City. This would be implemented as a contract that returned that value of some known point in storage. Of course this point in storage must be maintained with the correct such temperature, and thus the second part of the pattern would be for an external server to run an Ethereum node, and immediately on discovery of a new block, creates a new valid transaction, sent to the contract, updating said value in storage. The contract's code would accept such updates only from the identity contained on said server.
 
 \subsection{Random Numbers}
-Providing random numbers within a deterministic system is, naturally, an impossible task. However, we can approximate with pseudo-random numbers by utilising data which is generally unknowable at the time of transacting. Such data might include the block's hash, the block's timestamp and the block's coinbase address. For a series of such numbers, a trivial solution would be to work from the previous pseudo-random number, adding some constant amount and hashing the result.
-
-This strategy does have a downside: a miner with sufficient power could alter any of the above values in order to deliver a seed in order to alter the outcome of the pseudorandom-based executions. For a more secure pseudo-random offering, all involved parties could agree on a number of data feed contracts; these could be combined along with the block timestamp and hashed to produce the first number in the series. By spreading the inputs and thus the trust between numerous parties the likelihood of a malicious miner altering the outcome becomes increasingly less likely.
+Providing random numbers within a deterministic system is, naturally, an impossible task. However, we can approximate with pseudo-random numbers by utilising data which is generally unknowable at the time of transacting. Such data might include the block's hash, the block's timestamp and the block's coinbase address. In order to make it hard for malicious miner to control those values, one should use the {\small BLOCKHASH} operation in order to use hashes of the previous 256 blocks as pseudo-random numbers. For a series of such numbers, a trivial solution would be to add some constant amount and hashing the result.
 
 \section{Future Directions} \label{ch:future}
 
@@ -1221,7 +1215,7 @@ R_b(\mathbf{x}) & \equiv & \begin{cases}
 (128 + \lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{else if} \quad \lVert \mathbf{x} \rVert < 56 \\
 \big(183 + \big\lVert \mathtt{\tiny BE}(\lVert \mathbf{x} \rVert) \big\rVert \big) \cdot \mathtt{\tiny BE}(\lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{otherwise}
 \end{cases} \\
-\mathtt{\tiny BE}(x) & \equiv & (b_0, b_1, ...): b_0 \neq 0 \wedge \sum_{n = 0}^{n < \lVert \mathbf{b} \rVert - 1} b_n256^{\lVert \mathbf{b} \rVert - 1 - n} \\
+\mathtt{\tiny BE}(x) & \equiv & (b_0, b_1, ...): b_0 \neq 0 \wedge \sum_{n = 0}^{n < \lVert \mathbf{b} \rVert - 1} b_n \cdot 256^{\lVert \mathbf{b} \rVert - 1 - n} \\
 (a) \cdot (b, c) \cdot (d, e) & = & (a, b, c, d, e)
 \end{eqnarray}
 
@@ -1264,7 +1258,7 @@ It is defined as the function $\mathtt{\tiny HP}$ which maps from a sequence of 
 (16(f(t) + 1) + \mathbf{x}[0], 16\mathbf{x}[1] + \mathbf{x}[2], 16\mathbf{x}[3] + \mathbf{x}[4], ...) &
 \text{otherwise}
 \end{cases} \\
-f(t) & \equiv & \begin{cases} 2 & \text{if} \quad t \\ 0 & \text{otherwise} \end{cases}
+f(t) & \equiv & \begin{cases} 2 & \text{if} \quad t \neq 0 \\ 0 & \text{otherwise} \end{cases}
 \end{eqnarray}
 
 Thus the high nibble of the first byte contains two flags; the lowest bit encoding the oddness of the length and the second-lowest encoding the flag $t$. The low nibble of the first byte is zero in the case of an even number of nibbles and the first nibble in the case of an odd number. All remaining nibbles (now an even number) fit properly into the remaining bytes.
@@ -1537,7 +1531,7 @@ where:
 C_{memory}(a) \equiv G_{memory}(a + \Big\lfloor \dfrac{a^2}{1024} \Big\rfloor)
 \end{equation}
 
-and $C_\text{\tiny SSTORE}$ is specified in the appropriate section below. We define the following subsets of instructions:
+with $C_\text{\tiny CALL}$ and $C_\text{\tiny SSTORE}$ as specified in the appropriate section below. We define the following subsets of instructions:
 
 $W_{zero}$ = \{{\small STOP}, {\small SUICIDE}\}
 
@@ -1910,7 +1904,8 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& $\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except} \quad \boldsymbol{\sigma}^*[I_a]_n = \boldsymbol{\sigma}[I_a]_n + 1$ \\
 &&&& $A' \equiv A \Cup A^+$ which implies: $A'_\mathbf{s} \equiv A_\mathbf{s} \cup A^+_\mathbf{s} \quad \wedge \quad A'_\mathbf{l} \equiv A_\mathbf{l} \cdot A^+_\mathbf{l} \quad \wedge \quad A'_\mathbf{r} \equiv A_\mathbf{r} + A^+_\mathbf{r}$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
-&&&& where $x=0$ if the code execution for this operation failed due to lack of gas or $I_e = 1024$ \\
+&&&& where $x=0$ if the code execution for this operation failed due to an exceptional halting \\
+&&&& $Z(\boldsymbol{\sigma}^*, \boldsymbol{\mu}, I) = \top$ or $I_e = 1024$ \\
 &&&& (the maximum call depth limit is reached) or $\boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\sigma}[I_a]_b$ (balance of the caller is too \\
 &&&& low to fulfil the value transfer); and otherwise $x=A(I_a, \boldsymbol{\sigma}[I_a]_n)$, the address of the newly \\
 &&&& created account, otherwise. \\
@@ -1925,7 +1920,8 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
 &&&& $A' \equiv A \Cup A^+$ \\
 &&&& $t \equiv \boldsymbol{\mu}_\mathbf{s}[1] \mod 2^{160}$ \\
-&&&& where $x=0$ if the code execution for this operation failed due to lack of gas or if  \\
+&&&& where $x=0$ if the code execution for this operation failed due to an exceptional halting \\
+&&&& $Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) = \top$ or if  \\
 &&&& $\boldsymbol{\mu}_\mathbf{s}[2] > \boldsymbol{\sigma}[I_a]_b$ (not enough funds) or $I_e = 1024$ (call depth limit reached); $x=1$ \\
 &&&& otherwise. \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[3], \boldsymbol{\mu}_\mathbf{s}[4]), \boldsymbol{\mu}_\mathbf{s}[5], \boldsymbol{\mu}_\mathbf{s}[6])$ \\
@@ -1981,5 +1977,182 @@ Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $
 
 The proof-of-concept series include a development premine, making the state root hash some value $stateRoot$. The latest documentation should be consulted for the value of the state root.
 
-\end{document}
+\section{Ethash}\label{app:ethash}
+\subsection{Definitions}
+We employ the following definitions:
 
+\begin{tabular*}{\columnwidth}[h]{lrl}
+\toprule
+Name & Value & Description \\
+\midrule
+$J_{wordbytes}$ & 4  & Bytes in word. \\
+$J_{datasetinit}$ & $2^{30}$ & Bytes in dataset at genesis. \\
+$J_{datasetgrowth}$ & $2^{23}$ & Dataset growth per epoch. \\
+$J_{cacheinit}$ & $2^{24}$ & Bytes in cache at genesis. \\
+$J_{cachegrowth}$ & $2^{17}$ & Cache growth per epoch. \\
+$J_{epoch}$ & 30000 & Blocks per epoch. \\
+$J_{mixbytes}$ & 128 & mix length in bytes. \\
+$J_{hashbytes}$ & 64 & Hash length in bytes. \\
+$J_{parents}$ & 256 & Number of parents of each dataset element. \\
+$J_{cacherounds}$ & 3 & Number of rounds in cache production. \\
+$J_{accesses}$ & 64 & Number of accesses in hashimoto loop. \\
+\bottomrule
+\end{tabular*}
+
+\subsection{Size of dataset and cache}
+The size for Ethash's cache $\mathbf{c} \in \mathbb{B}$  and dataset $\mathbf{d} \in \mathbb{B}$ depend on the epoch, which in turn depends on the block number.
+\begin{equation}
+ E_{epoch}(H_i) = \left\lfloor\frac{H_i}{J_{epoch}}\right\rfloor
+\end{equation}
+The size of the dataset growth by $J_{datasetgrowth}$ bytes, and the size of the cache by $J_{cachegrowth}$ bytes, every epoch. In order to avoid regularity leading to cyclic behavior, the size must be a prime number. Therefore the size is reduced by a multiple of $J_{mixbytes}$, for the dataset, and $J_{hashbytes}$ for the cache. 
+Let $d_{size} = \lVert \mathbf{d} \rVert$ be the size of the dataset. Which is calculated using
+\begin{equation}
+ d_{size} = E_{prime}(J_{datasetinit} + J_{datasetgrowth} \cdot E_{epoch} - J_{mixbytes}, J_{mixbytes})
+\end{equation}
+The size of the cache, $c_{size}$, is calculated using
+\begin{equation}
+ c_{size} = E_{prime}(J_{cacheinit} + J_{cachegrowth} \cdot E_{epoch} - J_{hashbytes}, J_{hashbytes})
+\end{equation}
+\begin{equation}
+ E_{prime}(x, y) = \begin{cases}
+x & \text{if} \quad x / y \in \mathbb{P} \\
+E_{prime}(x - 1 \cdot y, y) & \text{otherwise}
+\end{cases}
+\end{equation}
+\subsection{Dataset generation}
+In order the generate the dataset we need the cache $\mathbf{c}$, which is an array of bytes. It depends on the cache size  $c_{size}$ and the seed hash $\mathbf{s} \in \mathbb{B}_{32}$. 
+\subsubsection{Seed hash}
+The seed hash is different for every epoch. For the first epoch it is the Keccak-256 hash of a series of 32 bytes of zeros. For every other epoch it is always the Keccak-256 hash of the previous seed hash:
+\begin{equation}
+ \mathbf{s} = C_{seedhash}(H_i)
+\end{equation}
+\begin{equation}
+ C_{seedhash}(H_i) = \begin{cases}
+\texttt{KEC}(\mathbf{0}_{32}) & \text{if} \quad E_{epoch}(H_i) = 0 \quad  \\
+\texttt{KEC}(C_{seedhash}(H_i - J_{epoch})) & \text{otherwise}
+\end{cases}
+\end{equation}
+With $\mathbf{0}_{32}$ being 32 bytes of zeros.
+
+\subsubsection{Cache}
+The cache production process involves using the seed hash to first sequentially filling up $c_{size}$ bytes of memory, then performing $J_{cacherounds}$ passes of the RandMemoHash algorithm created by \cite{lerner2014randmemohash}. The intial cache $\mathbf{c'}$, being an array of arrays of single bytes, will be constructed as follows.
+
+We define the array $\mathbf{c}_{i}$, consisting of 64 single bytes,  as the $i$th element of the intial cache:
+\begin{equation}
+ \mathbf{c}_{i} = \begin{cases}
+\texttt{KEC512}(\mathbf{s}) & \text{if} \quad i = 0 \quad  \\
+\texttt{KEC512}(\mathbf{c}_{i-1}) & \text{otherwise}
+\end{cases}
+\end{equation}
+Therefore $ \mathbf{c'}$ can be defined as 
+\begin{equation}
+ \mathbf{c'}[i] = \mathbf{c}_{i} \quad \forall \quad i < n
+\end{equation}
+\begin{equation}
+ n = \left\lfloor\frac{c_{size}}{J_{hashbytes}}\right\rfloor
+\end{equation}
+The cache is calculated by performing $J_{cacherounds}$ rounds of the RandMemoHash algorithm to the inital cache $\mathbf{c'}$:
+\begin{equation}
+ \mathbf{c} = E_{cacherounds}(\mathbf{c'}, J_{cacherounds})
+\end{equation}
+\begin{equation}
+ E_{cacherounds}(\mathbf{x}, y) = \begin{cases}
+\mathbf{x} & \text{if} \quad y = 0 \quad  \\
+E_\text{\tiny RMH}(\mathbf{x}) & \text{if} \quad y = 1 \quad  \\
+E_{cacherounds}(E_\text{\tiny RMH}(\mathbf{x}), y -1 ) & \text{otherwise}
+\end{cases}
+\end{equation}
+Where a single round modifies each subset of the cache as follows:
+\begin{equation}
+ E_\text{\tiny RMH}(\mathbf{x}) = \lbrace E_{rmh}(\mathbf{x}, 0), E_{rmh}(\mathbf{x}, 1), ... , E_{rmh}(\mathbf{x}, n - 1) \rbrace
+\end{equation}
+\begin{multline}
+  E_{rmh}(\mathbf{x}, i) = \texttt{KEC512}(\mathbf{x'}[(i - 1 + n) \mod n] \oplus \mathbf{x'}[\mathbf{x'}[i][0] \mod n]) \\
+  \text{with} \quad \mathbf{x'} = \mathbf{x} \quad \text{except} \quad \mathbf{x'}[j] = E_{rmh}(\mathbf{x}, j) \quad \forall \quad j < i
+\end{multline}
+
+\subsubsection{Full dataset calculation} \label{dataset} 
+Essentially, we combine data from $J_{parents}$ pseudorandomly selected cache nodes, and hash that to compute the dataset. The entire dataset is then generated by $d_{size}$ items, each $J_{hashbytes}$ bytes in size:
+\begin{equation}
+ \mathbf{d}[i] = E_{datasetitem}(\mathbf{c}, i) \quad \forall \quad i < \left\lfloor\frac{d_{size}}{J_{hashbytes}}\right\rfloor
+\end{equation}
+In order to calculate the single item we use an algorithm inspired by the FNV hash (\cite{FowlerNollVo1991FNVHash}) in some cases as a non-associative substitute for XOR.
+\begin{equation}
+ E_\text{\tiny FNV}(\mathbf{x}, \mathbf{y}) = (\mathbf{x} \cdot (\mathrm{0x01000193} \oplus \mathbf{y})) \mod 2^{32}
+\end{equation}
+The single item of the dataset can now be calculated as:
+\begin{equation}
+ E_{datasetitem}(\mathbf{c}, i) = E_{parents}(\mathbf{c}, i, -1, \varnothing)
+\end{equation}
+\begin{equation}
+  E_{parents}(\mathbf{c}, i, p, \mathbf{m}) = \begin{cases}
+E_{parents}(\mathbf{c}, i, p +1, E_{mix}(\mathbf{m}, \mathbf{c}, i, p + 1)) & \text{if} \quad p < J_{parents} -2 \\
+E_{mix}(\mathbf{m}, \mathbf{c}, i, p + 1) & \text{otherwise}
+\end{cases}
+\end{equation}
+\begin{equation}
+ E_{mix}(\mathbf{m}, \mathbf{c}, i, p) = \begin{cases}
+\texttt{KEC512}(\mathbf{c}[i \mod c_{size}] \oplus i) & \text{if} \quad p = 0 \\
+E_\text{\tiny FNV}(\mathbf{m}, \mathbf{c}[E_\text{\tiny FNV}(i \oplus p, \mathbf{m}[p \mod \lfloor J_{hashbytes} / J_{wordbytes} \rfloor]) \mod c_{size}] & \text{otherwise}
+\end{cases}
+\end{equation}
+
+\subsection{Proof-of-work function}
+Essentially, we maintain a "mix" $J_{mixbytes}$ bytes wide, and repeatedly sequentially fetch $J_{mixbytes}$ bytes from the full dataset and use the $E_\text{\tiny FNV}$ function to combine it with the mix. $J_{mixbytes}$ bytes of sequential access are used so that each round of the algorithm always fetches a full page from RAM, minimizing translation lookaside buffer misses which ASICs would theoretically be able to avoid.
+
+If the output of this algorithm is below the desired target, then the nonce is valid. Note that the extra application of \texttt{KEC} at the end ensures that there exists an intermediate nonce which can be provided to prove that at least a small amount of work was done; this quick outer PoW verification can be used for anti-DDoS purposes. It also serves to provide statistical assurance that the result is an unbiased, 256 bit number.
+
+The PoW-function returns an array with the compressed mix as its first item and the Keccak-256 hash of the concatenation of the compressed mix with the seed hash as the second item:
+\begin{equation}
+ \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d}) = \lbrace \mathbf{m}_c(\mathtt{\small KEC}(\mathtt{\small RLP}(L_H(H_{\hcancel{n}}))), H_n, \mathbf{d}), \texttt{KEC}(\mathbf{s}_h(\mathtt{\small KEC}(\mathtt{\small RLP}(L_H(H_{\hcancel{n}}))), H_n) + \mathbf{m}_c(\mathtt{\small KEC}(\mathtt{\small RLP}(L_H(H_{\hcancel{n}}))), H_n, \mathbf{d})) \rbrace
+\end{equation}
+With $H_{\hcancel{n}}$ being the hash of the header without the nonce. The compressed mix $\mathbf{m}_c$ is obtained as follows:
+\begin{equation}
+ \mathbf{m}_c(\mathbf{h}, \mathbf{n}, \mathbf{d}) = E_{compress}(E_{accesses}(\mathbf{d}, \sum_{i = 0}^{n_{mix}} \mathbf{s}_h(\mathbf{h}, \mathbf{n}), \mathbf{s}_h(\mathbf{h}, \mathbf{n}), -1), -4)
+\end{equation}
+
+The seed hash being:
+\begin{equation}
+ \mathbf{s}_h(\mathbf{h}, \mathbf{n}) = \texttt{KEC512}(\mathbf{h} + E_{revert}(\mathbf{n}))
+\end{equation}
+$E_{revert}(\mathbf{n})$ returns the reverted bytes sequence of the nonce $\mathbf{n}$:
+\begin{equation}
+ E_{revert}(\mathbf{n})[i] = \mathbf{n}[\lVert \mathbf{n} \rVert -i]
+\end{equation}
+We note that the ``$+$''-opertor between two byte sequences results in the concatenation of both sequences.
+
+The dataset $\mathbf{d}$ is obtained as described in section \ref{dataset}.
+
+The number of replicated sequences in the mix is:
+\begin{equation}
+ n_{mix} =  \left\lfloor\frac{J_{mixbytes}}{J_{hashbytes}}\right\rfloor
+\end{equation}
+In order to add random dataset nodes to the mix, the $E_{accesses}$ function is used:
+\begin{equation}
+ E_{accesses}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i) = \begin{cases}
+E_{mixdataset}(\mathbf{d}, \mathbf{m},  \mathbf{s}, i) & \text{if} \quad i = J_{accesses} -2 \\
+E_{accesses}(E_{mixdataset}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i), \mathbf{s}, i + 1) & \text{otherwise}
+\end{cases}
+\end{equation}
+\begin{equation}
+ E_{mixdataset}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i) = E_\text{\tiny FNV}(\mathbf{m}, E_{newdata}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i)
+\end{equation}
+$E_{newdata}$ returns an array with $n_{mix}$ elements:
+\begin{equation}
+ E_{newdata}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i)[j] = \mathbf{d}[E_\text{\tiny FNV}(i \oplus \mathbf{s}[0], \mathbf{m}[i \mod \left\lfloor\frac{J_{mixbytes}}{J_{wordbytes}}\right\rfloor) \mod \left\lfloor\frac{d_{size} / J_{hashbytes}}{n_{mix}}\right\rfloor \cdot n_{mix} + j] \quad \forall \quad j < n_{mix}
+\end{equation}
+The mix is compressed as follows:
+\begin{equation}
+ E_{compress}(\mathbf{m}, i) = \begin{cases}
+\mathbf{m} & \text{if} \quad i \geqslant \lVert \mathbf{m} \rVert - 8 \\
+E_{compress}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(\mathbf{m}[i + 4], \mathbf{m}[i + 5]), \mathbf{m}[i + 6]), \mathbf{m}[i + 7]), i + 8) & \text{otherwise}
+\end{cases}
+\end{equation}
+
+\subsection{Mining}
+In order to mine a valid block, one repeatedly chooses a random nonce $\mathbf{n}_{rand} \in \mathbb{B}_{8}$ and calculates the $\mathtt{PoW}$ function until
+\begin{equation}
+ \mathtt{PoW}(H_{\hcancel{n}}, \mathbf{n}_{rand}, \mathbf{d})[1] \leqslant \frac{2^{256}}{H_d}\quad.
+\end{equation}
+$H_d$ being the current difficulty of the block.
+\end{document}
