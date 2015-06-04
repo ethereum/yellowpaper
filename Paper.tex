@@ -995,8 +995,9 @@ s(U, H) &\\
 
 and $s$ denotes the ``is-sibling'' property:
 \begin{equation}
-s(U, H) \equiv (P(H) = P(U)\; \wedge \; H \neq U)
+s(U, H) \equiv (P(H) = P(U)\; \wedge \; H \neq U \; \wedge \; U \notin B(H)_\mathbf{U})
 \end{equation}
+where $B(H)$ is the block of the corresponding header $H$.
 
 \subsection{Transaction Validation}
 
