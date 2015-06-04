@@ -1551,7 +1551,7 @@ Note the memory cost component, given as the product of $G_{memory}$ and the max
 
 Referencing a zero length range (e.g. by attempting to pass it as the input range to a CALL) does not require memory to be extended to the beginning of the range. $\boldsymbol{\mu}'_i$ is defined as this new maximum number of words of active memory; special-cases are given where these two are not equal.
 
-Note also that $C_{memory}$ is the memory cost function (the expansion function being the difference between the cost before and after). It is a polynomial, with the higher-order coefficient divided and floored, and thus linear up to 32KB of memory used, after which it costs substantially more.
+Note also that $C_{memory}$ is the memory cost function (the expansion function being the difference between the cost before and after). It is a polynomial, with the higher-order coefficient divided and floored, and thus linear up to 724B of memory used, after which it costs substantially more.
 
 While defining the instruction set, we defined the memory-expansion for range function, $M$, thus:
 
