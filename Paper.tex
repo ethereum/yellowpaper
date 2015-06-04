@@ -1528,7 +1528,7 @@ w \equiv \begin{cases} I_\mathbf{b}[\boldsymbol{\mu}_{pc}] & \text{if} \quad \bo
 
 where:
 \begin{equation}
-C_{memory}(a) \equiv G_{memory}(a + \Big\lfloor \dfrac{a^2}{1024} \Big\rfloor)
+C_{memory}(a) \equiv G_{memory} \cdot a + \Big\lfloor \dfrac{a^2}{512} \Big\rfloor
 \end{equation}
 
 with $C_\text{\tiny CALL}$ and $C_\text{\tiny SSTORE}$ as specified in the appropriate section below. We define the following subsets of instructions:
