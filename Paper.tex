@@ -291,7 +291,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \begin{description}
 \item[parentHash] The Keccak 256-bit hash of the parent block's header, in its entirety; formally $H_p$.
 \item[ommersHash] The Keccak 256-bit hash of the ommers list portion of this block; formally $H_o$.
-\item[coinbase] The 160-bit address to which all fees collected from the successful mining of this block be transferred; formally $H_c$.
+\item[beneficiary] The 160-bit address to which all fees collected from the successful mining of this block be transferred; formally $H_c$.
 \item[stateRoot] The Keccak 256-bit hash of the root node of the state trie, after all transactions are executed and finalisations applied; formally $H_r$.
 \item[transactionsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with each transaction in the transactions list portion of the block; formally $H_t$.
 \item[receiptsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with the receipts of each transaction in the transactions list portion of the block; formally $H_e$.
@@ -485,7 +485,7 @@ In order to avoid issues of network abuse and to sidestep the inevitable questio
 
 Every transaction has a specific amount of gas associated with it: \textbf{gasLimit}. This is the amount of gas which is implicitly purchased from the sender's account balance. The purchase happens at the according \textbf{gasPrice}, also specified in the transaction. The transaction is considered invalid if the account balance cannot support such a purchase. It is named \textbf{gasLimit} since any unused gas at the end of the transaction is refunded (at the same rate of purchase) to the sender's account. Gas does not exist outside of the execution of a transaction. Thus for accounts with trusted code associated, a relatively high gas limit may be set and left alone.
 
-In general, Ether used to purchase gas that is not refunded is delivered to the \textit{coinbase} address, the address of an account typically under the control of the miner. Transactors are free to specify any \textbf{gasPrice} that they wish, however miners are free to ignore transactions as they choose. A higher gas price on a transaction will therefore cost the sender more in terms of Ether and deliver a greater value to the miner and thus will more likely be selected for inclusion by more miners. Miners, in general, will choose to advertise the minimum gas price for which they will execute transactions and transactors will be free to canvas these prices in determining what gas price to offer. Since there will be a (weighted) distribution of minimum acceptable gas prices, transactors will necessarily have a trade-off to make between lowering the gas price and maximising the chance that their transaction will be mined in a timely manner.
+In general, Ether used to purchase gas that is not refunded is delivered to the \textit{beneficiary} address, the address of an account typically under the control of the miner. Transactors are free to specify any \textbf{gasPrice} that they wish, however miners are free to ignore transactions as they choose. A higher gas price on a transaction will therefore cost the sender more in terms of Ether and deliver a greater value to the miner and thus will more likely be selected for inclusion by more miners. Miners, in general, will choose to advertise the minimum gas price for which they will execute transactions and transactors will be free to canvas these prices in determining what gas price to offer. Since there will be a (weighted) distribution of minimum acceptable gas prices, transactors will necessarily have a trade-off to make between lowering the gas price and maximising the chance that their transaction will be mined in a timely manner.
 
 %\subsubsection{Determining Computation Costs}
 
@@ -582,7 +582,7 @@ g^* \equiv g' + \min \{ \Big\lfloor \dfrac{T_g - g'}{2} \Big\rfloor, A_r \}
 
 The total refundable amount is the legitimately remaining gas $g'$, added to $A_r$, with the latter component being capped up to a maximum of half (rounded down) of the total amount used $T_g - g'$.
 
-The Ether for the gas is given to the miner, whose address is specified as the coinbase of the present block $B$. So we define the pre-final state $\boldsymbol{\sigma}^*$ in terms of the provisional state $\boldsymbol{\sigma}_P$:
+The Ether for the gas is given to the miner, whose address is specified as the beneficiary of the present block $B$. So we define the pre-final state $\boldsymbol{\sigma}^*$ in terms of the provisional state $\boldsymbol{\sigma}_P$:
 \begin{eqnarray}
 \boldsymbol{\sigma}^* & \equiv & \boldsymbol{\sigma}_P \quad \text{except} \\
 \boldsymbol{\sigma}^*[S(T)]_b & \equiv & \boldsymbol{\sigma}_P[S(T)]_b + g^* T_p \\
@@ -1010,7 +1010,7 @@ The given \textbf{gasUsed} must correspond faithfully to the transactions listed
 
 \subsection{Reward Application}
 
-The application of rewards to a block involves raising the balance of the accounts of the coinbase address of the block and each ommer by a certain amount. We raise the block's coinbase account by $R_b$; for each ommer, we raise the block's coinbase by an additional $\frac{1}{32}$ of the block reward and the coinbase of the ommer gets rewarded depending on the block number. Formally we define the function $\Omega$:
+The application of rewards to a block involves raising the balance of the accounts of the beneficiary address of the block and each ommer by a certain amount. We raise the block's beneficiary account by $R_b$; for each ommer, we raise the block's beneficiary by an additional $\frac{1}{32}$ of the block reward and the beneficiary of the ommer gets rewarded depending on the block number. Formally we define the function $\Omega$:
 \begin{eqnarray}
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
 \boldsymbol{\sigma}'[{B_H}_c]_b & = & \boldsymbol{\sigma}[{B_H}_c]_b + (1 + \frac{|B_\mathbf{U}|}{32})R_b \\
@@ -1018,7 +1018,7 @@ The application of rewards to a block involves raising the balance of the accoun
  \boldsymbol{\sigma}'[U_c]_b & = & \boldsymbol{\sigma}[U_c]_b + (1 + \frac{1}{8} (U_i - {B_H}_i)) R_b 
 \end{eqnarray}
 
-If there are collisions of the coinbase addresses between ommers and the block (i.e. two ommers with the same coinbase address or an ommer with the same coinbase address as the present block), additions are applied cumulatively.
+If there are collisions of the beneficiary addresses between ommers and the block (i.e. two ommers with the same beneficiary address or an ommer with the same beneficiary address as the present block), additions are applied cumulatively.
 
 We define the block reward as 1500 Finney:
 \begin{equation}
@@ -1110,7 +1110,7 @@ A data feed contract is one which provides a single service: it gives access to 
 The general pattern involves a single contract within Ethereum which, when given a message call, replies with some timely information concerning an external phenomenon. An example might be the local temperature of New York City. This would be implemented as a contract that returned that value of some known point in storage. Of course this point in storage must be maintained with the correct such temperature, and thus the second part of the pattern would be for an external server to run an Ethereum node, and immediately on discovery of a new block, creates a new valid transaction, sent to the contract, updating said value in storage. The contract's code would accept such updates only from the identity contained on said server.
 
 \subsection{Random Numbers}
-Providing random numbers within a deterministic system is, naturally, an impossible task. However, we can approximate with pseudo-random numbers by utilising data which is generally unknowable at the time of transacting. Such data might include the block's hash, the block's timestamp and the block's coinbase address. In order to make it hard for malicious miner to control those values, one should use the {\small BLOCKHASH} operation in order to use hashes of the previous 256 blocks as pseudo-random numbers. For a series of such numbers, a trivial solution would be to add some constant amount and hashing the result.
+Providing random numbers within a deterministic system is, naturally, an impossible task. However, we can approximate with pseudo-random numbers by utilising data which is generally unknowable at the time of transacting. Such data might include the block's hash, the block's timestamp and the block's beneficiary address. In order to make it hard for malicious miner to control those values, one should use the {\small BLOCKHASH} operation in order to use hashes of the previous 256 blocks as pseudo-random numbers. For a series of such numbers, a trivial solution would be to add some constant amount and hashing the result.
 
 \section{Future Directions} \label{ch:future}
 
@@ -1740,7 +1740,7 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& and we assert the header $H$ can be determined as its hash is the parent hash \\
 &&&& in the block following it. \\
 \midrule
-0x41 & {\small COINBASE} & 0 & 1 & Get the block's coinbase address. \\
+0x41 & {\small COINBASE} & 0 & 1 & Get the block's beneficiary address. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_H}_c$ \\
 \midrule
 0x42 & {\small TIMESTAMP} & 0 & 1 & Get the block's timestamp. \\
@@ -1975,7 +1975,7 @@ The genesis block is 15 items, and is specified thus:
 \big( \big( 0_{256}, \mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big), 0_{160}, stateRoot, 0, 0, 0_{2048}, 2^{17}, 0, 0, 3141592, time, 0, 0_{256},  \mathtt{\tiny KEC}\big( (42) \big) \big), (), () \big)
 \end{equation}
 
-Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $0_{160}$ refers to the coinbase address, a 160-bit hash which is all zeroes; $0_{2048}$ refers to the log bloom, 2048-bit of all zeros; $2^{17}$ refers to the difficulty; the transaction trie root, receipt trie root, gas used, block number and extradata are both $0$, being equivalent to the empty byte array. The sequences of both ommers and transactions are empty and represented by $()$. $\mathtt{\tiny KEC}\big( (42) \big)$ refers to the Keccak hash of a byte array of length one whose first and only byte is of value 42, used for the nonce. $\mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big)$ value refers to the hash of the ommer lists in RLP, both empty lists.
+Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $0_{160}$ refers to the beneficiary address, a 160-bit hash which is all zeroes; $0_{2048}$ refers to the log bloom, 2048-bit of all zeros; $2^{17}$ refers to the difficulty; the transaction trie root, receipt trie root, gas used, block number and extradata are both $0$, being equivalent to the empty byte array. The sequences of both ommers and transactions are empty and represented by $()$. $\mathtt{\tiny KEC}\big( (42) \big)$ refers to the Keccak hash of a byte array of length one whose first and only byte is of value 42, used for the nonce. $\mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big)$ value refers to the hash of the ommer lists in RLP, both empty lists.
 
 The proof-of-concept series include a development premine, making the state root hash some value $stateRoot$. Also $time$ will be set to the intial timestamp of the genesis block. The latest documentation should be consulted for those values.
 
