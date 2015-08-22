@@ -430,7 +430,7 @@ The canonical difficulty of a block of header $H$ is defined as $D(H)$:
 \begin{equation}
 D(H) \equiv \begin{cases}
 131072 & \text{if} \quad H_i = 0\\
-{P(H)_H}_d + \left\lfloor\frac{{P(H)_H}_d}{2048}\right\rfloor & \text{if} \quad H_s < {P(H)_H}_s + 8\\
+{P(H)_H}_d + \left\lfloor\frac{{P(H)_H}_d}{2048}\right\rfloor & \text{if} \quad H_s < {P(H)_H}_s + 13\\
 \max \{ 131072, x \} & \text{otherwise}\\
 \end{cases}
 \end{equation}
@@ -1020,9 +1020,9 @@ The application of rewards to a block involves raising the balance of the accoun
 
 If there are collisions of the beneficiary addresses between ommers and the block (i.e. two ommers with the same beneficiary address or an ommer with the same beneficiary address as the present block), additions are applied cumulatively.
 
-We define the block reward as 1500 Finney:
+We define the block reward as 5 Ether:
 \begin{equation}
-\text{Let} \quad R_b = 1.5 \times 10^{18}
+\text{Let} \quad R_b = 5 \times 10^{18}
 \end{equation}
 
 \subsection{State \& Nonce Validation}\label{sec:statenoncevalidation}
