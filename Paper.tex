@@ -364,7 +364,7 @@ We can assert a block's validity if and only if it satisfies several conditions:
 H_r &\equiv& \mathtt{\small TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) & \wedge \\
 H_o &\equiv& \mathtt{\small KEC}(\mathtt{\small RLP}(L_H^*(B_\mathbf{U}))) & \wedge \\
 H_t &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert, i \in \mathbb{P}: p(i, L_T(B_\mathbf{T}[i]))\}) & \wedge \\
-H_e &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert, i \in \mathbb{P}: p(i, L_R(B_\mathbf{R}[i]))\}) & \wedge \\
+H_e &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{R} \rVert, i \in \mathbb{P}: p(i, L_R(B_\mathbf{R}[i]))\}) & \wedge \\
 H_b &\equiv& \bigvee_{\mathbf{r} \in B_\mathbf{R}} \big( \mathbf{r}_b \big)
 \end{array}
 \end{equation}
@@ -885,16 +885,10 @@ All such positions must be on valid instruction boundaries, rather than sitting 
 
 Formally:
 \begin{equation}
-D(\mathbf{c}) \equiv D_J(\mathbf{c, 0}) \cap Y(\mathbf{c}, 0)
+D(\mathbf{c}) \equiv D_J(\mathbf{c}, 0)
 \end{equation}
 
 where:
-\begin{equation}
-Y(\mathbf{c}, i) \equiv \begin{cases}
-\{\} & \text{if} \quad i \geqslant |\mathbf{c}| \\
-\{ i \} \cup Y(\mathbf{c}, N(i, \mathbf{c}[i])) & \text{otherwise} \\
-\end{cases}
-\end{equation}
 \begin{equation}
 D_J(\mathbf{c}, i) \equiv \begin{cases}
 \{\} & \text{if} \quad i \geqslant |\mathbf{c}|  \\
