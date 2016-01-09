@@ -864,18 +864,30 @@ We also assume the fixed amounts of $\mathbf{\delta}$ and $\mathbf{\alpha}$, spe
 \subsubsection{Exceptional Halting}
 
 The exceptional halting function $Z$ is defined as:
-\begin{equation}
-Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv
-\begin{array}[t]{l}
-\boldsymbol{\mu}_g < C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \quad \vee \\
-\mathbf{\delta}_w = \varnothing \quad \vee \\
-\lVert\boldsymbol{\mu}_\mathbf{s}\rVert < \mathbf{\delta}_w \quad \vee \\
-( w = \{ \text{\small JUMP} \quad \wedge \quad \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \\
-( w = \{ \text{\small JUMPI} \quad \wedge \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \quad \wedge \quad \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \\
-( w = \{ \text{\small JUMPI} \quad \wedge \boldsymbol{\mu}_\mathbf{s}[1] = 0 \quad \wedge \quad \boldsymbol{\mu}_\mathbf{pc} +1 > \lVert I_\mathbf{b} \rVert ) ) \quad \vee \\
-\lVert\boldsymbol{\mu}_\mathbf{s}\rVert - \mathbf{\delta}_w + \mathbf{\alpha}_w > 1024 \quad
-\end{array}
-\end{equation}
+
+%\begin{equation}
+%Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv
+%\begin{array}[t]{lr}
+%\boldsymbol{\mu}_g < C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \quad \vee \\
+%\mathbf{\delta}_w = \varnothing \quad \vee \\
+%\lVert\boldsymbol{\mu}_\mathbf{s}\rVert < \mathbf{\delta}_w \quad \vee \\
+%( w = \text{\small JUMP} \quad \wedge \quad \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \\
+%( w = \text{\small JUMPI} \quad \wedge \quad \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \quad \wedge \quad \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \\
+%( w = \{ \text{\small JUMPI} \quad \wedge \boldsymbol{\mu}_\mathbf{s}[1] = 0 \quad \wedge \quad \boldsymbol{\mu}_\mathbf{pc} +1 > \lVert I_\mathbf{b} \rVert ) ) \quad \vee \\
+%\lVert\boldsymbol{\mu}_\mathbf{s}\rVert - \mathbf{\delta}_w + \mathbf{\alpha}_w > 1024 \quad
+%\end{array}
+%\end{equation}
+
+ \begin{gather} 
+Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv \boldsymbol{\mu}_g < C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \quad \vee \\ 
+\mathbf{\delta}_w = \varnothing \quad \vee   \nonumber \\
+\lVert\boldsymbol{\mu}_\mathbf{s}\rVert < \mathbf{\delta}_w \quad \vee \nonumber \\
+( w = \text{\small JUMP} \quad \wedge \quad \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \nonumber \\
+( w = \text{\small JUMPI} \quad \wedge \quad \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \quad \wedge \quad \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \nonumber \\
+( w =  \text{\small JUMPI} \quad \wedge \quad  \boldsymbol{\mu}_\mathbf{s}[1] = 0 \quad \wedge \quad \boldsymbol{\mu}_\mathbf{pc} +1 > \lVert I_\mathbf{b} \rVert ) \quad \vee \nonumber \\
+\lVert\boldsymbol{\mu}_\mathbf{s}\rVert - \mathbf{\delta}_w + \mathbf{\alpha}_w > 1024 \nonumber
+\end{gather}
+
 
 This states that the execution is in an exceptional halting state if there is insufficient gas, if the instruction is invalid (and therefore its $\delta$ subscript is undefined), if there are insufficient stack items, if a {\small JUMP}/{\small JUMPI} destination is invalid or the new stack size would be larger then 1024. The astute reader will realise that this implies that no instruction can, through its execution, cause an exceptional halt.
 
