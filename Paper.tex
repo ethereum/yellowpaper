@@ -870,7 +870,9 @@ Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv
 \boldsymbol{\mu}_g < C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \quad \vee \\
 \mathbf{\delta}_w = \varnothing \quad \vee \\
 \lVert\boldsymbol{\mu}_\mathbf{s}\rVert < \mathbf{\delta}_w \quad \vee \\
-( w \in \{ \text{\small JUMP}, \text{\small JUMPI} \} \quad \wedge \\ \quad \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \\
+( w = \{ \text{\small JUMP} \quad \wedge \quad \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \\
+( w = \{ \text{\small JUMPI} \quad \wedge \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \quad \wedge \quad \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \\
+( w = \{ \text{\small JUMPI} \quad \wedge \boldsymbol{\mu}_\mathbf{s}[1] = 0 \quad \wedge \quad \boldsymbol{\mu}_\mathbf{pc} +1 > \lVert I_\mathbf{b} \rVert ) ) \quad \vee \\
 \lVert\boldsymbol{\mu}_\mathbf{s}\rVert - \mathbf{\delta}_w + \mathbf{\alpha}_w > 1024 \quad
 \end{array}
 \end{equation}
