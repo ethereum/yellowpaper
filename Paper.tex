@@ -426,17 +426,38 @@ The block number is the parent's block number incremented by one:
 H_i \equiv {{P(H)_H}_i} + 1
 \end{equation}
 
+\newcommand{\mindifficulty}{D_0}
+\newcommand{\frontiermod}{\ensuremath{\varsigma_1}}
+\newcommand{\homesteadmod}{\ensuremath{\varsigma_2}}
+\newcommand{\expdiffsymb}{\ensuremath{\epsilon}}
+\newcommand{\diffadjustment}{x}
+
 The canonical difficulty of a block of header $H$ is defined as $D(H)$:
 \begin{equation}
-D(H) \equiv \begin{cases}
-131072 & \text{if} \quad H_i = 0\\
-{P(H)_H}_d + \left\lfloor\frac{{P(H)_H}_d}{2048}\right\rfloor & \text{if} \quad H_s < {P(H)_H}_s + 13\\
-\max \{ 131072, x \} & \text{otherwise}\\
-\end{cases}
+D(H) \equiv \begin{dcases}
+\mindifficulty & \text{if} \quad H_i = 0\\
+\text{max}\!\left(\mindifficulty, {P(H)_H}_d + \diffadjustment\times\frontiermod + \expdiffsymb \right) & \text{if} \quad H_i<\mathit{TBD}\\
+\text{max}\!\left(\mindifficulty, {P(H)_H}_d + \diffadjustment\times\homesteadmod + \expdiffsymb \right) & \text{otherwise}\\
+\end{dcases}
 \end{equation}
 where:
 \begin{equation}
-x = {P(H)_H}_d - \left\lfloor\frac{{P(H)_H}_d}{2048}\right\rfloor
+\mindifficulty \equiv 131072
+\end{equation}
+\begin{equation}
+\diffadjustment \equiv \left\lfloor\frac{{P(H)_H}_d}{2048}\right\rfloor
+\end{equation}
+\begin{equation}
+\frontiermod \equiv \begin{cases}
+1 & \text{if} \quad H_s < {P(H)_H}_s + 13 \\
+-1 & \text{otherwise} \\
+\end{cases}
+\end{equation}
+\begin{equation}
+\homesteadmod \equiv \text{max}\left( 1 - \left\lfloor\frac{H_s - {P(H)_H}_s}{10}\right\rfloor, -99 \right)
+\end{equation}
+\begin{equation}
+\expdiffsymb \equiv \left\lfloor 2^{ \left\lfloor H_i \div 100000 \right\rfloor - 2 } \right\rfloor
 \end{equation}
 
 The canonical gas limit $H_l$ of a block of header $H$ must fulfil the relation:
