@@ -546,11 +546,13 @@ A^0 \equiv (\varnothing, (), 0)
 
 \subsection{Execution}
 We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
-\begin{equation}
-g_0 \equiv \sum_{i \in T_\mathbf{i}, T_\mathbf{d}} \begin{cases} G_{txdatazero} & \text{if} \quad i = 0 \\ G_{txdatanonzero} & \text{otherwise} \end{cases} + G_{transaction}\\
-\end{equation}
+\begin{align}
+g_0 \equiv {} & \sum_{i \in T_\mathbf{i}, T_\mathbf{d}} \begin{cases} G_{txdatazero} & \text{if} \quad i = 0 \\ G_{txdatanonzero} & \text{otherwise} \end{cases} \\
+{} & + \begin{cases} G_\text{txcreate} & \text{if} \quad T_t = \varnothing \wedge T_o = S(T) \wedge H_i \geq \firsthomesteadblock \\ 0 & \text{otherwise} \end{cases} \\
+{} & + G_{transaction}
+\end{align}
 
-where $T_\mathbf{i},T_\mathbf{d}$ means the series of bytes of the transaction's associated data and initialisation EVM-code, depending on whether the transaction is for contract-creation or message-call. $G$ is defined in Appendix \ref{app:fees}.
+where $T_\mathbf{i},T_\mathbf{d}$ means the series of bytes of the transaction's associated data and initialisation EVM-code, depending on whether the transaction is for contract-creation or message-call. $G_\text{txcreate}$ is added if the transaction is contract-creating, but not if a result of EVM-code or before the {\it Homestead transition}. $G$ is fully defined in Appendix \ref{app:fees}.
 
 %todo Explain g_d reason?
 
@@ -1487,6 +1489,7 @@ $G_{callnewaccount}$ & 25000 & Paid for a {\small CALL} operation to a not previ
 $G_{exp}$ & 10 & Partial payment for an {\small EXP} operation. \\
 $G_{expbyte}$ & 10 & Partial payment when multiplied by $\lceil\log_{256}(exponent)\rceil$ for the {\small EXP} operation. \\
 $G_{memory}$ & 3 & Paid for every additional word when expanding memory. \\
+$G_\text{txcreate}$ & 32000 & Paid by all contract-creating transactions after the {\it Homestead transition}.\\
 $G_{txdatazero}$ & 4 & Paid for every zero byte of data or code for a transaction. \\
 $G_{txdatanonzero}$ & 68 & Paid for every non-zero byte of data or code for a transaction. \\
 $G_{transaction}$ & 21000 & Paid for every transaction. \\
