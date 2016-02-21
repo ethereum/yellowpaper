@@ -1417,8 +1417,8 @@ We declare that a signature is invalid unless all the following conditions are t
 \begin{align}
 0 < r &< \mathtt{\tiny secp256k1n} \\
 0 < s &< \begin{dcases}
-\hphantom{\lfloor} \mathtt{\tiny secp256k1n} & \text{if} \quad H_i < \firsthomesteadblock \\
-\left\lfloor \mathtt{\tiny secp256k1n} \div 2 \right\rfloor & \text{otherwise} \\
+\mathtt{\tiny secp256k1n} & \text{if} \quad H_i < \firsthomesteadblock \\
+\mathtt{\tiny secp256k1n} \div 2 & \text{otherwise} \\
 \end{dcases} \\
  v &\in \{27,28\} 
 \end{align}
