@@ -667,7 +667,7 @@ v' \equiv \begin{cases}
 
 %It is asserted that the state database will also change such that it defines the pair $(\mathtt{\tiny KEC}(\mathbf{b}), \mathbf{b})$.
 
-Finally, the account is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the account's storage can be altered, further accounts can be created and further message calls can be made. As such, the code execution function $\Xi$ evaluates to a tuple of the resultant state $\boldsymbol{\sigma}^{**}$, available gas remaining $g^{**}$, the accrued substate $A$ and the body code of the account $\mathbf{b}$.
+Finally, the account is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the account's storage can be altered, further accounts can be created and further message calls can be made. As such, the code execution function $\Xi$ evaluates to a tuple of the resultant state $\boldsymbol{\sigma}^{**}$, available gas remaining $g^{**}$, the accrued substate $A$ and the body code of the account $\mathbf{o}$.
 
 \begin{equation}
 (\boldsymbol{\sigma}^{**}, g^{**}, A, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}^*, g, I) \\
@@ -693,29 +693,29 @@ If the initialization code completes successfully, a final contract-creation cos
 c \equiv G_{codedeposit} \times |\mathbf{o}|
 \end{equation}
 
-If there is not enough gas remaining to pay this, \ie $g^{**} < c$, then we also declare an Out-of-Gas exception, and discard all the effects on the state as described above.
+If there is not enough gas remaining to pay this, \ie $g^{**} < c$, then we also declare an Out-of-Gas exception.
 
-The gas remaining will be zero in any such exceptional condition, \ie if the creation was conducted as the reception of a transaction, then this doesn't affect payment of the intrinsic cost of contract creation; it is paid regardless. However, the value of the transaction is not transferred to the aborted contract's address when we are Out-of-Gas, whichever way it came about.
+The gas remaining will be zero in any such exceptional condition, \ie if the creation was conducted as the reception of a transaction, then this doesn't affect payment of the intrinsic cost of contract creation; it is paid regardless. However, the value of the transaction is not transferred to the aborted contract's address when we are Out-of-Gas.
 
 If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persist. Thus formally, we may specify the resultant state, gas and substate as $(\boldsymbol{\sigma}', g', A)$ where:
 
-\begin{eqnarray}
-\quad g' & \equiv & \begin{cases}
+\begin{align}
+\quad g' &\equiv \begin{cases}
 0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
 g^{**} & \text{if} \quad g^{**}<c \wedge H_i<\firsthomesteadblock \\
 g^{**} - c & \text{otherwise} \\
 \end{cases} \\
-\quad \boldsymbol{\sigma}' & \equiv & \begin{cases}
+\quad \boldsymbol{\sigma}' &\equiv  \begin{cases}
 \boldsymbol{\sigma} & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
-\boldsymbol{\sigma}^{*} & \text{if} \quad g^{**}<c \wedge H_i<\firsthomesteadblock \\
+\boldsymbol{\sigma}^{**} & \text{if} \quad g^{**}<c \wedge H_i<\firsthomesteadblock \\
 \boldsymbol{\sigma}^{**} \quad \text{except:} & \\
 \quad\boldsymbol{\sigma}'[a]_c = \texttt{\small KEC}(\mathbf{o}) & \text{otherwise}
 \end{cases}
-\end{eqnarray}
+\end{align}
 
-The exception in the determination of $\boldsymbol{\sigma}'$ dictates that the resultant byte sequence from the execution of the initialisation code specifies the final body code for the newly-created account, with $\boldsymbol{\sigma}'[a]_c$ being the Keccak 256-bit hash of the newly created account's body code and $\mathbf{o}$ the output byte sequence of the code execution.
+The exception in the determination of $\boldsymbol{\sigma}'$ dictates that $\mathbf{o}$, the resultant byte sequence from the execution of the initialisation code, specifies the final body code for the newly-created account.
 
-Note that the intention from block \firsthomesteadblock onwards ({\it Homestead}) is that the result is either a successfully created new contract with its endowment, or no new contract with no transfer of value. Before {\it Homestead}, if there is not enough gas to pay $c$, no contract is created but the value is transferred.
+Note that the intention from block \firsthomesteadblock\ onwards ({\it Homestead}) is that the result is either a successfully created new contract with its endowment, or no new contract with no transfer of value. Before {\it Homestead}, if there is not enough gas to pay $c$, an account at the new contract's address is created, along with all the initialisation side-effects, and the value is transferred, but no contract code is deployed.
 
 \subsection{Subtleties}
 Note that while the initialisation code is executing, the newly created address exists but with no intrinsic body code. Thus any message call received by it during this time causes no code to be executed. If the initialisation execution ends with a {\small SUICIDE} instruction, the matter is moot since the account will be deleted before the transaction is completed. For a normal {\small STOP} code, or if the code returned is otherwise empty, then the state is left with a zombie account, and any remaining balance will be locked into the account forever.
