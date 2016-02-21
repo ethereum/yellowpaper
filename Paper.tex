@@ -31,6 +31,8 @@
 \definecolor{lightyellow}{rgb}{1,0.98,0.9}
 \definecolor{lightpink}{rgb}{1,0.94,0.95}
 
+\newcommand{\firsthomesteadblock}{\ensuremath{\mathit{TBA}}}
+
 \DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
 \newcommand*\eg{e.g.\@\xspace}
 \newcommand*\Eg{e.g.\@\xspace}
@@ -1377,10 +1379,7 @@ g_r &=& 15 + 3\Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil\\
 
 The method of signing transactions is similar to the `Electrum style signatures'; it utilises the SECP-256k1 curve as described by \cite{gura2004comparing}.
 
-It is assumed that the sender has a valid private key $p_r$, a randomly selected positive integer
-% to avoid line break in range definition
-
-in the range $(1, \mathtt{\tiny secp256k1n} - 1)$ represented as a byte array of length 32 in big-endian form.
+It is assumed that the sender has a valid private key $p_r$, which is a randomly selected positive integer (represented as a byte array of length 32 in big-endian form) in the range \hbox{$(1, \mathtt{\tiny secp256k1n} - 1)$}.
 
 We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARESTORE}$ and $\mathtt{\small ECDSAPUBKEY}$. These are formally defined in the literature.
 \begin{eqnarray}
@@ -1391,18 +1390,22 @@ We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARESTOR
 
 Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer in the aforementioned range). It is assumed that $v$ is the `recovery id', a 1 byte value specifying the sign and finiteness of the curve point; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid.
 
-We declare that a signature is invalid unless the following is true:
-\begin{eqnarray}
-0 < r < \mathtt{\tiny secp256k1n} \quad\wedge\quad \\
-0 < s < \mathtt{\tiny secp256k1n} \quad\wedge\quad \\
-v \in \{27,28\}
-\end{eqnarray}
+\newcommand{\slimit}{\ensuremath{\text{s-limit}}}
 
+We declare that a signature is invalid unless all the following conditions are true:
+\begin{align}
+0 < r &< \mathtt{\tiny secp256k1n} \\
+0 < s &< \begin{dcases}
+\hphantom{\lfloor} \mathtt{\tiny secp256k1n} & \text{if} \quad H_i < \firsthomesteadblock \\
+\left\lfloor \mathtt{\tiny secp256k1n} \div 2 \right\rfloor & \text{otherwise} \\
+\end{dcases} \\
+ v &\in \{27,28\} 
+\end{align}
 where:
-\begin{eqnarray}
-\mathtt{\tiny secp256k1n} &=& 115792089237316195423570985008687907852837564279074904382605163141518161494337
-%\mathtt{\tiny secp256k1p} &=& 2^{256} - 2^{32} - 977\\
-\end{eqnarray}
+\begin{align}
+\mathtt{\tiny secp256k1n} &= 115792089237316195423570985008687907852837564279074904382605163141518161494337
+%\mathtt{\tiny secp256k1p} &= 2^{256} - 2^{32} - 977\\
+\end{align}
 
 For a given private key, $p_r$, the Ethereum address $A(p_r)$ (a 160-bit value) to which it corresponds is defined as the right most 160-bits of the Keccak hash of the corresponding ECDSA public key:
 \begin{equation}
