@@ -438,7 +438,7 @@ The canonical difficulty of a block of header $H$ is defined as $D(H)$:
 \begin{equation}
 D(H) \equiv \begin{dcases}
 \mindifficulty & \text{if} \quad H_i = 0\\
-\text{max}\!\left(\mindifficulty, {P(H)_H}_d + \diffadjustment\times\frontiermod + \expdiffsymb \right) & \text{if} \quad H_i<\mathit{TBD}\\
+\text{max}\!\left(\mindifficulty, {P(H)_H}_d + \diffadjustment\times\frontiermod + \expdiffsymb \right) & \text{if} \quad H_i<\firsthomesteadblock\\
 \text{max}\!\left(\mindifficulty, {P(H)_H}_d + \diffadjustment\times\homesteadmod + \expdiffsymb \right) & \text{otherwise}\\
 \end{dcases}
 \end{equation}
