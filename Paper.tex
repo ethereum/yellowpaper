@@ -426,24 +426,45 @@ The block number is the parent's block number incremented by one:
 H_i \equiv {{P(H)_H}_i} + 1
 \end{equation}
 
+\newcommand{\mindifficulty}{D_0}
+\newcommand{\frontiermod}{\ensuremath{\varsigma_1}}
+\newcommand{\homesteadmod}{\ensuremath{\varsigma_2}}
+\newcommand{\expdiffsymb}{\ensuremath{\epsilon}}
+\newcommand{\diffadjustment}{x}
+
 The canonical difficulty of a block of header $H$ is defined as $D(H)$:
 \begin{equation}
-D(H) \equiv \begin{cases}
-131072 & \text{if} \quad H_i = 0\\
-{P(H)_H}_d + \left\lfloor\frac{{P(H)_H}_d}{2048}\right\rfloor & \text{if} \quad H_s < {P(H)_H}_s + 13\\
-\max \{ 131072, x \} & \text{otherwise}\\
-\end{cases}
+D(H) \equiv \begin{dcases}
+\mindifficulty & \text{if} \quad H_i = 0\\
+\text{max}\!\left(\mindifficulty, {P(H)_H}_d + \diffadjustment\times\frontiermod + \expdiffsymb \right) & \text{if} \quad H_i<\mathit{TBD}\\
+\text{max}\!\left(\mindifficulty, {P(H)_H}_d + \diffadjustment\times\homesteadmod + \expdiffsymb \right) & \text{otherwise}\\
+\end{dcases}
 \end{equation}
 where:
 \begin{equation}
-x = {P(H)_H}_d - \left\lfloor\frac{{P(H)_H}_d}{2048}\right\rfloor
+\mindifficulty \equiv 131072
+\end{equation}
+\begin{equation}
+\diffadjustment \equiv \left\lfloor\frac{{P(H)_H}_d}{2048}\right\rfloor
+\end{equation}
+\begin{equation}
+\frontiermod \equiv \begin{cases}
+1 & \text{if} \quad H_s < {P(H)_H}_s + 13 \\
+-1 & \text{otherwise} \\
+\end{cases}
+\end{equation}
+\begin{equation}
+\homesteadmod \equiv \text{max}\left( 1 - \left\lfloor\frac{H_s - {P(H)_H}_s}{10}\right\rfloor, -99 \right)
+\end{equation}
+\begin{equation}
+\expdiffsymb \equiv \left\lfloor 2^{ \left\lfloor H_i \div 100000 \right\rfloor - 2 } \right\rfloor
 \end{equation}
 
 The canonical gas limit $H_l$ of a block of header $H$ must fulfil the relation:
 \begin{eqnarray}
 & & H_l < {P(H)_H}_l + \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor \quad \wedge \\
 & & H_l > {P(H)_H}_l - \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor \quad \wedge \\
-& & H_l \geqslant 5000
+& & H_l \geqslant 125000
 \end{eqnarray}
 
 $H_s$ is the timestamp of block $H$ and must fulfil the relation:
@@ -550,7 +571,7 @@ T_g & \leqslant & {B_H}_l - \ell(B_\mathbf{R})_u
 
 Note the final condition; the sum of the transaction's gas limit, $T_g$, and the gas utilised in this block prior, given by $\ell(B_\mathbf{R})_u$, must be no greater than the block's \textbf{gasLimit}, ${B_H}_l$. 
 
-The execution of a valid transaction begins with an irrevocable change made to the state: the nonce of the account of the sender, $S(T)$, is incremented by one and the balance is reduced by the up-front cost, $v_0$. The gas available for the proceeding computation, $g$, is defined as $T_g - g_0$. The computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
+The execution of a valid transaction begins with an irrevocable change made to the state: the nonce of the account of the sender, $S(T)$, is incremented by one and the balance is reduced by part of the up-front cost, $T_gT_p$. The gas available for the proceeding computation, $g$, is defined as $T_g - g_0$. The computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
 
 We define the checkpoint state $\boldsymbol{\sigma}_0$:
 \begin{eqnarray}
@@ -631,7 +652,7 @@ The account's nonce is initially defined as zero, the balance as the value passe
 \end{equation}
 \begin{eqnarray}
 \boldsymbol{\sigma}^*[a] &\equiv& \big( 0, v + v', \mathtt{\tiny TRIE}(\varnothing), \mathtt{\tiny KEC}\big(()\big) \big) \\
-\boldsymbol{\sigma}^*[s]_b &\equiv& \boldsymbol{\sigma}^*[s]_b - v
+\boldsymbol{\sigma}^*[s]_b &\equiv& \boldsymbol{\sigma}[s]_b - v
 \end{eqnarray}
 
 where $v'$ is the account's pre-existing value, in the event it was previously in existence:
@@ -728,15 +749,14 @@ The account's associated code (identified as the fragment whose Keccak hash is $
 \boldsymbol{\sigma}^{**} & \text{otherwise}
 \end{cases} \\
 (\boldsymbol{\sigma}^{**}, g', \mathbf{s}, \mathbf{o}) & \equiv & \begin{cases}
-\Xi_{\mathtt{ECREC}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad a = 1 \\
-\Xi_{\mathtt{SHA256}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad a = 2 \\
-\Xi_{\mathtt{RIP160}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad a = 3 \\
-\Xi_{\mathtt{ID}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad a = 4 \\
+\Xi_{\mathtt{ECREC}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 1 \\
+\Xi_{\mathtt{SHA256}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 2 \\
+\Xi_{\mathtt{RIP160}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 3 \\
+\Xi_{\mathtt{ID}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 4 \\
 \Xi(\boldsymbol{\sigma}_1, g, I) & \text{otherwise} \end{cases} \\
-I_a & \equiv & a \\
+I_a & \equiv & r \\
 I_o & \equiv & o \\
 I_p & \equiv & p \\
-I_d & \equiv & d \\
 I_\mathbf{d} & \equiv & \mathbf{d} \\
 I_s & \equiv & s \\
 I_v & \equiv & v \\
@@ -864,17 +884,26 @@ We also assume the fixed amounts of $\mathbf{\delta}$ and $\mathbf{\alpha}$, spe
 \subsubsection{Exceptional Halting}
 
 The exceptional halting function $Z$ is defined as:
+%\begin{equation}
+%Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv
+%\begin{array}[t]{l}
+%\boldsymbol{\mu}_g < C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \quad \vee \\
+%\mathbf{\delta}_w = \varnothing \quad \vee \\
+%\lVert\boldsymbol{\mu}_\mathbf{s}\rVert < \mathbf{\delta}_w \quad \vee \\
+%( w \in \{ \text{\small JUMP}, \text{\small JUMPI} \} \quad \wedge \\ \quad \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \\
+%\lVert\boldsymbol{\mu}_\mathbf{s}\rVert - \mathbf{\delta}_w + \mathbf{\alpha}_w > 1024 \quad
+%\end{array}
+%\end{equation}
 
- \begin{gather} 
+
+\begin{gather} 
 Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv \boldsymbol{\mu}_g < C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \quad \vee \\ 
 \mathbf{\delta}_w = \varnothing \quad \vee   \nonumber \\
 \lVert\boldsymbol{\mu}_\mathbf{s}\rVert < \mathbf{\delta}_w \quad \vee \nonumber \\
 ( w = \text{\small JUMP} \quad \wedge \quad \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \nonumber \\
 ( w = \text{\small JUMPI} \quad \wedge \quad \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \quad \wedge \quad \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \nonumber \\
-( w =  \text{\small JUMPI} \quad \wedge \quad  \boldsymbol{\mu}_\mathbf{s}[1] = 0 \quad \wedge \quad \boldsymbol{\mu}_\mathbf{pc} +1 > \lVert I_\mathbf{b} \rVert ) \quad \vee \nonumber \\
 \lVert\boldsymbol{\mu}_\mathbf{s}\rVert - \mathbf{\delta}_w + \mathbf{\alpha}_w > 1024 \nonumber
 \end{gather}
-
 
 This states that the execution is in an exceptional halting state if there is insufficient gas, if the instruction is invalid (and therefore its $\delta$ subscript is undefined), if there are insufficient stack items, if a {\small JUMP}/{\small JUMPI} destination is invalid or the new stack size would be larger then 1024. The astute reader will realise that this implies that no instruction can, through its execution, cause an exceptional halt.
 
@@ -977,14 +1006,14 @@ The process of finalising a block involves four stages:
 
 The validation of ommer headers means nothing more than verifying that each ommer header is both a valid header and satisfies the relation of $N$th-generation ommer to the present block where $N \leq 6$. The maximum of ommer headers is two. Formally:
 \begin{equation}
-\lVert B_\mathbf{U} \rVert \leqslant 2 \bigwedge_{U \in B_\mathbf{U}} V(U) \; \wedge \; k(U, P(B_H), 6)
+\lVert B_\mathbf{U} \rVert \leqslant 2 \bigwedge_{U \in B_\mathbf{U}} V(U) \; \wedge \; k(U, P(B_H)_H, 6)
 \end{equation}
 
 where $k$ denotes the ``is-kin'' property:
 \begin{equation}
 k(U, H, n) \equiv \begin{cases} false & \text{if} \quad n = 0 \\ 
 s(U, H) &\\
-\quad \vee \; k(U, P(H), n - 1) & \text{otherwise}
+\quad \vee \; k(U, P(H)_H, n - 1) & \text{otherwise}
 \end{cases}
 \end{equation}
 
@@ -998,7 +1027,7 @@ where $B(H)$ is the block of the corresponding header $H$.
 
 %where $s[i]$ equals the root of the state trie immediately after the execution of the transaction $B_\mathbf{T}[i]$, and $g[i]$ the total gas used immediately after said transaction.
 
-The given \textbf{gasUsed} must correspond faithfully to the transactions listed: ${B_H}_u$, the total gas used in the block, must be equal to the accumulated gas used according to the final transaction:
+The given \textbf{gasUsed} must correspond faithfully to the transactions listed: ${B_H}_g$, the total gas used in the block, must be equal to the accumulated gas used according to the final transaction:
 \begin{equation}
 {B_H}_g = \ell(\mathbf{R})_u
 \end{equation}
@@ -1008,7 +1037,7 @@ The given \textbf{gasUsed} must correspond faithfully to the transactions listed
 The application of rewards to a block involves raising the balance of the accounts of the beneficiary address of the block and each ommer by a certain amount. We raise the block's beneficiary account by $R_b$; for each ommer, we raise the block's beneficiary by an additional $\frac{1}{32}$ of the block reward and the beneficiary of the ommer gets rewarded depending on the block number. Formally we define the function $\Omega$:
 \begin{eqnarray}
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
-\boldsymbol{\sigma}'[{B_H}_c]_b & = & \boldsymbol{\sigma}[{B_H}_c]_b + (1 + \frac{|B_\mathbf{U}|}{32})R_b \\
+\boldsymbol{\sigma}'[{B_H}_c]_b & = & \boldsymbol{\sigma}[{B_H}_c]_b + (1 + \frac{\lVert B_\mathbf{U}\rVert}{32})R_b \\
 \forall_{U \in B_\mathbf{U}}: \\ \nonumber
  \boldsymbol{\sigma}'[U_c]_b & = & \boldsymbol{\sigma}[U_c]_b + (1 + \frac{1}{8} (U_i - {B_H}_i)) R_b 
 \end{eqnarray}
@@ -1037,7 +1066,7 @@ And finally define $\Phi$, the block transition function, which maps an incomple
 \Phi(B) & \equiv & B': \quad B' = B^* \quad \text{except:} \\
 B'_n & = & n: \quad x \leqslant \frac{2^{256}}{H_d} \\
 B'_m & = & m \quad \text{with } (x, m) = \mathtt{PoW}(B^*_{\hcancel{n}}, n, \mathbf{d}) \\
-B^* & \equiv & B \quad \text{except:} \quad B'_r = r(\Pi(\Gamma(B), B))
+B^* & \equiv & B \quad \text{except:} \quad B^*_r = r(\Pi(\Gamma(B), B))
 \end{eqnarray}
 With $\mathbf{d}$ being a dataset as specified in appendix \ref{app:ethash}.
 
@@ -1080,7 +1109,7 @@ Secondly, it should not be possible to make super-linear profits, and especially
 
 One plague of the Bitcoin world is ASICs. These are specialised pieces of compute hardware that exist only to do a single task. In Bitcoin's case the task is the SHA256 hash function. While ASICs exist for a proof-of-work function, both goals are placed in jeopardy. Because of this, a proof-of-work function that is ASIC-resistant (i.e. difficult or economically inefficient to implement in specialised compute hardware) has been identified as the proverbial silver bullet.
 
-Two directions exist for ASIC resistance; firstly make it sequential memory-hard, i.e. engineer the function such that the determination of the nonce requires a lot of memory and bandwidth such that the memory cannot be used in parallel to discover multiple nonces simultaneously. The second is to make the type of computation it would need to do general-purpose; the meaning of ``specialised hardware''  for a general-purpose task set is, naturally, general purpose hardware and as such commodity desktop computers are likely to be pretty close to ``specialised hardware'' for the task. For Ethereum 1.0 we have choosen the first path.
+Two directions exist for ASIC resistance; firstly make it sequential memory-hard, i.e. engineer the function such that the determination of the nonce requires a lot of memory and bandwidth such that the memory cannot be used in parallel to discover multiple nonces simultaneously. The second is to make the type of computation it would need to do general-purpose; the meaning of ``specialised hardware''  for a general-purpose task set is, naturally, general purpose hardware and as such commodity desktop computers are likely to be pretty close to ``specialised hardware'' for the task. For Ethereum 1.0 we have chosen the first path.
 
 More formally, the proof-of-work function takes the form of $\mathtt{PoW}$:
 \begin{equation}
@@ -1091,7 +1120,7 @@ Where $H_{\hcancel{n}}$ is the new block's header but \textit{without} the nonce
 \subsubsection{Ethash}
 Ethash is the planned PoW algorithm for Ethereum 1.0. It is the latest version of Dagger-Hashimoto, introduced by \cite{dagger} and \cite{hashimoto}, although it can no longer appropriately be called that since many of the original features of both algorithms have been drastically changed in the last month of research and development. The general route that the algorithm takes is as follows:
 
-There exists a seed which can be computed for each block by scanning through the block headers up until that point. From the seed, one can compute a pseudorandom cache, $J_{cacheinit}$ bytes in intial size. Light clients store the cache. From the cache, we can generate a dataset, $J_{datasetinit}$ bytes in initial size, with the property that each item in the dataset depends on only a small number of items from the cache. Full clients and miners store the dataset. The dataset grows linearly with time.
+There exists a seed which can be computed for each block by scanning through the block headers up until that point. From the seed, one can compute a pseudorandom cache, $J_{cacheinit}$ bytes in initial size. Light clients store the cache. From the cache, we can generate a dataset, $J_{datasetinit}$ bytes in initial size, with the property that each item in the dataset depends on only a small number of items from the cache. Full clients and miners store the dataset. The dataset grows linearly with time.
 
 Mining involves grabbing random slices of the dataset and hashing them together. Verification can be done with low memory by using the cache to regenerate the specific pieces of the dataset that you need, so you only need to store the cache. The large dataset is updated once every $J_{epoch}$ blocks, so the vast majority of a miner's effort will be reading the dataset, not making changes to it. The mentioned parameters as well as the algorithm is explained in detail in appendix \ref{app:ethash}.
 
@@ -1211,7 +1240,7 @@ R_b(\mathbf{x}) & \equiv & \begin{cases}
 (128 + \lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{else if} \quad \lVert \mathbf{x} \rVert < 56 \\
 \big(183 + \big\lVert \mathtt{\tiny BE}(\lVert \mathbf{x} \rVert) \big\rVert \big) \cdot \mathtt{\tiny BE}(\lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{otherwise}
 \end{cases} \\
-\mathtt{\tiny BE}(x) & \equiv & (b_0, b_1, ...): b_0 \neq 0 \wedge \sum_{n = 0}^{n < \lVert \mathbf{b} \rVert - 1} b_n \cdot 256^{\lVert \mathbf{b} \rVert - 1 - n} \\
+\mathtt{\tiny BE}(x) & \equiv & (b_0, b_1, ...): b_0 \neq 0 \wedge x = \sum_{n = 0}^{n < \lVert \mathbf{b} \rVert} b_n \cdot 256^{\lVert \mathbf{b} \rVert - 1 - n} \\
 (a) \cdot (b, c) \cdot (d, e) & = & (a, b, c, d, e)
 \end{eqnarray}
 
@@ -2061,7 +2090,7 @@ E_{cacherounds}(E_\text{\tiny RMH}(\mathbf{x}), y -1 ) & \text{otherwise}
 \end{equation}
 Where a single round modifies each subset of the cache as follows:
 \begin{equation}
- E_\text{\tiny RMH}(\mathbf{x}) = \lbrace E_{rmh}(\mathbf{x}, 0), E_{rmh}(\mathbf{x}, 1), ... , E_{rmh}(\mathbf{x}, n - 1) \rbrace
+ E_\text{\tiny RMH}(\mathbf{x}) = \big( E_{rmh}(\mathbf{x}, 0), E_{rmh}(\mathbf{x}, 1), ... , E_{rmh}(\mathbf{x}, n - 1) \big)
 \end{equation}
 \begin{multline}
   E_{rmh}(\mathbf{x}, i) = \texttt{KEC512}(\mathbf{x'}[(i - 1 + n) \mod n] \oplus \mathbf{x'}[\mathbf{x'}[i][0] \mod n]) \\
@@ -2069,7 +2098,7 @@ Where a single round modifies each subset of the cache as follows:
 \end{multline}
 
 \subsubsection{Full dataset calculation} \label{dataset} 
-Essentially, we combine data from $J_{parents}$ pseudorandomly selected cache nodes, and hash that to compute the dataset. The entire dataset is then generated by $d_{size}$ items, each $J_{hashbytes}$ bytes in size:
+Essentially, we combine data from $J_{parents}$ pseudorandomly selected cache nodes, and hash that to compute the dataset. The entire dataset is then generated by a number of items, each $J_{hashbytes}$ bytes in size:
 \begin{equation}
  \mathbf{d}[i] = E_{datasetitem}(\mathbf{c}, i) \quad \forall \quad i < \left\lfloor\frac{d_{size}}{J_{hashbytes}}\right\rfloor
 \end{equation}
@@ -2090,7 +2119,7 @@ E_{mix}(\mathbf{m}, \mathbf{c}, i, p + 1) & \text{otherwise}
 \begin{equation}
  E_{mix}(\mathbf{m}, \mathbf{c}, i, p) = \begin{cases}
 \texttt{KEC512}(\mathbf{c}[i \mod c_{size}] \oplus i) & \text{if} \quad p = 0 \\
-E_\text{\tiny FNV}(\mathbf{m}, \mathbf{c}[E_\text{\tiny FNV}(i \oplus p, \mathbf{m}[p \mod \lfloor J_{hashbytes} / J_{wordbytes} \rfloor]) \mod c_{size}] & \text{otherwise}
+E_\text{\tiny FNV}\big(\mathbf{m}, \mathbf{c}[E_\text{\tiny FNV}(i \oplus p, \mathbf{m}[p \mod \lfloor J_{hashbytes} / J_{wordbytes} \rfloor]) \mod c_{size}] \big) & \text{otherwise}
 \end{cases}
 \end{equation}
 
