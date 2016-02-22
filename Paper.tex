@@ -548,7 +548,7 @@ A^0 \equiv (\varnothing, (), 0)
 We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
 \begin{align}
 g_0 \equiv {} & \sum_{i \in T_\mathbf{i}, T_\mathbf{d}} \begin{cases} G_{txdatazero} & \text{if} \quad i = 0 \\ G_{txdatanonzero} & \text{otherwise} \end{cases} \\
-{} & + \begin{cases} G_\text{txcreate} & \text{if} \quad T_t = \varnothing \wedge T_o = S(T) \wedge H_i \geq \firsthomesteadblock \\ 0 & \text{otherwise} \end{cases} \\
+{} & + \begin{cases} G_\text{txcreate} & \text{if} \quad T_t = \varnothing \wedge H_i \geq \firsthomesteadblock \\ 0 & \text{otherwise} \end{cases} \\
 {} & + G_{transaction}
 \end{align}
 
