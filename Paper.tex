@@ -31,7 +31,7 @@
 \definecolor{lightyellow}{rgb}{1,0.98,0.9}
 \definecolor{lightpink}{rgb}{1,0.94,0.95}
 
-\newcommand{\firsthomesteadblock}{\ensuremath{\mathit{TBA}}}
+\newcommand{\firsthomesteadblock}{\ensuremath{N_H}}
 
 \DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
 \newcommand*\eg{e.g.\@\xspace}
@@ -228,6 +228,14 @@ where $v$ is the account validity function:
 \begin{equation}
 \quad v(x) \equiv x_n \in \mathbb{P}_{256} \wedge x_b \in \mathbb{P}_{256} \wedge x_s \in \mathbb{B}_{32} \wedge x_c \in \mathbb{B}_{32}
 \end{equation}
+
+\subsection{Homestead} \label{ch:homestead}
+
+A significant block number for compatibility with the public network is the block marking the transition between the {\it Frontier} and {\it Homestead} phases of the platform, which we denote with the symbol \firsthomesteadblock, defined thus
+\begin{equation}
+\firsthomesteadblock \equiv 1,\! 150,\! 000
+\end{equation}
+The protocol was upgraded at this block, so this symbol appears in some equations to account for the changes.
 
 \subsection{The Transaction} \label{ch:transaction}
 
