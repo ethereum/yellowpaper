@@ -7,8 +7,6 @@ The Yellow Paper is a formal definition of the Ethereum protocol, originally by 
 
 It is a free culture work, licensed under Creative Commons Attribution Share-Alike (CC-BY-SA) version 4.0.
 
-## Usage
-
 The paper comes as a single ``latex`` file ``Paper.tex``. The latest version is generally available as a PDF at https://ethereum.github.io/yellowpaper/paper.pdf, while the version for Frontier needs to be built as below.
 
 ## How to build
