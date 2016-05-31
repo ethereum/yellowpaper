@@ -1321,7 +1321,7 @@ y(\mathfrak{I}) & = & \{ (\mathbf{k}_0' \in \mathbb{Y}, \mathbf{v}_0 \in \mathbb
 \end{cases}
 \end{eqnarray}
 
-We define the function $\texttt{\small TRIE}$, which evaluates to the root of the trie that represents this set when encoded in this structure:
+We define the function $\texttt{\small TRIE}$, which evaluates to the root of the trie that represents this set when encoded in this structure (see also formal definition \ref{eq:structuralcomposition} for the structural composition function $c$):
 \begin{equation}
 \texttt{\small TRIE}(\mathfrak{I}) \equiv \texttt{\small KEC}(c(\mathfrak{I}, 0))
 \end{equation}
@@ -1343,7 +1343,7 @@ In a manner similar to a radix tree, when the trie is traversed from root to lea
 \end{description}
 
 A branch is then only used when necessary; no branch nodes may exist that contain only a single non-zero entry. We may formally define this structure with the structural composition function $c$:
-\begin{equation}
+\begin{equation} \label{eq:structuralcomposition}
 c(\mathfrak{I}, i) \equiv \begin{cases}
 \texttt{\small RLP}\Big( \big(\texttt{\small HP}(I_0[i .. (\lVert I_0\rVert - 1)], true), I_1 \big) \Big) & \text{if} \quad \lVert \mathfrak{I} \rVert = 1 \quad \text{where} \; \exists I: I \in \mathfrak{I} \\
 \texttt{\small RLP}\Big( \big(\texttt{\small HP}(I_0[i .. (j - 1)], false), n(\mathfrak{I}, j) \big) \Big) & \text{if} \quad i \ne j \quad \text{where} \; j = \arg \max_x : \exists \mathbf{l}: \lVert \mathbf{l} \rVert = x : \forall_{I \in \mathfrak{I}}: I_0[0 .. (x - 1)] = \mathbf{l} \\
