@@ -644,7 +644,7 @@ These are used to help define the transaction receipt, discussed later.
 
 \section{Contract Creation} \label{ch:create}
 
-There are number of intrinsic parameters used when creating an account: sender ($s$), original transactor ($o$), available gas ($g$), gas price ($p$), endowment ($v$) together with an arbitrary length byte array, $\mathbf{i}$, the initialisation EVM code and finally the present depth of the message-call/contract-creation stack ($e$).
+There are a number of intrinsic parameters used when creating an account: sender ($s$), original transactor ($o$), available gas ($g$), gas price ($p$), endowment ($v$) together with an arbitrary length byte array, $\mathbf{i}$, the initialisation EVM code and finally the present depth of the message-call/contract-creation stack ($e$).
 
 We define the creation function formally as the function $\Lambda$, which evaluates from these values, together with the state $\boldsymbol{\sigma}$ to the tuple containing the new state, remaining gas and accrued transaction substate $(\boldsymbol{\sigma}', g', A)$, as in section \ref{ch:transactions}:
 \begin{equation}
