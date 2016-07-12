@@ -2144,10 +2144,4 @@ E_{compress}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(\mathbf{m}
 \end{cases}
 \end{equation}
 
-\subsection{Mining}
-In order to mine a valid block, one repeatedly chooses a random nonce $\mathbf{n}_{rand} \in \mathbb{B}_{8}$ and calculates the $\mathtt{PoW}$ function until
-\begin{equation}
- \mathtt{PoW}(H_{\hcancel{n}}, \mathbf{n}_{rand}, \mathbf{d})[1] \leqslant \frac{2^{256}}{H_d}\quad.
-\end{equation}
-$H_d$ being the current difficulty of the block.
 \end{document}
