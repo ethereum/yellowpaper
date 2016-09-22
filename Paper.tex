@@ -1994,7 +1994,7 @@ G_{callnewaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathb
 
 \begin{tabular*}{\columnwidth}[h]{rlrrl}
 \midrule
-0xf4 & {\small DELEGATECALL} & 7 & 1 & Message-call into this account with an alternative account's code, but persisting\\
+0xf4 & {\small DELEGATECALL} & 6 & 1 & Message-call into this account with an alternative account's code, but persisting\\
 &&&& the current values for {\it sender} and {\it value}. \\
 &&&& Exactly equivalent to {\small CALL} except: \\
 &&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}^*, I_s, I_o, I_a, t,\\\quad \boldsymbol{\mu}_\mathbf{s}[0], I_p, 0, \boldsymbol{\mu}_\mathbf{s}[2], \mathbf{i}, I_e + 1)\end{array} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \leqslant \boldsymbol{\sigma}[I_a]_b \;\wedge\; I_e < 1024 \\ (\boldsymbol{\sigma}, g, \varnothing, \mathbf{o}) & \text{otherwise} \end{cases}$ \\
