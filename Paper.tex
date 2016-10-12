@@ -1492,7 +1492,8 @@ $G_{verylow}$ & 3 & Amount of gas to pay for operations of the set {\small $W_{v
 $G_{low}$ & 5 & Amount of gas to pay for operations of the set {\small $W_{low}$}. \\
 $G_{mid}$ & 8 & Amount of gas to pay for operations of the set {\small $W_{mid}$}. \\
 $G_{high}$ & 10 & Amount of gas to pay for operations of the set {\small $W_{high}$}. \\
-$G_{ext}$ & 20 & Amount of gas to pay for operations of the set {\small $W_{ext}$}. \\
+$G_{extcode}$ & 700 & Amount of gas to pay for operations of the set {\small $W_{extcode}$}. \\
+$G_{extbal}$ & 400 & Amount of gas to pay for operations of the set {\small $W_{extbal}$}. \\
 $G_{sload}$ & 50 & Paid for a {\small SLOAD} operation. \\
 $G_{jumpdest}$ & 1 & Paid for a {\small JUMPDEST} operation. \\
 $G_{sset}$ & 20000 & Paid for an {\small SSTORE} operation when the storage value is set to non-zero from zero. \\
@@ -1539,7 +1540,7 @@ C_\text{\tiny SSTORE}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w
 G_{exp} & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_\mathbf{s}[1] = 0 \\
 G_{exp} + G_{expbyte}\times(1+\lfloor\log_{256}(\boldsymbol{\mu}_\mathbf{s}[1])\rfloor) & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_\mathbf{s}[1] > 0 \\
 G_{verylow} + G_{copy}\times\lceil\boldsymbol{\mu}_\mathbf{s}[2] \div 32\rceil & \text{if} \quad w = \text{\small CALLDATACOPY} \lor \text{\small CODECOPY} \\
-G_{ext} + G_{copy}\times\lceil\boldsymbol{\mu}_\mathbf{s}[3] \div 32\rceil & \text{if} \quad w = \text{\small EXTCODECOPY} \\
+G_{extcode} + G_{copy}\times\lceil\boldsymbol{\mu}_\mathbf{s}[3] \div 32\rceil & \text{if} \quad w = \text{\small EXTCODECOPY} \\
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1] & \text{if} \quad w = \text{\small LOG0} \\
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+G_{logtopic} & \text{if} \quad w = \text{\small LOG1} \\
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+2G_{logtopic} & \text{if} \quad w = \text{\small LOG2} \\
@@ -1556,7 +1557,8 @@ G_{verylow} & \text{if} \quad w \in W_{verylow}\\
 G_{low} & \text{if} \quad w \in W_{low}\\
 G_{mid} & \text{if} \quad w \in W_{mid}\\
 G_{high} & \text{if} \quad w \in W_{high}\\
-G_{ext} & \text{if} \quad w \in W_{ext}
+G_{extcode} & \text{if} \quad w \in W_{extcode}\\
+G_{extbal} & \text{if} \quad w \in W_{extbal}
 \end{cases}
 \end{equation}
 \begin{equation}
@@ -1584,7 +1586,9 @@ $W_{mid}$ = \{{\small ADDMOD}, {\small MULMOD}, {\small JUMP}\}
 
 $W_{high}$ = \{{\small JUMPI}\}
 
-$W_{ext}$ = \{{\small BALANCE}, {\small EXTCODESIZE}, {\small BLOCKHASH}\}
+$W_{extcode}$ = \{{\small EXTCODESIZE}, {\small BLOCKHASH}\}
+
+$W_{extbal}$ = \{{\small BALANCE}\}
 
 Note the memory cost component, given as the product of $G_{memory}$ and the maximum of 0 \& the ceiling of the number of words in size that the memory must be over the current number of words, $\boldsymbol{\mu}_i$ in order that all accesses reference valid memory whether for read or write. Such accesses must be for non-zero number of bytes.
 
