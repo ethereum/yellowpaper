@@ -1605,6 +1605,12 @@ s & \text{if} \quad l = 0 \\
 \end{cases}
 \end{equation}
 
+Another useful function is ``all but one 64th'' function~$L$ defined as:
+
+\begin{equation}
+L(n) \equiv n - \lfloor n / 64 \rfloor
+\end{equation}
+
 \subsection{Instruction Set}
 
 As previously specified in section \ref{ch:model}, these definitions take place in the final context there. In particular we assume $O$ is the EVM state-progression function and define the terms pertaining to the next cycle's state $(\boldsymbol{\sigma}', \boldsymbol{\mu}')$ such that:
@@ -1982,7 +1988,7 @@ C_{\text{\tiny GASCAPPED}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) + G_{callstipe
 C_{\text{\tiny GASCAPPED}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{otherwise}
 \end{cases}$ \\
 &&&& $C_{\text{\tiny GASCAPPED}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
-\boldsymbol{\mu}_g - C_{\text{\tiny CALLEXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad \boldsymbol{\mu}_g < C_{\text{\tiny CALLEXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) + \boldsymbol{\mu}_{\mathbf{s}}[0] \;\wedge \\
+L(\boldsymbol{\mu}_g - C_{\text{\tiny CALLEXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})) & \text{if} \quad L(\boldsymbol{\mu}_g - C_{\text{\tiny CALLEXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})) < \boldsymbol{\mu}_{\mathbf{s}}[0] \;\wedge \\
 &\quad\quad \boldsymbol{\mu}_g \ge C_{\text{\tiny CALLEXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})\\
 \boldsymbol{\mu}_{\mathbf{s}}[0] & \text{otherwise}
 \end{cases}$\\
