@@ -1493,8 +1493,8 @@ $G_{low}$ & 5 & Amount of gas to pay for operations of the set {\small $W_{low}$
 $G_{mid}$ & 8 & Amount of gas to pay for operations of the set {\small $W_{mid}$}. \\
 $G_{high}$ & 10 & Amount of gas to pay for operations of the set {\small $W_{high}$}. \\
 $G_{extcode}$ & 700 & Amount of gas to pay for operations of the set {\small $W_{extcode}$}. \\
-$G_{extbal}$ & 400 & Amount of gas to pay for operations of the set {\small $W_{extbal}$}. \\
-$G_{sload}$ & 50 & Paid for a {\small SLOAD} operation. \\
+$G_{balance}$ & 400 & Amount of gas to pay for a {\small BALANCE} operation. \\
+$G_{sload}$ & 200 & Paid for a {\small SLOAD} operation. \\
 $G_{jumpdest}$ & 1 & Paid for a {\small JUMPDEST} operation. \\
 $G_{sset}$ & 20000 & Paid for an {\small SSTORE} operation when the storage value is set to non-zero from zero. \\
 $G_{sreset}$ & 5000 & Paid for an {\small SSTORE} operation when the storage value's zeroness remains unchanged or is set to zero. \\
@@ -1558,7 +1558,7 @@ G_{low} & \text{if} \quad w \in W_{low}\\
 G_{mid} & \text{if} \quad w \in W_{mid}\\
 G_{high} & \text{if} \quad w \in W_{high}\\
 G_{extcode} & \text{if} \quad w \in W_{extcode}\\
-G_{extbal} & \text{if} \quad w \in W_{extbal}
+G_{balance} & \text{if} \quad w = \text{\small BALANCE}
 \end{cases}
 \end{equation}
 \begin{equation}
@@ -1587,8 +1587,6 @@ $W_{mid}$ = \{{\small ADDMOD}, {\small MULMOD}, {\small JUMP}\}
 $W_{high}$ = \{{\small JUMPI}\}
 
 $W_{extcode}$ = \{{\small EXTCODESIZE}, {\small BLOCKHASH}\}
-
-$W_{extbal}$ = \{{\small BALANCE}\}
 
 Note the memory cost component, given as the product of $G_{memory}$ and the maximum of 0 \& the ceiling of the number of words in size that the memory must be over the current number of words, $\boldsymbol{\mu}_i$ in order that all accesses reference valid memory whether for read or write. Such accesses must be for non-zero number of bytes.
 
