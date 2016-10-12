@@ -1976,7 +1976,17 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& otherwise. \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[3], \boldsymbol{\mu}_\mathbf{s}[4]), \boldsymbol{\mu}_\mathbf{s}[5], \boldsymbol{\mu}_\mathbf{s}[6])$ \\
 &&&& Thus the operand order is: gas, to, value, in offset, in size, out offset, out size. \\
-&&&& $C_{\text{\tiny CALL}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv G_{call} + \boldsymbol{\mu}_\mathbf{s}[0] + C_{\text{\tiny CALLXFER}}(\boldsymbol{\mu}) + C_{\text{\tiny CALLNEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$ \\
+&&&& $C_{\text{\tiny CALL}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv C_{\text{\tiny GASCAPPED}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) + C_{\text{\tiny CALLEXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$ \\
+&&&& $C_{\text{\tiny CALLGAS}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv  \begin{cases}
+C_{\text{\tiny GASCAPPED}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) + G_{callstipend} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \neq 0 \\
+C_{\text{\tiny GASCAPPED}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{otherwise}
+\end{cases}$ \\
+&&&& $C_{\text{\tiny GASCAPPED}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
+\boldsymbol{\mu}_g - C_{\text{\tiny CALLEXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad \boldsymbol{\mu}_g < C_{\text{\tiny CALLEXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) + \boldsymbol{\mu}_{\mathbf{s}}[0] \;\wedge \\
+&\quad\quad \boldsymbol{\mu}_g \ge C_{\text{\tiny CALLEXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})\\
+\boldsymbol{\mu}_{\mathbf{s}}[0] & \text{otherwise}
+\end{cases}$\\
+&&&& $C_{\text{\tiny CALLEXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv G_{call} + C_{\text{\tiny CALLXFER}}(\boldsymbol{\mu}) + C_{\text{\tiny CALLNEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$\\
 &&&& $C_{\text{\tiny CALLXFER}}(\boldsymbol{\mu}) \equiv \begin{cases}
 G_{callvalue} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \neq 0 \\
 0 & \text{otherwise}
@@ -1984,10 +1994,6 @@ G_{callvalue} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \neq 0 \\
 &&&& $C_{\text{\tiny CALLNEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
 G_{callnewaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[1] \mod 2^{160}] = \varnothing \\
 0 & \text{otherwise}
-\end{cases}$ \\
-&&&& $C_{\text{\tiny CALLGAS}}(\boldsymbol{\mu}) \equiv  \begin{cases}
-\boldsymbol{\mu}_\mathbf{s}[0] + G_{callstipend} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \neq 0 \\
-\boldsymbol{\mu}_\mathbf{s}[0] & \text{otherwise}
 \end{cases}$ \\
 \midrule
 0xf2 & {\small CALLCODE} & 7 & 1 & Message-call into this account with an alternative account's code. \\
