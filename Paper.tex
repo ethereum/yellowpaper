@@ -1506,7 +1506,7 @@ $G_{codedeposit}$ & 200 & Paid per byte for a {\small CREATE} operation to succe
 $G_{call}$ & 700 & Paid for a {\small CALL} operation. \\
 $G_{callvalue}$ & 9000 & Paid for a non-zero value transfer as part of the {\small CALL} operation. \\
 $G_{callstipend}$ & 2300 & A stipend for the called contract subtracted from $G_{callvalue}$ for a non-zero value transfer. \\
-$G_{callnewaccount}$ & 25000 & Paid for a {\small CALL} operation to a not previously existing account. \\
+$G_{newaccount}$ & 25000 & Paid for a {\small CALL} or {\small SUICIDE} operation which creates an account. \\
 $G_{exp}$ & 10 & Partial payment for an {\small EXP} operation. \\
 $G_{expbyte}$ & 10 & Partial payment when multiplied by $\lceil\log_{256}(exponent)\rceil$ for the {\small EXP} operation. \\
 $G_{memory}$ & 3 & Paid for every additional word when expanding memory. \\
@@ -1999,7 +1999,7 @@ G_{callvalue} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \neq 0 \\
 0 & \text{otherwise}
 \end{cases}$ \\
 &&&& $C_{\text{\tiny NEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
-G_{callnewaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[1] \mod 2^{160}] = \varnothing \\
+G_{newaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[1] \mod 2^{160}] = \varnothing \\
 0 & \text{otherwise}
 \end{cases}$ \\
 \midrule
@@ -2039,9 +2039,9 @@ G_{callnewaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathb
 R_{suicide} & \text{if} \quad I_a \notin A_\mathbf{s} \\
 0 & \text{otherwise}
 \end{cases}$ \\
-&&&& $C_{\text{\tiny SUICIDE}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
-G_{suicide} + G_{callnewaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[1] \mod 2^{160}] = \varnothing \\
-G_{suicide} & \text{otherwise}
+&&&& $C_{\text{\tiny SUICIDE}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv G_{suicide} + \begin{cases}
+G_{newaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[1] \mod 2^{160}] = \varnothing \\
+0 & \text{otherwise}
 \end{cases}$ \\
 \bottomrule
 \end{tabular*}
