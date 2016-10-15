@@ -1152,7 +1152,7 @@ Providing random numbers within a deterministic system is, naturally, an impossi
 
 The state database won't be forced to maintain all past state trie structures into the future. It should maintain an age for each node and eventually discard nodes that are neither recent enough nor checkpoints; checkpoints, or a set of nodes in the database that allow a particular block's state trie to be traversed, could be used to place a maximum limit on the amount of computation needed in order to retrieve any state throughout the blockchain.
 
-Blockchain consolidation could be used in order to reduce the amount of blocks a client would need to download to act as a full, mining, node. A compressed archive of the trie structure at given points in time (perhaps one in every 10000th block) could be maintained by the peer network, effectively recasting the genesis block. This would reduce the amount to be downloaded to a single archive plus a hard maximum limit  of blocks.
+Blockchain consolidation could be used in order to reduce the amount of blocks a client would need to download to act as a full, mining, node. A compressed archive of the trie structure at given points in time (perhaps one in every 10,000th block) could be maintained by the peer network, effectively recasting the genesis block. This would reduce the amount to be downloaded to a single archive plus a hard maximum limit  of blocks.
 
 Finally, blockchain compression could perhaps be conducted: nodes in state trie that haven't sent/received a transaction in some constant amount of blocks could be thrown out, reducing both Ether-leakage and the growth of the state database.
 
@@ -1170,7 +1170,7 @@ I have introduced, discussed and formally defined the protocol of Ethereum. Thro
 
 \section{Acknowledgements}
 
-Important maintenance, useful corrections and suggestions were provided by a number of others from the Ethereum DEV organisation and Ethereum community at large including Christoph Jentzsch, Gustav Simonsson, Aeron Buchanan, Pawe\l{} Bylica, Jutta Steiner, Nick Savers, Viktor Tr\'{o}n, Marko Simovic, Yoichi Hirai, Giacomo Tazzari and, of course, Vitalik Buterin.
+Many thanks to Aeron Buchanan for authoring the Homestead revisions, Christoph Jentzsch for authoring the Ethash algorithm and Yoichi Hirai for doing most of the EIP-150 changes. Important maintenance, useful corrections and suggestions were provided by a number of others from the Ethereum DEV organisation and Ethereum community at large including Gustav Simonsson, Pawe\l{} Bylica, Jutta Steiner, Nick Savers, Viktor Tr\'{o}n, Marko Simovic, Giacomo Tazzari and, of course, Vitalik Buterin.
 
 \bibliography{Biblio}
 \bibliographystyle{plainnat}
@@ -1520,6 +1520,7 @@ $G_{logtopic}$ & 375 & Paid for each topic of a {\small LOG} operation. \\
 $G_{sha3}$ & 30 & Paid for each {\small SHA3} operation. \\
 $G_{sha3word}$ & 6 & Paid for each word (rounded up) for input data to a {\small SHA3} operation. \\
 $G_{copy}$ & 3 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
+$G_{blockhash}$ & 20 & Payment for {\small BLOCKHASH} operation. \\
 
 %extern u256 const c_copyGas;			///< Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
 \bottomrule
@@ -1536,7 +1537,7 @@ When a 256-bit machine datum is converted to and from a 160-bit address or hash,
 The general gas cost function, $C$, is defined as:
 
 \begin{equation}
-C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv C_{memory}(\boldsymbol{\mu}'_i)-C_{memory}(\boldsymbol{\mu}_i) + \begin{cases}
+C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv C_{mem}(\boldsymbol{\mu}'_i)-C_{mem}(\boldsymbol{\mu}_i) + \begin{cases}
 C_\text{\tiny SSTORE}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SSTORE} \\
 G_{exp} & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_\mathbf{s}[1] = 0 \\
 G_{exp} + G_{expbyte}\times(1+\lfloor\log_{256}(\boldsymbol{\mu}_\mathbf{s}[1])\rfloor) & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_\mathbf{s}[1] > 0 \\
@@ -1560,7 +1561,8 @@ G_{low} & \text{if} \quad w \in W_{low}\\
 G_{mid} & \text{if} \quad w \in W_{mid}\\
 G_{high} & \text{if} \quad w \in W_{high}\\
 G_{extcode} & \text{if} \quad w \in W_{extcode}\\
-G_{balance} & \text{if} \quad w = \text{\small BALANCE}
+G_{balance} & \text{if} \quad w = \text{\small BALANCE}\\
+G_{blockhash} & \text{if} \quad w = \text{\small BLOCKHASH}\\
 \end{cases}
 \end{equation}
 \begin{equation}
@@ -1571,7 +1573,7 @@ w \equiv \begin{cases} I_\mathbf{b}[\boldsymbol{\mu}_{pc}] & \text{if} \quad \bo
 
 where:
 \begin{equation}
-C_{memory}(a) \equiv G_{memory} \cdot a + \Big\lfloor \dfrac{a^2}{512} \Big\rfloor
+C_{mem}(a) \equiv G_{memory} \cdot a + \Big\lfloor \dfrac{a^2}{512} \Big\rfloor
 \end{equation}
 
 with $C_\text{\tiny CALL}$, $C_\text{\tiny SUICIDE}$ and $C_\text{\tiny SSTORE}$ as specified in the appropriate section below. We define the following subsets of instructions:
@@ -1588,13 +1590,13 @@ $W_{mid}$ = \{{\small ADDMOD}, {\small MULMOD}, {\small JUMP}\}
 
 $W_{high}$ = \{{\small JUMPI}\}
 
-$W_{extcode}$ = \{{\small EXTCODESIZE}, {\small BLOCKHASH}\}
+$W_{extcode}$ = \{{\small EXTCODESIZE}\}
 
 Note the memory cost component, given as the product of $G_{memory}$ and the maximum of 0 \& the ceiling of the number of words in size that the memory must be over the current number of words, $\boldsymbol{\mu}_i$ in order that all accesses reference valid memory whether for read or write. Such accesses must be for non-zero number of bytes.
 
 Referencing a zero length range (e.g. by attempting to pass it as the input range to a CALL) does not require memory to be extended to the beginning of the range. $\boldsymbol{\mu}'_i$ is defined as this new maximum number of words of active memory; special-cases are given where these two are not equal.
 
-Note also that $C_{memory}$ is the memory cost function (the expansion function being the difference between the cost before and after). It is a polynomial, with the higher-order coefficient divided and floored, and thus linear up to 724B of memory used, after which it costs substantially more.
+Note also that $C_{mem}$ is the memory cost function (the expansion function being the difference between the cost before and after). It is a polynomial, with the higher-order coefficient divided and floored, and thus linear up to 724B of memory used, after which it costs substantially more.
 
 While defining the instruction set, we defined the memory-expansion for range function, $M$, thus:
 
@@ -1982,22 +1984,21 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& otherwise. \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[3], \boldsymbol{\mu}_\mathbf{s}[4]), \boldsymbol{\mu}_\mathbf{s}[5], \boldsymbol{\mu}_\mathbf{s}[6])$ \\
 &&&& Thus the operand order is: gas, to, value, in offset, in size, out offset, out size. \\
-&&&& $C_{\text{\tiny CALL}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv C_{\text{\tiny GASCAPPED}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) + C_{\text{\tiny CALLEXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$ \\
+&&&& $C_{\text{\tiny CALL}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) + C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$ \\
 &&&& $C_{\text{\tiny CALLGAS}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv  \begin{cases}
-C_{\text{\tiny GASCAPPED}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) + G_{callstipend} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \neq 0 \\
-C_{\text{\tiny GASCAPPED}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{otherwise}
+C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) + G_{callstipend} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \neq 0 \\
+C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{otherwise}
 \end{cases}$ \\
-&&&& $C_{\text{\tiny GASCAPPED}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
-L(\boldsymbol{\mu}_g - C_{\text{\tiny CALLEXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})) & \text{if} \quad L(\boldsymbol{\mu}_g - C_{\text{\tiny CALLEXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})) < \boldsymbol{\mu}_{\mathbf{s}}[0] \;\wedge \\
-&\quad\quad \boldsymbol{\mu}_g \ge C_{\text{\tiny CALLEXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})\\
+&&&& $C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
+\min\{ L(\boldsymbol{\mu}_g - C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})), \boldsymbol{\mu}_{\mathbf{s}}[0] \} & \text{if} \quad \boldsymbol{\mu}_g \ge C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})\\
 \boldsymbol{\mu}_{\mathbf{s}}[0] & \text{otherwise}
 \end{cases}$\\
-&&&& $C_{\text{\tiny CALLEXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv G_{call} + C_{\text{\tiny CALLXFER}}(\boldsymbol{\mu}) + C_{\text{\tiny CALLNEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$\\
-&&&& $C_{\text{\tiny CALLXFER}}(\boldsymbol{\mu}) \equiv \begin{cases}
+&&&& $C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv G_{call} + C_{\text{\tiny XFER}}(\boldsymbol{\mu}) + C_{\text{\tiny NEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$\\
+&&&& $C_{\text{\tiny XFER}}(\boldsymbol{\mu}) \equiv \begin{cases}
 G_{callvalue} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \neq 0 \\
 0 & \text{otherwise}
 \end{cases}$ \\
-&&&& $C_{\text{\tiny CALLNEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
+&&&& $C_{\text{\tiny NEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
 G_{callnewaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[1] \mod 2^{160}] = \varnothing \\
 0 & \text{otherwise}
 \end{cases}$ \\
