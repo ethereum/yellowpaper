@@ -699,9 +699,12 @@ $I_\mathbf{d}$ evaluates to the empty tuple as there is no input data to this ca
 Code execution depletes gas, and gas may not go below zero, thus execution may exit before the code has come to a natural halting state. In this (and several other) exceptional cases we say an out-of-gas (OOG) exception has occurred: The evaluated state is defined as being the empty set, $\varnothing$, and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation.
 
 If the initialization code completes successfully, a final contract-creation cost is paid, the code-deposit cost, $c$, proportional to the size of the created contract's code:
-\begin{equation}
-c \equiv G_{codedeposit} \times |\mathbf{o}|
-\end{equation}
+\begin{align}
+c \equiv \begin{cases}
+  2^{256} - 1 & \text{if} \quad |\mathbf{o}| \le 24000 \\
+  G_{codedeposit} \times |\mathbf{o}| & \text{otherwise}
+\end{cases}
+\end{align}
 
 If there is not enough gas remaining to pay this, \ie $g^{**} < c$, then we also declare an out-of-gas exception.
 
