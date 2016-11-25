@@ -2,7 +2,7 @@
 
 [![Gitter](https://badges.gitter.im/ethereum/yellowpaper.svg)](https://gitter.im/ethereum/yellowpaper?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-The paper comes as a single ``latex`` file ``Paper.tex``. The latest version is generally available as a PDF at http://gavwood.com/Paper.pdf .
+The paper comes as a single ``latex`` file ``Paper.tex``. The latest version is generally available as a PDF at http://paper.gavwood.com .
 
 It can be viewed in ``PDF`` format with ``pdflatex Paper.tex`` (local install of a current free tex distribution required).
 
