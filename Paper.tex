@@ -1619,21 +1619,21 @@ Here given are the various exceptions to the state transition rules given in sec
 \toprule
 \multicolumn{5}{c}{\textbf{10s: Comparison \& Bitwise Logic Operations}} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
-0x10 & {\small LT} & 2 & 1 & Less-than comparision. \\
+0x10 & {\small LT} & 2 & 1 & Less-than comparison. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] < \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
-0x11 & {\small GT} & 2 & 1 & Greater-than comparision. \\
+0x11 & {\small GT} & 2 & 1 & Greater-than comparison. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
-0x12 & {\small SLT} & 2 & 1 & Signed less-than comparision. \\
+0x12 & {\small SLT} & 2 & 1 & Signed less-than comparison. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] < \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 &&&& Where all values are treated as two's complement signed 256-bit integers. \\
 \midrule
-0x13 & {\small SGT} & 2 & 1 & Signed greater-than comparision. \\
+0x13 & {\small SGT} & 2 & 1 & Signed greater-than comparison. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 &&&& Where all values are treated as two's complement signed 256-bit integers. \\
 \midrule
-0x14 & {\small EQ} & 2 & 1 & Equality comparision. \\
+0x14 & {\small EQ} & 2 & 1 & Equality comparison. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] = \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
 0x15 & {\small ISZERO} & 1 & 1 & Simple not operator. \\
