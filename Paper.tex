@@ -2013,7 +2013,7 @@ G_{callvalue} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \neq 0 \\
 0 & \text{otherwise}
 \end{cases}$ \\
 &&&& $C_{\text{\tiny NEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
-G_{newaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[1] \mod 2^{160}] = \varnothing \\
+G_{newaccount} & \text{if} \quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma},\boldsymbol{\mu}_\mathbf{s}[1] \mod 2^{160}) \wedge \boldsymbol{\mu}_\mathbf{s}[2] \neq 0 \\
 0 & \text{otherwise}
 \end{cases}$ \\
 \midrule
@@ -2056,7 +2056,7 @@ R_{selfdestruct} & \text{if} \quad I_a \notin A_\mathbf{s} \\
 0 & \text{otherwise}
 \end{cases}$ \\
 &&&& $C_{\text{\tiny SELFDESTRUCT}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv G_{selfdestruct} + \begin{cases}
-G_{newaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[1] \mod 2^{160}] = \varnothing \\
+G_{newaccount} & \text{if} \quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma}, \boldsymbol{\mu}_\mathbf{s}[1] \mod 2^{160}) \wedge \boldsymbol{\sigma}[I_a]_b \neq 0 \\
 0 & \text{otherwise}
 \end{cases}$ \\
 \bottomrule
