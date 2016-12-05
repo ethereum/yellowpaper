@@ -233,6 +233,14 @@ where $v$ is the account validity function:
 \quad v(x) \equiv x_n \in \mathbb{P}_{256} \wedge x_b \in \mathbb{P}_{256} \wedge x_s \in \mathbb{B}_{32} \wedge x_c \in \mathbb{B}_{32}
 \end{equation}
 
+An account state is empty when it has no code, zero nonce and zero balance:
+\begin{equation}
+\mathtt{\tiny EMPTY}(\boldsymbol{\sigma}, a)
+\equiv \boldsymbol{\sigma}[a]_c = \texttt{\small KEC}\big(()\big)
+\wedge \boldsymbol{\sigma}[a]_n = 0
+\wedge \boldsymbol{\sigma}[a]_b = 0
+\end{equation}
+
 \subsection{Homestead} \label{ch:homestead}
 
 A significant block number for compatibility with the public network is the block marking the transition between the {\it Frontier} and {\it Homestead} phases of the platform, which we denote with the symbol \firsthomesteadblock, defined thus
