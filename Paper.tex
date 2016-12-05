@@ -238,6 +238,11 @@ An account is \textit{empty} when it has no code, zero nonce and zero balance:
 \mathtt{\tiny EMPTY}(\boldsymbol{\sigma}, a) \equiv \boldsymbol{\sigma}[a]_c = \texttt{\small KEC}\big(()\big) \wedge \boldsymbol{\sigma}[a]_n = 0 \wedge \boldsymbol{\sigma}[a]_b = 0
 \end{equation}
 
+An account is \textit{dead} when its account state is non-existent or empty:
+\begin{equation}
+\mathtt{\tiny DEAD}(\boldsymbol{\sigma}, a) \equiv \boldsymbol{\sigma}[a] = \varnothing \vee \mathtt{\tiny EMPTY}(\boldsymbol{\sigma}, a)
+\end{equation}
+
 \subsection{The Transaction} \label{ch:transaction}
 
 A transaction (formally, $T$) is a single cryptographically-signed instruction constructed by an actor externally to the scope of Ethereum. While it is assumed that the ultimate external actor will be human in nature, software tools will be used in its construction and dissemination\footnote{Notably, such `tools' could ultimately become so causally removed from their human-based initiation---or humans may become so causally-neutral---that there could be a point at which they rightly be considered autonomous agents. \eg contracts may offer bounties to humans for being sent transactions to initiate their execution.}. There are two types of transactions: those which result in message calls and those which result in the creation of new accounts with associated code (known informally as `contract creation'). Both types specify a number of common fields:
