@@ -1389,7 +1389,7 @@ A reasonable implementation will maintain a database of nodes determined from th
 For each precompiled contract, we make use of a template function, $\Xi_{\mathtt{PRE}}$, which implements the out-of-gas checking.
 \begin{equation}
 \Xi_{\mathtt{PRE}}(\boldsymbol{\sigma}, g, I, T) \equiv \begin{cases}
-(\varnothing, 0, A^0(\emptyset), ()) & \text{if} \quad g < g_r \\
+(\varnothing, 0, A^0(T), ()) & \text{if} \quad g < g_r \\
 (\boldsymbol\sigma, g - g_r, A^0(T), \mathbf{o}) & \text{otherwise}\end{cases}
 \end{equation}
 
