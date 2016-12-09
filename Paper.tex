@@ -235,12 +235,12 @@ where $v$ is the account validity function:
 
 An account is \textit{empty} when it has no code, zero nonce and zero balance:
 \begin{equation}
-\mathtt{\tiny EMPTY}(\boldsymbol{\sigma}, a) \equiv \boldsymbol{\sigma}[a]_c = \texttt{\small KEC}\big(()\big) \wedge \boldsymbol{\sigma}[a]_n = 0 \wedge \boldsymbol{\sigma}[a]_b = 0
+\mathtt{\tiny EMPTY}(\boldsymbol{\sigma}, a) \quad\equiv\quad \boldsymbol{\sigma}[a]_c = \texttt{\small KEC}\big(()\big) \wedge \boldsymbol{\sigma}[a]_n = 0 \wedge \boldsymbol{\sigma}[a]_b = 0
 \end{equation}
 
 An account is \textit{dead} when its account state is non-existent or empty:
 \begin{equation}
-\mathtt{\tiny DEAD}(\boldsymbol{\sigma}, a) \equiv \boldsymbol{\sigma}[a] = \varnothing \vee \mathtt{\tiny EMPTY}(\boldsymbol{\sigma}, a)
+\mathtt{\tiny DEAD}(\boldsymbol{\sigma}, a) \quad\equiv\quad \boldsymbol{\sigma}[a] = \varnothing \vee \mathtt{\tiny EMPTY}(\boldsymbol{\sigma}, a)
 \end{equation}
 
 \subsection{The Transaction} \label{ch:transaction}
@@ -783,13 +783,13 @@ The account's associated code (identified as the fragment whose Keccak hash is $
 g' & \equiv & \begin{cases}
 0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
 g^{**} & \text{otherwise}
-\end{cases} \\
+\end{cases} \\ \nonumber
 \qquad (\boldsymbol{\sigma}^{**}, g^{**}, A, \mathbf{o}) & \equiv & \begin{cases}
-\Xi_{\mathtt{ECREC}}(\boldsymbol{\sigma}_1, g, I, T) & \text{if} \quad r = 1 \\
-\Xi_{\mathtt{SHA256}}(\boldsymbol{\sigma}_1, g, I, T) & \text{if} \quad r = 2 \\
-\Xi_{\mathtt{RIP160}}(\boldsymbol{\sigma}_1, g, I, T) & \text{if} \quad r = 3 \\
-\Xi_{\mathtt{ID}}(\boldsymbol{\sigma}_1, g, I, T) & \text{if} \quad r = 4 \\
-\Xi(\boldsymbol{\sigma}_1, g, I, T) & \text{otherwise} \end{cases} \\
+\Xi_{\mathtt{ECREC}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 1 \\
+\Xi_{\mathtt{SHA256}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 2 \\
+\Xi_{\mathtt{RIP160}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 3 \\
+\Xi_{\mathtt{ID}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 4 \\
+\Xi(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{otherwise} \end{cases} \\
 I_a & \equiv & r \\
 I_o & \equiv & o \\
 I_p & \equiv & p \\
@@ -797,7 +797,8 @@ I_\mathbf{d} & \equiv & \mathbf{d} \\
 I_s & \equiv & s \\
 I_v & \equiv & \tilde{v} \\
 I_e & \equiv & e \\
-T & \equiv & \{s, r\} \\
+\mathbf{t} & \equiv & \{s, r\} \\
+\\ \nonumber
 \text{Let} \; \mathtt{\tiny KEC}(I_\mathbf{b}) & = & \boldsymbol{\sigma}[c]_c
 \end{eqnarray}
 
