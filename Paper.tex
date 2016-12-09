@@ -236,7 +236,7 @@ where $v$ is the account validity function:
 An account state is empty when it has no code, zero nonce and zero balance:
 \begin{equation}
 \mathtt{\tiny EMPTY}(\boldsymbol{\sigma}, a)
-\equiv \boldsymbol{\sigma}[a]_c = \texttt{\small KEC}\big(()\big)
+\quad\equiv\quad \boldsymbol{\sigma}[a]_c = \texttt{\small KEC}\big(()\big)
 \wedge \boldsymbol{\sigma}[a]_n = 0
 \wedge \boldsymbol{\sigma}[a]_b = 0
 \end{equation}
@@ -244,7 +244,7 @@ An account state is empty when it has no code, zero nonce and zero balance:
 An account is dead when its account state is non-existent or empty:
 \begin{equation}
 \mathtt{\tiny DEAD}(\boldsymbol{\sigma}, a)
-\equiv \boldsymbol{\sigma}[a] = \varnothing \vee \mathtt{\tiny EMPTY}(\boldsymbol{\sigma}, a)
+\quad\equiv\quad \boldsymbol{\sigma}[a] = \varnothing \vee \mathtt{\tiny EMPTY}(\boldsymbol{\sigma}, a)
 \end{equation}
 
 Here is a function that updates the balance of an account state but deletes the account state when it becomes empty:
@@ -805,6 +805,7 @@ The account's associated code (identified as the fragment whose Keccak hash is $
 \boldsymbol{\sigma} & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
 \boldsymbol{\sigma}^{**} & \text{otherwise}
 \end{cases} \\
+\\ \nonumber
 (\boldsymbol{\sigma}^{**}, g', \mathbf{s}, \mathbf{o}) & \equiv & \begin{cases}
 \Xi_{\mathtt{ECREC}}(\boldsymbol{\sigma}_1, g, I, T) & \text{if} \quad r = 1 \\
 \Xi_{\mathtt{SHA256}}(\boldsymbol{\sigma}_1, g, I, T) & \text{if} \quad r = 2 \\
@@ -819,6 +820,7 @@ I_s & \equiv & s \\
 I_v & \equiv & \tilde{v} \\
 I_e & \equiv & e \\
 T   & \equiv & \{s, r\} \\
+\\ \nonumber
 \text{Let} \; \mathtt{\tiny KEC}(I_\mathbf{b}) & = & \boldsymbol{\sigma}[c]_c
 \end{eqnarray}
 
