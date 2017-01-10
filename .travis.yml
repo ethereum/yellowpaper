@@ -1,0 +1,10 @@
+sudo: required
+before_install:
+- sudo apt-get -qq update
+- sudo apt-get install texlive texlive-latex3
+script:
+- pdflatex -interaction=errorstopmode -halt-on-error Paper.tex
+- bibtex Paper
+- pdflatex -interaction=errorstopmode -halt-on-error Paper.tex
+- pdflatex -interaction=errorstopmode -halt-on-error Paper.tex
+- pdflatex -interaction=errorstopmode -halt-on-error Paper.tex
