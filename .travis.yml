@@ -1,0 +1,6 @@
+sudo: required
+before_install:
+- sudo apt-get -qq update
+- sudo apt-get install texlive
+script:
+- pdflatex Paper.pdf
