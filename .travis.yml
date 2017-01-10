@@ -1,0 +1,2 @@
+script:
+- pdflatex Paper.pdf
