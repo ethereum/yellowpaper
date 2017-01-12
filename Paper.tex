@@ -547,9 +547,9 @@ Throughout transaction execution, we accrue certain information that is acted up
 A \equiv (A_\mathbf{s}, A_\mathbf{l}, A_r)
 \end{equation}
 
-The tuple contents include $A_\mathbf{s}$, the suicide set: a set of accounts that will be discarded following the transaction's completion. $A_\mathbf{l}$ is the log series: this is a series of archived and indexable `checkpoints' in VM code execution that allow for contract-calls to be easily tracked by onlookers external to the Ethereum world (such as decentralised application front-ends). Finally there is $A_r$, the refund balance, increased through using the {\small SSTORE} instruction in order to reset contract storage to zero from some non-zero value. Though not immediately refunded, it is allowed to partially offset the total execution costs.
+The tuple contents include $A_\mathbf{s}$, the self-destruct set: a set of accounts that will be discarded following the transaction's completion. $A_\mathbf{l}$ is the log series: this is a series of archived and indexable `checkpoints' in VM code execution that allow for contract-calls to be easily tracked by onlookers external to the Ethereum world (such as decentralised application front-ends). Finally there is $A_r$, the refund balance, increased through using the {\small SSTORE} instruction in order to reset contract storage to zero from some non-zero value. Though not immediately refunded, it is allowed to partially offset the total execution costs.
 
-For brevity, we define the empty substate $A^0$ to have no suicides, no logs and a zero refund balance:
+For brevity, we define the empty substate $A^0$ to have no self-destructs, no logs and a zero refund balance:
 \begin{equation}
 A^0 \equiv (\varnothing, (), 0)
 \end{equation}
@@ -625,7 +625,7 @@ The Ether for the gas is given to the miner, whose address is specified as the b
 m & \equiv & {B_H}_c
 \end{eqnarray}
 
-The final state, $\boldsymbol{\sigma}'$, is reached after deleting all accounts that appear in the suicide list:
+The final state, $\boldsymbol{\sigma}'$, is reached after deleting all accounts that appear in the self-destruct list:
 \begin{eqnarray}
 \boldsymbol{\sigma}' & \equiv & \boldsymbol{\sigma}^* \quad \text{except} \\
 \forall i \in A_\mathbf{s}: \boldsymbol{\sigma}'[i] & \equiv & \varnothing
@@ -854,7 +854,7 @@ In addition to the system state $\boldsymbol{\sigma}$, and the remaining gas for
 \item $I_e$, the depth of the present message-call or contract-creation (i.e. the number of {\small CALL}s or {\small CREATE}s being executed at present).
 \end{itemize}
 
-The execution model defines the function $\Xi$, which can compute the resultant state $\boldsymbol{\sigma}'$, the remaining gas $g'$, the suicide list $\mathbf{s}$, the log series $\mathbf{l}$, the refunds $r$ and the resultant output, $\mathbf{o}$, given these definitions:
+The execution model defines the function $\Xi$, which can compute the resultant state $\boldsymbol{\sigma}'$, the remaining gas $g'$, the self-destruct list $\mathbf{s}$, the log series $\mathbf{l}$, the refunds $r$ and the resultant output, $\mathbf{o}$, given these definitions:
 \begin{equation}
 (\boldsymbol{\sigma}', g', \mathbf{s}, \mathbf{l}, r, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}, g, I)
 \end{equation}
@@ -980,7 +980,7 @@ N(\boldsymbol{\mu}_{pc}, w) & \text{otherwise}
 \end{cases}
 \end{eqnarray}
 
-In general, we assume the memory, suicide list and system state don't change:
+In general, we assume the memory, self-destruct list and system state don't change:
 \begin{eqnarray}
 \boldsymbol{\mu}'_\mathbf{m} & \equiv & \boldsymbol{\mu}_\mathbf{m} \\
 \boldsymbol{\mu}'_i & \equiv & \boldsymbol{\mu}_i \\
@@ -1500,7 +1500,7 @@ $G_{jumpdest}$ & 1 & Paid for a {\small JUMPDEST} operation. \\
 $G_{sset}$ & 20000 & Paid for an {\small SSTORE} operation when the storage value is set to non-zero from zero. \\
 $G_{sreset}$ & 5000 & Paid for an {\small SSTORE} operation when the storage value's zeroness remains unchanged or is set to zero. \\
 $R_{sclear}$ & 15000 & Refund given (added into refund counter) when the storage value is set to zero from non-zero. \\
-$R_{selfdestruct}$ & 24000 & Refund given (added into refund counter) for suiciding an account. \\
+$R_{selfdestruct}$ & 24000 & Refund given (added into refund counter) for self-destructing an account. \\
 $G_{selfdestruct}$ & 5000 & Amount of gas to pay for a {\small SELFDESTRUCT} operation. \\
 $G_{create}$ & 32000 & Paid for a {\small CREATE} operation. \\
 $G_{codedeposit}$ & 200 & Paid per byte for a {\small CREATE} operation to succeed in placing code into state. \\
