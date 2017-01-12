@@ -2,10 +2,19 @@
 
 set -e
 
+if [ -d ".git" ]; then
+
 SHA=`git rev-parse --short --verify HEAD`
 DATE=`git show -s --format="%cd" --date="format:%Y-%m-%d" HEAD`
+REV="$SHA - $DATE"
 
-echo "\newcommand{\YellowPaperVersionNumber}{$SHA - $DATE}" > Version.tex
+else
+
+REV="unknown revision"
+
+fi
+
+echo "\newcommand{\YellowPaperVersionNumber}{$REV}" > Version.tex
 
 pdflatex -interaction=errorstopmode -halt-on-error Paper.tex && \
 bibtex Paper && \
