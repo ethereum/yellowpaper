@@ -7,8 +7,6 @@ It is a free culture work, licensed under Creative Commons Attribution Share-Ali
 
 The paper comes as a single ``latex`` file ``Paper.tex``. The latest version is generally available as a PDF at https://ethereum.github.io/yellowpaper/paper.pdf, while the version for Frontier needs to be built as below.
 
-## How to build
-
 The paper also comes as a single ``latex`` file ``Paper.tex``, which is built as a PDF as follows.
 
 ```
