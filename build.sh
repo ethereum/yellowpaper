@@ -3,7 +3,7 @@
 set -e
 
 SHA=`git rev-parse --short --verify HEAD`
-DATE=`date "+%Y-%m-%d"`
+DATE=`git show -s --format="%cd" --date="format:%Y-%m-%d" HEAD`
 
 echo "\newcommand{\YellowPaperVersionNumber}{$SHA - $DATE}" > Version.tex
 
