@@ -813,30 +813,7 @@ Over an account's execution, the total fee for memory-usage payable is proportio
 
 Storage fees have a slightly nuanced behaviour---to incentivise minimisation of the use of storage (which corresponds directly to a larger state database on all nodes), the execution fee for an operation that clears an entry in the storage is not only waived, a qualified refund is given; in fact, this refund is effectively paid up-front since the initial usage of a storage location costs substantially more than normal usage.
 
-%More formally, given an instruction, it is possible to calculate the gas cost of executing it as follows:
-%
-%\begin{itemize}
-%\item {\small SHA3} costs $G_{sha3}$ gas
-%\item {\small SLOAD} costs $G_{sload}$ gas
-%\item {\small BALANCE} costs $G_{balance}$ gas
-%\item {\small SSTORE} costs $d.G_{sstore}$ gas where:
-%\begin{itemize}
-%\item $d = 2$ if the new value of the storage is non-zero and the old is zero;
-%\item $d = 0$ if the new value of the storage is zero and the old is non-zero;
-%\item $d = 1$ otherwise.
-%\end{itemize}
-%\item {\small CALL} costs $G_{call}$, though additional gas may be taken for the execution of the account's associated code, if non-empty.
-%\item {\small CREATE} costs $G_{create}$, though additional gas may be taken for the execution of the account initialisation code.
-%\item {\small STOP} costs $G_{stop}$ gas
-%\item {\small SUICIDE} costs $G_{suicide}$ gas
-%\item All other operations cost $G_{step}$ gas.
-%\end{itemize}
-%
-%Additionally, when memory is accessed with {\small MSTORE}, {\small MSTORE8}, {\small MLOAD}, {\small CALLDATACOPY}, {\small CODECOPY}, {\small RETURN}, {\small SHA3}, {\small CREATE} or {\small CALL}, the memory should be enlarged to the smallest multiple of words such that all addressed bytes now fit in it.
-
 See Appendix \ref{app:vm} for a rigorous definition of the EVM gas cost.
-
-%Whenever a higher memory index is referenced, the fee difference to take it to the higher usage from the original (lower) usage is charged. Notably, because {\small MSTORE} and {\small MLOAD} operate on word lengths, they implicitly increase the highest-accessed index to 31 greater than their target index.
 
 \subsection{Execution Environment}
 
