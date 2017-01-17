@@ -5,7 +5,7 @@ set -e
 if [ -d ".git" ]; then
 
 SHA=`git rev-parse --short --verify HEAD`
-DATE=`git show -s --format="%cd" --date="format:%Y-%m-%d" HEAD`
+DATE=`git show -s --format="%cd" --date=short HEAD`
 REV="$SHA - $DATE"
 
 else
