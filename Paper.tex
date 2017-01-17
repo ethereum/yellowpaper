@@ -21,6 +21,8 @@
 \usepackage{afterpage}
 \usepackage{tikz}
 
+\input{Version.tex}
+
 \newcommand{\hcancel}[1]{%
     \tikz[baseline=(tocancel.base)]{
         \node[inner sep=0pt,outer sep=0pt] (tocancel) {#1};
@@ -39,7 +41,7 @@
 \newcommand*\ie{i.e.\@\xspace}
 %\renewcommand{\itemhook}{\setlength{\topsep}{0pt}  \setlength{\itemsep}{0pt}\setlength{\leftmargin}{15pt}}
 
-\title{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ {\smaller \textbf{EIP-150 revision}}}
+\title{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ {\smaller \textbf{EIP-150 revision (\YellowPaperVersionNumber{})}}}
 \author{
     Dr. Gavin Wood\\
     Founder, Ethereum \& Ethcore\\
