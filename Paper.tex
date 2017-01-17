@@ -1458,7 +1458,7 @@ We may then define the sender function $S$ of the transaction as:
 S(T) \equiv \mathcal{B}_{96..255}\big(\mathtt{\tiny KEC}\big( \mathtt{\small ECDSARECOVER}(h(T), T_w, T_r, T_s) \big) \big)
 \end{equation}
 
-The assertion that the sender of the a signed transaction equals the address of the signer should be self-evident:
+The assertion that the sender of a signed transaction equals the address of the signer should be self-evident:
 \begin{equation}
 \forall T: \forall p_r: S(G(T, p_r)) \equiv A(p_r)
 \end{equation}
