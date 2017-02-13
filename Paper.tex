@@ -2019,6 +2019,8 @@ G_{newaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}
 &&&& This means that the recipient is in fact the same account as at present, simply\\
 &&&& that the code is overwritten {\it and} the context is almost entirely identical.\\
 \midrule
+0xfe & {\small INVALID} & 0 & 0 & Designated invalid instruction. \\
+\midrule
 0xff & {\small SELFDESTRUCT} & 1 & 0 & Halt execution and register account for later deletion. \\
 &&&& $A'_\mathbf{s} \equiv A_\mathbf{s} \cup \{ I_a \}$ \\
 &&&& $\boldsymbol{\sigma}'[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}]_b \equiv \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}]_b + \boldsymbol{\sigma}[I_a]_b$ \\
