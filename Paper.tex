@@ -696,7 +696,8 @@ I_\mathbf{d} & \equiv & () \\
 I_s & \equiv & s \\
 I_v & \equiv & v \\
 I_\mathbf{b} & \equiv & \mathbf{i} \\
-I_e & \equiv & e
+I_e & \equiv & e \\
+I_w & \equiv & \top
 \end{eqnarray}
 
 $I_\mathbf{d}$ evaluates to the empty tuple as there is no input data to this call. $I_H$ has no special treatment and is determined from the blockchain.
@@ -787,6 +788,7 @@ I_\mathbf{d} & \equiv & \mathbf{d} \\
 I_s & \equiv & s \\
 I_v & \equiv & \tilde{v} \\
 I_e & \equiv & e \\
+I_w & \equiv & \top \\
 \text{Let} \; \mathtt{\tiny KEC}(I_\mathbf{b}) & = & \boldsymbol{\sigma}[c]_c
 \end{eqnarray}
 
@@ -831,7 +833,10 @@ In addition to the system state $\boldsymbol{\sigma}$, and the remaining gas for
 \item $I_v$, the value, in Wei, passed to this account as part of the same procedure as execution; if the execution agent is a transaction, this would be the transaction value.
 \item $I_\mathbf{b}$, the byte array that is the machine code to be executed.
 \item $I_H$, the block header of the present block.
-\item $I_e$, the depth of the present message-call or contract-creation (i.e. the number of {\small CALL}s or {\small CREATE}s being executed at present).
+\item $I_e$, the depth of the present message-call or contract-creation
+      (i.e. the number of {\small CALL}s or {\small CREATE}s being
+      executed at present).
+\item $I_w$, the permission to write to the state.
 \end{itemize}
 
 The execution model defines the function $\Xi$, which can compute the resultant state $\boldsymbol{\sigma}'$, the remaining gas $g'$, the self-destruct set $\mathbf{s}$, the log series $\mathbf{l}$, the refunds $r$ and the resultant output, $\mathbf{o}$, given these definitions:
