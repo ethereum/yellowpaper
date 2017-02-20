@@ -704,9 +704,13 @@ $I_\mathbf{d}$ evaluates to the empty tuple as there is no input data to this ca
 Code execution depletes gas, and gas may not go below zero, thus execution may exit before the code has come to a natural halting state. In this (and several other) exceptional cases we say an out-of-gas (OOG) exception has occurred: The evaluated state is defined as being the empty set, $\varnothing$, and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation.
 
 If the initialization code completes successfully, a final contract-creation cost is paid, the code-deposit cost, $c$, proportional to the size of the created contract's code:
-\begin{equation}
-c \equiv G_{codedeposit} \times |\mathbf{o}|
-\end{equation}
+\begin{eqnarray}
+ c & \equiv &
+ \begin{cases}
+  G_{codedeposit} \times |\mathbf{o}| & \text{if}\quad \boldsymbol{\sigma}^{**} \neq \varnothing \\
+  0 & \text{otherwise}
+ \end{cases}
+\end{eqnarray}
 
 If there is not enough gas remaining to pay this, \ie $g^{**} < c$, then we also declare an out-of-gas exception.
 
@@ -716,7 +720,8 @@ If such an exception does not occur, then the remaining gas is refunded to the o
 
 \begin{align}
 \quad g' &\equiv \begin{cases}
-0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
+0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \wedge \mathbf{o} = \varnothing \\
+g^{**} & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \wedge \mathbf{o} \neq \varnothing \\
 g^{**} & \text{if} \quad g^{**}<c \wedge H_i<\firsthomesteadblock \\
 g^{**} - c & \text{otherwise} \\
 \end{cases} \\
@@ -767,7 +772,7 @@ Throughout the present work, it is assumed that if $\boldsymbol{\sigma}_1[r]$ wa
 \end{cases}
 \end{equation}
 
-The account's associated code (identified as the fragment whose Keccak hash is $\boldsymbol{\sigma}[c]_c$) is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts in an exceptional fashion (i.e. due to an exhausted gas supply, stack underflow, invalid jump destination or invalid instruction), then no gas is refunded to the caller and the state is reverted to the point immediately prior to balance transfer (i.e. $\boldsymbol{\sigma}$).
+The account's associated code (identified as the fragment whose Keccak hash is $\boldsymbol{\sigma}[c]_c$) is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts in an exceptional fashion (i.e. due to an exhausted gas supply, stack underflow, invalid jump destination or invalid instruction), then no gas is refunded to the caller and the state is reverted to the point immediately prior to balance transfer (i.e. $\boldsymbol{\sigma}$).  However, if the execution halted by a {\small REVERT} instruction, the remaining gas (if any) is paid back although the state is reverted.
 
 \begin{eqnarray}
 \boldsymbol{\sigma}' & \equiv & \begin{cases}
@@ -775,7 +780,8 @@ The account's associated code (identified as the fragment whose Keccak hash is $
 \boldsymbol{\sigma}^{**} & \text{otherwise}
 \end{cases} \\
 g' & \equiv & \begin{cases}
-0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
+0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \wedge
+               \mathbf{o} = \varnothing \\
 g^{**} & \text{otherwise}
 \end{cases} \\
 (\boldsymbol{\sigma}^{**}, g^{**}, \mathbf{s}, \mathbf{o}) & \equiv & \begin{cases}
@@ -845,7 +851,7 @@ The execution model defines the function $\Xi$, which can compute the resultant 
 
 \subsection{Execution Overview}
 
-We must now define the $\Xi$ function. In most practical implementations this will be modelled as an iterative progression of the pair comprising the full system state, $\boldsymbol{\sigma}$ and the machine state, $\boldsymbol{\mu}$. Formally, we define it recursively with a function $X$. This uses an iterator function $O$ (which defines the result of a single cycle of the state machine) together with functions $Z$ which determines if the present state is an exceptional halting state of the machine and $H$, specifying the output data of the instruction if and only if the present state is a normal halting state of the machine.
+We must now define the $\Xi$ function. In most practical implementations this will be modelled as an iterative progression of the pair comprising the full system state, $\boldsymbol{\sigma}$ and the machine state, $\boldsymbol{\mu}$. Formally, we define it recursively with a function $X$. This uses an iterator function $O$ (which defines the result of a single cycle of the state machine) together with functions $Z$ which determines if the present state is an exceptional halting state of the machine and $H$, specifying the output data of the instruction.
 
 The empty sequence, denoted $()$, is not equal to the empty set, denoted $\varnothing$; this is important when interpreting the output of $H$, which evaluates to $\varnothing$ when execution is to continue but a series (potentially empty) when execution should halt.
 \begin{eqnarray}
@@ -902,7 +908,7 @@ Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv
 \end{array}
 \end{equation}
 
-This states that the execution is in an exceptional halting state if there is insufficient gas, if the instruction is invalid (and therefore its $\delta$ subscript is undefined), if there are insufficient stack items, if a {\small JUMP}/{\small JUMPI} destination is invalid or the new stack size would be larger then 1024. The astute reader will realise that this implies that no instruction can, through its execution, cause an exceptional halt.
+This states that the execution is in an exceptional halting state if there is insufficient gas, if the instruction is invalid (and therefore its $\delta$ subscript is undefined), if there are insufficient stack items, if a {\small JUMP}/{\small JUMPI} destination is invalid or the new stack size would be larger then 1024.
 
 \subsubsection{Jump Destination Validity}
 
@@ -931,12 +937,13 @@ i + w - \text{\small PUSH1} + 2 & \text{if} \quad w \in [\text{\small PUSH1}, \t
 i + 1 & \text{otherwise} \end{cases}
 \end{equation}
 
-\subsubsection{Normal Halting}
+\subsubsection{Post-Execution Halting}
 
-The normal halting function $H$ is defined:
-\begin{equation}
+The post-execution halting function $H$ is defined:
+\begin{equation} \label{eq:output}
 H(\boldsymbol{\mu}, I) \equiv \begin{cases}
-H_{\text{\tiny RETURN}}(\boldsymbol{\mu}) & \text{if} \quad w = \text{\small RETURN} \\
+H_{\text{\tiny RETURN}}(\boldsymbol{\mu}) & \text{if} \quad w \in
+                               \{\text{\small RETURN}, \text{\small REVERT}\}  \\
 () & \text{if} \quad w \in \{ \text{\small STOP}, \text{\small SELFDESTRUCT} \} \\
 \varnothing & \text{otherwise}
 \end{cases}
@@ -1567,7 +1574,7 @@ C_{mem}(a) \equiv G_{memory} \cdot a + \Big\lfloor \dfrac{a^2}{512} \Big\rfloor
 
 with $C_\text{\tiny CALL}$, $C_\text{\tiny SELFDESTRUCT}$ and $C_\text{\tiny SSTORE}$ as specified in the appropriate section below. We define the following subsets of instructions:
 
-$W_{zero}$ = \{{\small STOP}, {\small RETURN}\}
+$W_{zero}$ = \{{\small STOP}, {\small RETURN}, {\small REVERT}\}
 
 $W_{base}$ = \{{\small ADDRESS}, {\small ORIGIN}, {\small CALLER}, {\small CALLVALUE}, {\small CALLDATASIZE}, {\small CODESIZE}, {\small GASPRICE}, {\small COINBASE},\newline \noindent\hspace*{1cm} {\small TIMESTAMP}, {\small NUMBER}, {\small DIFFICULTY}, {\small GASLIMIT}, {\small POP}, {\small PC}, {\small MSIZE}, {\small GAS}\}
 
@@ -2024,6 +2031,13 @@ G_{newaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}
 &&&& and ninth parameters to the call $\Theta$.\\
 &&&& This means that the recipient is in fact the same account as at present, simply\\
 &&&& that the code is overwritten {\it and} the context is almost entirely identical.\\
+\midrule
+0xfd & {\small REVERT} & 2 & 0 & Halt execution reverting state changes
+                 but returning data and gas. \\
+&&&& The definition of $H$ mentions {\small REVERT} and that has the effect of halting the execution.\\
+&&&& See equation (\ref{eq:output}). \\
+&&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[1])$ \\
+&&&& $\sigma' = \varnothing,\quad A' = A^0$ \\
 \midrule
 0xfe & {\small INVALID} & $\varnothing$ & $\varnothing$ & Designated invalid instruction. \\
 \midrule
