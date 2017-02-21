@@ -642,11 +642,6 @@ And finally, we specify $\Upsilon^g$, the total gas used in this transaction and
 
 These are used to help define the transaction receipt, discussed later.
 
-%In the case that $s = m$ then we simply return the Ether back to the sender/miner, collapsing the exception into:
-%\begin{eqnarray}
-%\boldsymbol{\sigma}'[s]_b & \equiv & \boldsymbol{\sigma}_P[s]_b + g
-%\end{eqnarray}
-
 \section{Contract Creation} \label{ch:create}
 
 There are a number of intrinsic parameters used when creating an account: sender ($s$), original transactor ($o$), available gas ($g$), gas price ($p$), endowment ($v$) together with an arbitrary length byte array, $\mathbf{i}$, the initialisation EVM code and finally the present depth of the message-call/contract-creation stack ($e$).
