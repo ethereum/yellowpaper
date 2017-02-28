@@ -731,7 +731,7 @@ Code execution depletes gas, and gas may not go below zero, thus execution may e
 If the initialization code completes successfully, a final contract-creation cost is paid, the code-deposit cost, $c$, proportional to the size of the created contract's code:
 \begin{align}
 c \equiv \begin{cases}
-  2^{256} - 1 & \text{if} \quad |\mathbf{o}| \le 24000 \\
+  2^{256} - 1 & \text{if} \quad |\mathbf{o}| \le 24576 \\
   G_{codedeposit} \times |\mathbf{o}| & \text{otherwise}
 \end{cases}
 \end{align}
