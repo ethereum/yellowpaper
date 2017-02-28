@@ -1461,7 +1461,12 @@ S(T) \equiv \mathcal{B}_{96..255}\big(\mathtt{\tiny KEC}\big( \mathtt{\small ECD
 
 The assertion that the sender of a signed transaction equals the address of the signer should be self-evident:
 \begin{equation}
-\forall T: \forall p_r: S(G(T, p_r)) \equiv A(p_r)
+\forall T: \forall p_r: S(G(T, p_r)) \equiv A(p_r) \quad \text{ where } (T_w, T_r, T_s) \text{ is a valid signature.}
+\end{equation}
+
+When a transaction has a particular invalid signature and it has zero gas price, zero nonce and zero value, the sender of the transaction is $2^{256} - 1$.
+\begin{equation}
+\forall T: S(T) \equiv 2^{256} - 1 \quad \text{ where } \quad (T_w, T_r, T_s) = (\mathtt{chain\_id}, 0, 0) \,\wedge\, T_p = T_n = T_v = 0.
 \end{equation}
 
 \section{Fee Schedule}\label{app:fees}
