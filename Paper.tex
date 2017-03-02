@@ -330,16 +330,16 @@ B \equiv (B_H, B_\mathbf{T}, B_\mathbf{U})
 In order to encode information about a transaction concerning which it may be useful to form a zero-knowledge proof, or index and search, we encode a receipt of each transaction containing certain information from concerning its execution. 
 Each receipt, denoted $B_\mathbf{R}[i]$ for the $i$th transaction, is placed in an index-keyed trie and the root recorded in the header as $H_e$.
 
-The transaction receipt is a tuple of four items comprising the post-transaction state, $R_{\boldsymbol{\sigma}}$, the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_u$, the set of logs created through execution of the transaction, $R_\mathbf{l}$ and the Bloom filter composed from information in those logs, $R_b$:
+The transaction receipt is a tuple of four items comprising the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_u$, the set of logs created through execution of the transaction, $R_\mathbf{l}$ and the Bloom filter composed from information in those logs, $R_b$:
 \begin{equation}
-R \equiv (R_{\boldsymbol{\sigma}}, R_u, R_b, R_\mathbf{l})
+R \equiv (R_u, R_b, R_\mathbf{l})
 \end{equation}
 
 The function $L_R$ trivially prepares a transaction receipt for being transformed into an RLP-serialised byte array:
 \begin{equation}
-L_R(R) \equiv (\mathtt{\small TRIE}(L_S(R_{\boldsymbol{\sigma}})), R_u, R_b, R_\mathbf{l})
+L_R(R) \equiv (0 \in \mathbb{B}_{256}, R_u, R_b, R_\mathbf{l})
 \end{equation}
-thus the post-transaction state, $R_{\boldsymbol{\sigma}}$ is encoded into a trie structure, the root of which forms the first item.
+where $0 \in \mathbb{B}_{256}$ replaces the pre-transaction state root that existed in previous versions of the protocol.
 
 We assert $R_u$, the cumulative gas used is a positive integer and that the logs Bloom, $R_b$, is a hash of size 2048 bits (256 bytes):
 \begin{equation}
