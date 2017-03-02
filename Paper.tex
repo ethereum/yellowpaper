@@ -273,7 +273,7 @@ Appendix \ref{app:signing} specifies the function, $S$, which maps transactions 
 \begin{equation}
 L_T(T) \equiv \begin{cases}
 (T_n, T_p, T_g, T_t, T_v, T_\mathbf{i}, T_w, T_r, T_s) & \text{if} \; T_t = \varnothing\\
-(T_n, T_p, T_g, T_t, T_v, T_\mathbf{d}, T_w, T_r, T_s) & \text{otherwise} 
+(T_n, T_p, T_g, T_t, T_v, T_\mathbf{d}, T_w, T_r, T_s) & \text{otherwise}
 \end{cases}
 \end{equation}
 
@@ -327,7 +327,7 @@ B \equiv (B_H, B_\mathbf{T}, B_\mathbf{U})
 
 \subsubsection{Transaction Receipt}
 
-In order to encode information about a transaction concerning which it may be useful to form a zero-knowledge proof, or index and search, we encode a receipt of each transaction containing certain information from concerning its execution. 
+In order to encode information about a transaction concerning which it may be useful to form a zero-knowledge proof, or index and search, we encode a receipt of each transaction containing certain information from concerning its execution.
 Each receipt, denoted $B_\mathbf{R}[i]$ for the $i$th transaction, is placed in an index-keyed trie and the root recorded in the header as $H_e$.
 
 The transaction receipt is a tuple of four items comprising the post-transaction state, $R_{\boldsymbol{\sigma}}$, the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_u$, the set of logs created through execution of the transaction, $R_\mathbf{l}$ and the Bloom filter composed from information in those logs, $R_b$:
@@ -580,13 +580,13 @@ The validity is determined as:
 S(T) & \neq & \varnothing \quad \wedge \\
 \boldsymbol{\sigma}[S(T)] & \neq & \varnothing \quad \wedge \\
 T_n & = & \boldsymbol{\sigma}[S(T)]_n \quad \wedge \\
-g_0 & \leqslant & T_g \quad \wedge \\ 
+g_0 & \leqslant & T_g \quad \wedge \\
 v_0 & \leqslant & \boldsymbol{\sigma}[S(T)]_b \quad \wedge \\
 T_g & \leqslant & {B_H}_l - \ell(B_\mathbf{R})_u
 \end{array}
 \end{equation}
 
-Note the final condition; the sum of the transaction's gas limit, $T_g$, and the gas utilised in this block prior, given by $\ell(B_\mathbf{R})_u$, must be no greater than the block's \textbf{gasLimit}, ${B_H}_l$. 
+Note the final condition; the sum of the transaction's gas limit, $T_g$, and the gas utilised in this block prior, given by $\ell(B_\mathbf{R})_u$, must be no greater than the block's \textbf{gasLimit}, ${B_H}_l$.
 
 The execution of a valid transaction begins with an irrevocable change made to the state: the nonce of the account of the sender, $S(T)$, is incremented by one and the balance is reduced by part of the up-front cost, $T_gT_p$. The gas available for the proceeding computation, $g$, is defined as $T_g - g_0$. The computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
 
@@ -696,7 +696,11 @@ I_e & \equiv & e
 
 $I_\mathbf{d}$ evaluates to the empty tuple as there is no input data to this call. $I_H$ has no special treatment and is determined from the blockchain.
 
+<<<<<<< Updated upstream
 Code execution depletes gas, and gas may not go below zero, thus execution may exit before the code has come to a natural halting state. In this (and several other) exceptional cases we say an out-of-gas (OOG) exception has occurred: The evaluated state is defined as being the empty set, $\varnothing$, and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation.
+=======
+Code execution depletes gas, and gas may not go below zero, thus execution may exit before the code has come to a natural halting state. In this (and several other) exceptional cases we say an Out-of-Gas exception has occurred: The evaluated state is defined as being the empty set, $\varnothing$, and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation.
+>>>>>>> Stashed changes
 
 If the initialization code completes successfully, a final contract-creation cost is paid, the code-deposit cost, $c$, proportional to the size of the created contract's code:
 \begin{equation}
@@ -829,9 +833,15 @@ In addition to the system state $\boldsymbol{\sigma}$, and the remaining gas for
 \item $I_e$, the depth of the present message-call or contract-creation (i.e. the number of {\small CALL}s or {\small CREATE}s being executed at present).
 \end{itemize}
 
-The execution model defines the function $\Xi$, which can compute the resultant state $\boldsymbol{\sigma}'$, the remaining gas $g'$, the self-destruct set $\mathbf{s}$, the log series $\mathbf{l}$, the refunds $r$ and the resultant output, $\mathbf{o}$, given these definitions:
+The execution model defines the function $\Xi$, which can compute the resultant state $\boldsymbol{\sigma}'$, the remaining gas $g'$, the accrued substate $A$ and the resultant output, $\mathbf{o}$, given these definitions. For the present context, we will defined it as:
 \begin{equation}
-(\boldsymbol{\sigma}', g', \mathbf{s}, \mathbf{l}, r, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}, g, I)
+(\boldsymbol{\sigma}', g', A, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}, g, I)
+\end{equation}
+
+where we will remember that $A$, the accrued substate is defined as the tuple of the suicides set $\mathbf{s}$, the log series $\mathbf{l}$ and the refunds $r$:
+
+\begin{equation}
+A \equiv (\mathbf{s}, \mathbf{l}, r)
 \end{equation}
 
 \subsection{Execution Overview}
@@ -999,7 +1009,7 @@ The validation of ommer headers means nothing more than verifying that each omme
 
 where $k$ denotes the ``is-kin'' property:
 \begin{equation}
-k(U, H, n) \equiv \begin{cases} false & \text{if} \quad n = 0 \\ 
+k(U, H, n) \equiv \begin{cases} false & \text{if} \quad n = 0 \\
 s(U, H) &\\
 \quad \vee \; k(U, P(H)_H, n - 1) & \text{otherwise}
 \end{cases}
@@ -1027,7 +1037,7 @@ The application of rewards to a block involves raising the balance of the accoun
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
 \boldsymbol{\sigma}'[{B_H}_c]_b & = & \boldsymbol{\sigma}[{B_H}_c]_b + (1 + \frac{\lVert B_\mathbf{U}\rVert}{32})R_b \\
 \forall_{U \in B_\mathbf{U}}: \\ \nonumber
- \boldsymbol{\sigma}'[U_c]_b & = & \boldsymbol{\sigma}[U_c]_b + (1 + \frac{1}{8} (U_i - {B_H}_i)) R_b 
+ \boldsymbol{\sigma}'[U_c]_b & = & \boldsymbol{\sigma}[U_c]_b + (1 + \frac{1}{8} (U_i - {B_H}_i)) R_b
 \end{eqnarray}
 
 If there are collisions of the beneficiary addresses between ommers and the block (i.e. two ommers with the same beneficiary address or an ommer with the same beneficiary address as the present block), additions are applied cumulatively.
@@ -1076,7 +1086,7 @@ In the case of $B_\mathbf{R}[n]_u$, we take a similar approach defining each ite
 
 For $\mathbf{R}[n]_\mathbf{l}$, we utilise the $\Upsilon^\mathbf{l}$ function that we conveniently defined in the transaction execution function.
 \begin{equation}
-\mathbf{R}[n]_\mathbf{l} = 
+\mathbf{R}[n]_\mathbf{l} =
 \Upsilon^\mathbf{l}(\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n])
 \end{equation}
 
@@ -1114,7 +1124,7 @@ Mining involves grabbing random slices of the dataset and hashing them together.
 
 \section{Implementing Contracts}
 
-There are several patterns of contracts engineering that allow particular useful behaviours; two of these that I will briefly discuss are data feeds and random numbers. 
+There are several patterns of contracts engineering that allow particular useful behaviours; two of these that I will briefly discuss are data feeds and random numbers.
 
 \subsection{Data Feeds}
 A data feed contract is one which provides a single service: it gives access to information from the external world within Ethereum. The accuracy and timeliness of this information is not guaranteed and it is the task of a secondary contract author---the contract that utilises the data feed---to determine how much trust can be placed in any single data feed.
@@ -1420,7 +1430,7 @@ We declare that a signature is invalid unless all the following conditions are t
 \mathtt{\tiny secp256k1n} & \text{if} \quad H_i < \firsthomesteadblock \\
 \mathtt{\tiny secp256k1n} \div 2 + 1 & \text{otherwise} \\
 \end{dcases} \\
- v &\in \{27,28\} 
+ v &\in \{27,28\}
 \end{align}
 where:
 \begin{align}
@@ -1437,7 +1447,7 @@ The message hash, $h(T)$, to be signed is the Keccak hash of the transaction wit
 \begin{eqnarray}
 L_S(T) & \equiv & \begin{cases}
 (T_n, T_p, T_g, T_t, T_v, T_\mathbf{i}) & \text{if} \; T_t = 0\\
-(T_n, T_p, T_g, T_t, T_v, T_\mathbf{d}) & \text{otherwise} 
+(T_n, T_p, T_g, T_t, T_v, T_\mathbf{d}) & \text{otherwise}
 \end{cases} \\
 h(T) & \equiv & \mathtt{\small KEC}( L_S(T) )
 \end{eqnarray}
@@ -2074,7 +2084,7 @@ The size for Ethash's cache $\mathbf{c} \in \mathbb{B}$  and dataset $\mathbf{d}
 \begin{equation}
  E_{epoch}(H_i) = \left\lfloor\frac{H_i}{J_{epoch}}\right\rfloor
 \end{equation}
-The size of the dataset growth by $J_{datasetgrowth}$ bytes, and the size of the cache by $J_{cachegrowth}$ bytes, every epoch. In order to avoid regularity leading to cyclic behavior, the size must be a prime number. Therefore the size is reduced by a multiple of $J_{mixbytes}$, for the dataset, and $J_{hashbytes}$ for the cache. 
+The size of the dataset growth by $J_{datasetgrowth}$ bytes, and the size of the cache by $J_{cachegrowth}$ bytes, every epoch. In order to avoid regularity leading to cyclic behavior, the size must be a prime number. Therefore the size is reduced by a multiple of $J_{mixbytes}$, for the dataset, and $J_{hashbytes}$ for the cache.
 Let $d_{size} = \lVert \mathbf{d} \rVert$ be the size of the dataset. Which is calculated using
 \begin{equation}
  d_{size} = E_{prime}(J_{datasetinit} + J_{datasetgrowth} \cdot E_{epoch} - J_{mixbytes}, J_{mixbytes})
@@ -2090,7 +2100,7 @@ E_{prime}(x - 1 \cdot y, y) & \text{otherwise}
 \end{cases}
 \end{equation}
 \subsection{Dataset generation}
-In order the generate the dataset we need the cache $\mathbf{c}$, which is an array of bytes. It depends on the cache size  $c_{size}$ and the seed hash $\mathbf{s} \in \mathbb{B}_{32}$. 
+In order the generate the dataset we need the cache $\mathbf{c}$, which is an array of bytes. It depends on the cache size  $c_{size}$ and the seed hash $\mathbf{s} \in \mathbb{B}_{32}$.
 \subsubsection{Seed hash}
 The seed hash is different for every epoch. For the first epoch it is the Keccak-256 hash of a series of 32 bytes of zeros. For every other epoch it is always the Keccak-256 hash of the previous seed hash:
 \begin{equation}
@@ -2114,7 +2124,7 @@ We define the array $\mathbf{c}_{i}$, consisting of 64 single bytes,  as the $i$
 \texttt{KEC512}(\mathbf{c}_{i-1}) & \text{otherwise}
 \end{cases}
 \end{equation}
-Therefore $ \mathbf{c'}$ can be defined as 
+Therefore $ \mathbf{c'}$ can be defined as
 \begin{equation}
  \mathbf{c'}[i] = \mathbf{c}_{i} \quad \forall \quad i < n
 \end{equation}
@@ -2141,7 +2151,7 @@ Where a single round modifies each subset of the cache as follows:
   \text{with} \quad \mathbf{x'} = \mathbf{x} \quad \text{except} \quad \mathbf{x'}[j] = E_{rmh}(\mathbf{x}, j) \quad \forall \quad j < i
 \end{multline}
 
-\subsubsection{Full dataset calculation} \label{dataset} 
+\subsubsection{Full dataset calculation} \label{dataset}
 Essentially, we combine data from $J_{parents}$ pseudorandomly selected cache nodes, and hash that to compute the dataset. The entire dataset is then generated by a number of items, each $J_{hashbytes}$ bytes in size:
 \begin{equation}
  \mathbf{d}[i] = E_{datasetitem}(\mathbf{c}, i) \quad \forall \quad i < \left\lfloor\frac{d_{size}}{J_{hashbytes}}\right\rfloor
