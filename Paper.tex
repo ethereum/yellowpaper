@@ -41,7 +41,7 @@
 \newcommand*\ie{i.e.\@\xspace}
 %\renewcommand{\itemhook}{\setlength{\topsep}{0pt}  \setlength{\itemsep}{0pt}\setlength{\leftmargin}{15pt}}
 
-\title{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ {\smaller \textbf{EIP-155/160/161/170 revision (\YellowPaperVersionNumber{})}}}
+\title{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ {\smaller \textbf{EIP-150 revision (\YellowPaperVersionNumber{})}}}
 \author{
     Dr. Gavin Wood\\
     Founder, Ethereum \& Ethcore\\
@@ -232,30 +232,6 @@ where $v$ is the account validity function:
 \begin{equation}
 \quad v(x) \equiv x_n \in \mathbb{P}_{256} \wedge x_b \in \mathbb{P}_{256} \wedge x_s \in \mathbb{B}_{32} \wedge x_c \in \mathbb{B}_{32}
 \end{equation}
-
-An account state is empty when it has no code, zero nonce and zero balance:
-\begin{equation}
-\mathtt{\tiny EMPTY}(\boldsymbol{\sigma}, a)
-\quad\equiv\quad \boldsymbol{\sigma}[a]_c = \texttt{\small KEC}\big(()\big)
-\wedge \boldsymbol{\sigma}[a]_n = 0
-\wedge \boldsymbol{\sigma}[a]_b = 0
-\end{equation}
-
-An account is dead when its account state is non-existent or empty:
-\begin{equation}
-\mathtt{\tiny DEAD}(\boldsymbol{\sigma}, a)
-\quad\equiv\quad \boldsymbol{\sigma}[a] = \varnothing \vee \mathtt{\tiny EMPTY}(\boldsymbol{\sigma}, a)
-\end{equation}
-
-We define the function that updates the balance of an account state but deletes the account state when it becomes empty:
-\begin{equation}
-\rho_b(\boldsymbol{\sigma}, a, x) \equiv
-\begin{cases}
-\varnothing \quad\text{if}\quad \boldsymbol{\sigma}[a]_n = 0 \wedge x = 0 \wedge \boldsymbol{\sigma}[a]_c = \texttt{\small KEC}\big(()\big) \\
-(\boldsymbol{\sigma}[a]_n, x, \boldsymbol{\sigma}[a]_s, \boldsymbol{\sigma}[a]_c) \quad \text{otherwise}
-\end{cases}
-\end{equation}
-where $a \in \mathbb{B}_{20}$ and $x \in \mathbb{P}_{256}$.
 
 \subsection{Homestead} \label{ch:homestead}
 
@@ -571,14 +547,14 @@ Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define $\Up
 \subsection{Substate}
 Throughout transaction execution, we accrue certain information that is acted upon immediately following the transaction. We call this \textit{transaction substate}, and represent it as $A$, which is a tuple:
 \begin{equation}
-A \equiv (A_\mathbf{s}, A_\mathbf{l}, A_\mathbf{t}, A_r)
+A \equiv (A_\mathbf{s}, A_\mathbf{l}, A_r)
 \end{equation}
 
-The tuple contents include $A_\mathbf{s}$, the self-destruct set: a set of accounts that will be discarded following the transaction's completion. $A_\mathbf{l}$ is the log series: this is a series of archived and indexable `checkpoints' in VM code execution that allow for contract-calls to be easily tracked by onlookers external to the Ethereum world (such as decentralised application front-ends). $A_\mathbf{t}$ is the set of touched accounts, of which the empty ones are deleted at the end of a transaction. Finally there is $A_r$, the refund balance, increased through using the {\small SSTORE} instruction in order to reset contract storage to zero from some non-zero value. Though not immediately refunded, it is allowed to partially offset the total execution costs.
+The tuple contents include $A_\mathbf{s}$, the self-destruct set: a set of accounts that will be discarded following the transaction's completion. $A_\mathbf{l}$ is the log series: this is a series of archived and indexable `checkpoints' in VM code execution that allow for contract-calls to be easily tracked by onlookers external to the Ethereum world (such as decentralised application front-ends). Finally there is $A_r$, the refund balance, increased through using the {\small SSTORE} instruction in order to reset contract storage to zero from some non-zero value. Though not immediately refunded, it is allowed to partially offset the total execution costs.
 
-For brevity, we define the initial substate $A^0$ to have no self-destructs, no logs, a set of touched accounts and a zero refund balance:
+For brevity, we define the empty substate $A^0$ to have no self-destructs, no logs and a zero refund balance:
 \begin{equation}
-A^0(T) \equiv (\varnothing, (), T, 0) \quad\text{for}\quad T \subseteq \mathbb{B}_{20}
+A^0 \equiv (\varnothing, (), 0)
 \end{equation}
 
 \subsection{Execution}
@@ -647,16 +623,15 @@ The total refundable amount is the legitimately remaining gas $g'$, added to $A_
 The Ether for the gas is given to the miner, whose address is specified as the beneficiary of the present block $B$. So we define the pre-final state $\boldsymbol{\sigma}^*$ in terms of the provisional state $\boldsymbol{\sigma}_P$:
 \begin{eqnarray}
 \boldsymbol{\sigma}^* & \equiv & \boldsymbol{\sigma}_P \quad \text{except} \\
-\boldsymbol{\sigma}^*[S(T)] & \equiv & \rho_b(\boldsymbol{\sigma}_P, S(T), \boldsymbol{\sigma}_P[S(T)]_b + g^* T_p) \\
-\boldsymbol{\sigma}^*[m] & \equiv & \rho_b(\boldsymbol{\sigma}_P, m, \boldsymbol{\sigma}_P[m]_b + (T_g - g^*) T_p) \\
+\boldsymbol{\sigma}^*[S(T)]_b & \equiv & \boldsymbol{\sigma}_P[S(T)]_b + g^* T_p \\
+\boldsymbol{\sigma}^*[m]_b & \equiv & \boldsymbol{\sigma}_P[m]_b + (T_g - g^*) T_p \\
 m & \equiv & {B_H}_c
 \end{eqnarray}
 
-The final state, $\boldsymbol{\sigma}'$, is reached after deleting all accounts that either appear in the self-destruct list or are touched and empty:
+The final state, $\boldsymbol{\sigma}'$, is reached after deleting all accounts that appear in the self-destruct set:
 \begin{eqnarray}
 \boldsymbol{\sigma}' & \equiv & \boldsymbol{\sigma}^* \quad \text{except} \\
-\forall i \in A_\mathbf{s}: \boldsymbol{\sigma}'[i] & \equiv & \varnothing \\
-\forall i \in A_\mathbf{t}: \boldsymbol{\sigma}'[i] & \equiv & \varnothing \quad\text{if}\quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma}^*\kern -2pt, i)
+\forall i \in A_\mathbf{s}: \boldsymbol{\sigma}'[i] & \equiv & \varnothing
 \end{eqnarray}
 
 And finally, we specify $\Upsilon^g$, the total gas used in this transaction and $\Upsilon^\mathbf{l}$, the logs created by this transaction:
@@ -683,13 +658,13 @@ a \equiv \mathcal{B}_{96..255}\Big(\mathtt{\tiny KEC}\Big(\mathtt{\tiny RLP}\big
 
 where $\mathtt{\tiny KEC}$ is the Keccak 256-bit hash function, $\mathtt{\tiny RLP}$ is the RLP encoding function, $\mathcal{B}_{a..b}(X)$ evaluates to binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$ and $\boldsymbol{\sigma}[x]$ is the address state of $x$ or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
 
-The account's nonce is initially defined as one, the balance as the value passed, the storage as empty and the code hash as the Keccak 256-bit hash of the empty string; the sender's balance is also reduced by the value passed. Thus the mutated state becomes $\boldsymbol{\sigma}^*$:
+The account's nonce is initially defined as zero, the balance as the value passed, the storage as empty and the code hash as the Keccak 256-bit hash of the empty string; the sender's balance is also reduced by the value passed. Thus the mutated state becomes $\boldsymbol{\sigma}^*$:
 \begin{equation}
 \boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except:}
 \end{equation}
 \begin{eqnarray}
-\boldsymbol{\sigma}^*[a] &\equiv& \big( 1, v + v', \mathtt{\tiny TRIE}(\varnothing), \mathtt{\tiny KEC}\big(()\big) \big) \\
-\boldsymbol{\sigma}^*[s] &\equiv& \rho_b(\boldsymbol{\sigma}, s, \boldsymbol{\sigma}[s]_b - v)
+\boldsymbol{\sigma}^*[a] &\equiv& \big( 0, v + v', \mathtt{\tiny TRIE}(\varnothing), \mathtt{\tiny KEC}\big(()\big) \big) \\
+\boldsymbol{\sigma}^*[s]_b &\equiv& \boldsymbol{\sigma}[s]_b - v
 \end{eqnarray}
 
 where $v'$ is the account's pre-existing value, in the event it was previously in existence:
@@ -705,7 +680,7 @@ v' \equiv \begin{cases}
 Finally, the account is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the account's storage can be altered, further accounts can be created and further message calls can be made. As such, the code execution function $\Xi$ evaluates to a tuple of the resultant state $\boldsymbol{\sigma}^{**}$, available gas remaining $g^{**}$, the accrued substate $A$ and the body code of the account $\mathbf{o}$.
 
 \begin{equation}
-(\boldsymbol{\sigma}^{**}, g^{**}, A, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}^*, g, I, \{s, a\}) \\
+(\boldsymbol{\sigma}^{**}, g^{**}, A, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}^*, g, I) \\
 \end{equation}
 where $I$ contains the parameters of the execution environment as defined in section \ref{ch:model}, that is:
 \begin{eqnarray}
@@ -724,12 +699,9 @@ $I_\mathbf{d}$ evaluates to the empty tuple as there is no input data to this ca
 Code execution depletes gas, and gas may not go below zero, thus execution may exit before the code has come to a natural halting state. In this (and several other) exceptional cases we say an out-of-gas (OOG) exception has occurred: The evaluated state is defined as being the empty set, $\varnothing$, and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation.
 
 If the initialization code completes successfully, a final contract-creation cost is paid, the code-deposit cost, $c$, proportional to the size of the created contract's code:
-\begin{align}
-c \equiv \begin{cases}
-  2^{256} - 1 & \text{if} \quad |\mathbf{o}| \le 24576 \\
-  G_{codedeposit} \times |\mathbf{o}| & \text{otherwise}
-\end{cases}
-\end{align}
+\begin{equation}
+c \equiv G_{codedeposit} \times |\mathbf{o}|
+\end{equation}
 
 If there is not enough gas remaining to pay this, \ie $g^{**} < c$, then we also declare an out-of-gas exception.
 
@@ -746,8 +718,6 @@ g^{**} - c & \text{otherwise} \\
 \quad \boldsymbol{\sigma}' &\equiv  \begin{cases}
 \boldsymbol{\sigma} & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
 \boldsymbol{\sigma}^{**} & \text{if} \quad g^{**}<c \wedge H_i<\firsthomesteadblock \\
-\boldsymbol{\sigma}^{**} \quad \text{except:} & \\
-\quad\boldsymbol{\sigma}'[a] = \varnothing & \text{if} \quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma}^{**}, a) \\
 \boldsymbol{\sigma}^{**} \quad \text{except:} & \\
 \quad\boldsymbol{\sigma}'[a]_c = \texttt{\small KEC}(\mathbf{o}) & \text{otherwise}
 \end{cases}
@@ -780,16 +750,15 @@ Throughout the present work, it is assumed that if $\boldsymbol{\sigma}_1[r]$ wa
 \boldsymbol{\sigma}_1 \equiv \boldsymbol{\sigma}_1' \quad \text{except:} \\
 \end{equation}
 \begin{equation}
-\boldsymbol{\sigma}_1[s] \equiv \rho_b(\boldsymbol{\sigma}_1', s, \boldsymbol{\sigma}_1'[s]_b - v)
+\boldsymbol{\sigma}_1[s]_b \equiv \boldsymbol{\sigma}_1'[s]_b - v
 \end{equation}
 \begin{equation}
 \text{and}\quad \boldsymbol{\sigma}_1' \equiv \boldsymbol{\sigma} \quad \text{except:} \\
 \end{equation}
 \begin{equation}
 \begin{cases}
-\boldsymbol{\sigma}_1'[r] \equiv (v, 0, \mathtt{\tiny KEC}(()), \mathtt{\tiny TRIE}(\varnothing)) & \text{if} \quad \boldsymbol{\sigma}[r] = \varnothing \wedge v \neq 0 \\
-\boldsymbol{\sigma}_1'[r] \equiv \varnothing & \text{if}\quad \boldsymbol{\sigma}[r] = \varnothing \wedge v = 0 \\
-\boldsymbol{\sigma}_1'[r] \equiv \rho_b(\boldsymbol{\sigma}, r, \boldsymbol{\sigma}[r]_b + v) & \text{otherwise}
+\boldsymbol{\sigma}_1'[r] \equiv (v, 0, \mathtt{\tiny KEC}(()), \mathtt{\tiny TRIE}(\varnothing)) & \text{if} \quad \boldsymbol{\sigma}[r] = \varnothing \\
+\boldsymbol{\sigma}_1'[r]_b \equiv \boldsymbol{\sigma}[r]_b + v & \text{otherwise}
 \end{cases}
 \end{equation}
 
@@ -800,13 +769,12 @@ The account's associated code (identified as the fragment whose Keccak hash is $
 \boldsymbol{\sigma} & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
 \boldsymbol{\sigma}^{**} & \text{otherwise}
 \end{cases} \\
-\\ \nonumber
 (\boldsymbol{\sigma}^{**}, g', \mathbf{s}, \mathbf{o}) & \equiv & \begin{cases}
-\Xi_{\mathtt{ECREC}}(\boldsymbol{\sigma}_1, g, I, T) & \text{if} \quad r = 1 \\
-\Xi_{\mathtt{SHA256}}(\boldsymbol{\sigma}_1, g, I, T) & \text{if} \quad r = 2 \\
-\Xi_{\mathtt{RIP160}}(\boldsymbol{\sigma}_1, g, I, T) & \text{if} \quad r = 3 \\
-\Xi_{\mathtt{ID}}(\boldsymbol{\sigma}_1, g, I, T) & \text{if} \quad r = 4 \\
-\Xi(\boldsymbol{\sigma}_1, g, I, T) & \text{otherwise} \end{cases} \\
+\Xi_{\mathtt{ECREC}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 1 \\
+\Xi_{\mathtt{SHA256}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 2 \\
+\Xi_{\mathtt{RIP160}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 3 \\
+\Xi_{\mathtt{ID}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 4 \\
+\Xi(\boldsymbol{\sigma}_1, g, I) & \text{otherwise} \end{cases} \\
 I_a & \equiv & r \\
 I_o & \equiv & o \\
 I_p & \equiv & p \\
@@ -814,8 +782,6 @@ I_\mathbf{d} & \equiv & \mathbf{d} \\
 I_s & \equiv & s \\
 I_v & \equiv & \tilde{v} \\
 I_e & \equiv & e \\
-T   & \equiv & \{s, r\} \\
-\\ \nonumber
 \text{Let} \; \mathtt{\tiny KEC}(I_\mathbf{b}) & = & \boldsymbol{\sigma}[c]_c
 \end{eqnarray}
 
@@ -865,7 +831,7 @@ In addition to the system state $\boldsymbol{\sigma}$, and the remaining gas for
 
 The execution model defines the function $\Xi$, which can compute the resultant state $\boldsymbol{\sigma}'$, the remaining gas $g'$, the self-destruct set $\mathbf{s}$, the log series $\mathbf{l}$, the refunds $r$ and the resultant output, $\mathbf{o}$, given these definitions:
 \begin{equation}
-(\boldsymbol{\sigma}', g', \mathbf{s}, \mathbf{l}, r, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}, g, I, T)
+(\boldsymbol{\sigma}', g', \mathbf{s}, \mathbf{l}, r, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}, g, I)
 \end{equation}
 
 \subsection{Execution Overview}
@@ -874,7 +840,7 @@ We must now define the $\Xi$ function. In most practical implementations this wi
 
 The empty sequence, denoted $()$, is not equal to the empty set, denoted $\varnothing$; this is important when interpreting the output of $H$, which evaluates to $\varnothing$ when execution is to continue but a series (potentially empty) when execution should halt.
 \begin{eqnarray}
-\Xi(\boldsymbol{\sigma}, g, I, T) & \equiv & X_{0,1,2,4}\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A^0(T), I)\big) \\
+\Xi(\boldsymbol{\sigma}, g, I) & \equiv & X_{0,1,2,4}\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A^0, I)\big) \\
 \boldsymbol{\mu}_g & \equiv & g \\
 \boldsymbol{\mu}_{pc} & \equiv & 0 \\
 \boldsymbol{\mu}_\mathbf{m} & \equiv & (0, 0, ...) \\
@@ -883,7 +849,7 @@ The empty sequence, denoted $()$, is not equal to the empty set, denoted $\varno
 \end{eqnarray}
 \begin{equation}
 X\big( (\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \big) \equiv \begin{cases}
-\big(\varnothing, \boldsymbol{\mu}, A^0(\emptyset), I, ()\big) & \text{if} \quad Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I)\\
+\big(\varnothing, \boldsymbol{\mu}, A^0, I, ()\big) & \text{if} \quad Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I)\\
 O(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \cdot \mathbf{o} & \text{if} \quad \mathbf{o} \neq \varnothing\\
 X\big(O(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I)\big) & \text{otherwise}\\
 \end{cases}
@@ -1058,13 +1024,10 @@ The given \textbf{gasUsed} must correspond faithfully to the transactions listed
 
 The application of rewards to a block involves raising the balance of the accounts of the beneficiary address of the block and each ommer by a certain amount. We raise the block's beneficiary account by $R_b$; for each ommer, we raise the block's beneficiary by an additional $\frac{1}{32}$ of the block reward and the beneficiary of the ommer gets rewarded depending on the block number. Formally we define the function $\Omega$:
 \begin{eqnarray}
-\\ \nonumber
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
-\\ \nonumber
-\boldsymbol{\sigma}'[{B_H}_c] & \equiv & \rho_b(\boldsymbol{\sigma}, {B_H}_c, \boldsymbol{\sigma}[{B_H}_c]_b + (1 + \frac{\lVert B_\mathbf{U}\rVert}{32})R_b) \\
-\\ \nonumber
+\boldsymbol{\sigma}'[{B_H}_c]_b & = & \boldsymbol{\sigma}[{B_H}_c]_b + (1 + \frac{\lVert B_\mathbf{U}\rVert}{32})R_b \\
 \forall_{U \in B_\mathbf{U}}: \\ \nonumber
- \boldsymbol{\sigma}'[U_c] & \equiv & \rho_b(\boldsymbol{\sigma}, U_c, \boldsymbol{\sigma}[U_c]_b + (1 + \frac{1}{8} (U_i - {B_H}_i)) R_b)
+ \boldsymbol{\sigma}'[U_c]_b & = & \boldsymbol{\sigma}[U_c]_b + (1 + \frac{1}{8} (U_i - {B_H}_i)) R_b 
 \end{eqnarray}
 
 If there are collisions of the beneficiary addresses between ommers and the block (i.e. two ommers with the same beneficiary address or an ommer with the same beneficiary address as the present block), additions are applied cumulatively.
@@ -1385,9 +1348,9 @@ A reasonable implementation will maintain a database of nodes determined from th
 
 For each precompiled contract, we make use of a template function, $\Xi_{\mathtt{PRE}}$, which implements the out-of-gas checking.
 \begin{equation}
-\Xi_{\mathtt{PRE}}(\boldsymbol{\sigma}, g, I, T) \equiv \begin{cases}
-(\varnothing, 0, A^0(T), ()) & \text{if} \quad g < g_r \\
-(\boldsymbol\sigma, g - g_r, A^0(T), \mathbf{o}) & \text{otherwise}\end{cases}
+\Xi_{\mathtt{PRE}}(\boldsymbol{\sigma}, g, I) \equiv \begin{cases}
+(\varnothing, 0, A^0, ()) & \text{if} \quad g < g_r \\
+(\boldsymbol\sigma, g - g_r, A^0, \mathbf{o}) & \text{otherwise}\end{cases}
 \end{equation}
 
 The precompiled contracts each use these definitions and provide specifications for the $\mathbf{o}$ (the output data) and $g_r$, the gas requirements.
@@ -1446,7 +1409,7 @@ We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARESTOR
 \mathtt{\small ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64}
 \end{eqnarray}
 
-Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer in the aforementioned range). It is assumed that $v$ is either the `recovery id' or `chain id doubled plus 35 or 36'.  The recovery id is a 1 byte value specifying the sign and finiteness of the curve point; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid.  The chain id is a constant natural number.
+Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer in the aforementioned range). It is assumed that $v$ is the `recovery id', a 1 byte value specifying the sign and finiteness of the curve point; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid.
 
 \newcommand{\slimit}{\ensuremath{\text{s-limit}}}
 
@@ -1457,7 +1420,7 @@ We declare that a signature is invalid unless all the following conditions are t
 \mathtt{\tiny secp256k1n} & \text{if} \quad H_i < \firsthomesteadblock \\
 \mathtt{\tiny secp256k1n} \div 2 + 1 & \text{otherwise} \\
 \end{dcases} \\
- v &\in \{27,28,\mathtt{\tiny chain\_id} \times 2 + 35 , \mathtt{\tiny chain\_id} \times 2 + 36\}
+ v &\in \{27,28\} 
 \end{align}
 where:
 \begin{align}
@@ -1470,13 +1433,11 @@ For a given private key, $p_r$, the Ethereum address $A(p_r)$ (a 160-bit value) 
 A(p_r) = \mathcal{B}_{96..255}\big(\mathtt{\tiny KEC}\big( \mathtt{\small ECDSAPUBKEY}(p_r) \big) \big)
 \end{equation}
 
-The message hash, $h(T)$, to be signed is the Keccak hash of the transaction.  Two different flavors of signing schemes are available.  One operates without the latter three signature components, formally described as $T_r$, $T_s$ and $T_w$.  The other operates on nine elements:
+The message hash, $h(T)$, to be signed is the Keccak hash of the transaction without the latter three signature components, formally described as $T_r$, $T_s$ and $T_w$:
 \begin{eqnarray}
 L_S(T) & \equiv & \begin{cases}
-(T_n, T_p, T_g, T_t, T_v, T_\mathbf{i}) & \text{if} \; T_t = 0 \wedge v \in \{27, 28\}\\
-(T_n, T_p, T_g, T_t, T_v, T_\mathbf{d}) & \text{if} \; T_t \neq 0 \wedge v \in \{27, 28\} \\
-(T_n, T_p, T_g, T_t, T_v, T_\mathbf{i}, \mathtt{\tiny chain\_id}, (), ()) & \text{if} \; T_t = 0 \wedge v \notin \{27, 28\}\\
-(T_n, T_p, T_g, T_t, T_v, T_\mathbf{d}, \mathtt{\tiny chain\_id}, (), ()) & \text{otherwise}
+(T_n, T_p, T_g, T_t, T_v, T_\mathbf{i}) & \text{if} \; T_t = 0\\
+(T_n, T_p, T_g, T_t, T_v, T_\mathbf{d}) & \text{otherwise} 
 \end{cases} \\
 h(T) & \equiv & \mathtt{\small KEC}( L_S(T) )
 \end{eqnarray}
@@ -1527,7 +1488,7 @@ $G_{callvalue}$ & 9000 & Paid for a non-zero value transfer as part of the {\sma
 $G_{callstipend}$ & 2300 & A stipend for the called contract subtracted from $G_{callvalue}$ for a non-zero value transfer. \\
 $G_{newaccount}$ & 25000 & Paid for a {\small CALL} or {\small SELFDESTRUCT} operation which creates an account. \\
 $G_{exp}$ & 10 & Partial payment for an {\small EXP} operation. \\
-$G_{expbyte}$ & 50 & Partial payment when multiplied by $\lceil\log_{256}(exponent)\rceil$ for the {\small EXP} operation. \\
+$G_{expbyte}$ & 10 & Partial payment when multiplied by $\lceil\log_{256}(exponent)\rceil$ for the {\small EXP} operation. \\
 $G_{memory}$ & 3 & Paid for every additional word when expanding memory. \\
 $G_\text{txcreate}$ & 32000 & Paid by all contract-creating transactions after the {\it Homestead transition}.\\
 $G_{txdatazero}$ & 4 & Paid for every zero byte of data or code for a transaction. \\
@@ -1983,8 +1944,7 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& $\mathbf{i} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[1] \dots (\boldsymbol{\mu}_\mathbf{s}[1] + \boldsymbol{\mu}_\mathbf{s}[2] - 1) ]$ \\
 &&&& $(\boldsymbol{\sigma}', \boldsymbol{\mu}'_g, A^+) \equiv \begin{cases}\Lambda(\boldsymbol{\sigma}^*, I_a, I_o, L(\boldsymbol{\mu}_g), I_p, \boldsymbol{\mu}_\mathbf{s}[0], \mathbf{i}, I_e + 1) & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] \leqslant \boldsymbol{\sigma}[I_a]_b \;\wedge\; I_e < 1024\\ \big(\boldsymbol{\sigma}, \boldsymbol{\mu}_g, \varnothing\big) & \text{otherwise} \end{cases}$ \\
 &&&& $\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except} \quad \boldsymbol{\sigma}^*[I_a]_n = \boldsymbol{\sigma}[I_a]_n + 1$ \\
-&&&& $A' \equiv A \Cup A^+$ which implies: $A'_\mathbf{s} \equiv A_\mathbf{s} \cup A^+_\mathbf{s} \quad \wedge \quad A'_\mathbf{l} \equiv A_\mathbf{l} \cdot A^+_\mathbf{l} \quad \wedge \quad A'_\mathbf{t} \equiv A_\mathbf{t} \cup A^+_\mathbf{t}$ \\
-&&&& $ \wedge \quad A'_\mathbf{r} \equiv A_\mathbf{r} + A^+_\mathbf{r}$ \\
+&&&& $A' \equiv A \Cup A^+$ which implies: $A'_\mathbf{s} \equiv A_\mathbf{s} \cup A^+_\mathbf{s} \quad \wedge \quad A'_\mathbf{l} \equiv A_\mathbf{l} \cdot A^+_\mathbf{l} \quad \wedge \quad A'_\mathbf{r} \equiv A_\mathbf{r} + A^+_\mathbf{r}$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
 &&&& where $x=0$ if the code execution for this operation failed due to an exceptional halting \\
 &&&& $Z(\boldsymbol{\sigma}^*, \boldsymbol{\mu}, I) = \top$ or $I_e = 1024$ \\
@@ -2024,7 +1984,7 @@ G_{callvalue} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \neq 0 \\
 0 & \text{otherwise}
 \end{cases}$ \\
 &&&& $C_{\text{\tiny NEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
-G_{newaccount} & \text{if} \quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma},\boldsymbol{\mu}_\mathbf{s}[1] \mod 2^{160}) \wedge \boldsymbol{\mu}_\mathbf{s}[2] \neq 0 \\
+G_{newaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[1] \mod 2^{160}] = \varnothing \\
 0 & \text{otherwise}
 \end{cases}$ \\
 \midrule
@@ -2060,14 +2020,14 @@ G_{newaccount} & \text{if} \quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma},\boldsy
 \midrule
 0xff & {\small SELFDESTRUCT} & 1 & 0 & Halt execution and register account for later deletion. \\
 &&&& $A'_\mathbf{s} \equiv A_\mathbf{s} \cup \{ I_a \}$ \\
-&&&& $\boldsymbol{\sigma}'[r] \equiv \rho_b(\boldsymbol{\sigma}, r, \boldsymbol{\sigma}[r]_b + \boldsymbol{\sigma}[I_a]_b)$ where $r \equiv \boldsymbol{\mu}_s[0]\mod 2^{160}$\\
-&&&& $\boldsymbol{\sigma}'[I_a] \equiv \rho_b(\boldsymbol{\sigma}, I_a, 0)$ \\
+&&&& $\boldsymbol{\sigma}'[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}]_b \equiv \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}]_b + \boldsymbol{\sigma}[I_a]_b$ \\
+&&&& $\boldsymbol{\sigma}'[I_a]_b \equiv 0$ \\
 &&&& $A'_{r} \equiv A_{r} + \begin{cases}
 R_{selfdestruct} & \text{if} \quad I_a \notin A_\mathbf{s} \\
 0 & \text{otherwise}
 \end{cases}$ \\
 &&&& $C_{\text{\tiny SELFDESTRUCT}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv G_{selfdestruct} + \begin{cases}
-G_{newaccount} & \text{if} \quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma}, \boldsymbol{\mu}_\mathbf{s}[1] \mod 2^{160}) \wedge \boldsymbol{\sigma}[I_a]_b \neq 0 \\
+G_{newaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[1] \mod 2^{160}] = \varnothing \\
 0 & \text{otherwise}
 \end{cases}$ \\
 \bottomrule
