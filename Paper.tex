@@ -775,6 +775,8 @@ The account's associated code (identified as the fragment whose Keccak hash is $
 \Xi_{\mathtt{RIP160}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 3 \\
 \Xi_{\mathtt{ID}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 4 \\
 \Xi_{\mathtt{ADD}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 5 \\
+\Xi_{\mathtt{SUB}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 6 \\
+\Xi_{\mathtt{MUL}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 7 \\
 \Xi(\boldsymbol{\sigma}_1, g, I) & \text{otherwise} \end{cases} \\
 I_a & \equiv & r \\
 I_o & \equiv & o \\
@@ -1420,6 +1422,41 @@ Y &=& I_\mathbf{d}[(32 + I_\mathbf{d}[0..31])..(|I_\mathbf{d}| - 1)] \\
 \end{cases}
 \end{eqnarray}
 
+The sixth contract performs arbitrary-precision subtraction on non-negative integers.  This is similar to the addition.  The subtraction contract halts exceptionally if the result would be negative.
+
+\begin{eqnarray}
+\Xi_{\mathtt{SUB}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:}\\
+\Xi_{\mathtt{SUB}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| - 32 <  I_\mathbf{d}[0..31] \\
+\Xi_{\mathtt{SUB}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad X < Y \\
+g_r &=& G_{addsubbase} + G_{arithword} \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil \\
+\mathbf{o} &=& (X - Y) \in \mathbb{B}_\ell \\
+X &=& I_\mathbf{d}[32..(32 + I_\mathbf{d}[0..31] - 1)] \\
+Y &=& I_\mathbf{d}[(32 + I_\mathbf{d}[0..31])..(|I_\mathbf{d}| - 1)] \\
+\ell &=&
+\begin{cases}
+0 &\text{if}\ X = Y \\
+\lfloor \log_8(X - Y) \rfloor + 1 & \text{otherwise}
+\end{cases}
+\end{eqnarray}
+
+The seventh contract performs arbitrary-precision multiplication on non-negative integers.  The definition is similar to that of the addition contract.
+
+\begin{eqnarray}
+\Xi_{\mathtt{MUL}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:}\\
+\Xi_{\mathtt{MUL}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| - 32 <  I_\mathbf{d}[0..31] \\
+g_r &=& G_{muldivbase} + G_{arithword} \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil + \ell_X \ell_Y / G_{quaddivisor} \\
+\mathbf{o} &=& (X \times Y) \in \mathbb{B}_\ell \\
+X &=& I_\mathbf{d}[32..(32 + I_\mathbf{d}[0..31] - 1)] \\
+\ell_X &=& I_\mathbf{d}[0..31] \\
+Y &=& I_\mathbf{d}[(32 + I_\mathbf{d}[0..31])..(|I_\mathbf{d}| - 1)] \\
+\ell_Y &=& |I_\mathbf{d}| - 32 - \ell_X \\
+\ell &=&
+\begin{cases}
+0 &\text{if}\ X = 0 \ \text{or}\  Y = 0 \\
+\lfloor \log_8(X \times Y) \rfloor + 1 & \text{otherwise}
+\end{cases}
+\end{eqnarray}
+
 \section{Signing Transactions}\label{app:signing}
 
 The method of signing transactions is similar to the `Electrum style signatures'; it utilises the SECP-256k1 curve as described by \cite{gura2004comparing}.
@@ -1526,7 +1563,9 @@ $G_{sha3word}$ & 6 & Paid for each word (rounded up) for input data to a {\small
 $G_{copy}$ & 3 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
 $G_{blockhash}$ & 20 & Payment for {\small BLOCKHASH} operation. \\
 $G_{addsubbase}$ & 15 & Payment for the precompiled addition or subtraction contract \\
+$G_{muldivbase}$ & 30 & Payment for the precompiled multiplication or division contract \\
 $G_{arithword}$ & 6 & Paid for each word used in precompiled contracts for arbitrary precision arighmetics.\\
+$G_{quaddivisor}$ & 32 & The quadratic coefficient of the input sizes of multiplication and division precompiled contracts.  \\
 
 %extern u256 const c_copyGas;			///< Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
 \bottomrule
