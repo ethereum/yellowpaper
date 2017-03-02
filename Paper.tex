@@ -774,6 +774,7 @@ The account's associated code (identified as the fragment whose Keccak hash is $
 \Xi_{\mathtt{SHA256}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 2 \\
 \Xi_{\mathtt{RIP160}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 3 \\
 \Xi_{\mathtt{ID}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 4 \\
+\Xi_{\mathtt{ADD}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 5 \\
 \Xi(\boldsymbol{\sigma}_1, g, I) & \text{otherwise} \end{cases} \\
 I_a & \equiv & r \\
 I_o & \equiv & o \\
@@ -1394,13 +1395,30 @@ For the purposes here, we assume we have well-defined standard cryptographic fun
 \mathtt{\small RIPEMD160}(\mathbf{i} \in \mathbb{B}) & \equiv & o \in \mathbb{B}_{20}
 \end{eqnarray}
 
-Finally, the fourth contract, the identity function $\Xi_{\mathtt{ID}}$ simply defines the output as the input:
+The fourth contract, the identity function $\Xi_{\mathtt{ID}}$ simply defines the output as the input:
 \begin{eqnarray}
 \Xi_{\mathtt{ID}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
 g_r &=& 15 + 3\Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil\\
 \mathbf{o} &=& I_\mathbf{d}
 \end{eqnarray}
 
+The fifth contract performs arbitrary-precision addition on non-negative integers.
+The first word in the input specifies the number of bytes that the first non-negative integer $X$ occupies.
+The result is represented in the smallest possible number of bytes.  The first byte in the output is never zero.
+
+\begin{eqnarray}
+\Xi_{\mathtt{ADD}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:}\\
+\Xi_{\mathtt{ADD}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| - 32 <  I_\mathbf{d}[0..31] \\
+g_r &=& G_{addsubbase} + G_{arithword} \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil \\
+\mathbf{o} &=& (X + Y) \in \mathbb{B}_\ell \\
+X &=& I_\mathbf{d}[32..(32 + I_\mathbf{d}[0..31] - 1)] \\
+Y &=& I_\mathbf{d}[(32 + I_\mathbf{d}[0..31])..(|I_\mathbf{d}| - 1)] \\
+\ell &=&
+\begin{cases}
+0 &\text{if}\, X = Y = 0 \\
+\lfloor \log_8(X + Y) \rfloor + 1 & \text{otherwise}
+\end{cases}
+\end{eqnarray}
 
 \section{Signing Transactions}\label{app:signing}
 
@@ -1507,6 +1525,8 @@ $G_{sha3}$ & 30 & Paid for each {\small SHA3} operation. \\
 $G_{sha3word}$ & 6 & Paid for each word (rounded up) for input data to a {\small SHA3} operation. \\
 $G_{copy}$ & 3 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
 $G_{blockhash}$ & 20 & Payment for {\small BLOCKHASH} operation. \\
+$G_{addsubbase}$ & 15 & Payment for the precompiled addition or subtraction contract \\
+$G_{arithword}$ & 6 & Paid for each word used in precompiled contracts for arbitrary precision arighmetics.\\
 
 %extern u256 const c_copyGas;			///< Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
 \bottomrule
