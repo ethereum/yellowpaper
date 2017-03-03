@@ -1480,6 +1480,7 @@ Y &=& I_\mathbf{d}[(32 + I_\mathbf{d}[0..31])..(|I_\mathbf{d}| - 1)] \\
 \end{cases}
 \end{eqnarray}
 
+The ninth contract performs arbitrary-precision exponentiation under modulo.  Here, $0 ^ 0$ is taken to be one.
 \begin{eqnarray}
 \Xi_{\mathtt{EXPMOD}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:}\\
 \ell_B &=& I_\mathbf{d}[0..31] \\
@@ -1715,7 +1716,7 @@ Here given are the various exceptions to the state transition rules given in sec
 \begin{tabular*}{\columnwidth}[h]{rlrrl}
 \toprule
 \multicolumn{5}{c}{\textbf{0s: Stop and Arithmetic Operations}} \\
-\multicolumn{5}{l}{All arithmetic is modulo $2^{256}$ unless otherwise noted.  $0 ^ 0$ is defined to be $1$.} \vspace{5pt} \\
+\multicolumn{5}{l}{All arithmetic is modulo $2^{256}$ unless otherwise noted.} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x00 & {\small STOP} & 0 & 0 & Halts execution. \\
 \midrule
