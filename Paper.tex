@@ -1454,7 +1454,7 @@ Y &=& I_\mathbf{d}[(32 + I_\mathbf{d}[0..31])..(|I_\mathbf{d}| - 1)] \\
 \ell_Y &=& |I_\mathbf{d}| - 32 - \ell_X \\
 \ell &=&
 \begin{cases}
-0 &\text{if}\ X = 0 \ \text{or}\  Y = 0 \\
+0 &\text{if}\ X = 0 \ \vee\  Y = 0 \\
 \lfloor \log_8(X \times Y) \rfloor + 1 & \text{otherwise}
 \end{cases}
 \end{eqnarray}
@@ -1476,7 +1476,7 @@ Y &=& I_\mathbf{d}[(32 + I_\mathbf{d}[0..31])..(|I_\mathbf{d}| - 1)] \\
 \ell_Y &=& |I_\mathbf{d}| - 32 - \ell_X \\
 \ell &=&
 \begin{cases}
-0 &\text{if}\ Y = 0 \ \text{or} \ \Big\lfloor \dfrac X Y \Big\rfloor = 0 \\
+0 &\text{if}\ Y = 0 \ \vee \ \Big\lfloor \dfrac X Y \Big\rfloor = 0 \\
 \lfloor \log_8(\Big\lfloor \dfrac X Y \Big\rfloor) \rfloor + 1 & \text{otherwise}
 \end{cases}
 \end{eqnarray}
@@ -1493,12 +1493,12 @@ g_r &=& G_{modexpbase} + G_{arithword} \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Bi
 \mathbf{o} &=&
 \begin{cases}
  () & \text{if} \  M = 0 \\
- B ^ E \mod M \in \mathbb{B}_\ell & \text{otherwise}
+ B ^ E \bmod M \in \mathbb{B}_\ell & \text{otherwise}
 \end{cases} \\
 \ell &=&
 \begin{cases}
-0 &\text{if}\ M = 0 \ \text{or} \ B ^ E \mod M = 0 \\
-\lfloor \log_8(B ^ E \mod M) \rfloor + 1 & \text{otherwise}
+0 &\text{if}\ M = 0 \quad \vee \quad {B ^ E} \bmod M = 0 \\
+\lfloor \log_8(B ^ E \bmod M) \rfloor + 1 & \text{otherwise}
 \end{cases}
 \end{eqnarray}
 
@@ -1607,8 +1607,9 @@ $G_{sha3}$ & 30 & Paid for each {\small SHA3} operation. \\
 $G_{sha3word}$ & 6 & Paid for each word (rounded up) for input data to a {\small SHA3} operation. \\
 $G_{copy}$ & 3 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
 $G_{blockhash}$ & 20 & Payment for {\small BLOCKHASH} operation. \\
-$G_{addsubbase}$ & 15 & Payment for the precompiled addition or subtraction contract \\
-$G_{muldivbase}$ & 30 & Payment for the precompiled multiplication or division contract \\
+$G_{addsubbase}$ & 15 & Payment for the precompiled addition or subtraction contract. \\
+$G_{muldivbase}$ & 30 & Payment for the precompiled multiplication or division contract. \\
+$G_{modexpbase}$ & 45 & Payment for the precompiled exponention under modulo. \\
 $G_{arithword}$ & 6 & Paid for each word used in precompiled contracts for arbitrary precision arighmetics.\\
 $G_{quaddivisor}$ & 32 & The quadratic coefficient of the input sizes of multiplication and division precompiled contracts.  \\
 
