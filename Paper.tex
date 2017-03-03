@@ -791,6 +791,7 @@ g^{**} & \text{otherwise}
 \Xi_{\mathtt{SHA256}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 2 \\
 \Xi_{\mathtt{RIP160}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 3 \\
 \Xi_{\mathtt{ID}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 4 \\
+\Xi_{\mathtt{EXPMOD}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 5 \\
 \Xi(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{otherwise} \end{cases} \\
 I_a & \equiv & r \\
 I_o & \equiv & o \\
@@ -1438,6 +1439,32 @@ g_r &=& 15 + 3\Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil\\
 \mathbf{o} &=& I_\mathbf{d}
 \end{eqnarray}
 
+The fifth contract performs arbitrary-precision exponentiation under modulo.  Here, $0 ^ 0$ is taken to be one.
+The first word in the input specifies the number of bytes that the first non-negative integer $B$ occupies.
+The second word in the input specifies the number of bytes that the second non-negative integer $E$ occupies.
+These two words are followed by $B$ and $E$; and the rest of the input is interpreted as the third non-negative integer $M$.
+All non-negative integers $B$, $E$ $M$ are encoded as byte sequences in the big-endian way.
+
+\begin{eqnarray}
+\Xi_{\mathtt{EXPMOD}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:}\\
+\ell_B &=& I_\mathbf{d}[0..31] \\
+B &=& I_\mathbf{d}[32..(31 + \ell_B)] \\
+\ell_E &=& I_\mathbf{d}[(32 + \ell_B)..(63 + \ell_B)] \\
+E &=& I_\mathbf{d}[(64 + \ell_B)..(63 + \ell_B + \ell_E)] \\
+M &=& I_\mathbf{d}[(64 + \ell_B + \ell_E)..(|I_\mathbf{d}| - 1)] \\
+\Xi_{\mathtt{EXPMOD}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| < 32 + \ell_B \quad \vee \quad |I_\mathbf{d}| < 64 + \ell_B + \ell_E \\
+g_r &=& G_{modexpbase} + G_{arithword} \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil + |M|^2 |E| / G_{quaddivisor} \\
+\mathbf{o} &=&
+\begin{cases}
+ () & \text{if} \  M = 0 \\
+ B ^ E \bmod M \in \mathbb{B}_\ell & \text{otherwise}
+\end{cases} \\
+\ell &=&
+\begin{cases}
+0 &\text{if}\ M = 0 \quad \vee \quad {B ^ E} \bmod M = 0 \\
+\lfloor \log_8(B ^ E \bmod M) \rfloor + 1 & \text{otherwise}
+\end{cases}
+\end{eqnarray}
 
 \section{Signing Transactions}\label{app:signing}
 
@@ -1550,6 +1577,9 @@ $G_{sha3}$ & 30 & Paid for each {\small SHA3} operation. \\
 $G_{sha3word}$ & 6 & Paid for each word (rounded up) for input data to a {\small SHA3} operation. \\
 $G_{copy}$ & 3 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
 $G_{blockhash}$ & 20 & Payment for {\small BLOCKHASH} operation. \\
+$G_{modexpbase}$ & 45 & Payment for the precompiled exponention under modulo. \\
+$G_{arithword}$ & 6 & Paid for each word used in precompiled contracts for arbitrary precision arighmetics.\\
+$G_{quaddivisor}$ & 32 & The quadratic coefficient of the input sizes of multiplication and division precompiled contracts.  \\
 
 %extern u256 const c_copyGas;			///< Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
 \bottomrule
