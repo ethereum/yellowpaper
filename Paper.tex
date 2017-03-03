@@ -1452,7 +1452,7 @@ B &=& I_\mathbf{d}[32..(31 + \ell_B)] \\
 \ell_E &=& I_\mathbf{d}[(32 + \ell_B)..(63 + \ell_B)] \\
 E &=& I_\mathbf{d}[(64 + \ell_B)..(63 + \ell_B + \ell_E)] \\
 M &=& I_\mathbf{d}[(64 + \ell_B + \ell_E)..(|I_\mathbf{d}| - 1)] \\
-\Xi_{\mathtt{EXPMOD}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| < 32 + \ell_B \quad \vee \quad |I_\mathbf{d}| < 64 + \ell_B + \ell_E \\
+\Xi_{\mathtt{EXPMOD}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| < 64 + \ell_B + \ell_E \\
 g_r &=& G_{modexpbase} + G_{arithword} \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil + |M|^2 |E| / G_{quaddivisor} \\
 \mathbf{o} &=&
 \begin{cases}
