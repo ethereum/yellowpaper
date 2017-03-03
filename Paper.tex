@@ -782,6 +782,7 @@ The account's associated code (identified as the fragment whose Keccak hash is $
 \Xi_{\mathtt{ADD}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 5 \\
 \Xi_{\mathtt{SUB}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 6 \\
 \Xi_{\mathtt{MUL}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 7 \\
+\Xi_{\mathtt{DIV}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 8 \\
 \Xi(\boldsymbol{\sigma}_1, g, I) & \text{otherwise} \end{cases} \\
 I_a & \equiv & r \\
 I_o & \equiv & o \\
@@ -1438,7 +1439,7 @@ Y &=& I_\mathbf{d}[(32 + I_\mathbf{d}[0..31])..(|I_\mathbf{d}| - 1)] \\
 \end{cases}
 \end{eqnarray}
 
-The seventh contract performs arbitrary-precision multiplication on non-negative integers.  The definition is similar to that of the addition contract.
+The seventh contract performs arbitrary-precision multiplication on non-negative integers.  The input format is the same as that of the addition contract.
 
 \begin{eqnarray}
 \Xi_{\mathtt{MUL}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:}\\
@@ -1453,6 +1454,28 @@ Y &=& I_\mathbf{d}[(32 + I_\mathbf{d}[0..31])..(|I_\mathbf{d}| - 1)] \\
 \begin{cases}
 0 &\text{if}\ X = 0 \ \text{or}\  Y = 0 \\
 \lfloor \log_8(X \times Y) \rfloor + 1 & \text{otherwise}
+\end{cases}
+\end{eqnarray}
+
+The eigth contract performs arbitrary-precision division on non-negative integers.  The definition is similar to that of the multiplication contract.
+
+\begin{eqnarray}
+\Xi_{\mathtt{DIV}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:}\\
+\Xi_{\mathtt{DIV}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| - 32 <  I_\mathbf{d}[0..31] \\
+g_r &=& G_{muldivbase} + G_{arithword} \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil + \ell_X \ell_Y / G_{quaddivisor} \\
+\mathbf{o} &=&
+\begin{cases}
+ () & \text{if} \  Y = 0 \\
+ \Big\lfloor \dfrac X Y \Big\rfloor \in \mathbb{B}_\ell & \text{otherwise}
+\end{cases} \\
+X &=& I_\mathbf{d}[32..(32 + I_\mathbf{d}[0..31] - 1)] \\
+\ell_X &=& I_\mathbf{d}[0..31] \\
+Y &=& I_\mathbf{d}[(32 + I_\mathbf{d}[0..31])..(|I_\mathbf{d}| - 1)] \\
+\ell_Y &=& |I_\mathbf{d}| - 32 - \ell_X \\
+\ell &=&
+\begin{cases}
+0 &\text{if}\ Y = 0 \ \text{or} \ \Big\lfloor \dfrac X Y \Big\rfloor = 0 \\
+\lfloor \log_8(\Big\lfloor \dfrac X Y \Big\rfloor) \rfloor + 1 & \text{otherwise}
 \end{cases}
 \end{eqnarray}
 
