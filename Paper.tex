@@ -579,7 +579,8 @@ The validity is determined as:
 \begin{array}[t]{rcl}
 S(T) & \neq & \varnothing \quad \wedge \\
 \boldsymbol{\sigma}[S(T)] & \neq & \varnothing \quad \wedge \\
-T_n & = & \boldsymbol{\sigma}[S(T)]_n \quad \wedge \\
+T_n \bmod 2^{64} & = & \boldsymbol{\sigma}[S(T)]_n \quad \wedge \\
+\big(\lfloor T_n / 2^{64} \rfloor = 0 & \vee & \lfloor T_n / 2^{64} \rfloor = \mathtt{\small chain\_id}\ \big) \quad \wedge \\
 g_0 & \leqslant & T_g \quad \wedge \\
 v_0 & \leqslant & \boldsymbol{\sigma}[S(T)]_b \quad \wedge \\
 T_g & \leqslant & {B_H}_l - \ell(B_\mathbf{R})_u
