@@ -1737,7 +1737,7 @@ C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv C_{mem}(\boldsymbol{\mu}'_i)-
 C_\text{\tiny SSTORE}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SSTORE} \\
 G_{exp} & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_\mathbf{s}[1] = 0 \\
 G_{exp} + G_{expbyte}\times(1+\lfloor\log_{256}(\boldsymbol{\mu}_\mathbf{s}[1])\rfloor) & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_\mathbf{s}[1] > 0 \\
-G_{verylow} + G_{copy}\times\lceil\boldsymbol{\mu}_\mathbf{s}[2] \div 32\rceil & \text{if} \quad w = \text{\small CALLDATACOPY} \lor \text{\small CODECOPY} \\
+G_{verylow} + G_{copy}\times\lceil\boldsymbol{\mu}_\mathbf{s}[2] \div 32\rceil & \text{if} \quad w = \text{\small CALLDATACOPY} \lor \text{\small CODECOPY} \lor \text{\small RETURNDATACOPY} \\
 G_{extcode} + G_{copy}\times\lceil\boldsymbol{\mu}_\mathbf{s}[3] \div 32\rceil & \text{if} \quad w = \text{\small EXTCODECOPY} \\
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1] & \text{if} \quad w = \text{\small LOG0} \\
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+G_{logtopic} & \text{if} \quad w = \text{\small LOG1} \\
@@ -1776,7 +1776,7 @@ with $C_\text{\tiny CALL}$, $C_\text{\tiny SELFDESTRUCT}$ and $C_\text{\tiny SST
 
 $W_{zero}$ = \{{\small STOP}, {\small RETURN}, {\small REVERT}\}
 
-$W_{base}$ = \{{\small ADDRESS}, {\small ORIGIN}, {\small CALLER}, {\small CALLVALUE}, {\small CALLDATASIZE}, {\small CODESIZE}, {\small GASPRICE}, {\small COINBASE},\newline \noindent\hspace*{1cm} {\small TIMESTAMP}, {\small NUMBER}, {\small DIFFICULTY}, {\small GASLIMIT}, {\small POP}, {\small PC}, {\small MSIZE}, {\small GAS}\}
+$W_{base}$ = \{{\small ADDRESS}, {\small ORIGIN}, {\small CALLER}, {\small CALLVALUE}, {\small CALLDATASIZE}, {\small CODESIZE}, {\small GASPRICE}, {\small COINBASE},\newline \noindent\hspace*{1cm} {\small TIMESTAMP}, {\small NUMBER}, {\small DIFFICULTY}, {\small GASLIMIT}, {\small RETURNDATASIZE}, {\small POP}, {\small PC}, {\small MSIZE}, {\small GAS}\}
 
 $W_{verylow}$ = \{{\small ADD}, {\small SUB}, {\small NOT}, {\small LT}, {\small GT}, {\small SLT}, {\small SGT}, {\small EQ}, {\small ISZERO}, {\small AND}, {\small OR}, {\small XOR}, {\small BYTE}, {\small CALLDATALOAD}, \newline \noindent\hspace*{1cm} {\small MLOAD}, {\small MSTORE}, {\small MSTORE8}, {\small PUSH*}, {\small DUP*}, {\small SWAP*}\}
 
