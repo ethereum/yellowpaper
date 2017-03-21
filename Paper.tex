@@ -824,7 +824,8 @@ We must now define the $\Xi$ function. In most practical implementations this wi
 
 The empty sequence, denoted $()$, is not equal to the empty set, denoted $\varnothing$; this is important when interpreting the output of $H$, which evaluates to $\varnothing$ when execution is to continue but a series (potentially empty) when execution should halt.
 \begin{eqnarray}
-\Xi(\boldsymbol{\sigma}, g, I) & \equiv & X_{0,1,2,4}\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A^0, I)\big) \\
+\Xi(\boldsymbol{\sigma}, g, I) & \equiv & (\boldsymbol{\sigma}'\!, \boldsymbol{\mu}'_g, A, \mathbf{o}) \\
+(\boldsymbol{\sigma}, \boldsymbol{\mu}'\!, A, I'\!, \mathbf{o}) & \equiv & X\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A^0\!, I)\big) \\
 \boldsymbol{\mu}_g & \equiv & g \\
 \boldsymbol{\mu}_{pc} & \equiv & 0 \\
 \boldsymbol{\mu}_\mathbf{m} & \equiv & (0, 0, ...) \\
@@ -845,7 +846,7 @@ where
 (a, b, c) \cdot d & \equiv & (a, b, c, d)
 \end{eqnarray}
 
-Note that we must drop the fourth value in the tuple returned by $X$ to correctly evaluate $\Xi$, hence the subscript $X_{0,1,2,4}$.
+Note that, when we evaluate $\Xi$, we drop the fourth element $I'$ and extract the remaining gas $\boldsymbol{\mu}'_g$ from the resultant machine state $\boldsymbol{\mu}'$.
 
 $X$ is thus cycled (recursively here, but implementations are generally expected to use a simple iterative loop) until either $Z$ becomes true indicating that the present state is exceptional and that the machine must be halted and any changes discarded or until $H$ becomes a series (rather than the empty set) indicating that the machine has reached a controlled halt.
 
