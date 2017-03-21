@@ -469,8 +469,14 @@ where:
 \end{cases}
 \end{equation}
 \begin{equation}
-\homesteadmod \equiv \text{max}\left( 1 - \left\lfloor\frac{H_s - {P(H)_H}_s}{10}\right\rfloor, -99 \right)
+\homesteadmod \equiv \text{max}\left( x - \left\lfloor\frac{H_s - {P(H)_H}_s}{9}\right\rfloor, -99 \right)
 \end{equation}
+\begin{equation*}
+x \equiv \begin{cases}
+1 & \text{if} \, \lVert P(H)_\mathbf{U}\rVert = 0 \\
+2 & \text{otherwise}
+\end{cases}
+\end{equation*}
 \begin{equation}
 \expdiffsymb \equiv \left\lfloor 2^{ \left\lfloor H_i \div 100000 \right\rfloor - 2 } \right\rfloor
 \end{equation}
