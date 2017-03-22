@@ -1447,12 +1447,12 @@ All non-negative integers $B$, $E$ $M$ are encoded as byte sequences in the big-
 
 \begin{eqnarray}
 \Xi_{\mathtt{EXPMOD}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:}\\
-\ell_B &=& I_\mathbf{d}[0..31] \\
-\ell_E &=& I_\mathbf{d}[32..63] \\
-B &=& I_\mathbf{d}[64..(63 + \ell_B)] \\
-E &=& I_\mathbf{d}[(64 + \ell_B)..(63 + \ell_B + \ell_E)] \\
-M &=& I_\mathbf{d}[(64 + \ell_B + \ell_E)..(|I_\mathbf{d}| - 1)] \\
-\Xi_{\mathtt{EXPMOD}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| < 64 + \ell_B + \ell_E \\
+l_B &=& I_\mathbf{d}[0..31] \in \mathbb{P}_{256} \\
+l_E &=& I_\mathbf{d}[32..63] \in \mathbb{P}_{256} \\
+B &=& I_\mathbf{d}[64..(63 + l_B)] \\
+E &=& I_\mathbf{d}[(64 + l_B)..(63 + l_B + l_E)] \\
+M &=& I_\mathbf{d}[(64 + l_B + l_E)..(|I_\mathbf{d}| - 1)] \\
+\Xi_{\mathtt{EXPMOD}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| < 64 + l_B + l_E \\
 g_r &=& G_{modexpbase} + G_{arithword} \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil + |M|^2 |E| / G_{quaddivisor} \\
 \mathbf{o} &=&
 \begin{cases}
