@@ -1414,12 +1414,12 @@ The input and output formats are the same for $\Xi_{\mathtt{SUB}}$, $\Xi_{\matht
 
 \begin{eqnarray}
 \Xi_{\mathtt{ADD}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:}\\
-\Xi_{\mathtt{ADD}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| - 32 <  I_\mathbf{d}[0..31] \\
+\Xi_{\mathtt{ADD}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| - 32 <  l_X \\
 g_r &=& G_{addsubbase} + G_{arithword} \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil \\
 \mathbf{o} &=& \mathtt{\tiny BE}(X + Y) \\
-X &=& I_\mathbf{d}[32..(32 + I_\mathbf{d}[0..31] - 1)] \\
+X &=& I_\mathbf{d}[32..(31 + l_X)] \\
 l_X &=& I_\mathbf{d}[0..31] \in \mathbb{P}_{256} \\
-Y &=& I_\mathbf{d}[(32 + I_\mathbf{d}[0..31])..(|I_\mathbf{d}| - 1)] \\
+Y &=& I_\mathbf{d}[(32 + l_X)..(|I_\mathbf{d}| - 1)] \\
 l_Y &=& |I_\mathbf{d}| - 32 - l_X
 \end{eqnarray}
 
@@ -1427,13 +1427,12 @@ The sixth contract performs arbitrary-precision subtraction on non-negative inte
 
 \begin{eqnarray}
 \Xi_{\mathtt{SUB}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:}\\
-\Xi_{\mathtt{SUB}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| - 32 <  I_\mathbf{d}[0..31] \\
-\Xi_{\mathtt{SUB}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad X < Y \\
+\Xi_{\mathtt{SUB}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| - 32 <  l_X \, \vee \, X < Y \\
 g_r &=& G_{addsubbase} + G_{arithword} \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil \\
 \mathbf{o} &=& \mathtt{\tiny BE}(X - Y) \\
-X &=& I_\mathbf{d}[32..(32 + I_\mathbf{d}[0..31] - 1)] \\
+X &=& I_\mathbf{d}[32..(31 + l_X)] \\
 l_X &=& I_\mathbf{d}[0..31] \in \mathbb{P}_{256} \\
-Y &=& I_\mathbf{d}[(32 + I_\mathbf{d}[0..31])..(|I_\mathbf{d}| - 1)] \\
+Y &=& I_\mathbf{d}[(32 + l_X)..(|I_\mathbf{d}| - 1)] \\
 l_Y &=& |I_\mathbf{d}| - 32 - l_X
 \end{eqnarray}
 
@@ -1441,12 +1440,12 @@ The seventh contract performs arbitrary-precision multiplication on non-negative
 
 \begin{eqnarray}
 \Xi_{\mathtt{MUL}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:}\\
-\Xi_{\mathtt{MUL}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| - 32 <  I_\mathbf{d}[0..31] \\
+\Xi_{\mathtt{MUL}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| - 32 < l_X \\
 g_r &=& G_{muldivbase} + G_{arithword} \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil + l_X l_Y / G_{quaddivisor} \\
 \mathbf{o} &=& \mathtt{\tiny BE}(X \times Y) \\
 X &=& I_\mathbf{d}[32..(32 + I_\mathbf{d}[0..31] - 1)] \\
-l_X &=& I_\mathbf{d}[0..31] \in \mathbb{P}_{256} \\
-Y &=& I_\mathbf{d}[(32 + I_\mathbf{d}[0..31])..(|I_\mathbf{d}| - 1)] \\
+l_X &=& l_X \in \mathbb{P}_{256} \\
+Y &=& I_\mathbf{d}[(32 + l_X)..(|I_\mathbf{d}| - 1)] \\
 l_Y &=& |I_\mathbf{d}| - 32 - l_X
 \end{eqnarray}
 
@@ -1454,16 +1453,16 @@ The eigth contract performs arbitrary-precision division on non-negative integer
 
 \begin{eqnarray}
 \Xi_{\mathtt{DIV}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:}\\
-\Xi_{\mathtt{DIV}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| - 32 <  I_\mathbf{d}[0..31] \\
+\Xi_{\mathtt{DIV}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| - 32 < l_X \\
 g_r &=& G_{muldivbase} + G_{arithword} \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil + l_X l_Y / G_{quaddivisor} \\
 \mathbf{o} &=&
 \begin{cases}
  () & \text{if} \  Y = 0 \\
  \mathtt{\tiny BE}\Big(\big\lfloor \dfrac X Y \big\rfloor\Big) & \text{otherwise}
 \end{cases} \\
-X &=& I_\mathbf{d}[32..(32 + I_\mathbf{d}[0..31] - 1)] \\
+X &=& I_\mathbf{d}[32..(31 + l_X)] \\
 l_X &=& I_\mathbf{d}[0..31] \in \mathbb{P}_{256} \\
-Y &=& I_\mathbf{d}[(32 + I_\mathbf{d}[0..31])..(|I_\mathbf{d}| - 1)] \\
+Y &=& I_\mathbf{d}[(32 + l_X..(|I_\mathbf{d}| - 1)] \\
 l_Y &=& |I_\mathbf{d}| - 32 - l_X
 \end{eqnarray}
 
