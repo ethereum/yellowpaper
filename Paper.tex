@@ -240,6 +240,7 @@ An account state is empty when it has no code, zero nonce and zero balance:
 \wedge \boldsymbol{\sigma}[a]_n = 0
 \wedge \boldsymbol{\sigma}[a]_b = 0
 \end{equation}
+Even callable precompiled contracts can have an empty account state.  This is because their account states do not usually contain the code describing its behavior.
 
 An account is dead when its account state is non-existent or empty:
 \begin{equation}
