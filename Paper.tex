@@ -1448,8 +1448,8 @@ All non-negative integers $B$, $E$ $M$ are encoded as byte sequences in the big-
 \begin{eqnarray}
 \Xi_{\mathtt{EXPMOD}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:}\\
 \ell_B &=& I_\mathbf{d}[0..31] \\
-B &=& I_\mathbf{d}[32..(31 + \ell_B)] \\
-\ell_E &=& I_\mathbf{d}[(32 + \ell_B)..(63 + \ell_B)] \\
+\ell_E &=& I_\mathbf{d}[32..63] \\
+B &=& I_\mathbf{d}[64..(63 + \ell_B)] \\
 E &=& I_\mathbf{d}[(64 + \ell_B)..(63 + \ell_B + \ell_E)] \\
 M &=& I_\mathbf{d}[(64 + \ell_B + \ell_E)..(|I_\mathbf{d}| - 1)] \\
 \Xi_{\mathtt{EXPMOD}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| < 64 + \ell_B + \ell_E \\
