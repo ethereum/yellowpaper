@@ -1408,7 +1408,7 @@ g_r &=& 15 + 3\Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil\\
 
 The fifth contract performs arbitrary-precision addition on non-negative integers.
 The first word in the input specifies the number of bytes that the first non-negative integer $X$ occupies.
-The result is represented in the smallest possible number of bytes.  The first byte in the output is never zero.
+The result is represented in the smallest possible number of bytes.  The first byte in the output, if exists, is never zero.
 
 \begin{eqnarray}
 \Xi_{\mathtt{ADD}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:}\\
