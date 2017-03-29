@@ -711,7 +711,7 @@ If such an exception does not occur, then the remaining gas is refunded to the o
 
 \begin{align}
 \quad g' &\equiv \begin{cases}
-0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
+0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \ \wedge\ \mathbf{o} = \varnothing \\
 g^{**} & \text{if} \quad g^{**}<c \wedge H_i<\firsthomesteadblock \\
 g^{**} - c & \text{otherwise} \\
 \end{cases} \\
@@ -769,7 +769,11 @@ The account's associated code (identified as the fragment whose Keccak hash is $
 \boldsymbol{\sigma} & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
 \boldsymbol{\sigma}^{**} & \text{otherwise}
 \end{cases} \\
-(\boldsymbol{\sigma}^{**}, g', \mathbf{s}, \mathbf{o}) & \equiv & \begin{cases}
+g' & \equiv & \begin{cases}
+0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \ \wedge \ \mathbf{o} = \varnothing \\
+g^{**} & \text{otherwise}
+\end{cases} \\
+(\boldsymbol{\sigma}^{**}, g^{**}, \mathbf{s}, \mathbf{o}) & \equiv & \begin{cases}
 \Xi_{\mathtt{ECREC}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 1 \\
 \Xi_{\mathtt{SHA256}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 2 \\
 \Xi_{\mathtt{RIP160}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 3 \\
@@ -855,7 +859,7 @@ The empty sequence, denoted $()$, is not equal to the empty set, denoted $\varno
 \end{eqnarray}
 \begin{equation}
 X\big( (\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \big) \equiv \begin{cases}
-\big(\varnothing, \boldsymbol{\mu}, A^0, I, ()\big) & \text{if} \quad Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I)\\
+\big(\varnothing, \boldsymbol{\mu}, A^0, I, \varnothing\big) & \text{if} \quad Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I)\\
 O(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \cdot \mathbf{o} & \text{if} \quad \mathbf{o} \neq \varnothing\\
 X\big(O(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I)\big) & \text{otherwise}\\
 \end{cases}
