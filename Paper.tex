@@ -857,9 +857,10 @@ The empty sequence, denoted $()$, is not equal to the empty set, denoted $\varno
 \boldsymbol{\mu}_i & \equiv & 0 \\
 \boldsymbol{\mu}_\mathbf{s} & \equiv & ()
 \end{eqnarray}
-\begin{equation}
+\begin{equation} \label{eq:X-def}
 X\big( (\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \big) \equiv \begin{cases}
 \big(\varnothing, \boldsymbol{\mu}, A^0, I, \varnothing\big) & \text{if} \quad Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I)\\
+\big(\varnothing, \boldsymbol{\mu}', A^0, I, \mathbf{o}\big) & \text{if} \quad w = \text{\small REVERT} \\
 O(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \cdot \mathbf{o} & \text{if} \quad \mathbf{o} \neq \varnothing\\
 X\big(O(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I)\big) & \text{otherwise}\\
 \end{cases}
@@ -868,7 +869,9 @@ X\big(O(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I)\big) & \text{otherwise}\\
 where
 \begin{eqnarray}
 \mathbf{o} & \equiv & H(\boldsymbol{\mu}, I) \\
-(a, b, c) \cdot d & \equiv & (a, b, c, d)
+(a, b, c) \cdot d & \equiv & (a, b, c, d) \\
+\boldsymbol{\mu}' & \equiv & \boldsymbol{\mu}\ \text{except:} \\
+\boldsymbol{\mu}'_g & \equiv & \boldsymbol{\mu}_g - C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I)
 \end{eqnarray}
 
 Note that we must drop the fourth value in the tuple returned by $X$ to correctly evaluate $\Xi$, hence the subscript $X_{0,1,2,4}$.
@@ -937,13 +940,13 @@ i + 1 & \text{otherwise} \end{cases}
 The normal halting function $H$ is defined:
 \begin{equation}
 H(\boldsymbol{\mu}, I) \equiv \begin{cases}
-H_{\text{\tiny RETURN}}(\boldsymbol{\mu}) & \text{if} \quad w = \text{\small RETURN} \\
+H_{\text{\tiny RETURN}}(\boldsymbol{\mu}) & \text{if} \quad w \in \{\text{\small RETURN}, \text{\small REVERT}\} \\
 () & \text{if} \quad w \in \{ \text{\small STOP}, \text{\small SELFDESTRUCT} \} \\
 \varnothing & \text{otherwise}
 \end{cases}
 \end{equation}
 
-The data-returning halt operation, \text{\small RETURN}, has a special function $H_{\text{\tiny RETURN}}$, defined in Appendix \ref{app:vm}.
+The data-returning halt operations, \text{\small RETURN} and \text{\small REVERT}, have a special function $H_{\text{\tiny RETURN}}$, defined in Appendix \ref{app:vm}.
 
 \subsection{The Execution Cycle}
 
@@ -1568,7 +1571,7 @@ C_{mem}(a) \equiv G_{memory} \cdot a + \Big\lfloor \dfrac{a^2}{512} \Big\rfloor
 
 with $C_\text{\tiny CALL}$, $C_\text{\tiny SELFDESTRUCT}$ and $C_\text{\tiny SSTORE}$ as specified in the appropriate section below. We define the following subsets of instructions:
 
-$W_{zero}$ = \{{\small STOP}, {\small RETURN}\}
+$W_{zero}$ = \{{\small STOP}, {\small RETURN}, {\small REVERT}\}
 
 $W_{base}$ = \{{\small ADDRESS}, {\small ORIGIN}, {\small CALLER}, {\small CALLVALUE}, {\small CALLDATASIZE}, {\small CODESIZE}, {\small GASPRICE}, {\small COINBASE},\newline \noindent\hspace*{1cm} {\small TIMESTAMP}, {\small NUMBER}, {\small DIFFICULTY}, {\small GASLIMIT}, {\small POP}, {\small PC}, {\small MSIZE}, {\small GAS}\}
 
@@ -1956,8 +1959,8 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& $\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except} \quad \boldsymbol{\sigma}^*[I_a]_n = \boldsymbol{\sigma}[I_a]_n + 1$ \\
 &&&& $A' \equiv A \Cup A^+$ which implies: $A'_\mathbf{s} \equiv A_\mathbf{s} \cup A^+_\mathbf{s} \quad \wedge \quad A'_\mathbf{l} \equiv A_\mathbf{l} \cdot A^+_\mathbf{l} \quad \wedge \quad A'_\mathbf{r} \equiv A_\mathbf{r} + A^+_\mathbf{r}$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
-&&&& where $x=0$ if the code execution for this operation failed due to an exceptional halting \\
-&&&& $Z(\boldsymbol{\sigma}^*, \boldsymbol{\mu}, I) = \top$ or $I_e = 1024$ \\
+&&&& where $x=0$ if the code execution for this operation failed due to an exceptional halting\\
+&&&& (or for a \text{\small REVERT}) $\boldsymbol{\sigma}' = \varnothing$, or $I_e = 1024$ \\
 &&&& (the maximum call depth limit is reached) or $\boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\sigma}[I_a]_b$ (balance of the caller is too \\
 &&&& low to fulfil the value transfer); and otherwise $x=A(I_a, \boldsymbol{\sigma}[I_a]_n)$, the address of the newly \\
 &&&& created account, otherwise. \\
@@ -1974,7 +1977,7 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& $A' \equiv A \Cup A^+$ \\
 &&&& $t \equiv \boldsymbol{\mu}_\mathbf{s}[1] \mod 2^{160}$ \\
 &&&& where $x=0$ if the code execution for this operation failed due to an exceptional halting \\
-&&&& $Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) = \top$ or if  \\
+&&&& (or for a \text{\small REVERT}) $\boldsymbol{\sigma}' = \varnothing$ or if  \\
 &&&& $\boldsymbol{\mu}_\mathbf{s}[2] > \boldsymbol{\sigma}[I_a]_b$ (not enough funds) or $I_e = 1024$ (call depth limit reached); $x=1$ \\
 &&&& otherwise. \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[3], \boldsymbol{\mu}_\mathbf{s}[4]), \boldsymbol{\mu}_\mathbf{s}[5], \boldsymbol{\mu}_\mathbf{s}[6])$ \\
@@ -2025,6 +2028,12 @@ G_{newaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}
 &&&& and ninth parameters to the call $\Theta$.\\
 &&&& This means that the recipient is in fact the same account as at present, simply\\
 &&&& that the code is overwritten {\it and} the context is almost entirely identical.\\
+\midrule
+0xfd & {\small REVERT} & 2 & 0 & Halt execution reverting state changes
+                 but returning data and gas. \\
+&&&& The effect of this operation is described in (\ref{eq:X-def}). \\
+&&&& For the gas calculation, we need to define the memory usage: \\
+&&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[1])$ \\
 \midrule
 0xfe & {\small INVALID} & $\varnothing$ & $\varnothing$ & Designated invalid instruction. \\
 \midrule
