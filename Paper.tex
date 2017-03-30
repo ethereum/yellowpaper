@@ -695,11 +695,11 @@ If such an exception does not occur, then the remaining gas is refunded to the o
 
 \begin{align}
 \quad g' &\equiv \begin{cases}
-0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
+0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing\ \vee\ g^{**} < c \\
 g^{**} - c & \text{otherwise} \\
 \end{cases} \\
 \quad \boldsymbol{\sigma}' &\equiv  \begin{cases}
-\boldsymbol{\sigma} & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
+\boldsymbol{\sigma} & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing\ \vee\ g^{**} < c \\
 \boldsymbol{\sigma}^{**} \quad \text{except:} & \\
 \quad\boldsymbol{\sigma}'[a]_c = \texttt{\small KEC}(\mathbf{o}) & \text{otherwise}
 \end{cases}
