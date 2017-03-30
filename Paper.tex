@@ -33,8 +33,6 @@
 \definecolor{lightyellow}{rgb}{1,0.98,0.9}
 \definecolor{lightpink}{rgb}{1,0.94,0.95}
 
-\newcommand{\firsthomesteadblock}{\ensuremath{N_H}}
-
 \DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
 \newcommand*\eg{e.g.\@\xspace}
 \newcommand*\Eg{e.g.\@\xspace}
@@ -147,6 +145,8 @@ This would mean that past a given point in time (block), multiple states of the 
 
 The scheme we use in order to generate consensus is a simplified version of the GHOST protocol introduced by \cite{cryptoeprint:2013:881}. This process is described in detail in section \ref{ch:ghost}.
 
+Sometimes, a path follows a new protocol from a particular height.  This document describes one version of the protocol.  In order to follow back the history of a path, one might need to reference multiple versions of this document.
+
 \section{Conventions}\label{ch:conventions}
 
 I use a number of typographical conventions for the formal notation, some of which are quite particular to the present work:
@@ -232,14 +232,6 @@ where $v$ is the account validity function:
 \begin{equation}
 \quad v(x) \equiv x_n \in \mathbb{P}_{256} \wedge x_b \in \mathbb{P}_{256} \wedge x_s \in \mathbb{B}_{32} \wedge x_c \in \mathbb{B}_{32}
 \end{equation}
-
-\subsection{Homestead} \label{ch:homestead}
-
-A significant block number for compatibility with the public network is the block marking the transition between the {\it Frontier} and {\it Homestead} phases of the platform, which we denote with the symbol \firsthomesteadblock, defined thus
-\begin{equation}
-\firsthomesteadblock \equiv 1,\! 150,\! 000
-\end{equation}
-The protocol was upgraded at this block, so this symbol appears in some equations to account for the changes.
 
 \subsection{The Transaction} \label{ch:transaction}
 
@@ -442,7 +434,6 @@ H_i \equiv {{P(H)_H}_i} + 1
 \end{equation}
 
 \newcommand{\mindifficulty}{D_0}
-\newcommand{\frontiermod}{\ensuremath{\varsigma_1}}
 \newcommand{\homesteadmod}{\ensuremath{\varsigma_2}}
 \newcommand{\expdiffsymb}{\ensuremath{\epsilon}}
 \newcommand{\diffadjustment}{x}
@@ -451,7 +442,6 @@ The canonical difficulty of a block of header $H$ is defined as $D(H)$:
 \begin{equation}
 D(H) \equiv \begin{dcases}
 \mindifficulty & \text{if} \quad H_i = 0\\
-\text{max}\!\left(\mindifficulty, {P(H)_H}_d + \diffadjustment\times\frontiermod + \expdiffsymb \right) & \text{if} \quad H_i<\firsthomesteadblock\\
 \text{max}\!\left(\mindifficulty, {P(H)_H}_d + \diffadjustment\times\homesteadmod + \expdiffsymb \right) & \text{otherwise}\\
 \end{dcases}
 \end{equation}
@@ -461,12 +451,6 @@ where:
 \end{equation}
 \begin{equation}
 \diffadjustment \equiv \left\lfloor\frac{{P(H)_H}_d}{2048}\right\rfloor
-\end{equation}
-\begin{equation}
-\frontiermod \equiv \begin{cases}
-1 & \text{if} \quad H_s < {P(H)_H}_s + 13 \\
--1 & \text{otherwise} \\
-\end{cases}
 \end{equation}
 \begin{equation}
 \homesteadmod \equiv \text{max}\left( 1 - \left\lfloor\frac{H_s - {P(H)_H}_s}{10}\right\rfloor, -99 \right)
@@ -561,11 +545,11 @@ A^0 \equiv (\varnothing, (), 0)
 We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
 \begin{align}
 g_0 \equiv {} & \sum_{i \in T_\mathbf{i}, T_\mathbf{d}} \begin{cases} G_{txdatazero} & \text{if} \quad i = 0 \\ G_{txdatanonzero} & \text{otherwise} \end{cases} \\
-{} & + \begin{cases} G_\text{txcreate} & \text{if} \quad T_t = \varnothing \wedge H_i \geq \firsthomesteadblock \\ 0 & \text{otherwise} \end{cases} \\
+{} & + \begin{cases} G_\text{txcreate} & \text{if} \quad T_t = \varnothing \\ 0 & \text{otherwise} \end{cases} \\
 {} & + G_{transaction}
 \end{align}
 
-where $T_\mathbf{i},T_\mathbf{d}$ means the series of bytes of the transaction's associated data and initialisation EVM-code, depending on whether the transaction is for contract-creation or message-call. $G_\text{txcreate}$ is added if the transaction is contract-creating, but not if a result of EVM-code or before the {\it Homestead transition}. $G$ is fully defined in Appendix \ref{app:fees}.
+where $T_\mathbf{i},T_\mathbf{d}$ means the series of bytes of the transaction's associated data and initialisation EVM-code, depending on whether the transaction is for contract-creation or message-call. $G_\text{txcreate}$ is added if the transaction is contract-creating, but not if a result of EVM-code. $G$ is fully defined in Appendix \ref{app:fees}.
 
 %todo Explain g_d reason?
 
@@ -712,12 +696,10 @@ If such an exception does not occur, then the remaining gas is refunded to the o
 \begin{align}
 \quad g' &\equiv \begin{cases}
 0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
-g^{**} & \text{if} \quad g^{**}<c \wedge H_i<\firsthomesteadblock \\
 g^{**} - c & \text{otherwise} \\
 \end{cases} \\
 \quad \boldsymbol{\sigma}' &\equiv  \begin{cases}
 \boldsymbol{\sigma} & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
-\boldsymbol{\sigma}^{**} & \text{if} \quad g^{**}<c \wedge H_i<\firsthomesteadblock \\
 \boldsymbol{\sigma}^{**} \quad \text{except:} & \\
 \quad\boldsymbol{\sigma}'[a]_c = \texttt{\small KEC}(\mathbf{o}) & \text{otherwise}
 \end{cases}
@@ -725,7 +707,7 @@ g^{**} - c & \text{otherwise} \\
 
 The exception in the determination of $\boldsymbol{\sigma}'$ dictates that $\mathbf{o}$, the resultant byte sequence from the execution of the initialisation code, specifies the final body code for the newly-created account.
 
-Note that the intention from block \firsthomesteadblock\ onwards ({\it Homestead}) is that the result is either a successfully created new contract with its endowment, or no new contract with no transfer of value. Before {\it Homestead}, if there is not enough gas to pay $c$, an account at the new contract's address is created, along with all the initialisation side-effects, and the value is transferred, but no contract code is deployed.
+Note that intention is that the result is either a successfully created new contract with its endowment, or no new contract with no transfer of value.
 
 \subsection{Subtleties}
 Note that while the initialisation code is executing, the newly created address exists but with no intrinsic body code. Thus any message call received by it during this time causes no code to be executed. If the initialisation execution ends with a {\small SELFDESTRUCT} instruction, the matter is moot since the account will be deleted before the transaction is completed. For a normal {\small STOP} code, or if the code returned is otherwise empty, then the state is left with a zombie account, and any remaining balance will be locked into the account forever.
@@ -1426,11 +1408,8 @@ Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed fro
 We declare that a signature is invalid unless all the following conditions are true:
 \begin{align}
 0 < r &< \mathtt{\tiny secp256k1n} \\
-0 < s &< \begin{dcases}
-\mathtt{\tiny secp256k1n} & \text{if} \quad H_i < \firsthomesteadblock \\
-\mathtt{\tiny secp256k1n} \div 2 + 1 & \text{otherwise} \\
-\end{dcases} \\
- v &\in \{27,28\}
+0 < s &< \mathtt{\tiny secp256k1n} \div 2 + 1 \\
+v &\in \{27,28\}
 \end{align}
 where:
 \begin{align}
