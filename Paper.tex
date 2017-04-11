@@ -1378,7 +1378,7 @@ A reasonable implementation will maintain a database of nodes determined from th
 \section{Precompiled Contracts}\label{app:precompiled}
 
 For each precompiled contract, we make use of a template function, $\Xi_{\mathtt{PRE}}$, which implements the out-of-gas checking.
-\begin{equation}
+\begin{equation} \label{eq:pre}
 \Xi_{\mathtt{PRE}}(\boldsymbol{\sigma}, g, I, T) \equiv \begin{cases}
 (\varnothing, 0, A^0, ()) & \text{if} \quad g < g_r \\
 (\boldsymbol\sigma, g - g_r, A^0, \mathbf{o}) & \text{otherwise}\end{cases}
@@ -2262,5 +2262,11 @@ The mix is compressed as follows:
 E_{compress}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(\mathbf{m}[i + 4], \mathbf{m}[i + 5]), \mathbf{m}[i + 6]), \mathbf{m}[i + 7]), i + 8) & \text{otherwise}
 \end{cases}
 \end{equation}
+
+\section{Anomalies on the Main Network}
+
+\subsection{Deletion of an Account Dispite Out-of-gas}
+
+At block 2675119, in the transaction \texttt{0xcf416c536ec1a19ed1fb89e4ec7ffb3cf73aa413b3aa9b77d60e4fd81a4296ba}, an account at address 0x03 was called and an out-of-gas occurred during the call. Against the equation (\ref{eq:pre}), this added 0x03 in the set of touched addresses, and this transaction turned $\boldsymbol{\sigma}[0x03]$ into $\varnothing$.
 
 \end{document}
