@@ -161,7 +161,7 @@ Tuples are typically denoted with an upper-case letter, \eg $T$, is used to deno
 
 Scalars and fixed-size byte sequences (or, synonymously, arrays) are denoted with a normal lower-case letter, \eg $n$ is used in the document to denote a transaction nonce. Those with a particularly special meaning may be greek, \eg $\delta$, the number of items required on the stack for a given operation.
 
-Arbitrary-length sequences are typically denoted as a bold lower-case letter, \eg $\mathbf{o}$ is used to denote the byte-sequence given as the output data of a message call. For particularly important values, a bold uppercase letter may be used.
+Arbitrary-length sequences are typically denoted as a bold lower-case letter, \eg $\mathbf{o}$ is used to denote the byte sequence given as the output data of a message call. For particularly important values, a bold uppercase letter may be used.
 
 Throughout, we assume scalars are positive integers and thus belong to the set $\mathbb{P}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{32}$ and the set of all positive integers smaller than $2^{256}$ is named $\mathbb{P}_{256}$. This is formally defined in section \ref{ch:block}.
 
@@ -282,9 +282,9 @@ where
 \mathbb{P}_n = \{ P: P \in \mathbb{P} \wedge P < 2^n \}
 \end{equation}
 
-The address hash $T_\mathbf{t}$ is slightly different: it is either a 20-byte address hash or, in the case of being a contract-creation transaction (and thus formally equal to $\varnothing$), it is the RLP empty byte-series and thus the member of $\mathbb{B}_0$:
+The address hash $T_\mathbf{t}$ is slightly different: it is either a 20-byte address hash or, in the case of being a contract-creation transaction (and thus formally equal to $\varnothing$), it is the RLP empty byte sequence and thus the member of $\mathbb{B}_0$:
 \begin{equation}
-T_t \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_t \neq \varnothing \\
+T_\mathbf{t} \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_t \neq \varnothing \\
 \mathbb{B}_{0} & \text{otherwise}\end{cases}
 \end{equation}
 
@@ -353,7 +353,7 @@ We define the Bloom filter function, $M$, to reduce a log entry into a single 25
 M(O) \equiv \bigvee_{t \in \{O_a\} \cup O_\mathbf{t}} \big( M_{3:2048}(t) \big)
 \end{equation}
 
-where $M_{3:2048}$ is a specialised Bloom filter that sets three bits out of 2048, given an arbitrary byte series. It does this through taking the low-order 11 bits of each of the first three pairs of bytes in a Keccak-256 hash of the byte series. Formally:
+where $M_{3:2048}$ is a specialised Bloom filter that sets three bits out of 2048, given an arbitrary byte sequence. It does this through taking the low-order 11 bits of each of the first three pairs of bytes in a Keccak-256 hash of the byte sequence. Formally:
 \begin{eqnarray}
 M_{3:2048}(\mathbf{x}: \mathbf{x} \in \mathbb{B}) & \equiv & \mathbf{y}: \mathbf{y} \in \mathbb{B}_{256} \quad \text{where:}\\
 \mathbf{y} & = & (0, 0, ..., 0) \quad \text{except:}\\
