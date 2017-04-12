@@ -613,7 +613,7 @@ where $g$ is the amount of gas remaining after deducting the basic amount requir
 \begin{equation}
 g \equiv T_g - g_0
 \end{equation}
-and $T_o$ is the original transactor, which can differ from the sender in the case of a message call or contract creation not directly triggered by a transaction but coming from the execution of EVM-code.  $a$ is the address of the created account, which is defined as the rightmost 160 bits of the Keccak hash of the RLP encoding of the structure containing only the sender and the nonce. Thus we define the resultant address for the new account $a$:
+and $T_o$ is the original transactor, which can differ from the sender in the case of a message call or contract creation not directly triggered by a transaction but coming from the execution of EVM-code. $a$ is the address of the created account, which is defined as the rightmost 160 bits of the Keccak hash of the RLP encoding of the structure containing only the sender and the nonce. Thus we define the resultant address for the new account $a$:
 \begin{equation}
 a \equiv \mathcal{B}_{96..255}\Big(\mathtt{\tiny KEC}\Big(\mathtt{\tiny RLP}\big(\;(s, \boldsymbol{\sigma}_0[s]_n - 1)\;\big)\Big)\Big)
 \end{equation}
@@ -2033,7 +2033,7 @@ G_{newaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}
 0xfb & {\small CREATE\_P2SH} & 3 & 1 & Create a new account with associated code on an address calculated using the \\
 &&&& creator's address. \\
 &&&& Exactly equivalent to {\small CREATE} except: \\
-&&&& $a \equiv \mathcal{B}_{96..255}\Big(\mathtt{\tiny KEC}\big(I_a \cdot \mathbf{i}\big)\Big)$ \\
+&&&& $a \equiv \mathcal{B}_{96..255}\Big(\mathtt{\tiny KEC}\big(I_a \cdot \mathtt{\tiny KEC}(\mathbf{i})\big)\Big)$ \\
 \midrule
 0xfe & {\small INVALID} & $\varnothing$ & $\varnothing$ & Designated invalid instruction. \\
 \midrule
