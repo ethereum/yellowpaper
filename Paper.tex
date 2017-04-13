@@ -1501,6 +1501,16 @@ I_{\mathbf d}[x]&\text{if}\ x < |I_{\mathbf d}|\\
 \end{cases}
 \end{eqnarray}
 
+We define a precompiled contract for scalar multiplication on $G_1$, where $\bar I_{\mathbf d}$ is defined in (\ref{eq:complemented_input}).
+\begin{eqnarray}
+\Xi_{\mathtt{BN\_MUL}}&\equiv&\Xi_{\mathtt{PRE}}\quad\text{except:}\\
+\Xi_{\mathtt{BN\_MUL}}(\boldsymbol\sigma,g,I)&=&(\varnothing,0,A^0,())\quad\text{if}\ x=\varnothing\\
+g_r&=&?\\
+\mathbf o&\equiv&\delta_1^{-1}(n\cdot x)\quad\text{where $\cdot$ is the scalar multiplication in $G_1$}\\
+n&\equiv&\bar I_{\mathbf d}[0..31]\\
+x&\equiv&\delta_1(\bar I_{\mathbf d}[32..95])
+\end{eqnarray}
+
 \section{Signing Transactions}\label{app:signing}
 
 The method of signing transactions is similar to the `Electrum style signatures'; it utilises the SECP-256k1 curve as described by \cite{gura2004comparing}.
