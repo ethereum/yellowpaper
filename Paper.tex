@@ -838,7 +838,8 @@ The empty sequence, denoted $()$, is not equal to the empty set, denoted $\varno
 \boldsymbol{\mu}_{pc} & \equiv & 0 \\
 \boldsymbol{\mu}_\mathbf{m} & \equiv & (0, 0, ...) \\
 \boldsymbol{\mu}_i & \equiv & 0 \\
-\boldsymbol{\mu}_\mathbf{s} & \equiv & ()
+\boldsymbol{\mu}_\mathbf{s} & \equiv & () \\
+\boldsymbol{\mu}_\mathbf{o} & \equiv & ()
 \end{eqnarray}
 \begin{equation}
 X\big( (\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \big) \equiv \begin{cases}
@@ -1511,7 +1512,7 @@ C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv C_{mem}(\boldsymbol{\mu}'_i)-
 C_\text{\tiny SSTORE}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SSTORE} \\
 G_{exp} & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_\mathbf{s}[1] = 0 \\
 G_{exp} + G_{expbyte}\times(1+\lfloor\log_{256}(\boldsymbol{\mu}_\mathbf{s}[1])\rfloor) & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_\mathbf{s}[1] > 0 \\
-G_{verylow} + G_{copy}\times\lceil\boldsymbol{\mu}_\mathbf{s}[2] \div 32\rceil & \text{if} \quad w = \text{\small CALLDATACOPY} \lor \text{\small CODECOPY} \\
+G_{verylow} + G_{copy}\times\lceil\boldsymbol{\mu}_\mathbf{s}[2] \div 32\rceil & \text{if} \quad w = \text{\small CALLDATACOPY} \lor \text{\small CODECOPY} \lor \text{\small RETURNDATACOPY} \\
 G_{extcode} + G_{copy}\times\lceil\boldsymbol{\mu}_\mathbf{s}[3] \div 32\rceil & \text{if} \quad w = \text{\small EXTCODECOPY} \\
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1] & \text{if} \quad w = \text{\small LOG0} \\
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+G_{logtopic} & \text{if} \quad w = \text{\small LOG1} \\
@@ -1550,7 +1551,7 @@ with $C_\text{\tiny CALL}$, $C_\text{\tiny SELFDESTRUCT}$ and $C_\text{\tiny SST
 
 $W_{zero}$ = \{{\small STOP}, {\small RETURN}\}
 
-$W_{base}$ = \{{\small ADDRESS}, {\small ORIGIN}, {\small CALLER}, {\small CALLVALUE}, {\small CALLDATASIZE}, {\small CODESIZE}, {\small GASPRICE}, {\small COINBASE},\newline \noindent\hspace*{1cm} {\small TIMESTAMP}, {\small NUMBER}, {\small DIFFICULTY}, {\small GASLIMIT}, {\small POP}, {\small PC}, {\small MSIZE}, {\small GAS}\}
+$W_{base}$ = \{{\small ADDRESS}, {\small ORIGIN}, {\small CALLER}, {\small CALLVALUE}, {\small CALLDATASIZE}, {\small CODESIZE}, {\small GASPRICE}, {\small COINBASE},\newline \noindent\hspace*{1cm} {\small TIMESTAMP}, {\small NUMBER}, {\small DIFFICULTY}, {\small GASLIMIT}, {\small RETURNDATASIZE}, {\small POP}, {\small PC}, {\small MSIZE}, {\small GAS}\}
 
 $W_{verylow}$ = \{{\small ADD}, {\small SUB}, {\small NOT}, {\small LT}, {\small GT}, {\small SLT}, {\small SGT}, {\small EQ}, {\small ISZERO}, {\small AND}, {\small OR}, {\small XOR}, {\small BYTE}, {\small CALLDATALOAD}, \newline \noindent\hspace*{1cm} {\small MLOAD}, {\small MSTORE}, {\small MSTORE8}, {\small PUSH*}, {\small DUP*}, {\small SWAP*}\}
 
@@ -1637,6 +1638,16 @@ Here given are the various exceptions to the state transition rules given in sec
 0x0b & {\small SIGNEXTEND} & 2 & 1 & Extend length of two's complement signed integer. \\
 &&&& $ \forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \begin{cases} \boldsymbol{\mu}_\mathbf{s}[1]_t &\text{if} \quad i \leqslant t \quad \text{where} \; t = 256 - 8(\boldsymbol{\mu}_\mathbf{s}[0] + 1) \\ \boldsymbol{\mu}_\mathbf{s}[1]_i &\text{otherwise} \end{cases}$ \\
 \multicolumn{5}{l}{$\boldsymbol{\mu}_\mathbf{s}[x]_i$ gives the $i$th bit (counting from zero) of $\boldsymbol{\mu}_\mathbf{s}[x]$} \vspace{5pt} \\
+\midrule
+0x0d & {\small RETURNDATASIZE} & 0 & 1 & Get size of output data from the previous call from the current environment. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \lVert \boldsymbol{\mu}_\mathbf{o} \rVert$ \\
+\midrule
+0x0e & {\small RETURNDATACOPY} & 3 & 0 & Copy output data from the previous call to memory. \\
+&&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_\mathbf{s}[2] - 1\} } \boldsymbol{\mu}'_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[0] + i ] \equiv
+\begin{cases} \boldsymbol{\mu}_\mathbf{o}[\boldsymbol{\mu}_\mathbf{s}[1] + i] & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] + i < \lVert \boldsymbol{\mu}_\mathbf{o} \rVert \\ 0 & \text{otherwise} \end{cases}$\\
+&&&& The additions in $\boldsymbol{\mu}_\mathbf{s}[1] + i$ are not subject to the $2^{256}$ modulo. \\
+&&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[2])$ \\
+\midrule
 \end{tabular*}
 
 \begin{tabular*}{\columnwidth}[h]{rlrrl}
@@ -1949,6 +1960,7 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}, I_a, I_o, t, t,\\ \quad C_{\text{\tiny CALLGAS}}(\boldsymbol{\mu}), I_p, \boldsymbol{\mu}_\mathbf{s}[2], \boldsymbol{\mu}_\mathbf{s}[2], \mathbf{i}, I_e + 1)\end{array} & \begin{array}{l}\text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \leqslant \boldsymbol{\sigma}[I_a]_b \;\wedge \\ \quad\quad I_e < 1024\end{array}\\ (\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
 &&&& $n \equiv \min(\{ \boldsymbol{\mu}_\mathbf{s}[6], |\mathbf{o}|\})$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[5] \dots (\boldsymbol{\mu}_\mathbf{s}[5] + n - 1) ] = \mathbf{o}[0 \dots (n - 1)]$ \\
+&&&& $\boldsymbol{\mu}'_\mathbf{o} = \mathbf{o}$ \\
 &&&& $\boldsymbol{\mu}'_g \equiv \boldsymbol{\mu}_g + g'$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
 &&&& $A' \equiv A \Cup A^+$ \\
