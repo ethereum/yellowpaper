@@ -2052,9 +2052,8 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& where $P$ is the hash of a block of a particular number, up to a maximum age.\\
 &&&& 0 is left on the stack if the looked for block number is greater than the current block number \\
 &&&& or more than 256 blocks behind the current block. \\
-&&&& $P(h, n, a) \equiv \begin{cases} 0 & \text{if} \quad n > H_{\mathrm{i}} \vee a = 256 \vee h = 0 \\ h & \text{if} \quad n = H_{\mathrm{i}} \\ P(H_{\mathrm{p}}, n, a + 1) & \text{otherwise} \end{cases}$ \\
-&&&& and we assert the header $H$ can be determined as its hash is the parent hash \\
-&&&& in the block following it. \\
+&&&& $P(h, n, a) \equiv \begin{cases} 0 & \text{if} \quad n > H(h)_{\mathrm{i}} \vee a = 256 \vee h = 0 \\ h & \text{if} \quad n = H(h)_{\mathrm{i}} \\ P(H(h)_{\mathrm{p}}, n, a + 1) & \text{otherwise} \end{cases}$ \\
+&&&& and we assert the header $H(h)$ can be determined from its hash~$h$ unless $h$ is zero. \\
 \midrule
 0x41 & {\small COINBASE} & 0 & 1 & Get the block's beneficiary address. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{H}}_{\mathrm{c}}$ \\
