@@ -760,6 +760,11 @@ g^{**} & \text{otherwise}
 \Xi_{\mathtt{SHA256}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 2 \\
 \Xi_{\mathtt{RIP160}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 3 \\
 \Xi_{\mathtt{ID}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 4 \\
+\Xi_{\mathtt{ADD}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 5 \\
+\Xi_{\mathtt{SUB}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 6 \\
+\Xi_{\mathtt{MUL}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 7 \\
+\Xi_{\mathtt{DIV}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 8 \\
+\Xi_{\mathtt{EXPMOD}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 9 \\
 \Xi(\boldsymbol{\sigma}_1, g, I) & \text{otherwise} \end{cases} \\
 I_a & \equiv & r \\
 I_o & \equiv & o \\
@@ -1381,13 +1386,109 @@ For the purposes here, we assume we have well-defined standard cryptographic fun
 \mathtt{\small RIPEMD160}(\mathbf{i} \in \mathbb{B}) & \equiv & o \in \mathbb{B}_{20}
 \end{eqnarray}
 
-Finally, the fourth contract, the identity function $\Xi_{\mathtt{ID}}$ simply defines the output as the input:
+The fourth contract, the identity function $\Xi_{\mathtt{ID}}$ simply defines the output as the input:
 \begin{eqnarray}
 \Xi_{\mathtt{ID}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
 g_r &=& 15 + 3\Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil\\
 \mathbf{o} &=& I_\mathbf{d}
 \end{eqnarray}
 
+The fifth contract performs arbitrary-precision addition on non-negative integers.
+The first word in the input specifies the number of bytes that the first non-negative integer $X$ occupies.
+The result is represented in the smallest possible number of bytes.  The first byte in the output is never zero.
+
+\begin{eqnarray}
+\Xi_{\mathtt{ADD}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:}\\
+\Xi_{\mathtt{ADD}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| - 32 <  I_\mathbf{d}[0..31] \\
+g_r &=& G_{addsubbase} + G_{arithword} \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil \\
+\mathbf{o} &=& (X + Y) \in \mathbb{B}_\ell \\
+X &=& I_\mathbf{d}[32..(32 + I_\mathbf{d}[0..31] - 1)] \\
+Y &=& I_\mathbf{d}[(32 + I_\mathbf{d}[0..31])..(|I_\mathbf{d}| - 1)] \\
+\ell &=&
+\begin{cases}
+0 &\text{if}\, X = Y = 0 \\
+\lfloor \log_8(X + Y) \rfloor + 1 & \text{otherwise}
+\end{cases}
+\end{eqnarray}
+
+The sixth contract performs arbitrary-precision subtraction on non-negative integers.  This is similar to the addition.  The subtraction contract halts exceptionally if the result would be negative.
+
+\begin{eqnarray}
+\Xi_{\mathtt{SUB}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:}\\
+\Xi_{\mathtt{SUB}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| - 32 <  I_\mathbf{d}[0..31] \\
+\Xi_{\mathtt{SUB}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad X < Y \\
+g_r &=& G_{addsubbase} + G_{arithword} \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil \\
+\mathbf{o} &=& (X - Y) \in \mathbb{B}_\ell \\
+X &=& I_\mathbf{d}[32..(32 + I_\mathbf{d}[0..31] - 1)] \\
+Y &=& I_\mathbf{d}[(32 + I_\mathbf{d}[0..31])..(|I_\mathbf{d}| - 1)] \\
+\ell &=&
+\begin{cases}
+0 &\text{if}\ X = Y \\
+\lfloor \log_8(X - Y) \rfloor + 1 & \text{otherwise}
+\end{cases}
+\end{eqnarray}
+
+The seventh contract performs arbitrary-precision multiplication on non-negative integers.  The input format is the same as that of the addition contract.
+
+\begin{eqnarray}
+\Xi_{\mathtt{MUL}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:}\\
+\Xi_{\mathtt{MUL}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| - 32 <  I_\mathbf{d}[0..31] \\
+g_r &=& G_{muldivbase} + G_{arithword} \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil + \ell_X \ell_Y / G_{quaddivisor} \\
+\mathbf{o} &=& (X \times Y) \in \mathbb{B}_\ell \\
+X &=& I_\mathbf{d}[32..(32 + I_\mathbf{d}[0..31] - 1)] \\
+\ell_X &=& I_\mathbf{d}[0..31] \\
+Y &=& I_\mathbf{d}[(32 + I_\mathbf{d}[0..31])..(|I_\mathbf{d}| - 1)] \\
+\ell_Y &=& |I_\mathbf{d}| - 32 - \ell_X \\
+\ell &=&
+\begin{cases}
+0 &\text{if}\ X = 0 \ \vee\  Y = 0 \\
+\lfloor \log_8(X \times Y) \rfloor + 1 & \text{otherwise}
+\end{cases}
+\end{eqnarray}
+
+The eigth contract performs arbitrary-precision division on non-negative integers.  The definition is similar to that of the multiplication contract.
+
+\begin{eqnarray}
+\Xi_{\mathtt{DIV}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:}\\
+\Xi_{\mathtt{DIV}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| - 32 <  I_\mathbf{d}[0..31] \\
+g_r &=& G_{muldivbase} + G_{arithword} \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil + \ell_X \ell_Y / G_{quaddivisor} \\
+\mathbf{o} &=&
+\begin{cases}
+ () & \text{if} \  Y = 0 \\
+ \Big\lfloor \dfrac X Y \Big\rfloor \in \mathbb{B}_\ell & \text{otherwise}
+\end{cases} \\
+X &=& I_\mathbf{d}[32..(32 + I_\mathbf{d}[0..31] - 1)] \\
+\ell_X &=& I_\mathbf{d}[0..31] \\
+Y &=& I_\mathbf{d}[(32 + I_\mathbf{d}[0..31])..(|I_\mathbf{d}| - 1)] \\
+\ell_Y &=& |I_\mathbf{d}| - 32 - \ell_X \\
+\ell &=&
+\begin{cases}
+0 &\text{if}\ Y = 0 \ \vee \ \Big\lfloor \dfrac X Y \Big\rfloor = 0 \\
+\lfloor \log_8(\Big\lfloor \dfrac X Y \Big\rfloor) \rfloor + 1 & \text{otherwise}
+\end{cases}
+\end{eqnarray}
+
+The ninth contract performs arbitrary-precision exponentiation under modulo.  Here, $0 ^ 0$ is taken to be one.
+\begin{eqnarray}
+\Xi_{\mathtt{EXPMOD}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:}\\
+\ell_B &=& I_\mathbf{d}[0..31] \\
+B &=& I_\mathbf{d}[32..(31 + \ell_B)] \\
+\ell_E &=& I_\mathbf{d}[(32 + \ell_B)..(63 + \ell_B)] \\
+E &=& I_\mathbf{d}[(64 + \ell_B)..(63 + \ell_B + \ell_E)] \\
+M &=& I_\mathbf{d}[(64 + \ell_B + \ell_E)..(|I_\mathbf{d}| - 1)] \\
+\Xi_{\mathtt{EXPMOD}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| < 64 + \ell_B + \ell_E \\
+g_r &=& G_{modexpbase} + G_{arithword} \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil + |M|^2 |E| / G_{quaddivisor} \\
+\mathbf{o} &=&
+\begin{cases}
+ () & \text{if} \  M = 0 \\
+ B ^ E \bmod M \in \mathbb{B}_\ell & \text{otherwise}
+\end{cases} \\
+\ell &=&
+\begin{cases}
+0 &\text{if}\ M = 0 \quad \vee \quad {B ^ E} \bmod M = 0 \\
+\lfloor \log_8(B ^ E \bmod M) \rfloor + 1 & \text{otherwise}
+\end{cases}
+\end{eqnarray}
 
 \section{Signing Transactions}\label{app:signing}
 
@@ -1491,6 +1592,11 @@ $G_{sha3}$ & 30 & Paid for each {\small SHA3} operation. \\
 $G_{sha3word}$ & 6 & Paid for each word (rounded up) for input data to a {\small SHA3} operation. \\
 $G_{copy}$ & 3 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
 $G_{blockhash}$ & 20 & Payment for {\small BLOCKHASH} operation. \\
+$G_{addsubbase}$ & 15 & Payment for the precompiled addition or subtraction contract. \\
+$G_{muldivbase}$ & 30 & Payment for the precompiled multiplication or division contract. \\
+$G_{modexpbase}$ & 45 & Payment for the precompiled exponention under modulo. \\
+$G_{arithword}$ & 6 & Paid for each word used in precompiled contracts for arbitrary precision arighmetics.\\
+$G_{quaddivisor}$ & 32 & The quadratic coefficient of the input sizes of multiplication and division precompiled contracts.  \\
 
 %extern u256 const c_copyGas;			///< Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
 \bottomrule
