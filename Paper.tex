@@ -1402,26 +1402,21 @@ g_r &=& 15 + 3\Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil\\
 \mathbf{o} &=& I_\mathbf{d}
 \end{eqnarray}
 
-The fifth contract performs arbitrary-precision exponentiation under modulo.  Here, $0 ^ 0$ is taken to be one.
-The first word in the input specifies the number of bytes that the first non-negative integer $B$ occupies.
-The second word in the input specifies the number of bytes that the second non-negative integer $E$ occupies.
-These two words are followed by $B$ and $E$; and the rest of the input is interpreted as the third non-negative integer $M$.
-All non-negative integers $B$, $E$ $M$ are encoded as byte sequences in the big-endian way.
-The output format is the same as the precompiled contract $\Xi_{\mathtt{ADD}}$.
+The fifth contract performs arbitrary-precision exponentiation under modulo.  Here, $0 ^ 0$ is taken to be one, and $x \bmod 0$ is ???. The first word in the input specifies the number of bytes that the first non-negative integer $B$ occupies. The second word in the input specifies the number of bytes that the second non-negative integer $E$ occupies. The third word in the input specifies the number of bytes that the third non-negative integer $M$ occupies.  These three words are followed by $B$, $E$ and $M$.  The rest of the input is discarded.  Whenever the input is too short, the missing bytes are considered to be zero.  The output is encoded big-endian into the same format as $M$'s.
 
 \begin{eqnarray}
-\Xi_{\mathtt{EXPMOD}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:}\\
-l_B &=& I_\mathbf{d}[0..31] \in \mathbb{P}_{256} \\
-l_E &=& I_\mathbf{d}[32..63] \in \mathbb{P}_{256} \\
-B &=& I_\mathbf{d}[64..(63 + l_B)] \\
-E &=& I_\mathbf{d}[(64 + l_B)..(63 + l_B + l_E)] \\
-M &=& I_\mathbf{d}[(64 + l_B + l_E)..(|I_\mathbf{d}| - 1)] \\
-\Xi_{\mathtt{EXPMOD}}(\boldsymbol{\sigma}, g, I) &\equiv& (\varnothing, 0, A^0, ()) \quad \text{if} \quad |I_\mathbf{d}| < 64 + l_B + l_E\,\vee\,M\le B \\
-g_r &=& G_{modexpbase} + G_{arithword} \Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil + |M|^2 |E| / G_{quaddivisor} \\
-\mathbf{o} &=&
-\begin{cases}
- () & \text{if} \  M = 0 \\
- \mathtt{\tiny BE}(B ^ E \bmod M) & \text{otherwise}
+\Xi_{\mathtt{EXPMOD}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:} \\
+g_r &=& \Big\lfloor\frac{\max(\ell_M,\ell_B)^2\max(\ell_E,1)}{G_{quaddivisor}}\Big\rfloor \\
+\mathbf o &=& (B^E\bmod M)\in\mathbb P_{8\ell_M} \\
+\ell_B &\equiv& i[0..31] \\
+\ell_E &\equiv& i[32..63] \\
+\ell_M &\equiv& i[64..95] \\
+B &\equiv& i[96..(95+\ell_B)] \\
+E &\equiv& i[(96+\ell_B)..(95+\ell_B+\ell_E)] \\
+M &\equiv& i[(96+\ell_B+\ell_E)..(95+\ell_B+\ell_E+\ell_M)] \\
+i[x] &\equiv& \begin{cases}
+I_{\mathbf d}[x] &\text{if}\ x < |I_{\mathbf d}| \\
+0 &\text{otherwise}
 \end{cases}
 \end{eqnarray}
 
@@ -1530,11 +1525,7 @@ $G_{sha3}$ & 30 & Paid for each {\small SHA3} operation. \\
 $G_{sha3word}$ & 6 & Paid for each word (rounded up) for input data to a {\small SHA3} operation. \\
 $G_{copy}$ & 3 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
 $G_{blockhash}$ & 20 & Payment for {\small BLOCKHASH} operation. \\
-$G_{addsubbase}$ & 15 & Payment for the precompiled addition or subtraction contract. \\
-$G_{muldivbase}$ & 30 & Payment for the precompiled multiplication or division contract. \\
-$G_{modexpbase}$ & 45 & Payment for the precompiled exponention under modulo. \\
-$G_{arithword}$ & 6 & Paid for each word used in precompiled contracts for arbitrary precision arighmetics.\\
-$G_{quaddivisor}$ & 32 & The quadratic coefficient of the input sizes of multiplication and division precompiled contracts.  \\
+$G_{quaddivisor}$ & 20 & The quadratic coefficient of the input sizes of the exponation-over-modulo precompiled contract.  \\
 
 %extern u256 const c_copyGas;			///< Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
 \bottomrule
