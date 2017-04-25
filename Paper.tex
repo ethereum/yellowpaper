@@ -1429,7 +1429,7 @@ The message hash, $h(T)$, to be signed is the Keccak hash of the transaction.  T
 \begin{eqnarray}
 L_S(T) & \equiv & \begin{cases}
 (T_n, T_p, T_g, T_t, T_v, \mathbf{p}) & \text{if} \; v \in \{27, 28\}\\
-(T_n, T_p, T_g, T_t, T_v, \mathbf{p}, \mathtt{\tiny chain\_id}, (), ()) & \text{if} \; v \notin \{27, 28\}\\
+(T_n, T_p, T_g, T_t, T_v, \mathbf{p}, \mathtt{\tiny chain\_id}, (), ()) & \text{otherwise}\\
 \end{cases} \\
 \nonumber \text{where} \\
 \nonumber \mathbf{p} & \equiv & \begin{cases}
@@ -1446,9 +1446,13 @@ G(T, p_r) \equiv T \quad \text{except:} \\
 \end{eqnarray}
 
 We may then define the sender function $S$ of the transaction as:
-\begin{equation}
-S(T) \equiv \mathcal{B}_{96..255}\big(\mathtt{\tiny KEC}\big( \mathtt{\small ECDSARECOVER}(h(T), T_w, T_r, T_s) \big) \big)
-\end{equation}
+\begin{eqnarray}
+S(T) &\equiv& \mathcal{B}_{96..255}\big(\mathtt{\tiny KEC}\big( \mathtt{\small ECDSARECOVER}(h(T), v_0, T_r, T_s) \big) \big) \\
+v_0 &\equiv& \begin{cases}
+T_w &\text{if}\ T_w\in\{27, 28\} \\
+28 - (T_w \bmod 2) &\text{otherwise}
+\end{cases}
+\end{eqnarray}
 
 The assertion that the sender of a signed transaction equals the address of the signer should be self-evident:
 \begin{equation}
