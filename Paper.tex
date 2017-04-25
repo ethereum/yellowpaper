@@ -985,7 +985,7 @@ The process of finalising a block involves four stages:
 
 \subsection{Ommer Validation}
 
-The validation of ommer headers means nothing more than verifying that each ommer header is both a valid header and satisfies the relation of $N$th-generation ommer to the present block where $N \leq 6$. The maximum of ommer headers is two. Formally:
+The validation of ommer headers means nothing more than verifying that each ommer header is both a valid header and satisfies the relation of $N$th-generation ommer to the present block where $N \leq 6$. The maximum of ommer headers is two. An ommer may be included only in one block in a blockchain. Formally:
 \begin{equation}
 \lVert B_\mathbf{U} \rVert \leqslant 2 \bigwedge_{U \in B_\mathbf{U}} V(U) \; \wedge \; k(U, P(B_H)_H, 6)
 \end{equation}
@@ -993,14 +993,15 @@ The validation of ommer headers means nothing more than verifying that each omme
 where $k$ denotes the ``is-kin'' property:
 \begin{equation}
 k(U, H, n) \equiv \begin{cases} false & \text{if} \quad n = 0 \\
-s(U, H) &\\
-\quad \vee \; k(U, P(H)_H, n - 1) & \text{otherwise}
+(s(U, H) &\\
+\quad \vee \; k(U, P(H)_H, n - 1)) &\\
+\quad \wedge \; U \notin B(H)_\mathbf{U} & \text{otherwise}
 \end{cases}
 \end{equation}
 
 and $s$ denotes the ``is-sibling'' property:
 \begin{equation}
-s(U, H) \equiv (P(H) = P(U)\; \wedge \; H \neq U \; \wedge \; U \notin B(H)_\mathbf{U})
+s(U, H) \equiv (P(H) = P(U)\; \wedge \; H \neq U)
 \end{equation}
 where $B(H)$ is the block of the corresponding header $H$.
 
