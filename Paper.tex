@@ -1774,13 +1774,15 @@ Here given are the various exceptions to the state transition rules given in sec
 \multicolumn{5}{c}{\textbf{40s: Block Information}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x40 & {\small BLOCKHASH} & 1 & 1 & Get the hash of one of the 256 most recent complete blocks. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv P(I_{H_p}, \boldsymbol{\mu}_\mathbf{s}[0], 0)$ \\
-&&&& where $P$ is the hash of a block of a particular number, up to a maximum age.\\
-&&&& 0 is left on the stack if the looked for block number is greater than the current block number \\
-&&&& or more than 256 blocks behind the current block. \\
-&&&& $P(h, n, a) \equiv \begin{cases} 0 & \text{if} \quad n > H_i \vee a = 256 \vee h = 0 \\ h & \text{if} \quad n = H_i \\ P(H_p, n, a + 1) & \text{otherwise} \end{cases}$ \\
-&&&& and we assert the header $H$ can be determined as its hash is the parent hash \\
-&&&& in the block following it. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \mathbf{o}'[0..31]$ \\
+&&&& $\mathbf{o}'[i] \equiv \begin{cases}
+\mathbf{o}[i] & \text{if}\ 0 \le i < |\mathbf{o}| \\
+0 & \text{otherwise}
+\end{cases}$ \\
+&&&& $(\ldots,\mathbf o) \equiv \Theta(\boldsymbol{\sigma}, I_a, I_o, t, t, 10000000, I_p, 0, 0, \boldsymbol{\mu}_{\mathbf{s}}[0], I_e + 1)$ \\
+&&&& $t \equiv 240$ \\
+&&&& See Section~\ref{sec:blockhash-early-metropolis} for the special behavior of {\small BLOCKHASH} instruction during the first \\
+&&&& 256 blocks in the Metropolis phase. \\
 \midrule
 0x41 & {\small COINBASE} & 0 & 1 & Get the block's beneficiary address. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_H}_c$ \\
