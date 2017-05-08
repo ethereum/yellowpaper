@@ -2227,4 +2227,25 @@ E_{compress}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(\mathbf{m}
 \end{cases}
 \end{equation}
 
+\section{Anomalies on the Main Network}
+
+\subsection{Early behavior of BLOCKHASH instruction}
+\label{sec:blockhash-early-metropolis}
+
+During the first 256 blocks in the Metropolis phase, {\small BLOCKHASH} instruction behaves as specified below.
+
+\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\toprule
+0x40 & {\small BLOCKHASH} & 1 & 1 & Get the hash of one of the 256 most recent complete blocks. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv P(I_{H_p}, \boldsymbol{\mu}_\mathbf{s}[0], 0)$ \\
+&&&& where $P$ is the hash of a block of a particular number, up to a maximum age.\\
+&&&& 0 is left on the stack if the looked for block number is greater than the current block number \\
+&&&& or more than 256 blocks behind the current block. \\
+&&&& $P(h, n, a) \equiv \begin{cases} 0 & \text{if} \quad n > H_i \vee a = 256 \vee h = 0 \\ h & \text{if} \quad n = H_i \\ P(H_p, n, a + 1) & \text{otherwise} \end{cases}$ \\
+&&&& and we assert the header $H$ can be determined as its hash is the parent hash \\
+&&&& in the block following it. \\
+\bottomrule
+\end{tabular*}
+
+
 \end{document}
