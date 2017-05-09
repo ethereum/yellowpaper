@@ -2030,10 +2030,22 @@ G_{newaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}
 &&&& This means that the recipient is in fact the same account as at present, simply\\
 &&&& that the code is overwritten {\it and} the context is almost entirely identical.\\
 \midrule
-0xfb & {\small CREATE\_P2SH} & 3 & 1 & Create a new account with associated code on an address calculated using the \\
-&&&& creator's address. \\
-&&&& Exactly equivalent to {\small CREATE} except: \\
-&&&& $a \equiv \mathcal{B}_{96..255}\Big(\mathtt{\tiny KEC}\big(I_a \cdot \mathtt{\tiny KEC}(\mathbf{i})\big)\Big)$ \\
+0xfb & {\small CREATE2} & 4 & 1 & Create a new account with associated code on a predictable address. \\
+&&&& $\mathbf{i} \equiv \boldsymbol{\mu}_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[2]..(\boldsymbol{\mu}_\mathbf{s}[2] + \boldsymbol{\mu}_\mathbf{s}[3] - 1)]$ \\
+&&&& $a \equiv \mathcal{B}_{96..255}\Big(\mathtt{\tiny KEC}\big(I_a\cdot \boldsymbol{\mu}_\mathbf{s}[1]\cdot \mathtt{\tiny KEC}(\mathbf i)\big)\Big)$ \\
+&&&& $(\boldsymbol{\sigma}', \boldsymbol{\mu}_g', A^+) \equiv \begin{cases}
+\begin{array}{l}\Lambda(\boldsymbol{\sigma}^*, I_a, I_o, L(\boldsymbol{\mu}_g), I_p, \\ \phantom{\Lambda(}\boldsymbol{\mu}_\mathbf{s}[0], \mathbf{i}, I_e + 1, a)\end{array} & \text{if}\begin{array}{l}(\boldsymbol{\sigma}^*[a]=\varnothing\vee\boldsymbol{\sigma}^*[a]_c=())\wedge\\\boldsymbol{\mu}_\mathbf{s}[0]\le\boldsymbol{\sigma}[I_a]_b\wedge I_e<1024\end{array}\\
+(\boldsymbol{\sigma},\boldsymbol{\mu}_g,\varnothing)&\text{otherwise}
+\end{cases}$ \\
+&&&& $\boldsymbol{\sigma}^*\equiv\boldsymbol{\sigma}$ except $\boldsymbol{\sigma}^*[I_a]_n=\boldsymbol{\sigma}[I_a]_n+1$ \\
+&&&& $A'\equiv A\Cup A^+$ (with $\Cup$ defined in the definition of {\small CREATE}) \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
+&&&& where $x = 0$ if the code execution for this operation failed due to an exceptional \\
+&&&& halting $Z(\boldsymbol{\sigma}^*,\boldsymbol{\mu}, I) = \top$ or $I_e = 1024$ (the maximum call depth limit is reached) or \\
+&&&& $\boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\sigma}[I_a]_b$ (balance of the caller is too low to fulfill the balance transfer) or \\
+&&&& $\boldsymbol{\sigma}[a]_c \neq ()$ (a contract already exists); otherwise $x = a$. \\
+&&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[2], \boldsymbol{\mu}_\mathbf{s}[3])$ \\
+&&&& Thus the operand order is: value, salt, input offset, input size. \\
 \midrule
 0xfe & {\small INVALID} & $\varnothing$ & $\varnothing$ & Designated invalid instruction. \\
 \midrule
