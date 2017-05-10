@@ -1404,7 +1404,7 @@ We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARECOVE
 \mathtt{\small ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64}
 \end{eqnarray}
 
-Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer in the aforementioned range). It is assumed that $v$ is either the `recovery identifier' or `chain identifier doubled plus 35 or 36'.  The recovery identifier is a 1 byte value specifying the sign and finiteness of the curve point; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid.  The chain identifier is a constant natural number.
+Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer in the aforementioned range). It is assumed that $v$ is either the `recovery identifier' or `chain identifier doubled plus 35 or 36'. The recovery identifier is a 1 byte value specifying the sign and finiteness of the curve point; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid. The chain identifier is a constant natural number.
 
 \newcommand{\slimit}{\ensuremath{\text{s-limit}}}
 
@@ -1412,7 +1412,7 @@ We declare that a signature is invalid unless all the following conditions are t
 \begin{align}
 0 < r &< \mathtt{\tiny secp256k1n} \\
 0 < s &< \mathtt{\tiny secp256k1n} \div 2 + 1 \\
-v &\in \{27,28,\mathtt{\tiny chain\_id} \times 2 + 35 , \mathtt{\tiny chain\_id} \times 2 + 36\}
+v &\in \{27,28,\mathtt{\tiny chain\_id} \times 2 + 35, \mathtt{\tiny chain\_id} \times 2 + 36\}
 \end{align}
 where:
 \begin{align}
@@ -1425,7 +1425,7 @@ For a given private key, $p_r$, the Ethereum address $A(p_r)$ (a 160-bit value) 
 A(p_r) = \mathcal{B}_{96..255}\big(\mathtt{\tiny KEC}\big( \mathtt{\small ECDSAPUBKEY}(p_r) \big) \big)
 \end{equation}
 
-The message hash, $h(T)$, to be signed is the Keccak hash of the transaction.  Two different flavors of signing schemes are available.  One operates without the latter three signature components, formally described as $T_r$, $T_s$ and $T_w$.  The other operates on nine elements:
+The message hash, $h(T)$, to be signed is the Keccak hash of the transaction. Two different flavors of signing schemes are available. One operates without the latter three signature components, formally described as $T_r$, $T_s$ and $T_w$. The other operates on nine elements:
 \begin{eqnarray}
 L_S(T) & \equiv & \begin{cases}
 (T_n, T_p, T_g, T_t, T_v, \mathbf{p}) & \text{if} \; v \in \{27, 28\}\\
