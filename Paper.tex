@@ -904,12 +904,10 @@ Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv
 \end{equation}
 where
 \begin{equation}
-W(w, \boldsymbol{\mu}) \equiv
-\begin{array}[t]{l}
+W(w, \boldsymbol{\mu}) \equiv \begin{array}[t]{l}
 w \in \{\text{\small CREATE}, \text{\small SSTORE}, \text{\small SELFDESTRUCT}\} \quad \vee \\
 \text{\small LOG0} \le w \wedge w \le \text{\small LOG4} \quad \vee \\
-w \in \{\text{\small CALL}, \text{\small CALLCODE}\} \wedge
-\boldsymbol{\mu}_\mathbf{s}[2] \neq 0
+w \in \{\text{\small CALL}, \text{\small CALLCODE}\} \wedge \boldsymbol{\mu}_\mathbf{s}[2] \neq 0
 \end{array}
 \end{equation}
 
@@ -2039,8 +2037,7 @@ G_{newaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}
 0xfa & {\small STATICCALL} & 6 & 1 & Static message-call into an account. \\
 &&&& Exactly equivalent to {\small CALL} except: \\
 &&&& The argument $\boldsymbol{\mu}_\mathbf{s}[2]$ is replaced with $0$. \\
-&&&& The deeper argument $\boldsymbol{\mu}_\mathbf{s}[3]$, $\boldsymbol{\mu}_\mathbf{s}[4]$, $\boldsymbol{\mu}_\mathbf{s}[5]$ and
-     $\boldsymbol{\mu}_\mathbf{s}[6]$ are respectively replaced with \\
+&&&& The deeper argument $\boldsymbol{\mu}_\mathbf{s}[3]$, $\boldsymbol{\mu}_\mathbf{s}[4]$, $\boldsymbol{\mu}_\mathbf{s}[5]$ and $\boldsymbol{\mu}_\mathbf{s}[6]$ are respectively replaced with \\
 &&&& $\boldsymbol{\mu}_\mathbf{s}[2]$, $\boldsymbol{\mu}_\mathbf{s}[3]$, $\boldsymbol{\mu}_\mathbf{s}[4]$ and $\boldsymbol{\mu}_\mathbf{s}[5]$. \\
 &&&& The last argument of $\Theta$ is $\bot$. \\
 \midrule
