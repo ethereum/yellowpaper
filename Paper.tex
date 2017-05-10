@@ -593,8 +593,8 @@ The execution of a valid transaction begins with an irrevocable change made to t
 We define the checkpoint state $\boldsymbol{\sigma}_0$:
 \begin{eqnarray}
 \boldsymbol{\sigma}_0 & \equiv & \boldsymbol{\sigma} \quad \text{except:} \\
-\boldsymbol{\sigma}_0[S(T)]_b & \equiv & \boldsymbol{\sigma}[S(T)]_b - T_g T_p \\
-\boldsymbol{\sigma}_0[S(T)]_n & \equiv & \begin{cases}
+\qquad\boldsymbol{\sigma}_0[S(T)]_b & \equiv & \boldsymbol{\sigma}[S(T)]_b - T_g T_p \\
+\qquad\boldsymbol{\sigma}_0[S(T)]_n & \equiv & \begin{cases}
 \boldsymbol{\sigma}[S(T)]_n &\text{if}\ S(T) = 2^{256} - 1 \\
 \boldsymbol{\sigma}[S(T)]_n + 1 &\text{otherwise} \\
 \end{cases}
@@ -2043,8 +2043,8 @@ G_{newaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}
 &&&& where $x = 0$ if the code execution for this operation failed due to an exceptional \\
 &&&& halting $Z(\boldsymbol{\sigma}^*,\boldsymbol{\mu}, I) = \top$, $E(\boldsymbol{\sigma}, a) = \top$ (the address is already occupied) or \\
 &&&& $I_e = 1024$ (the maximum call depth limit is reached), \\
-&&&& $\boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\sigma}[I_a]_b$ (balance of the caller is too low to fulfill the balance transfer) or \\
-&&&& $\boldsymbol{\sigma}[a]_c \neq ()$ (a contract already exists); otherwise $x = a$. \\
+&&&& $\boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\sigma}[I_a]_b$ (balance of the caller is too low to fulfill the balance transfer); \\
+&&&& otherwise $x = a$. \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[2], \boldsymbol{\mu}_\mathbf{s}[3])$ \\
 &&&& Thus the operand order is: value, salt, input offset, input size. \\
 \midrule
