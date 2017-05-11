@@ -722,7 +722,7 @@ g^{**} - c & \text{otherwise} \\
 \boldsymbol{\sigma}^{**} \quad \text{except:} & \\
 \quad\boldsymbol{\sigma}'[a]_c = \texttt{\small KEC}(\mathbf{o}) & \text{otherwise}
 \end{cases} \\
-E(\boldsymbol{\sigma}, a) &\equiv \big(\boldsymbol{\sigma}[a] \neq \varnothing \wedge (\boldsymbol{\sigma}[a]_c \neq () \vee \boldsymbol{\sigma}[a]_n \neq 0)\big)
+E(\boldsymbol{\sigma}, a) &\equiv \big(\boldsymbol{\sigma}[a] \neq \varnothing \wedge (\boldsymbol{\sigma}[a]_c \neq \texttt{\small KEC}(()) \vee \boldsymbol{\sigma}[a]_n \neq 0)\big)
 \end{align}
 
 The exception in the determination of $\boldsymbol{\sigma}'$ dictates that $\mathbf{o}$, the resultant byte sequence from the execution of the initialisation code, specifies the final body code for the newly-created account.
