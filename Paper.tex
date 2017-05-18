@@ -1781,7 +1781,10 @@ Here given are the various exceptions to the state transition rules given in sec
 \multicolumn{5}{c}{\textbf{40s: Block Information}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x40 & {\small BLOCKHASH} & 1 & 1 & Get the hash of one of the 256 most recent complete blocks. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \mathbf{o}'[0..31]$ \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}
+\mathbf{o}'[0..31] & \text{if}\ {I_H}_i \le \boldsymbol{\mu}_\mathbf{s}[0] + 256 < {I_H}_i + 256\ \text{where $+$ is not modulo} 2^{256} \\
+0 & \text{otherwise}
+\end{cases}$ \\
 &&&& $\mathbf{o}'[i] \equiv \begin{cases}
 \mathbf{o}[i] & \text{if}\ 0 \le i < |\mathbf{o}| \\
 0 & \text{otherwise}
