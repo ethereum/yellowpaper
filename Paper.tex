@@ -1055,12 +1055,19 @@ We may now define the function, $\Gamma$, that maps a block $B$ to its initiatio
 
 Here, $\mathtt{\small TRIE}(L_S(\boldsymbol{\sigma}_i))$ means the hash of the root node of a trie of state $\boldsymbol{\sigma}_i$; it is assumed that implementations will store this in the state database, trivial and efficient since the trie is by nature an immutable data structure.
 
+We also define a function~$\pi$ that turns the initiation state into the prepared state:
+\begin{eqnarray}
+\pi(\boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}' \\
+(\boldsymbol{\sigma}',\ldots) & \equiv &\Theta(\boldsymbol{\sigma}, 2^{256}-2, 2^{256}-2, 240,\\
+&&\phantom{\Theta(} 240, 1000000, 0, 0, 0, {B_H}_p, \top)
+\end{eqnarray}
+
 And finally define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
 \begin{eqnarray}
 \Phi(B) & \equiv & B': \quad B' = B^* \quad \text{except:} \\
 B'_n & = & n: \quad x \leqslant \frac{2^{256}}{H_d} \\
 B'_m & = & m \quad \text{with } (x, m) = \mathtt{PoW}(B^*_{\hcancel{n}}, n, \mathbf{d}) \\
-B^* & \equiv & B \quad \text{except:} \quad B^*_r = r(\Pi(\Gamma(B), B))
+B^* & \equiv & B \quad \text{except:} \quad B^*_r = r(\Pi(\pi(\Gamma(B)), B))
 \end{eqnarray}
 With $\mathbf{d}$ being a dataset as specified in appendix \ref{app:ethash}.
 
