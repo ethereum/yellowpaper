@@ -1566,7 +1566,8 @@ We define a precompiled contract for zkSNARK verification.
 \Xi_{\mathtt{SNARKV}}&\equiv&\Xi_{\mathtt{PRE}}\quad\text{except:}\\
 \qquad\Xi_{\mathtt{SNARKV}}(\boldsymbol\sigma,g,I)&=&(\varnothing,0,A^0,())\quad\text{if}\ F\\
 F&\equiv&(|I_\mathbf{d}|\bmod 192\neq 0\vee(\exists j.\ a_j=\varnothing\vee b_j=\varnothing))\\
-g_r&=&?\\
+k &=& \dfrac{|I_\mathbf{d}|}{192} \\
+g_r&=& 60000k + 40000 \\
 \mathbf o[0..31]&\equiv&\begin{cases}
 0x0000000000000000000000000000000000000000000000000000000000000001&\text{if}\ v\wedge\neg F\\
 0x0000000000000000000000000000000000000000000000000000000000000000&\text{if}\ \neg v\wedge\neg F
