@@ -1443,7 +1443,12 @@ The fifth contract performs arbitrary-precision exponentiation under modulo. Her
 
 \begin{eqnarray}
 \Xi_{\mathtt{EXPMOD}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:} \\
-g_r &=& \Big\lfloor\frac{\max(\ell_M,\ell_B)^2\max(\ell_E,1)}{G_{quaddivisor}}\Big\rfloor \\
+g_r &=& \Big\lfloor\frac{\max(\ell_M,\ell_B)^2\max(\ell'_E,1)}{G_{quaddivisor}}\Big\rfloor \\
+\ell'_E &=& \begin{cases}
+0 & \text{if}\ \ell_E\le 256\wedge E=0 \\
+\lfloor \log_2(E)\rfloor &\text{if}\ \ell_E\le 256 \wedge E \neq 0 \\
+8(\ell_E - 32) + \lfloor \log_2(i[(96+\ell_B)..(127+\ell_B)]) \rfloor & \text{otherwise} \\
+\end{cases} \\
 \mathbf o &=& (B^E\bmod M)\in\mathbb P_{8\ell_M} \\
 \ell_B &\equiv& i[0..31] \\
 \ell_E &\equiv& i[32..63] \\
@@ -1568,7 +1573,7 @@ $G_{sha3}$ & 30 & Paid for each {\small SHA3} operation. \\
 $G_{sha3word}$ & 6 & Paid for each word (rounded up) for input data to a {\small SHA3} operation. \\
 $G_{copy}$ & 3 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
 $G_{blockhash}$ & 20 & Payment for {\small BLOCKHASH} operation. \\
-$G_{quaddivisor}$ & 20 & The quadratic coefficient of the input sizes of the exponation-over-modulo precompiled contract. \\
+$G_{quaddivisor}$ & 100 & The quadratic coefficient of the input sizes of the exponation-over-modulo precompiled contract. \\
 
 %extern u256 const c_copyGas;			///< Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
 \bottomrule
