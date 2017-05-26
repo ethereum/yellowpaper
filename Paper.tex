@@ -1408,9 +1408,9 @@ The fifth contract performs arbitrary-precision exponentiation under modulo. Her
 \Xi_{\mathtt{EXPMOD}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:} \\
 g_r &=& \Big\lfloor\frac{\max(\ell_M,\ell_B)^2\max(\ell'_E,1)}{G_{quaddivisor}}\Big\rfloor \\
 \ell'_E &=& \begin{cases}
-0 & \text{if}\ \ell_E\le 256\wedge E=0 \\
-\lfloor \log_2(E)\rfloor &\text{if}\ \ell_E\le 256 \wedge E \neq 0 \\
-8(\ell_E - 32) + \lfloor \log_2(i[(96+\ell_B)..(127+\ell_B)]) \rfloor & \text{if}\ 256 < \ell_E \wedge i[(96 + \ell_B)..(127 + \ell_B)]\neq 0 \\
+0 & \text{if}\ \ell_E\le 32\wedge E=0 \\
+\lfloor \log_2(E)\rfloor &\text{if}\ \ell_E\le 32 \wedge E \neq 0 \\
+8(\ell_E - 32) + \lfloor \log_2(i[(96+\ell_B)..(127+\ell_B)]) \rfloor & \text{if}\ 32 < \ell_E \wedge i[(96 + \ell_B)..(127 + \ell_B)]\neq 0 \\
 8(\ell_E - 32) & \text{otherwise} \\
 \end{cases} \\
 \mathbf o &=& (B^E\bmod M)\in\mathbb P_{8\ell_M} \\
