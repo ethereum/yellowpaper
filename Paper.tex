@@ -1055,20 +1055,27 @@ We may now define the function, $\Gamma$, that maps a block $B$ to its initiatio
 
 Here, $\mathtt{\small TRIE}(L_S(\boldsymbol{\sigma}_i))$ means the hash of the root node of a trie of state $\boldsymbol{\sigma}_i$; it is assumed that implementations will store this in the state database, trivial and efficient since the trie is by nature an immutable data structure.
 
+We also define a function~$\pi$ that turns the initiation state into the prepared state:
+\begin{eqnarray}
+\pi(\boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}' \\
+(\boldsymbol{\sigma}',\ldots) & \equiv &\Theta(\boldsymbol{\sigma}, 2^{256}-2, 2^{256}-2, 240,\\
+&&\phantom{\Theta(} 240, 1000000, 0, 0, 0, {B_H}_p, \top)
+\end{eqnarray}
+
 And finally define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
 \begin{eqnarray}
 \Phi(B) & \equiv & B': \quad B' = B^* \quad \text{except:} \\
 B'_n & = & n: \quad x \leqslant \frac{2^{256}}{H_d} \\
 B'_m & = & m \quad \text{with } (x, m) = \mathtt{PoW}(B^*_{\hcancel{n}}, n, \mathbf{d}) \\
-B^* & \equiv & B \quad \text{except:} \quad B^*_r = r(\Pi(\Gamma(B), B))
+B^* & \equiv & B \quad \text{except:} \quad B^*_r = r(\Pi(\pi(\Gamma(B)), B))
 \end{eqnarray}
 With $\mathbf{d}$ being a dataset as specified in appendix \ref{app:ethash}.
 
 As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of $\Omega$, the block finalisation function and $\Upsilon$, the transaction-evaluation function, both now well-defined.
 
-As previously detailed, $\mathbf{R}[n]_{\boldsymbol{\sigma}}$, $\mathbf{R}[n]_\mathbf{l}$ and $\mathbf{R}[n]_u$ are the $n$th corresponding states, logs and cumulative gas used after each transaction ($\mathbf{R}[n]_b$, the fourth component in the tuple, has already been defined in terms of the logs). The former is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
+As previously detailed, $\mathbf{R}[n]_{\boldsymbol{\sigma}}$, $\mathbf{R}[n]_\mathbf{l}$ and $\mathbf{R}[n]_u$ are the $n$th corresponding states, logs and cumulative gas used after each transaction ($\mathbf{R}[n]_b$, the fourth component in the tuple, has already been defined in terms of the logs). The former is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's prepared state in the case of the first such transaction):
 \begin{equation}
-\mathbf{R}[n]_{\boldsymbol{\sigma}} = \begin{cases} \Gamma(B) & \text{if} \quad n < 0 \\ \Upsilon(\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n]) & \text{otherwise} \end{cases}
+\mathbf{R}[n]_{\boldsymbol{\sigma}} = \begin{cases} \pi(\Gamma(B)) & \text{if} \quad n < 0 \\ \Upsilon(\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n]) & \text{otherwise} \end{cases}
 \end{equation}
 
 In the case of $B_\mathbf{R}[n]_u$, we take a similar approach defining each item as the gas used in evaluating the corresponding transaction summed with the previous item (or zero, if it is the first), giving us a running total:
@@ -1506,7 +1513,7 @@ $G_{logtopic}$ & 375 & Paid for each topic of a {\small LOG} operation. \\
 $G_{sha3}$ & 30 & Paid for each {\small SHA3} operation. \\
 $G_{sha3word}$ & 6 & Paid for each word (rounded up) for input data to a {\small SHA3} operation. \\
 $G_{copy}$ & 3 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
-$G_{blockhash}$ & 20 & Payment for {\small BLOCKHASH} operation. \\
+$G_{blockhash}$ & 800 & Payment for {\small BLOCKHASH} operation. \\
 
 %extern u256 const c_copyGas;			///< Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
 \bottomrule
@@ -1774,13 +1781,18 @@ Here given are the various exceptions to the state transition rules given in sec
 \multicolumn{5}{c}{\textbf{40s: Block Information}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x40 & {\small BLOCKHASH} & 1 & 1 & Get the hash of one of the 256 most recent complete blocks. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv P(I_{H_p}, \boldsymbol{\mu}_\mathbf{s}[0], 0)$ \\
-&&&& where $P$ is the hash of a block of a particular number, up to a maximum age.\\
-&&&& 0 is left on the stack if the looked for block number is greater than the current block number \\
-&&&& or more than 256 blocks behind the current block. \\
-&&&& $P(h, n, a) \equiv \begin{cases} 0 & \text{if} \quad n > H_i \vee a = 256 \vee h = 0 \\ h & \text{if} \quad n = H_i \\ P(H_p, n, a + 1) & \text{otherwise} \end{cases}$ \\
-&&&& and we assert the header $H$ can be determined as its hash is the parent hash \\
-&&&& in the block following it. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}
+\mathbf{o}'[0..31] & \text{if}\ {I_H}_i \le \boldsymbol{\mu}_\mathbf{s}[0] + 256 < {I_H}_i + 256\ \text{where $+$ is not modulo} 2^{256} \\
+0 & \text{otherwise}
+\end{cases}$ \\
+&&&& $\mathbf{o}'[i] \equiv \begin{cases}
+\mathbf{o}[i] & \text{if}\ 0 \le i < |\mathbf{o}| \\
+0 & \text{otherwise}
+\end{cases}$ \\
+&&&& $(\ldots,\mathbf o) \equiv \Theta(\boldsymbol{\sigma}, I_a, I_o, t, t, 10000000, I_p, 0, 0, \boldsymbol{\mu}_{\mathbf{s}}[0], I_e + 1)$ \\
+&&&& $t \equiv 240$ \\
+&&&& See Section~\ref{sec:blockhash-early-metropolis} for the special behavior of {\small BLOCKHASH} instruction during the first \\
+&&&& 256 blocks in the Metropolis phase. \\
 \midrule
 0x41 & {\small COINBASE} & 0 & 1 & Get the block's beneficiary address. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_H}_c$ \\
@@ -2224,5 +2236,41 @@ The mix is compressed as follows:
 E_{compress}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(\mathbf{m}[i + 4], \mathbf{m}[i + 5]), \mathbf{m}[i + 6]), \mathbf{m}[i + 7]), i + 8) & \text{otherwise}
 \end{cases}
 \end{equation}
+
+\section{Anomalies on the Main Network}
+
+\subsection{Configuration of BLOCKHASH contract}
+
+In the block XXX, before any transaction is executed, the account state under address 240 is modified so that it is associated with the code:
+\begin{verbatim}
+0x73fffffffffffffffffffffffffffffffffffffffe33141561006a576001430360003561010082
+0755610100810715156100455760003561010061010083050761010001555b620100008107151561
+0064576000356101006201000083050761020001555b5061013e565b436000351215156100845760
+0060405260206040f361013d565b61010060003543031315156100a8576101006000350754606052
+60206060f361013c565b6101006000350715156100c55762010000600035430313156100c8565b60
+005b156100ea576101006101006000350507610100015460805260206080f361013b565b62010000
+6000350715156101095763010000006000354303131561010c565b60005b1561012f576101006201
+00006000350507610200015460a052602060a0f361013a565b600060c052602060c0f35b5b5b5b5b
+\end{verbatim}
+This code is used in the {\small BLOCKHASH} instruction.
+
+\subsection{Early behavior of BLOCKHASH instruction}
+\label{sec:blockhash-early-metropolis}
+
+During the first 256 blocks in the Metropolis phase, {\small BLOCKHASH} instruction behaves as specified below.
+
+\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\toprule
+0x40 & {\small BLOCKHASH} & 1 & 1 & Get the hash of one of the 256 most recent complete blocks. \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv P(I_{H_p}, \boldsymbol{\mu}_\mathbf{s}[0], 0)$ \\
+&&&& where $P$ is the hash of a block of a particular number, up to a maximum age.\\
+&&&& 0 is left on the stack if the looked for block number is greater than the current block number \\
+&&&& or more than 256 blocks behind the current block. \\
+&&&& $P(h, n, a) \equiv \begin{cases} 0 & \text{if} \quad n > H_i \vee a = 256 \vee h = 0 \\ h & \text{if} \quad n = H_i \\ P(H_p, n, a + 1) & \text{otherwise} \end{cases}$ \\
+&&&& and we assert the header $H$ can be determined as its hash is the parent hash \\
+&&&& in the block following it. \\
+\bottomrule
+\end{tabular*}
+
 
 \end{document}
