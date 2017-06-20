@@ -1965,9 +1965,10 @@ C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) + G_{callstipend}
 C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{otherwise}
 \end{cases}$ \\
 &&&& $C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
-\min\{ L(\boldsymbol{\mu}_g - C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})), \boldsymbol{\mu}_{\mathbf{s}}[0] \} & \text{if} \quad \boldsymbol{\mu}_g \ge C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})\\
+\min\{ L(g^* - C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})), \boldsymbol{\mu}_{\mathbf{s}}[0] \} & \text{if} \quad g^* \ge C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})\\
 \boldsymbol{\mu}_{\mathbf{s}}[0] & \text{otherwise}
 \end{cases}$\\
+&&&& $g^* \equiv \boldsymbol{\mu}_{g} - (C_{mem}(\boldsymbol{\mu}'_i)-C_{mem}(\boldsymbol{\mu}_i))$ \\
 &&&& $C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv G_{call} + C_{\text{\tiny XFER}}(\boldsymbol{\mu}) + C_{\text{\tiny NEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$\\
 &&&& $C_{\text{\tiny XFER}}(\boldsymbol{\mu}) \equiv \begin{cases}
 G_{callvalue} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \neq 0 \\
