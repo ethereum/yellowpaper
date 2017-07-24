@@ -1443,7 +1443,12 @@ The fifth contract performs arbitrary-precision exponentiation under modulo. Her
 
 \begin{eqnarray}
 \Xi_{\mathtt{EXPMOD}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:} \\
-g_r &=& \Big\lfloor\frac{\max(\ell_M,\ell_B)^2\max(\ell'_E,1)}{G_{quaddivisor}}\Big\rfloor \\
+g_r &=& \Big\lfloor\frac{f\big(\max(\ell_M,\ell_B)\big)\max(\ell'_E,1)}{G_{quaddivisor}}\Big\rfloor \\
+f(x) &\equiv& \begin{cases}
+x^2 & \text{if}\ x \le 64 \\
+\Big\lfloor\dfrac{x^2}{4}\Big\rfloor + 96 x - 3072 & \text{if}\ 64 < x \le 1024 \\
+\Big\lfloor\dfrac{x^2}{16}\Big\rfloor + 480x - 199680 & \text{otherwise}
+\end{cases}\\
 \ell'_E &=& \begin{cases}
 0 & \text{if}\ \ell_E\le 32\wedge E=0 \\
 \lfloor \log_2(E)\rfloor &\text{if}\ \ell_E\le 32 \wedge E \neq 0 \\
