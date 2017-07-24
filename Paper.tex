@@ -774,6 +774,7 @@ The account's associated code (identified as the fragment whose Keccak hash is $
 \Xi_{\mathtt{SHA256}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 2 \\
 \Xi_{\mathtt{RIP160}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 3 \\
 \Xi_{\mathtt{ID}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 4 \\
+\Xi_{\mathtt{EXPMOD}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 5 \\
 \Xi(\boldsymbol{\sigma}_1, g, I) & \text{otherwise} \end{cases} \\
 I_a & \equiv & r \\
 I_o & \equiv & o \\
@@ -1394,13 +1395,41 @@ For the purposes here, we assume we have well-defined standard cryptographic fun
 \mathtt{\small RIPEMD160}(\mathbf{i} \in \mathbb{B}) & \equiv & o \in \mathbb{B}_{20}
 \end{eqnarray}
 
-Finally, the fourth contract, the identity function $\Xi_{\mathtt{ID}}$ simply defines the output as the input:
+The fourth contract, the identity function $\Xi_{\mathtt{ID}}$ simply defines the output as the input:
 \begin{eqnarray}
 \Xi_{\mathtt{ID}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
 g_r &=& 15 + 3\Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil\\
 \mathbf{o} &=& I_\mathbf{d}
 \end{eqnarray}
 
+The fifth contract performs arbitrary-precision exponentiation under modulo. Here, $0 ^ 0$ is taken to be one, and $x \bmod 0$ is zero for all $x$. The first word in the input specifies the number of bytes that the first non-negative integer $B$ occupies. The second word in the input specifies the number of bytes that the second non-negative integer $E$ occupies. The third word in the input specifies the number of bytes that the third non-negative integer $M$ occupies. These three words are followed by $B$, $E$ and $M$. The rest of the input is discarded. Whenever the input is too short, the missing bytes are considered to be zero. The output is encoded big-endian into the same format as $M$'s.
+
+\begin{eqnarray}
+\Xi_{\mathtt{EXPMOD}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:} \\
+g_r &=& \Big\lfloor\frac{f\big(\max(\ell_M,\ell_B)\big)\max(\ell'_E,1)}{G_{quaddivisor}}\Big\rfloor \\
+f(x) &\equiv& \begin{cases}
+x^2 & \text{if}\ x \le 64 \\
+\Big\lfloor\dfrac{x^2}{4}\Big\rfloor + 96 x - 3072 & \text{if}\ 64 < x \le 1024 \\
+\Big\lfloor\dfrac{x^2}{16}\Big\rfloor + 480x - 199680 & \text{otherwise}
+\end{cases}\\
+\ell'_E &=& \begin{cases}
+0 & \text{if}\ \ell_E\le 32\wedge E=0 \\
+\lfloor \log_2(E)\rfloor &\text{if}\ \ell_E\le 32 \wedge E \neq 0 \\
+8(\ell_E - 32) + \lfloor \log_2(i[(96+\ell_B)..(127+\ell_B)]) \rfloor & \text{if}\ 32 < \ell_E \wedge i[(96 + \ell_B)..(127 + \ell_B)]\neq 0 \\
+8(\ell_E - 32) & \text{otherwise} \\
+\end{cases} \\
+\mathbf o &=& (B^E\bmod M)\in\mathbb P_{8\ell_M} \\
+\ell_B &\equiv& i[0..31] \\
+\ell_E &\equiv& i[32..63] \\
+\ell_M &\equiv& i[64..95] \\
+B &\equiv& i[96..(95+\ell_B)] \\
+E &\equiv& i[(96+\ell_B)..(95+\ell_B+\ell_E)] \\
+M &\equiv& i[(96+\ell_B+\ell_E)..(95+\ell_B+\ell_E+\ell_M)] \\
+i[x] &\equiv& \begin{cases}
+I_{\mathbf d}[x] &\text{if}\ x < |I_{\mathbf d}| \\
+0 &\text{otherwise}
+\end{cases}
+\end{eqnarray}
 
 \section{Signing Transactions}\label{app:signing}
 
@@ -1507,6 +1536,7 @@ $G_{sha3}$ & 30 & Paid for each {\small SHA3} operation. \\
 $G_{sha3word}$ & 6 & Paid for each word (rounded up) for input data to a {\small SHA3} operation. \\
 $G_{copy}$ & 3 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
 $G_{blockhash}$ & 20 & Payment for {\small BLOCKHASH} operation. \\
+$G_{quaddivisor}$ & 100 & The quadratic coefficient of the input sizes of the exponation-over-modulo precompiled contract. \\
 
 %extern u256 const c_copyGas;			///< Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
 \bottomrule
