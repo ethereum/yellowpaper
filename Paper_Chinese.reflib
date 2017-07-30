@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library>
+<manage_target braces="true" utf8="false">Biblio.bib</manage_target>
+<library_folder monitor="false"></library_folder>
+<taglist>
+</taglist>
+<doclist>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>cryptoeprint:2013:881</key>
+    <notes></notes>
+    <bib_type>Misc</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Accelerating Bitcoin’s Transaction Processing. Fast Money Grows on Trees, Not Chains</bib_title>
+    <bib_authors>Sompolinsky, Yonatan and Zohar, Aviv</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages></bib_pages>
+    <bib_year>2013</bib_year>
+    <bib_extra key="Note">http://eprint.iacr.org/</bib_extra>
+    <bib_extra key="Url">Cryptology ePrint Archive, Report 2013/881</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>gura2004comparing</key>
+    <notes></notes>
+    <bib_type>InCollection</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Comparing elliptic curve cryptography and RSA on 8-bit CPUs</bib_title>
+    <bib_authors>Gura, Nils and Patel, Arun and Wander, Arvinderpal and Eberle, Hans and Shantz, Sheueling Chang</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages>119-132</bib_pages>
+    <bib_year>2004</bib_year>
+    <bib_extra key="BookTitle">Cryptographic Hardware and Embedded Systems-CHES 2004</bib_extra>
+    <bib_extra key="Publisher">Springer</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>laurie2004proof</key>
+    <notes></notes>
+    <bib_type>InProceedings</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Proof-of-Work” proves not to work; version 0.2</bib_title>
+    <bib_authors>Laurie, Ben and Clayton, Richard</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages></bib_pages>
+    <bib_year>2004</bib_year>
+    <bib_extra key="BookTitle">Workshop on Economics and Information, Security</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>nakamoto2008bitcoin</key>
+    <notes></notes>
+    <bib_type>Article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Bitcoin: A peer-to-peer electronic cash system</bib_title>
+    <bib_authors>Nakamoto, Satoshi</bib_authors>
+    <bib_journal>Consulted</bib_journal>
+    <bib_volume>1</bib_volume>
+    <bib_number></bib_number>
+    <bib_pages>2012</bib_pages>
+    <bib_year>2008</bib_year>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>sprankel2013technical</key>
+    <notes></notes>
+    <bib_type>Misc</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Technical Basis of Digital Currencies</bib_title>
+    <bib_authors>Sprankel, Simon</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages></bib_pages>
+    <bib_year>2013</bib_year>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>aron2012bitcoin</key>
+    <notes></notes>
+    <bib_type>Article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>BitCoin software finds new life</bib_title>
+    <bib_authors>Aron, Jacob</bib_authors>
+    <bib_journal>New Scientist</bib_journal>
+    <bib_volume>213</bib_volume>
+    <bib_number>2847</bib_number>
+    <bib_pages>20</bib_pages>
+    <bib_year>2012</bib_year>
+    <bib_extra key="Publisher">Elsevier</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>mastercoin2013willett</key>
+    <notes></notes>
+    <bib_type>article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>MasterCoin Complete Specification</bib_title>
+    <bib_authors>J. R. Willett</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages></bib_pages>
+    <bib_year>2013</bib_year>
+    <bib_extra key="url">https://github.com/mastercoin-MSC/spec</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>colouredcoins2012rosenfeld</key>
+    <notes></notes>
+    <bib_type>article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Overview of Colored Coins</bib_title>
+    <bib_authors>Meni Rosenfeld</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages></bib_pages>
+    <bib_year>2012</bib_year>
+    <bib_extra key="url">https://bitcoil.co.il/BitcoinX.pdf</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>boutellier2014pirates</key>
+    <notes></notes>
+    <bib_type>incollection</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Pirates, Pioneers, Innovators and Imitators</bib_title>
+    <bib_authors>Boutellier, Roman and Heinzen, Mareike</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages>85-96</bib_pages>
+    <bib_year>2014</bib_year>
+    <bib_extra key="booktitle">Growth Through Innovation</bib_extra>
+    <bib_extra key="publisher">Springer</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>szabo1997formalizing</key>
+    <notes></notes>
+    <bib_type>Article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Formalizing and securing relationships on public networks</bib_title>
+    <bib_authors>Szabo, Nick</bib_authors>
+    <bib_journal>First Monday</bib_journal>
+    <bib_volume>2</bib_volume>
+    <bib_number>9</bib_number>
+    <bib_pages></bib_pages>
+    <bib_year>1997</bib_year>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>miller1997future</key>
+    <notes></notes>
+    <bib_type>InProceedings</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>The Future of Law</bib_title>
+    <bib_authors>Miller, Mark</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages></bib_pages>
+    <bib_year>1997</bib_year>
+    <bib_extra key="BookTitle">paper delivered at the Extro 3 Conference (August 9)</bib_extra>
+  </doc>
+  <doc>
+    <filename></filename>
+    <relative_filename></relative_filename>
+    <key>buterin2013ethereum</key>
+    <notes></notes>
+    <bib_type>article</bib_type>
+    <bib_doi></bib_doi>
+    <bib_title>Ethereum: A Next-Generation Smart Contract and Decentralized Application Platform</bib_title>
+    <bib_authors>Vitalik Buterin</bib_authors>
+    <bib_journal></bib_journal>
+    <bib_volume></bib_volume>
+    <bib_number></bib_number>
+    <bib_pages></bib_pages>
+    <bib_year>2013</bib_year>
+    <bib_extra key="url">http://ethereum.org/ethereum.html</bib_extra>
+  </doc>
+</doclist>
+</library>
