@@ -760,7 +760,7 @@ g^{**} - c & \text{otherwise} \\
 1 & \text{otherwise}
 \end{cases} \\
 \nonumber \text{where} \\
-F &\equiv \big((\boldsymbol{\sigma}^{**} = \varnothing \ \wedge\ \mathbf{o} = \varnothing) \vee\  g^{**} < c \ \vee\  |\mathbf{o}| > 24576\big)
+F \equiv &\big(\boldsymbol{\sigma}[a]_c \neq \texttt{\small KEC}\big(()\big) \ \vee\ \boldsymbol{\sigma}[a]_n \neq 0 \ \vee\ (\boldsymbol{\sigma}^{**} = \varnothing \ \wedge\ \mathbf{o} = \varnothing) \\\nonumber  & \vee\ g^{**} < c \ \vee\  |\mathbf{o}| > 24576\big)
 \end{align}
 
 The exception in the determination of $\boldsymbol{\sigma}'$ dictates that $\mathbf{o}$, the resultant byte sequence from the execution of the initialisation code, specifies the final body code for the newly-created account.
