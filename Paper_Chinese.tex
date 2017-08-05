@@ -43,8 +43,8 @@
 
 \title{以太坊：一种安全去中心化的通用交易账本 \\ {\smaller \textbf{EIP-150版本  (\YellowPaperVersionNumber{})}}}
 \author{
-    原文作者: Dr. Gavin Wood  gavin@ethcore.io\\
-    译者: 猿哥 yuange@cuiguangbin.com; 高天露 tianlu.jorden.gao@gmail.com
+    原文作者: Dr. Gavin Wood,  gavin@ethcore.io\\
+    译者: 猿哥, root@cxyym.com, 微信 yuange1024; 高天露, tianlu.jorden.gao@gmail.com
 }
 \begin{document}
 
@@ -52,9 +52,9 @@
 %\pagecolor{lightpink}
 
 \begin{abstract}
-The blockchain paradigm when coupled with cryptographically-secured transactions has demonstrated its utility through a number of projects, not least Bitcoin. Each such project can be seen as a simple application on a decentralised, but singleton, compute resource. We can call this paradigm a transactional singleton machine with shared-state.
+区块链对交易数据加密以保证安全,已经通过一系列项目展示了它的实用性,尤其是比特币。每一个这个的项目都可以看作是一个基于去中心化的单实例且拥有计算资源的应用。我们称这种模式为可以共享状态的单例状态机。
 
-以太坊Ethereum implements this paradigm in a generalised manner. Furthermore it provides a plurality of such resources, each with a distinct state and operating code but able to interact through a message-passing framework with others. We discuss its design, implementation issues, the opportunities it provides and the future hurdles we envisage.
+以太坊以更广义的方式实现了这种模式。 它提供了大量的资源,每一个资源都拥有独立的状态和操作码,并且可以通过消息传递方式和其它资源交互。我们讨论了它的设计、实现难题、它提供的机会以及以后可能有的一些问题。
 \end{abstract}
 
 \maketitle
@@ -62,39 +62,43 @@ The blockchain paradigm when coupled with cryptographically-secured transactions
 \setlength{\columnsep}{20pt}
 \begin{multicols}{2}
 
-\section{Introduction}\label{sec:introduction}
+\section{简介}\label{sec:introduction}
 
-With ubiquitous internet connections in most places of the world, global information transmission has become incredibly cheap. Technology-rooted movements like Bitcoin have demonstrated, through the power of the default, consensus mechanisms and voluntary respect of the social contract that it is possible to use the internet to make a decentralised value-transfer system, shared across the world and virtually free to use. This system can be said to be a very specialised version of a cryptographically secure, transaction-based state machine. Follow-up systems such as Namecoin adapted this original ``currency application'' of the technology into other applications albeit rather simplistic ones.
 
-Ethereum is a project which attempts to build the generalised technology; technology on which all transaction-based state machine concepts may be built. Moreover it aims to provide to the end-developer a tightly integrated end-to-end system for building software on a hitherto unexplored compute paradigm in the mainstream: a trustful object messaging compute framework.
+随着互联网连接了世界上绝大多数地方，全球信息共享的成本越来越低。比特币网络通过共识机制、自愿遵守的社会合约,实现一个去中心化的价值转移系统且可以在全球范围内自由使用, 这样的技术改革展示了它的巨大力量。这样的系统可以说是加密安全、基于交易的状态机的一种具体应用。后续类似这样的系统,如域名币（Namecoin）, 从最原先的"货币应用"发展到了其它应用,虽然它只是其中很简单的一种应用。
 
-\subsection{Driving Factors} \label{ch:driving}
+以太坊是一个尝试实现通用性技术的项目,所有基于交易的状态机都可以被构建。而且以太坊致力于为开发者提供主流一个紧凑的、整合的端到端系统, 这个系统提供了一种可信的消息传递计算框架让开发者以一种前所未有的范式来构建软件。
 
-There are many goals of this project; one key goal is to facilitate transactions between consenting individuals who would otherwise have no means to trust one another. This may be due to geographical separation, interfacing difficulty, or perhaps the incompatibility, incompetence, unwillingness, expense, uncertainty, inconvenience or corruption of existing legal systems. By specifying a state-change system through a rich and unambiguous language, and furthermore architecting a system such that we can reasonably expect that an agreement will be thus enforced autonomously, we can provide a means to this end.
+\subsection{驱动因素} \label{ch:driving}
 
-Dealings in this proposed system would have several attributes not often found in the real world. The incorruptibility of judgement, often difficult to find, comes naturally from a disinterested algorithmic interpreter. Transparency, or being able to see exactly how a state or judgement came about through the transaction log and rules or instructional codes, never happens perfectly in human-based systems since natural language is necessarily vague, information is often lacking, and plain old prejudices are difficult to shake.
+这个项目有很多目标，其中最重要的目标是为了促成不信任对方的个体之间的交易。这些不信任可能是因为地理位置分离、接口对接难度,或者是不兼容、不称职、不情愿、支出、不确定、不方便,或现有法律系统的腐败。于是我们想用一个丰富且清晰的语言去实现一个状态变化的系统，期望协议可以自动被执行, 我们可以为此提供一种实现方式。
 
-Overall, I wish to provide a system such that users can be guaranteed that no matter with which other individuals, systems or organisations they interact, they can do so with absolute confidence in the possible outcomes and how those outcomes might come about.
 
-\subsection{Previous Work} \label{ch:previous}
+这个提议系统中的交易, 有一些在现实世界中并不常见的属性。审判廉洁，在现实世界往往很难找到，但对公正的算法解释器是天然的; 透明，或者说通过交易日志和规则或代码指令能够清晰的看见到状态变化或者判决, 但因为人类语言的模糊性、信息的缺乏以及老的偏见难以撼动,导致基于人的系统中从来没有完美实现透明。
 
-\cite{buterin2013ethereum} first proposed the kernel of this work in late November, 2013. Though now evolved in many ways, the key functionality of a block-chain with a Turing-complete language and an effectively unlimited inter-transaction storage capability remains unchanged.
+总的来说，我希望能提供一个系统，能够保证用户无论是和其他个体、系统还是组织交互,都能对可能的结果及产生结果的过程完全信任。
 
-\cite{dwork92pricingvia} provided the first work into the usage of a cryptographic proof of computational expenditure (``proof-of-work'') as a means of transmitting a value signal over the Internet. The value-signal was utilised here as a spam deterrence mechanism rather than any kind of currency, but critically demonstrated the potential for a basic data channel to carry a \textit{strong economic signal}, allowing a receiver to make a physical assertion without having to rely upon \textit{trust}. \cite{back2002hashcash} later produced a system in a similar vein.
 
-The first example of utilising the proof-of-work as a strong economic signal to secure a currency was by \cite{vishnumurthy03karma:a}. In this instance, the token was used to keep peer-to-peer file trading in check, ensuring ``consumers'' be able to make micro-payments to ``suppliers'' for their services. The security model afforded by the proof-of-work was augmented with digital signatures and a ledger in order to ensure that the historical record couldn't be corrupted and that malicious actors could not spoof payment or unjustly complain about service delivery. Five years later, \cite{nakamoto2008bitcoin} introduced another such proof-of-work-secured value token, somewhat wider in scope. The fruits of this project, Bitcoin, became the first widely adopted global decentralised transaction ledger.
+\subsection{前人工作} \label{ch:previous}
 
-Other projects built on Bitcoin's success; the alt-coins introduced numerous other currencies through alteration to the protocol. Some of the best known are Litecoin and Primecoin, discussed by \cite{sprankel2013technical}. Other projects sought to take the core value content mechanism of the protocol and repurpose it; \cite{aron2012bitcoin} discusses, for example, the Namecoin project which aims to provide a decentralised name-resolution system.
+ \cite{buterin2013ethereum} 在2013年9月下旬第一次提出了这种系统的核心机制。虽然现在发展出了多种方案, 但最关键的部分, 具备图灵完备语言且不受限制的内部交易存贮容量的区块链, 仍未变化。
 
-Other projects still aim to build upon the Bitcoin network itself, leveraging the large amount of value placed in the system and the vast amount of computation that goes into the consensus mechanism. The Mastercoin project, first proposed by \cite{mastercoin2013willett}, aims to build a richer protocol involving many additional high-level features on top of the Bitcoin protocol through utilisation of a number of auxiliary parts to the core protocol. The Coloured Coins project, proposed by \cite{colouredcoins2012rosenfeld}, takes a similar but more simplified strategy, embellishing the rules of a transaction in order to break the fungibility of Bitcoin's base currency and allow the creation and tracking of tokens through a special ``chroma-wallet''-protocol-aware piece of software.
+\cite{dwork92pricingvia} 提出了一种使用计算支出的密码学证明方式(proof-of-work, 工作量证明)在互联网上传递信号值。信号值用作阻挡垃圾邮件，而不是任何一种货币, 但展示了一个基本的数据通道可以承载强大经济信号的可能性,  允许接受者无需依赖信任而做出物理断言。\cite{back2002hashcash} 后来设计了一个类似的系统。
 
-Additional work has been done in the area with discarding the decentralisation foundation; Ripple, discussed by \cite{boutellier2014pirates}, has sought to create a ``federated'' system for currency exchange, effectively creating a new financial clearing system. It has demonstrated that high efficiency gains can be made if the decentralisation premise is discarded.
+\cite{vishnumurthy03karma:a}最早使用工作量证明作为强大的经济信号保证货币安全。 在这个案例中，代币用作检查点对点（peer-to-peer,p2p）文件交易，同时保证“消费者”能支付给为他们提供服务的“供应商”。这种通过工作量证明的安全模型逐步扩展, 包括使用电子签名和账本技术, 以保证历史记录不被篡改, 怀有恶意的用户不能进行欺诈支付或不公平的抱怨服务。五年后（2008年），中本聪\cite{nakamoto2008bitcoin} 介绍了另一种更广泛的工作量证明安全价值代币。这个项目的成果比特币,成为了第一个被全球广泛认可的去中心化交易账本。
 
-Early work on smart contracts has been done by \cite{szabo1997formalizing} and \cite{miller1997future}. Around the 1990s it became clear that algorithmic enforcement of agreements could become a significant force in human cooperation. Though no specific system was proposed to implement such a system, it was proposed that the future of law would be heavily affected by such systems. In this light, Ethereum may be seen as a general implementation of such a \textit{crypto-law} system.
+
+由于比特币的成功，竞争币(alt-coins)开始兴起,通过改变比特币的协议去创建了大量的其他数字货币。比较知名的有莱特币（Litecoin）和素数币（Primecoin）, 参见 \cite{sprankel2013technical} 。一些项目使用比特币的核心机制并重新改造以应用在其它领域,例如域名币（Namecoin）, 致力于提供一个去中心化的名字解析系统, 参见 \cite{aron2012bitcoin} 。
+
+其它在比特币网络之上构建的项目, 也是依赖巨大的系统价值和巨大的算力来保证共识机制。万事达币（Mastercoin）项目, 在比特币协议之上,通过一系列基于核心协议的的辅助插件, 构建一个包含许多高级功能的富协议, 参见 \cite{mastercoin2013willett}。彩色币（Coloured Coins, 参见 \cite{colouredcoins2012rosenfeld}, 采用了类似的但更简化的协议, 以实现比特币基础货币的可替代性, 并允许通过色度钱包（“chroma-wallet”）来创建和跟踪代币。
+
+其它一些工作通过放弃中心化来进行。瑞波币（Ripple）,参见 \cite{boutellier2014pirates}, 试图去创建一个货币兑换的联邦系统（“federated ”system）和一个新的金融清算系统。这个系统展示了放弃去中心化特性可以获得性能上的提升。
+
+\cite{szabo1997formalizing} 和 \cite{miller1997future} 进行了智能合约（smart contract）的早期工作。大约在上世纪90年代，人们逐渐认识到协议算法的执行可以成为人类合作的重要力量。虽然当时没有这样的系统, 但可以预见未来的法律将会受到这种系统的影响。基于此, 以太坊或许可以成为这种密码学-法律系统的通用实现。
 
 %E language?
 
-\section{The Blockchain Paradigm} \label{ch:overview}
+\section{区块链} \label{ch:overview}
 
 Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissible. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg, be things such as reducing an account balance without an equal and opposite increase elsewhere. A valid state transition is one which comes about through a transaction. Formally:
 \begin{equation}
