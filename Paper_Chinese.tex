@@ -108,25 +108,23 @@
 
 $\Upsilon$ 是以太坊状态转换函数。在以太坊中, $\Upsilon$ 和 $\boldsymbol{\sigma}$ 比已有的任何比较系统都强; $\Upsilon$ 可以执行任意计算, 而 $\boldsymbol{\sigma}$  可以存贮交易中的任意状态。
 
+区块中记录着交易信息；区块之间通过密码学哈希(hash)链接起来。区块链就像一个分类账,将一系列交易记录在一起,并且连接上一个区块及最终状态(并没有直接保存最终状态本身---否则整个区块链就太大了）。系统激励节点去挖矿, 挖矿激励时,有执行状态转移函数,增加挖矿者的账户余额。
 
+挖矿是和其它潜在区块竞争一系列交易(一个区块)的记账权。它是通过密码安全证明的方式来实现的。这个机制称为工作量证明, 会在  \ref{ch:pow} 详细讨论。
 
-
-Transactions are collated into blocks; blocks are chained together using a cryptographic hash as a means of reference. Blocks function as a journal, recording a series of transactions together with the previous block and an identifier for the final state (though do not store the final state itself---that would be far too big). They also punctuate the transaction series with incentives for nodes to \textit{mine}. This incentivisation takes place as a state-transition function, adding value to a nominated account.
-
-Mining is the process of dedicating effort (working) to bolster one series of transactions (a block) over any other potential competitor block. It is achieved thanks to a cryptographically secure proof. This scheme is known as a proof-of-work and is discussed in detail in section \ref{ch:pow}.
-
-Formally, we expand to:
+公式如下:
 \begin{eqnarray}
 \boldsymbol{\sigma}_{t+1} & \equiv & \Pi(\boldsymbol{\sigma}_t, B) \\
 B & \equiv & (..., (T_0, T_1, ...) ) \\
 \Pi(\boldsymbol{\sigma}, B) & \equiv & \Omega(B, \Upsilon(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...)
 \end{eqnarray}
 
-Where $\Omega$ is the block-finalisation state transition function (a function that rewards a nominated party); $B$ is this block, which includes a series of transactions amongst some other components; and $\Pi$ is the block-level state-transition function.
+其中 $\Omega$ 是区块定稿状态转换函数（这个函数奖励一个特定的账户）；$B$ 表示包含一系列交易的区块； $\Pi$ 是区块级的状态转换函数。
 
-This is the basis of the blockchain paradigm, a model that forms the backbone of not only Ethereum, but all decentralised consensus-based transaction systems to date.
+上述是区块链的基本内容，这个模型不仅是以太坊的基础架构，还是迄今为止所有基于共识的去中心化交易系统的基础架构。
 
-\subsection{Value}
+
+\subsection{面值}
 
 In order to incentivise computation within the network, there needs to be an agreed method for transmitting value. To address this issue, Ethereum has an intrinsic currency, Ether, known also as {\small ETH} and sometimes referred to by the Old English \DH{}. The smallest subdenomination of Ether, and thus the one in which all integer values of the currency are counted, is the Wei. One Ether is defined as being $10^{18}$ Wei. There exist other subdenominations of Ether:
 \par
