@@ -109,6 +109,8 @@
 $\Upsilon$ 是以太坊状态转换函数。在以太坊中, $\Upsilon$ 和 $\boldsymbol{\sigma}$ 比已有的任何比较系统都强; $\Upsilon$ 可以执行任意计算, 而 $\boldsymbol{\sigma}$  可以存贮交易中的任意状态。
 
 
+
+
 Transactions are collated into blocks; blocks are chained together using a cryptographic hash as a means of reference. Blocks function as a journal, recording a series of transactions together with the previous block and an identifier for the final state (though do not store the final state itself---that would be far too big). They also punctuate the transaction series with incentives for nodes to \textit{mine}. This incentivisation takes place as a state-transition function, adding value to a nominated account.
 
 Mining is the process of dedicating effort (working) to bolster one series of transactions (a block) over any other potential competitor block. It is achieved thanks to a cryptographically secure proof. This scheme is known as a proof-of-work and is discussed in detail in section \ref{ch:pow}.
