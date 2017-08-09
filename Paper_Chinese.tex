@@ -121,28 +121,29 @@ B & \equiv & (..., (T_0, T_1, ...) ) \\
 
 其中 $\Omega$ 是区块定稿状态转换函数（这个函数奖励一个特定的账户）；$B$ 表示包含一系列交易的区块； $\Pi$ 是区块级的状态转换函数。
 
-上述是区块链的基本内容，这个模型不仅是以太坊的基础架构，还是迄今为止所有基于共识的去中心化交易系统的基础架构。
+上述是区块链的基本内容，这个模型不仅是以太坊的基础，还是迄今为止所有基于共识的去中心化交易系统的基础。
 
 
 \subsection{面值}
 
-In order to incentivise computation within the network, there needs to be an agreed method for transmitting value. To address this issue, Ethereum has an intrinsic currency, Ether, known also as {\small ETH} and sometimes referred to by the Old English \DH{}. The smallest subdenomination of Ether, and thus the one in which all integer values of the currency are counted, is the Wei. One Ether is defined as being $10^{18}$ Wei. There exist other subdenominations of Ether:
+为了激励网络中的计算，需要定义一种转账方法。以太坊设计了一个内置货币以太币(Ether)，ETH是大家所熟知的符号，有时用 \DH{} 表示。以太币最小的面额是Wei(伟)，所有货币值都以Wei的整数倍记录。一个以太币被定义成位。一个以太币等于 $10^{18}$ Wei 。不同的面值如下表:
+
 \par
 \begin{center}
 \begin{tabular}{rl}
 \toprule
-Multiplier & Name \\
+倍数 & 面值 \\
 \midrule
-$10^0$ & Wei \\
-$10^{12}$ & Szabo \\
-$10^{15}$ & Finney \\
-$10^{18}$ & Ether \\
+$10^0$ & Wei(伟)) \\
+$10^{12}$ & Szabo(萨博) \\
+$10^{15}$ & Finney(芬尼) \\
+$10^{18}$ & Ether(以太) \\
 \bottomrule
 \end{tabular}
 \end{center}
 \par
 
-Throughout the present work, any reference to value, in the context of Ether, currency, a balance or a payment, should be assumed to be counted in Wei.
+在整个工作中，任何涉及到价值、以太币相关的、货币、余额或者支付，都以Wei作为单位来计算。
 
 \subsection{Which History?}
 
