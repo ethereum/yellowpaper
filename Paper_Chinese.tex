@@ -76,7 +76,7 @@
 
 这个提议系统中的交易, 有一些在现实世界中并不常见的属性。审判廉洁，在现实世界往往很难找到，但对公正的算法解释器是天然的; 透明，或者说通过交易日志和规则或代码指令能够清晰的看见到状态变化或者判决, 但因为人类语言的模糊性、信息的缺乏以及老的偏见难以撼动,导致基于人的系统中从来没有完美实现透明。
 
-总的来说，我希望能提供一个系统，能够保证用户无论是和其他个体、系统还是组织交互,都能对可能的结果及产生结果的过程完全信任。
+总的来说，我们希望能提供一个系统，能够保证用户无论是和其他个体、系统还是组织交互,都能对可能的结果及产生结果的过程完全信任。
 
 
 \subsection{前人工作} \label{ch:previous}
@@ -145,17 +145,18 @@ $10^{18}$ & Ether(以太) \\
 
 在整个工作中，任何涉及到价值、以太币相关的、货币、余额或者支付，都以Wei作为单位来计算。
 
-\subsection{Which History?}
+\subsection{历史?}
 
-Since the system is decentralised and all parties have an opportunity to create a new block on some older pre-existing block, the resultant structure is necessarily a tree of blocks. In order to form a consensus as to which path, from root (the genesis block) to leaf (the block containing the most recent transactions) through this tree structure, known as the blockchain, there must be an agreed-upon scheme. If there is ever a disagreement between nodes as to which root-to-leaf path down the block tree is the `best' blockchain, then a \textit{fork} occurs.
+因为这是一个去中心化的系统, 所有人都有机会在之前的某一个区块创建新的区块并连接在其后, 这会行成一个树状的区块。为了能在这个树状结构上从根节点（创世块）到叶子节点（包含最新交易的区块）能形成一个一致的区块链,必须有一个共识方案。如果有人认为从根节点到叶子节点的路径不是"最佳"的区块链, 那这时候就会发生分叉。
 
-This would mean that past a given point in time (block), multiple states of the system may coexist: some nodes believing one block to contain the canonical transactions, other nodes believing some other block to be canonical, potentially containing radically different or incompatible transactions. This is to be avoided at all costs as the uncertainty that would ensue would likely kill all confidence in the entire system.
+这个就意味着在一个给定的时间点, 系统中会有多个状态共存：一些节点相信一个区块是包含标准的交易，其他的节点则相信另外一些区块包含标准的交易，其中就包含彻底不同或者不兼容的交易。这一点必须要避免, 因为它会破坏整个系统信用。
 
-The scheme we use in order to generate consensus is a simplified version of the GHOST protocol introduced by \cite{cryptoeprint:2013:881}. This process is described in detail in section \ref{ch:ghost}.
 
-Sometimes, a path follows a new protocol from a particular height.  This document describes one version of the protocol.  In order to follow back the history of a path, one might need to reference multiple versions of this document.
+我们使用了一个简单GHOST协议版本来达成共识, 参见 \cite{cryptoeprint:2013:881} 。我们会在\ref{ch:ghost} 详细说明。
 
-\section{Conventions}\label{ch:conventions}
+有时会从一个特定的区块链高度启用新的协议。本文描述了协议的一个版本, 如果要跟踪历史区块链路径, 可能需要查看这份文档的历史版本。(译者注: 可以到 https://github.com/ethereum/yellowpaper 查看英文版历史版本)
+
+\section{约定}\label{ch:conventions}
 
 I use a number of typographical conventions for the formal notation, some of which are quite particular to the present work:
 
