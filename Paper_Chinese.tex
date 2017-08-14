@@ -338,28 +338,29 @@ B \equiv (B_H, B_\mathbf{T}, B_\mathbf{U})
 
 \subsubsection{交易收据}
 
-In order to encode information about a transaction concerning which it may be useful to form a zero-knowledge proof, or index and search, we encode a receipt of each transaction containing certain information from concerning its execution.
-Each receipt, denoted $B_\mathbf{R}[i]$ for the $i$th transaction, is placed in an index-keyed trie and the root recorded in the header as $H_e$.
+为了让交易信息编码能有利于零知识证明、索引、搜索, 我们将每个包含一定信息的交易收据进行编码。以 $B_\mathbf{R}[i]$ 表示第 $i$ 个交易,保存在一个索引字典树中,$H_e$ 是这个字典树的根节点。
+为了去编译信息关于每一个有关系的交易而且可能是一个有用的工具去形成一个零知识证明（zero-knowledge proof），或者索引和搜索。我们编译每一个包含当前交易执行的某些信息为交易收据。每个收据（在第个交易中表示为）是被放置于一个带关键字索引的trie中和这个区块头中被记录下的根值，表示为。
 
-The transaction receipt is a tuple of four items comprising the post-transaction state, $R_{\boldsymbol{\sigma}}$, the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_u$, the set of logs created through execution of the transaction, $R_\mathbf{l}$ and the Bloom filter composed from information in those logs, $R_b$:
+交易收据是一个包含四个条目的元组：交易后的状态,$R_{\boldsymbol{\sigma}}$；当前区块中交易累计燃料使用量, $R_u$, 交易发生后会立即更新这个值;交易执行过程中创建的日志集合,$R_\mathbf{l}$；和日志Bloom过滤器,$R_b$ ：
+
 \begin{equation}
 R \equiv (R_{\boldsymbol{\sigma}}, R_u, R_b, R_\mathbf{l})
 \end{equation}
 
-The function $L_R$ trivially prepares a transaction receipt for being transformed into an RLP-serialised byte array:
+函数 $L_R$ 是一个将交易收据转换为 RLP 编码的预处理函数:
 \begin{equation}
 L_R(R) \equiv (\mathtt{\small TRIE}(L_S(R_{\boldsymbol{\sigma}})), R_u, R_b, R_\mathbf{l})
 \end{equation}
-thus the post-transaction state, $R_{\boldsymbol{\sigma}}$ is encoded into a trie structure, the root of which forms the first item.
 
-We assert $R_u$, the cumulative gas used is a positive integer and that the logs Bloom, $R_b$, is a hash of size 2048 bits (256 bytes):
+交易后状态 $R_{\boldsymbol{\sigma}}$ 会编码到一个字典树中, 字典树的根节点组成了第一个条目。
+
+我们假定累计的燃料使用量 $R_u$ 是一个正整数, 日志Bloom $R_b$ 是2048位(256字节)的哈希:
 \begin{equation}
 R_u \in \mathbb{P} \quad \wedge \quad R_b \in \mathbb{B}_{256}
 \end{equation}
 
-%Notably $B_\mathbf{T}$ does not get serialised into the block by the block preparation function $L_B$; it is merely a convenience equivalence.
 
-The log entries, $R_\mathbf{l}$, is a series of log entries, termed, for example, $(O_0, O_1, ...)$. A log entry, $O$, is a tuple of a logger's address, $O_a$, a series of 32-bytes log topics, $O_\mathbf{t}$ and some number of bytes of data, $O_\mathbf{d}$:
+$R_\mathbf{l}$ 是一系列的日志入口, 例如 $(O_0, O_1, ...)$。 一个日志入口 $O$ 是一个日志记录器的地址 $O_a$ 的元组, $O_\mathbf{t}$ 是一系列32字节的日志主题, $O_\mathbf{d}$ 是一些字节数据:
 \begin{equation}
 O \equiv (O_a, ({O_\mathbf{t}}_0, {O_\mathbf{t}}_1, ...), O_\mathbf{d})
 \end{equation}
@@ -367,12 +368,13 @@ O \equiv (O_a, ({O_\mathbf{t}}_0, {O_\mathbf{t}}_1, ...), O_\mathbf{d})
 O_a \in \mathbb{B}_{20} \quad \wedge \quad \forall_{t \in O_\mathbf{t}}: t \in \mathbb{B}_{32} \quad \wedge \quad O_\mathbf{d} \in \mathbb{B}
 \end{equation}
 
-We define the Bloom filter function, $M$, to reduce a log entry into a single 256-byte hash:
+我们定义 Bloom 过滤器函数 $M$ 将一个日志入口转换为一个 256 字节哈希:
 \begin{equation}
 M(O) \equiv \bigvee_{t \in \{O_a\} \cup O_\mathbf{t}} \big( M_{3:2048}(t) \big)
 \end{equation}
 
-where $M_{3:2048}$ is a specialised Bloom filter that sets three bits out of 2048, given an arbitrary byte sequence. It does this through taking the low-order 11 bits of each of the first three pairs of bytes in a Keccak-256 hash of the byte sequence. Formally:
+
+其中 $M_{3:2048}$ 是一个特别的 Bloom 过滤器,针对任意一个字节序列,它舍弃这个字节序列2048位的前三位。它通过对一个字节序列的 Keccak-256 哈希的每一个前三对字节取其的低11位来实现:
 \begin{eqnarray}
 M_{3:2048}(\mathbf{x}: \mathbf{x} \in \mathbb{B}) & \equiv & \mathbf{y}: \mathbf{y} \in \mathbb{B}_{256} \quad \text{where:}\\
 \mathbf{y} & = & (0, 0, ..., 0) \quad \text{except:}\\
@@ -380,9 +382,9 @@ M_{3:2048}(\mathbf{x}: \mathbf{x} \in \mathbb{B}) & \equiv & \mathbf{y}: \mathbf
 m(\mathbf{x}, i) &\equiv& \mathtt{\tiny KEC}(\mathbf{x})[i, i + 1] \bmod 2048
 \end{eqnarray}
 
-where $\mathcal{B}$ is the bit reference function such that $\mathcal{B}_j(\mathbf{x})$ equals the bit of index $j$ (indexed from 0) in the byte array $\mathbf{x}$.
+其中 $\mathcal{B}$ 是位引用函数, $\mathcal{B}_j(\mathbf{x})$ 等于字节数组 $\mathbf{x}$ 中的索引 j(从0开始索引) 的位。
 
-\subsubsection{Holistic Validity}
+\subsubsection{整体有效性}
 
 We can assert a block's validity if and only if it satisfies several conditions: it must be internally consistent with the ommer and transaction block hashes and the given transactions $B_\mathbf{T}$ (as specified in sec \ref{ch:finalisation}), when executed in order on the base state $\boldsymbol{\sigma}$ (derived from the final state of the parent block), result in a new state of the identity $H_r$:
 \begin{equation}
