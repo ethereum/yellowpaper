@@ -386,7 +386,8 @@ m(\mathbf{x}, i) &\equiv& \mathtt{\tiny KEC}(\mathbf{x})[i, i + 1] \bmod 2048
 
 \subsubsection{整体有效性}
 
-We can assert a block's validity if and only if it satisfies several conditions: it must be internally consistent with the ommer and transaction block hashes and the given transactions $B_\mathbf{T}$ (as specified in sec \ref{ch:finalisation}), when executed in order on the base state $\boldsymbol{\sigma}$ (derived from the final state of the parent block), result in a new state of the identity $H_r$:
+如果一个区块同时满足以下几个条件，我们才能认为这个区块是有效的：当从起始状态 $\boldsymbol{\sigma}$ (父块的最终状态) 按顺序执行完生成新的状态 $H_r$ 后, 在内部上要保持一致,包括叔链、交易区块哈希、给定的交易 $B_\mathbf{T}$（详细描述见 \ref{ch:finalisation}）:
+
 \begin{equation}
 \begin{array}[t]{lclc}
 H_r &\equiv& \mathtt{\small TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) & \wedge \\
@@ -397,21 +398,21 @@ H_b &\equiv& \bigvee_{\mathbf{r} \in B_\mathbf{R}} \big( \mathbf{r}_b \big)
 \end{array}
 \end{equation}
 
-where $p(k, v)$ is simply the pairwise RLP transformation, in this case, the first being the index of the transaction in the block and the second being the transaction receipt:
+其中 $p(k, v)$ 是 RLP 的简单对转换, 在这个例子中, k 为这个区块中的交易索引,v 为交易收据:
 \begin{equation}
 p(k, v) \equiv \big( \mathtt{\small RLP}(k), \mathtt{\small RLP}(v) \big)
 \end{equation}
 
-Furthermore:
+此外:
 \begin{equation}
 \mathtt{\small TRIE}(L_S(\boldsymbol{\sigma})) = {P(B_H)_H}_r
 \end{equation}
 
-Thus $\texttt{\small TRIE}(L_S(\boldsymbol{\sigma}))$ is the root node hash of the Merkle Patricia tree structure containing the key-value pairs of the state $\boldsymbol{\sigma}$ with values encoded using RLP, and $P(B_H)$ is the parent block of $B$, defined directly.
+$\texttt{\small TRIE}(L_S(\boldsymbol{\sigma}))$ 是包含以RLP编码的状态 $\boldsymbol{\sigma}$ 键值对的 Merkle Patricia 树根节点哈希, $P(B_H)$ 是父节点。
 
-The values stemming from the computation of transactions, specifically the transaction receipts, $B_\mathbf{R}$, and that defined through the transactions state-accumulation function, $\Pi$, are formalised later in section \ref{sec:statenoncevalidation}.
+这些值根据交易计算产生，特别是交易收据 $B_\mathbf{R}$,这个通过交易状态累积函数 $\Pi$ 定义，在 \ref{sec:statenoncevalidation} 会详细说明。
 
-\subsubsection{Serialisation}
+\subsubsection{序列化}
 
 The function $L_B$ and $L_H$ are the preparation functions for a block and block header respectively. Much like the transaction receipt preparation function $L_R$, we assert the types and order of the structure for when the RLP transformation is required:
 \begin{eqnarray}
