@@ -414,18 +414,19 @@ $\texttt{\small TRIE}(L_S(\boldsymbol{\sigma}))$ 是包含以RLP编码的状态 
 
 \subsubsection{序列化}
 
-The function $L_B$ and $L_H$ are the preparation functions for a block and block header respectively. Much like the transaction receipt preparation function $L_R$, we assert the types and order of the structure for when the RLP transformation is required:
+函数 $L_B$ 和 $L_H$ 分别是区块和区块头的准备函数。类似交易收据准备函数 $L_R$，当转换为 RLP 格式时,假设对应的类型、顺序及结构如下:
+
 \begin{eqnarray}
 \quad L_H(H) & \equiv & (\begin{array}[t]{l}H_p, H_o, H_c, H_r, H_t, H_e, H_b, H_d,\\ H_i, H_l, H_g, H_s, H_x, H_m, H_n \; )\end{array} \\
 \quad L_B(B) & \equiv & \big( L_H(B_H), L_T^*(B_\mathbf{T}), L_H^*(B_\mathbf{U}) \big)
 \end{eqnarray}
 
-With $L_T^*$ and $L_H^*$ being element-wise sequence transformations, thus:
+其中 $L_T^*$ 和 $L_H^*$ 是元素序列转换函数,因此:
 \begin{equation}
-f^*\big( (x_0, x_1, ...) \big) \equiv \big( f(x_0), f(x_1), ... \big) \quad \text{for any function} \; f
+f^*\big( (x_0, x_1, ...) \big) \equiv \big( f(x_0), f(x_1), ... \big) \quad \text{对于任何函数} \; f
 \end{equation}
 
-The component types are defined thus:
+元素类型定义如下:
 \begin{equation}
 \begin{array}[t]{lclclcl}
 H_p \in \mathbb{B}_{32} & \wedge & H_o \in \mathbb{B}_{32} & \wedge & H_c \in \mathbb{B}_{20} & \wedge \\
@@ -436,21 +437,21 @@ H_x \in \mathbb{B} & \wedge & H_m \in \mathbb{B}_{32} & \wedge & H_n \in \mathbb
 \end{array}
 \end{equation}
 
-where
+其中
 \begin{equation}
 \mathbb{B}_n = \{ B: B \in \mathbb{B} \wedge \lVert B \rVert = n \}
 \end{equation}
 
-We now have a rigorous specification for the construction of a formal block structure. The RLP function $\texttt{\small RLP}$ (see Appendix \ref{app:rlp}) provides the canonical method for transforming this structure into a sequence of bytes ready for transmission over the wire or storage locally.
+我们现在有了一个严密正式的区块结构结构说明。RLP 函数（见附录 \ref{app:rlp}）提供了一个标准方法来把这个结构转换为一个字节序列。
 
-\subsubsection{Block Header Validity}
+\subsubsection{区块头验证}
 
-We define $P(B_H)$ to be the parent block of $B$, formally:
+我们定义 $P(B_H)$ 为 $B$ 的父区块::
 \begin{equation}
 P(H) \equiv B': \mathtt{\tiny KEC}(\mathtt{\tiny RLP}(B'_H)) = H_p
 \end{equation}
 
-The block number is the parent's block number incremented by one:
+当前区块编号等于它的父块编号加1：
 \begin{equation}
 H_i \equiv {{P(H)_H}_i} + 1
 \end{equation}
@@ -460,14 +461,14 @@ H_i \equiv {{P(H)_H}_i} + 1
 \newcommand{\expdiffsymb}{\ensuremath{\epsilon}}
 \newcommand{\diffadjustment}{x}
 
-The canonical difficulty of a block of header $H$ is defined as $D(H)$:
+区块难度定义为 $D(H)$：
 \begin{equation}
 D(H) \equiv \begin{dcases}
 \mindifficulty & \text{if} \quad H_i = 0\\
 \text{max}\!\left(\mindifficulty, {P(H)_H}_d + \diffadjustment\times\homesteadmod + \expdiffsymb \right) & \text{otherwise}\\
 \end{dcases}
 \end{equation}
-where:
+其中:
 \begin{equation}
 \mindifficulty \equiv 131072
 \end{equation}
@@ -481,31 +482,32 @@ where:
 \expdiffsymb \equiv \left\lfloor 2^{ \left\lfloor H_i \div 100000 \right\rfloor - 2 } \right\rfloor
 \end{equation}
 
-The canonical gas limit $H_l$ of a block of header $H$ must fulfil the relation:
+区块的燃料限制 $H_l$ 需要满足下面条件:
 \begin{eqnarray}
 & & H_l < {P(H)_H}_l + \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor \quad \wedge \\
 & & H_l > {P(H)_H}_l - \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor \quad \wedge \\
 & & H_l \geqslant 125000
 \end{eqnarray}
 
-$H_s$ is the timestamp of block $H$ and must fulfil the relation:
+$H_s$ 是区块 $H$ 的时间戳,需满足下面条件:
 \begin{equation}
 H_s > {P(H)_H}_s
 \end{equation}
 
-This mechanism enforces a homeostasis in terms of the time between blocks; a smaller period between the last two blocks results in an increase in the difficulty level and thus additional computation required, lengthening the likely next period. Conversely, if the period is too large, the difficulty, and expected time to the next block, is reduced.
+这个机制保证了区块间时间平衡；如果最近的两个区块时间间隔短,则会导致难度系数增加,因此需要额外的计算量，大概率会延长下个区块的出块时间。相反，如果最近的2个区块时间间隔时间过长，难度系数和下一个区块的出块预期时间也会减少。
 
-The nonce, $H_n$, must satisfy the relations:
+随机数 $H_n$，必须满足下面关系：
 \begin{equation}
 n \leqslant \frac{2^{256}}{H_d} \quad \wedge \quad m = H_m
 \end{equation}
 with $(n, m) = \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})$.
 
-Where $H_{\hcancel{n}}$ is the new block's header $H$, but \textit{without} the nonce and mix-hash components, $\mathbf{d}$ being the current DAG, a large data set needed to compute the mix-hash, and $\mathtt{PoW}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an array with the first item being the mix-hash, to proof that a correct DAG has been used, and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. Given an approximately uniform distribution in the range $[0, 2^{64})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
+其中 $H_{\hcancel{n}}$ 是新区块的区块头，但不包含随机数和混合哈希值，$\mathbf{d}$  是当前的大数据集合 DAG(有向无环图)，需要去计算混合哈希,  $\mathtt{PoW}$ 是工作量证明函数（见 \ref{ch:pow}）：第一个元素用于计算混合哈希值，以证明使用了一个正确的 DAG, 第2个元素是伪随机数,依赖于 $H$ 及 $\mathbf{d}$ 。给定一个范围在$[0, 2^{64})$ 的均匀分布，则求解时间和难度$H_d$ 成比例。
 
-This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propagate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because its satisfaction depends on the contents of the block and in turn its composed transactions, creating new, valid, blocks is difficult and, over time, requires approximately the total compute power of the trustworthy portion of the mining peers.
+这就是区块链安全基础，这也是一个恶意节点不能用其新创建的区块中重写历史数据的重要原因。因为这个随机数必须满足这些条件，且因为条件依赖于这个区块的内容和相关交易, 创建新的合法的区块是困难的、耗时的, 需要超过所有诚实矿工的算力总和。
 
-Thus we are able to define the block header validity function $V(H)$:
+因此,我们定义这个区块头的验证函数 $V(H)$ 为：
+
 \begin{eqnarray}
 V(H) & \equiv &  n \leqslant \frac{2^{256}}{H_d} \wedge m = H_m \quad \wedge \\
 & & H_d = D(H) \quad \wedge \\
@@ -517,11 +519,11 @@ V(H) & \equiv &  n \leqslant \frac{2^{256}}{H_d} \wedge m = H_m \quad \wedge \\
 & & H_i = {P(H)_H}_i +1 \quad \wedge \\
 & & \lVert H_x \rVert \le 32
 \end{eqnarray}
-where $(n, m) = \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})$
+其中 $(n, m) = \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})$
 
-Noting additionally that \textbf{extraData} must be at most 32 bytes.
+此外, \textbf{extraData} 最多 32 字节。
 
-\section{Gas and Payment} \label{ch:payment}
+\section{燃料和支付} \label{ch:payment}
 
 In order to avoid issues of network abuse and to sidestep the inevitable questions stemming from Turing completeness, all programmable computation in Ethereum is subject to fees. The fee schedule is specified in units of \textit{gas} (see Appendix \ref{app:fees} for the fees associated with various computation). Thus any given fragment of programmable computation (this includes creating contracts, making message calls, utilising and accessing account storage and executing operations on the virtual machine) has a universally agreed cost in terms of gas.
 
