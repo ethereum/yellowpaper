@@ -344,9 +344,9 @@ L_R(R) \equiv (0 \in \mathbb{B}_{256}, R_u, R_b, R_\mathbf{l})
 \end{equation}
 where $0 \in \mathbb{B}_{256}$ replaces the pre-transaction state root that existed in previous versions of the protocol.
 
-We assert that the status code $R_{s'}$ is a single byte.
+We assert that the status code $R_{s'}$ is an integer.
 \begin{equation}
-R_{s'} \in \mathbb{B}_{8}
+R_{s'} \in \mathbb{P}
 \end{equation}
 
 We assert $R_u$, the cumulative gas used is a positive integer and that the logs Bloom, $R_b$, is a hash of size 2048 bits (256 bytes):
@@ -714,7 +714,7 @@ If there is not enough gas remaining to pay this, \ie $g^{**} < c$, then we also
 
 The gas remaining will be zero in any such exceptional condition, \ie if the creation was conducted as the reception of a transaction, then this doesn't affect payment of the intrinsic cost of contract creation; it is paid regardless. However, the value of the transaction is not transferred to the aborted contract's address when we are out-of-gas.
 
-If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persist. Thus formally, we may specify the resultant state, gas and substate as $(\boldsymbol{\sigma}', g', A)$ where:
+If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persist. Thus formally, we may specify the resultant state, gas, substate and status code as $(\boldsymbol{\sigma}', g', A, s')$ where:
 
 \begin{align}
 \quad g' &\equiv \begin{cases}
