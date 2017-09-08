@@ -471,9 +471,10 @@ where:
 \begin{equation}
 \homesteadmod \equiv \text{max}\left( 1 - \left\lfloor\frac{H_s - {P(H)_H}_s}{10}\right\rfloor, -99 \right)
 \end{equation}
-\begin{equation}
-\expdiffsymb \equiv \left\lfloor 2^{ \left\lfloor H_i \div 100000 \right\rfloor - 2 } \right\rfloor
-\end{equation}
+\begin{align}
+\expdiffsymb &\equiv \left\lfloor 2^{ \left\lfloor H'_i \div 100000 \right\rfloor - 2 } \right\rfloor \\
+H'_i &\equiv \max(H_i - 3000000, 0)
+\end{align}
 
 The canonical gas limit $H_l$ of a block of header $H$ must fulfil the relation:
 \begin{eqnarray}
