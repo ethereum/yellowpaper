@@ -44,7 +44,7 @@
 \title{以太坊：一种安全去中心化的通用交易账本 \\ {\smaller \textbf{EIP-150版本  (\YellowPaperVersionNumber{})}}}
 \author{
     原文作者: Dr. Gavin Wood,  gavin@ethcore.io\\
-    译者: 猿哥, root@cxyym.com, 微信 yuange1024; 高天露, tianlu.jorden.gao@gmail.com
+    译者: 猿哥, root@cxyym.com; 高天露, tianlu.jorden.gao@gmail.com
 }
 \begin{document}
 
@@ -525,64 +525,61 @@ V(H) & \equiv &  n \leqslant \frac{2^{256}}{H_d} \wedge m = H_m \quad \wedge \\
 
 \section{燃料和支付} \label{ch:payment}
 
-In order to avoid issues of network abuse and to sidestep the inevitable questions stemming from Turing completeness, all programmable computation in Ethereum is subject to fees. The fee schedule is specified in units of \textit{gas} (see Appendix \ref{app:fees} for the fees associated with various computation). Thus any given fragment of programmable computation (this includes creating contracts, making message calls, utilising and accessing account storage and executing operations on the virtual machine) has a universally agreed cost in terms of gas.
+为了避免网络滥用及回避由于图灵完整性而带来的一些不可避免的问题，在以太坊中所有的编程计算都需要费用。各种操作费用以 \textit{gas} (详见附录 \ref{app:fees} )为单位计算。任意的程序片段（包括合约创建、信息调回、利用及访问账户存储、在虚拟机上执行操作等）都可以根据规则计算出消耗的燃料。
 
-Every transaction has a specific amount of gas associated with it: \textbf{gasLimit}. This is the amount of gas which is implicitly purchased from the sender's account balance. The purchase happens at the according \textbf{gasPrice}, also specified in the transaction. The transaction is considered invalid if the account balance cannot support such a purchase. It is named \textbf{gasLimit} since any unused gas at the end of the transaction is refunded (at the same rate of purchase) to the sender's account. Gas does not exist outside of the execution of a transaction. Thus for accounts with trusted code associated, a relatively high gas limit may be set and left alone.
+每一个交易都有一个燃料上限：\textbf{gasLimit} (燃料上限)。这些燃料从发送者的账户中扣除。具体从账户上扣除的额度和 \textbf{gasPrice}(燃料价格) 有关(译者注: 扣除额度 = \textbf{gasLimit} * \textbf{gasPrice}), 在执行交易前会指定燃料价格。如果这个账户不能支付起燃料费用，这个交易会被当作无效交易。之所以它被命名为燃料上限，是因为剩余的燃料在交易完成之后会被退回（以购买时的同样价格）到发送者账户。燃料不会被用在交易执行之外。因此对于可信任账户，应该设置一个相对较高的燃料上限。
 
-In general, Ether used to purchase gas that is not refunded is delivered to the \textit{beneficiary} address, the address of an account typically under the control of the miner. Transactors are free to specify any \textbf{gasPrice} that they wish, however miners are free to ignore transactions as they choose. A higher gas price on a transaction will therefore cost the sender more in terms of Ether and deliver a greater value to the miner and thus will more likely be selected for inclusion by more miners. Miners, in general, will choose to advertise the minimum gas price for which they will execute transactions and transactors will be free to canvas these prices in determining what gas price to offer. Since there will be a (weighted) distribution of minimum acceptable gas prices, transactors will necessarily have a trade-off to make between lowering the gas price and maximising the chance that their transaction will be mined in a timely manner.
+通常来说，以太币（Ether）用作去购买燃料, 未退回的那部分转到了区块受益人的地址，通常这个账户的地址是由矿工设定。交易者可以任意设定燃料价格，然而矿工也可以任意地忽略某个交易。在一个交易中，高价格的燃料将消费这个发送者更多的以太币,并转给矿工更多的以太币，因此这个交易会被更多的矿工选择。通常来说，矿工将会选择去通知这是他们执行交易最低燃料价格, 交易者们一般也会些选择一个高过燃料价格下限的价格。因此, 会有一个（加权的）最低燃料可接受价格分布，交易者们需要权衡降低燃料价格和交易快速被矿工打包。
 
-%\subsubsection{Determining Computation Costs}
+\section{交易执行} \label{ch:transactions}
 
-\section{Transaction Execution} \label{ch:transactions}
-
-The execution of a transaction is the most complex part of the Ethereum protocol: it defines the state transition function $\Upsilon$. It is assumed that any transactions executed first pass the initial tests of intrinsic validity. These include:
-
+交易执行是以太坊协议中最复杂的部分：它定义了状态转换函数 $\Upsilon$。所有交易在执行时,都要先通过内部的有效性测试,这些包含：
 \begin{enumerate}
-\item The transaction is well-formed RLP, with no additional trailing bytes;
-\item the transaction signature is valid;
-\item the transaction nonce is valid (equivalent to the sender account's current nonce);
-\item the gas limit is no smaller than the intrinsic gas, $g_0$, used by the transaction;
-\item the sender account balance contains at least the cost, $v_0$, required in up-front payment.
+\item 交易是 RLP 格式数据，没有多余的后缀字节；
+\item 交易的签名是有效的；
+\item 交易的随机数是有效的（等于发送者账户的当前随机数）;
+\item 燃料上限不小于实际交易过程中用的燃料 $g_0$;
+\item 发送者账户的余额至少大于费用 $v_0$,需要提前支付。
 \end{enumerate}
 
-Formally, we consider the function $\Upsilon$, with $T$ being a transaction and $\boldsymbol{\sigma}$ the state:
+$T$ 表示交易, $\boldsymbol{\sigma}$ 表示状态, 状态转移函数 $\Upsilon$ 如下:
 \begin{equation}
 \boldsymbol{\sigma}' = \Upsilon(\boldsymbol{\sigma}, T)
 \end{equation}
 
-Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define $\Upsilon^g$ to evaluate to the amount of gas used in the execution of a transaction and $\Upsilon^\mathbf{l}$ to evaluate to the transaction's accrued log items, both to be formally defined later.
+$\boldsymbol{\sigma}'$ 是交易后的状态。我们定义 $\Upsilon^g$ 为交易执行所消耗的燃料量, $\Upsilon^\mathbf{l}$ 为交易过程中产生的日志记录, 都会在后文正式定义。
 
-\subsection{Substate}
-Throughout transaction execution, we accrue certain information that is acted upon immediately following the transaction. We call this \textit{transaction substate}, and represent it as $A$, which is a tuple:
+\subsection{子状态}
+
+从交易执行过程来看，伴随交易会产生一些特定的信息, 我们称为交易子状态，用 $A$ 来表示:
 \begin{equation}
 A \equiv (A_\mathbf{s}, A_\mathbf{l}, A_r)
 \end{equation}
 
-The tuple contents include $A_\mathbf{s}$, the self-destruct set: a set of accounts that will be discarded following the transaction's completion. $A_\mathbf{l}$ is the log series: this is a series of archived and indexable `checkpoints' in VM code execution that allow for contract-calls to be easily tracked by onlookers external to the Ethereum world (such as decentralised application front-ends). Finally there is $A_r$, the refund balance, increased through using the {\small SSTORE} instruction in order to reset contract storage to zero from some non-zero value. Though not immediately refunded, it is allowed to partially offset the total execution costs.
+元组内容包含自毁集合 $A_\mathbf{s}$: 一个将在交易完成后被删除的账户集合。 $A_\mathbf{l}$ 是一系列的日志：在代码执行过程中是可归档, 可索引的检查点, 允许以太坊世界的外部旁观者(例如去中心化应用的前端)跟踪合约调用。$A_r$ 表示返回的余额，当使用 {\small SSTORE} 指令将非0的合约存贮空间置为0时,返回余额会增加。虽然不是立即返回余额，但可以部分抵消整个执行费用。
 
-For brevity, we define the empty substate $A^0$ to have no self-destructs, no logs and a zero refund balance:
+我们定义空的子状态 $A^0$, 它没有自毁、没有日记、返回余额为0：
 \begin{equation}
 A^0 \equiv (\varnothing, (), 0)
 \end{equation}
 
-\subsection{Execution}
-We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
+\subsection{执行}
+
+执行过程中需要的燃料需要在交易进行之前支付,定义 $g_0$ :
 \begin{align}
 g_0 \equiv {} & \sum_{i \in T_\mathbf{i}, T_\mathbf{d}} \begin{cases} G_{txdatazero} & \text{if} \quad i = 0 \\ G_{txdatanonzero} & \text{otherwise} \end{cases} \\
 {} & + \begin{cases} G_\text{txcreate} & \text{if} \quad T_t = \varnothing \\ 0 & \text{otherwise} \end{cases} \\
 {} & + G_{transaction}
 \end{align}
 
-where $T_\mathbf{i},T_\mathbf{d}$ means the series of bytes of the transaction's associated data and initialisation EVM-code, depending on whether the transaction is for contract-creation or message-call. $G_\text{txcreate}$ is added if the transaction is contract-creating, but not if a result of EVM-code. $G$ is fully defined in Appendix \ref{app:fees}.
+$T_\mathbf{i}$ 合约初始化EVM代码, $T_\mathbf{d}$ 是交易附带的关联数据, 取决于交易是合约创建还是消息调用。如果这个交易是合约创建,那么会增加 $G_\text{txcreate}$ , 其它情况则不增加。$G$ 的详细定义见附录 \ref{app:fees}。
 
-%todo Explain g_d reason?
-
-The up-front cost $v_0$ is calculated as:
+预支付的费用 $v_0$ 计算如下:
 \begin{equation}
 v_0 \equiv T_g T_p + T_v
 \end{equation}
 
-The validity is determined as:
+需满足下面关系:
 \begin{equation}
 \begin{array}[t]{rcl}
 S(T) & \neq & \varnothing \quad \wedge \\
@@ -594,18 +591,21 @@ T_g & \leqslant & {B_H}_l - \ell(B_\mathbf{R})_u
 \end{array}
 \end{equation}
 
-Note the final condition; the sum of the transaction's gas limit, $T_g$, and the gas utilised in this block prior, given by $\ell(B_\mathbf{R})_u$, must be no greater than the block's \textbf{gasLimit}, ${B_H}_l$.
 
-The execution of a valid transaction begins with an irrevocable change made to the state: the nonce of the account of the sender, $S(T)$, is incremented by one and the balance is reduced by part of the up-front cost, $T_gT_p$. The gas available for the proceeding computation, $g$, is defined as $T_g - g_0$. The computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
+注意最后的那个条件: 交易燃料限制 $T_g$  <= 这个区块的燃料限制 ${B_H}_l$ - 这个区块之前的所有交易已使用的燃料 $\ell(B_\mathbf{R})_u$  。
 
-We define the checkpoint state $\boldsymbol{\sigma}_0$:
+
+有效交易的执行起始于一个对状态不能撤回的改变：发送者账户 $S(T)$ 的随机数会加1, 账户余额扣减部分预付费用 $T_gT_p$。计算过程中有效的燃料 $g$ = $T_g - g_0$。无论是合约创建还是消息调用，得到的最终这状态（可能等于当前的状态），这个改变是确定的且永久无效:从这个观点看不会存在无效的交易。
+
+我们定义检查点状态 $\boldsymbol{\sigma}_0$：
 \begin{eqnarray}
 \boldsymbol{\sigma}_0 & \equiv & \boldsymbol{\sigma} \quad \text{except:} \\
 \boldsymbol{\sigma}_0[S(T)]_b & \equiv & \boldsymbol{\sigma}[S(T)]_b - T_g T_p \\
 \boldsymbol{\sigma}_0[S(T)]_n & \equiv & \boldsymbol{\sigma}[S(T)]_n + 1
 \end{eqnarray}
 
-Evaluating $\boldsymbol{\sigma}_P$ from $\boldsymbol{\sigma}_0$ depends on the transaction type; either contract creation or message call; we define the tuple of post-execution provisional state $\boldsymbol{\sigma}_P$, remaining gas $g'$ and substate $A$:
+
+从 $\boldsymbol{\sigma}_0$ 转变为 $\boldsymbol{\sigma}_P$ 和交易类型相关。不管它是创建合约还是消息调用,我们定义元组包括执行后的临时状态 $\boldsymbol{\sigma}_P$ , 剩余的燃料 $g'$ 和子状态 $A$ :
 \begin{equation}
 (\boldsymbol{\sigma}_P, g', A) \equiv \begin{cases}
 \Lambda(\boldsymbol{\sigma}_0, S(T), T_o, &\\ \quad\quad g, T_p, T_v, T_\mathbf{i}, 0) & \text{if} \quad T_t = \varnothing \\
@@ -613,22 +613,25 @@ Evaluating $\boldsymbol{\sigma}_P$ from $\boldsymbol{\sigma}_0$ depends on the t
 \end{cases}
 \end{equation}
 
-where $g$ is the amount of gas remaining after deducting the basic amount required to pay for the existence of the transaction:
+其中 $g$ 是燃料上限扣除已有的交易消耗的燃料：
 \begin{equation}
 g \equiv T_g - g_0
 \end{equation}
-and $T_o$ is the original transactor, which can differ from the sender in the case of a message call or contract creation not directly triggered by a transaction but coming from the execution of EVM-code.
 
-Note we use $\Theta_{3}$ to denote the fact that only the first three components of the function's value are taken; the final represents the message-call's output value (a byte array) and is unused in the context of transaction evaluation.
+$T_o$ 是原始执行者，与和合约创建或消息调用(直接由交易触发)不同, 可以通过执行 EVM 代码内部调用来执行。
 
-After the message call or contract creation is processed, the state is finalised by determining the amount to be refunded, $g^*$ from the remaining gas, $g'$, plus some allowance from the refund counter, to the sender at the original rate.
+注意，我们使用 $\Theta_{3}$ 表示取函数值的前三个元素;最终结果是消息调用的输出（一个字节数组）, 最终结果并没有在交易的上下文使用。
+
+在消息调回或者创建合约被处理后，再确定退回的燃料后最终状态就确定了。 剩余的燃料 $g'$, 再加上一些补偿, 得到最终需要退回发送者的燃料 $g^*$:
+
 \begin{equation}
 g^* \equiv g' + \min \{ \Big\lfloor \dfrac{T_g - g'}{2} \Big\rfloor, A_r \}
 \end{equation}
 
-The total refundable amount is the legitimately remaining gas $g'$, added to $A_r$, with the latter component being capped up to a maximum of half (rounded down) of the total amount used $T_g - g'$.
+终需要退回发送者的燃料 $g^*$ 等于当前剩余的燃料 $g'$, 再加一个补偿, 这个补偿是 $A_r$ 和总使用燃料量 $T_g - g'$ 的一半中的小者。
 
-The Ether for the gas is given to the miner, whose address is specified as the beneficiary of the present block $B$. So we define the pre-final state $\boldsymbol{\sigma}^*$ in terms of the provisional state $\boldsymbol{\sigma}_P$:
+燃料对应的以太币给了矿工, 矿工地址是当前区块 $B$ 的受益者地址。我们定义预备最终状态 $\boldsymbol{\sigma}^*$ , 临时状态 $\boldsymbol{\sigma}_P$:
+
 \begin{eqnarray}
 \boldsymbol{\sigma}^* & \equiv & \boldsymbol{\sigma}_P \quad \text{except} \\
 \boldsymbol{\sigma}^*[S(T)]_b & \equiv & \boldsymbol{\sigma}_P[S(T)]_b + g^* T_p \\
@@ -636,37 +639,37 @@ The Ether for the gas is given to the miner, whose address is specified as the b
 m & \equiv & {B_H}_c
 \end{eqnarray}
 
-The final state, $\boldsymbol{\sigma}'$, is reached after deleting all accounts that appear in the self-destruct set:
+删除所有出现在自毁集合中的账户后, 达到了最终状态 $\boldsymbol{\sigma}'$:
 \begin{eqnarray}
 \boldsymbol{\sigma}' & \equiv & \boldsymbol{\sigma}^* \quad \text{except} \\
 \forall i \in A_\mathbf{s}: \boldsymbol{\sigma}'[i] & \equiv & \varnothing
 \end{eqnarray}
 
-And finally, we specify $\Upsilon^g$, the total gas used in this transaction and $\Upsilon^\mathbf{l}$, the logs created by this transaction:
+最后, 我们定义这次交易中总共使用的燃料 $\Upsilon^g$,  这次交易中创建的日志 $\Upsilon^\mathbf{l}$:
 \begin{eqnarray}
 \Upsilon^g(\boldsymbol{\sigma}, T) & \equiv & T_g - g' \\
 \Upsilon^\mathbf{l}(\boldsymbol{\sigma}, T) & \equiv & A_\mathbf{l}
 \end{eqnarray}
 
-These are used to help define the transaction receipt, discussed later.
+这些有助于后续讨论的交易收据。
 
-\section{Contract Creation} \label{ch:create}
+\section{合约创建} \label{ch:create}
 
-There are a number of intrinsic parameters used when creating an account: sender ($s$), original transactor ($o$), available gas ($g$), gas price ($p$), endowment ($v$) together with an arbitrary length byte array, $\mathbf{i}$, the initialisation EVM code and finally the present depth of the message-call/contract-creation stack ($e$).
+当创建一个账户时会有很多参数:发送者（$s$）、原始执行者（$o$）、可用的燃料（$g$）、燃料价格（$p$）、转账额度（$v$）、任意长度的字节数组 $\mathbf{i}$、EVM初始化代码、消息调用/合约创建的当前栈深度($e$) 。
 
-We define the creation function formally as the function $\Lambda$, which evaluates from these values, together with the state $\boldsymbol{\sigma}$ to the tuple containing the new state, remaining gas and accrued transaction substate $(\boldsymbol{\sigma}', g', A)$, as in section \ref{ch:transactions}:
+我们定义创建函数为函数 $\Lambda$，相关的变量有状态 $\boldsymbol{\sigma}$ , 包含新状态、剩余燃料及交易子状态 $(\boldsymbol{\sigma}', g', A)$ (详见第6小结) :：
 \begin{equation}
 (\boldsymbol{\sigma}', g', A) \equiv \Lambda(\boldsymbol{\sigma}, s, o, g, p, v, \mathbf{i}, e)
 \end{equation}
 
-The address of the new account is defined as being the rightmost 160 bits of the Keccak hash of the RLP encoding of the structure containing only the sender and the nonce. Thus we define the resultant address for the new account $a$:
+这个新账户的地址被定义为包含发送者和随机数 RLP 编码的 Keccak 哈希的最边160位。因此我们定义新帐户 $a$ 的地址:
 \begin{equation}
 a \equiv \mathcal{B}_{96..255}\Big(\mathtt{\tiny KEC}\Big(\mathtt{\tiny RLP}\big(\;(s, \boldsymbol{\sigma}[s]_n - 1)\;\big)\Big)\Big)
 \end{equation}
 
-where $\mathtt{\tiny KEC}$ is the Keccak 256-bit hash function, $\mathtt{\tiny RLP}$ is the RLP encoding function, $\mathcal{B}_{a..b}(X)$ evaluates to binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$ and $\boldsymbol{\sigma}[x]$ is the address state of $x$ or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
+其中 $\mathtt{\tiny KEC}$ 是Keccak 256 位哈希函数，$\mathtt{\tiny RLP}$ 是 RLP 编码函数，$\mathcal{B}_{a..b}(X)$ 表示取二进制数据 $X$ 位数为范围 $[a, b]$ 的值,$\boldsymbol{\sigma}[x]$ 是地址 $x$ 的状态，$\varnothing$ 表示地址不存在时的状态。注意,我们使用的是一个比发送者随机数要小的值；我们断言会在在这个合约创建是前会增加发送者账户的随机数，因此在刚开始在交易或VM操作中使用的随机数就是发送者的随机数。
 
-The account's nonce is initially defined as zero, the balance as the value passed, the storage as empty and the code hash as the Keccak 256-bit hash of the empty string; the sender's balance is also reduced by the value passed. Thus the mutated state becomes $\boldsymbol{\sigma}^*$:
+账户的随机数开始被定义为0，余额为传递的转账值，存储空间为空, 哈希代码为Keccak 256位的空字符串哈希值；发送者的余额会减去转账值。这个变化的状态变成 $\boldsymbol{\sigma}^*$:
 \begin{equation}
 \boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except:}
 \end{equation}
@@ -675,7 +678,7 @@ The account's nonce is initially defined as zero, the balance as the value passe
 \boldsymbol{\sigma}^*[s]_b &\equiv& \boldsymbol{\sigma}[s]_b - v
 \end{eqnarray}
 
-where $v'$ is the account's pre-existing value, in the event it was previously in existence:
+其中$v'$ 是账户在交易之前就有的余额:
 \begin{equation}
 v' \equiv \begin{cases}
 0 & \text{if} \quad \boldsymbol{\sigma}[a] = \varnothing\\
@@ -683,14 +686,12 @@ v' \equiv \begin{cases}
 \end{cases}
 \end{equation}
 
-%It is asserted that the state database will also change such that it defines the pair $(\mathtt{\tiny KEC}(\mathbf{b}), \mathbf{b})$.
-
-Finally, the account is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the account's storage can be altered, further accounts can be created and further message calls can be made. As such, the code execution function $\Xi$ evaluates to a tuple of the resultant state $\boldsymbol{\sigma}^{**}$, available gas remaining $g^{**}$, the accrued substate $A$ and the body code of the account $\mathbf{o}$.
+最后，这个账户是通过执行初始化账户的 EVM 代码 $\mathbf{i}$ （执行模型详见小结 \ref{ch:model} ）来初始化的。代码执行可以影响一些事件：可以改变当前账户的存储，能创建更多的账户,执行更多的消息调用。代码执行函数 $\Xi$ 可以得到一个元组,包括结果状态 $\boldsymbol{\sigma}^{**}$, 还可以用的燃料剩余燃料 $g^{**}$, 子状态 $A$, 以及账户 $\mathbf{o}$ 的代码。    赋值到最后的状态的数组中，有效的剩余燃料，当前产生的子状态 $A$ 和账号代码本身 $\mathbf{o}$。
 
 \begin{equation}
 (\boldsymbol{\sigma}^{**}, g^{**}, A, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}^*, g, I) \\
 \end{equation}
-where $I$ contains the parameters of the execution environment as defined in section \ref{ch:model}, that is:
+其中 $I$ 包含执行环境的相关参数, 这些参数在小结 \ref{ch:model} 中有详细定义:
 \begin{eqnarray}
 I_a & \equiv & a \\
 I_o & \equiv & o \\
@@ -702,21 +703,23 @@ I_\mathbf{b} & \equiv & \mathbf{i} \\
 I_e & \equiv & e
 \end{eqnarray}
 
-$I_\mathbf{d}$ evaluates to the empty tuple as there is no input data to this call. $I_H$ has no special treatment and is determined from the blockchain.
+如果没有输入数据,使用 $I_\mathbf{d}$ 表示空的元组。$I_H$ 没有什么特别的, 它由区块链决定。
 
-Code execution depletes gas, and gas may not go below zero, thus execution may exit before the code has come to a natural halting state. In this (and several other) exceptional cases we say an out-of-gas (OOG) exception has occurred: The evaluated state is defined as being the empty set, $\varnothing$, and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation.
 
-If the initialization code completes successfully, a final contract-creation cost is paid, the code-deposit cost, $c$, proportional to the size of the created contract's code:
+代码执行消耗燃料，且燃料不能低于 0，因此程序执行可能会在自然终止之前会退出。在这个（以及其他几个）异常情况, 我们称发生了燃料不足（out-of-gas, OOG）异常：演进的状态变成空集合 $\varnothing$, 整个创建操作对状态没有影响,状态就像尝试创建合作之前一样。
+
+如果这个初始化代码成功地执行完，那么对应的合约创建的也会被支付。代码保存费用  $c$ 和创建的合约代码大小成正比:
+
 \begin{equation}
 c \equiv G_{codedeposit} \times |\mathbf{o}|
 \end{equation}
 
-If there is not enough gas remaining to pay this, \ie $g^{**} < c$, then we also declare an out-of-gas exception.
+如果没有足够的燃料支付这些, 例如 $g^{**} < c$, 就会抛出燃料不足异常。
 
-The gas remaining will be zero in any such exceptional condition, \ie if the creation was conducted as the reception of a transaction, then this doesn't affect payment of the intrinsic cost of contract creation; it is paid regardless. However, the value of the transaction is not transferred to the aborted contract's address when we are out-of-gas.
 
-If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persist. Thus formally, we may specify the resultant state, gas and substate as $(\boldsymbol{\sigma}', g', A)$ where:
+发生这样的异常发生后, 剩余燃料将变为0。 如果合约创建是用于接受一个交易, 它不会影响合约创建内部消耗的燃料,无论如何都必须支付。然而，当燃料不足时, 并不会给这个合约地址转账。
 
+如果没有出现这样的异常,那么剩余的燃料会退会给最原始的发送者, 改变后的新状态也会永久保存。最终状态、燃料和子状态 $(\boldsymbol{\sigma}', g', A)$ 的关系如下:
 \begin{align}
 \quad g' &\equiv \begin{cases}
 0 & \text{if} \quad F \\
@@ -731,29 +734,32 @@ g^{**} - c & \text{otherwise} \\
 F &\equiv \big(\boldsymbol{\sigma}^{**} = \varnothing \ \vee\  g^{**} < c \ \vee\  |\mathbf{o}| > 24576\big)
 \end{align}
 
-The exception in the determination of $\boldsymbol{\sigma}'$ dictates that $\mathbf{o}$, the resultant byte sequence from the execution of the initialisation code, specifies the final body code for the newly-created account.
+上述 $\boldsymbol{\sigma}'$ 的公式,表明了执行代码初始化得到的最终字节序列 $\mathbf{o}$,就是新创建账户的代码体。
 
-Note that intention is that the result is either a successfully created new contract with its endowment, or no new contract with no transfer of value.
+当合约成功创建时, 如果有转账,对应的转账也会转到合约中;如果没有转账, 则仅是合约创建。
 
-\subsection{Subtleties}
-Note that while the initialisation code is executing, the newly created address exists but with no intrinsic body code. Thus any message call received by it during this time causes no code to be executed. If the initialisation execution ends with a {\small SELFDESTRUCT} instruction, the matter is moot since the account will be deleted before the transaction is completed. For a normal {\small STOP} code, or if the code returned is otherwise empty, then the state is left with a zombie account, and any remaining balance will be locked into the account forever.
+\subsection{细微之处}
+有一种情况需要注意, 当初始化代码正在执行时，新创建的地址出现了,但还没有内部的代码时。在这个时间内,任意消息调用不会引起代码执行。如果这个初始化执行结束于一个 {\small SELFDESTRUCT} 指令，这个账号会在交易执行完前将被删除, 这个行为是无意义的。对于 一个正常的 {\small STOP} 指令代码，或者返回的代码是空的, 这时候会出现一个僵尸账户，而且账户中剩余的余额将被永远被锁定在这个僵尸账户中。
 
-\section{Message Call} \label{ch:call}
-In the case of executing a message call, several parameters are required: sender ($s$), transaction originator ($o$), recipient ($r$), the account whose code is to be executed ($c$, usually the same as recipient), available gas ($g$), value ($v$) and gas price ($p$) together with an arbitrary length byte array, $\mathbf{d}$, the input data of the call and finally the present depth of the message-call/contract-creation stack ($e$).
+\section{消息调用} \label{ch:call}
+当执行消息调用时需要多个参数：发送者（$s$）、交易发起人（$o$）、接受者（$r$）、执行代码的账户（$c$,通常就是接受者）、可用的燃料（$g$）、转账额度（$v$）、燃料价格（$p$）、函数调用的一个任意长度字节的数组 $\mathbf{d}$ 的输入数据以及消息调用/合约创建的当前栈($e$)深度。。
 
-Aside from evaluating to a new state and transaction substate, message calls also have an extra component---the output data denoted by the byte array $\mathbf{o}$. This is ignored when executing transactions, however message calls can be initiated due to VM-code execution and in this case this information is used.
+除了转变到新的状态和交易子状态外，消息调用还有一个额外的元素 --- 用字节数组 $\mathbf{o}$ 表示的输出数据。执行交易时输出数据是被忽略的,但在消息调用时, 输出的数据由取决于虚拟机代码执行, 在这种情况下也使用了这些信息。
 \begin{equation}
 (\boldsymbol{\sigma}', g', A, \mathbf{o}) \equiv \Theta(\boldsymbol{\sigma}, s, o, r, c, g, p, v, \tilde{v}, \mathbf{d}, e)
 \end{equation}
-Note that we need to differentiate between the value that is to be transferred, $v$, from the value apparent in the execution context, $\tilde{v}$, for the {\small DELEGATECALL} instruction.
 
-We define $\boldsymbol{\sigma}_1$, the first transitional state as the original state but with the value transferred from sender to recipient:
+注意我们的是,当执行 {\small DELEGATECALL}  指令时,我们需要区别转账额度 $v$ 和执行上下文中的 $\tilde{v}$ 。
+
+
+我们定义，在原始状态基础上进行了发送者向接收者转账后为的状态第一个转变状态 $\boldsymbol{\sigma}_1$:
+
 \begin{equation}
 \boldsymbol{\sigma}_1[r]_b \equiv \boldsymbol{\sigma}[r]_b + v \quad\wedge\quad \boldsymbol{\sigma}_1[s]_b \equiv \boldsymbol{\sigma}[s]_b - v
 \end{equation}
 unless $s = r$.
 
-Throughout the present work, it is assumed that if $\boldsymbol{\sigma}_1[r]$ was originally undefined, it will be created as an account with no code or state and zero balance and nonce. Thus the previous equation should be taken to mean:
+我们假设如果 $\boldsymbol{\sigma}_1[r]$ 还未定义, 则会创建一个没有代码或没有状态,且余额和随机数都为0的账户。我们改进上一个方程式:
 \begin{equation}
 \boldsymbol{\sigma}_1 \equiv \boldsymbol{\sigma}_1' \quad \text{except:} \\
 \end{equation}
@@ -770,7 +776,8 @@ Throughout the present work, it is assumed that if $\boldsymbol{\sigma}_1[r]$ wa
 \end{cases}
 \end{equation}
 
-The account's associated code (identified as the fragment whose Keccak hash is $\boldsymbol{\sigma}[c]_c$) is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts in an exceptional fashion (i.e. due to an exhausted gas supply, stack underflow, invalid jump destination or invalid instruction), then no gas is refunded to the caller and the state is reverted to the point immediately prior to balance transfer (i.e. $\boldsymbol{\sigma}$).
+
+账户关联的代码（整个代码碎片, Keccak 哈希为  $\boldsymbol{\sigma}[c]_c$）依靠执行模式（见小结 \ref{ch:model}）执行。合约创建时，如果执行因为一个异常（例如：耗尽了燃料、堆栈溢出、无效的跳转目的地或者无效的指令）而被终止，燃料不会返回到调用者，且状态也会立即恢复到转账之前的状态(例如 $\boldsymbol{\sigma}$)。
 
 \begin{eqnarray}
 \boldsymbol{\sigma}' & \equiv & \begin{cases}
@@ -797,66 +804,66 @@ I_e & \equiv & e \\
 \text{Let} \; \mathtt{\tiny KEC}(I_\mathbf{b}) & = & \boldsymbol{\sigma}[c]_c
 \end{eqnarray}
 
-It is assumed that the client will have stored the pair $(\mathtt{\tiny KEC}(I_\mathbf{b}), I_\mathbf{b})$ at some point prior in order to make the determination of $I_\mathbf{b}$ feasible.
+我们假设客户端会先保存数据对 $(\mathtt{\tiny KEC}(I_\mathbf{b}), I_\mathbf{b})$ , 以便更方便地根据 $I_\mathbf{b}$ 做出决定。
 
-As can be seen, there are four exceptions to the usage of the general execution framework $\Xi$ for evaluation of the message call: these are four so-called `precompiled' contracts, meant as a preliminary piece of architecture that may later become \textit{native extensions}. The four contracts in addresses 1, 2, 3 and 4 execute the elliptic curve public key recovery function, the SHA2 256-bit hash scheme, the RIPEMD 160-bit hash scheme and the identity function respectively.
+如我们所见，消息调用执行框架 $\Xi$ 中有4个特例: 这四个是‘预编译’合约，作为最初架构中的一部分后续可能会变成本地扩展。这四个合约地址分别为1、2、3和4，分别是用来执行椭圆曲线公钥恢复函数、SHA2 256位哈希方案、RIPEMD 160位哈希方案和身份函数。
 
-Their full formal definition is in Appendix \ref{app:precompiled}.
+这4个合约的详细定义见附录 \ref{app:precompiled}。
 
-\section{Execution Model} \label{ch:model}
 
-The execution model specifies how the system state is altered given a series of bytecode instructions and a small tuple of environmental data. This is specified through a formal model of a virtual state machine, known as the Ethereum Virtual Machine (EVM). It is a \textit{quasi-}Turing-complete machine; the \textit{quasi} qualification comes from the fact that the computation is intrinsically bounded through a parameter, \textit{gas}, which limits the total amount of computation done.
+\section{执行模型} \label{ch:model}
+执行模型具体说明怎么使用一系列字节代码指令和一个小的环境数据元组去改变这个系统状态。这些是通过以太坊虚拟机(Ethereum Virtual Machine - EVM)这个虚拟的状态来实现的。它是一个准图灵机,说"准"是因为计算会被燃料所限制。
 
-\subsection{Basics}
+\subsection{基础}
 
-The EVM is a simple stack-based architecture. The word size of the machine (and thus size of stack item) is 256-bit. This was chosen to facilitate the Keccak-256 hash scheme and elliptic-curve computations. The memory model is a simple word-addressed byte array. The stack has a maximum size of $1024$. The machine also has an independent storage model; this is similar in concept to the memory but rather than a byte array, it is a word-addressable word array. Unlike memory, which is volatile, storage is non volatile and is maintained as part of the system state. All locations in both storage and memory are well-defined initially as zero.
+EVM 基于栈结构,机器的字大小（以及栈中数据的大小）是256位。主要是便于执行 Keccak-256 位哈希及椭圆曲线计算。内存模型基于字寻址的字节数据。栈的最大深度为1024。EVM也有一个独立的存储模型；类似内存但更新一个字节数组, 一个基于字寻址的字数组。不像易变的内存，存储是非易变的且是作为系统状态的一部分被维护。所有在内存和存储中的数据会初始化为0。
 
-The machine does not follow the standard von Neumann architecture. Rather than storing program code in generally-accessible memory or storage, it is stored separately in a virtual ROM interactable only through a specialised instruction.
+EVM 不是标准的诺依曼结构。它通过一个特别的指令把程序代码保存在一个虚拟的可以交互的 ROM 中, 而不是保存在一般性可访问的内存或存储中。
 
-The machine can have exceptional execution for several reasons, including stack underflows and invalid instructions. Like the out-of-gas exception, they do not leave state changes intact. Rather, the machine halts immediately and reports the issue to the execution agent (either the transaction processor or, recursively, the spawning execution environment) which will deal with it separately.
+EVM 在某些情况下会有异常发生，包括堆栈溢出和非法指令。就像缺乏燃料异常那样, 不会改变状态。有异常时, EVM 立即停止并告知执行代理(交易的处理者，或执行环境), 代理会单独处理异常。
 
-\subsection{Fees Overview}
+\subsection{费用概述}
 
-Fees (denominated in gas) are charged under three distinct circumstances, all three as prerequisite to the execution of an operation. The first and most common is the fee intrinsic to the computation of the operation (see Appendix \ref{app:fees}). Secondly, gas may be deducted in order to form the payment for a subordinate message call or contract creation; this forms part of the payment for {\small CREATE}, {\small CALL} and {\small CALLCODE}. Finally, gas may be paid due to an increase in the usage of the memory.
+在三个不同的情况下使用费用（命名为燃料），在这三种情况下，费用都是执行任何操作的必备条件。第一种情况也是最普通的情况就是计算操作费用（详见附录 \ref{app:fees}）。第二种情况，燃料可能因为一个子消息调用或者合约创建而被消耗,这是执行 {\small CREATE}, {\small CALL} and {\small CALLCODE} 费用中的一部分。第三种情况，燃料可能因为内存使用的增多而付费。
 
-Over an account's execution, the total fee for memory-usage payable is proportional to smallest multiple of 32 bytes that are required such that all memory indices (whether for read or write) are included in the range. This is paid for on a just-in-time basis; as such, referencing an area of memory at least 32 bytes greater than any previously indexed memory will certainly result in an additional memory usage fee. Due to this fee it is highly unlikely addresses will ever go above 32-bit bounds. That said, implementations must be able to manage this eventuality.
+对于一个账户的执行，内存总费用和最少需要的 32 字节倍数的内存量成正比, 所有的内存是按在一定范围中被包含的所有记忆索引（无论是读还是写）下要求的32位字节的最小倍数成比例的。这个为了 just-in-time (JIT) 的基础而去支付的；访问一个大于索引量 32 字节的地址的,就会需要额外的内存使用费。地址很容易超过 32 字节的限制, 但 EVM 不同。综上所述，必须能够去管理这些可能发生的事件。
 
-Storage fees have a slightly nuanced behaviour---to incentivise minimisation of the use of storage (which corresponds directly to a larger state database on all nodes), the execution fee for an operation that clears an entry in the storage is not only waived, a qualified refund is given; in fact, this refund is effectively paid up-front since the initial usage of a storage location costs substantially more than normal usage.
 
-See Appendix \ref{app:vm} for a rigorous definition of the EVM gas cost.
+存储费用有一个微妙的行为 —— 为最小化存储费用（直接与一个在所有结点上的大型状态数据通信），清除存储的执行费用指令不仅仅免除,而且会返回一些费用；因为初始化的存储费用往往比实际实际使用的多,在清除存储空间后会有返回费用, 这个返回的费用是预先支付的费用中的一部分。
 
-\subsection{Execution Environment}
+详细的 EVM 燃料消耗定义见附录 \ref{app:vm}。
 
-In addition to the system state $\boldsymbol{\sigma}$, and the remaining gas for computation $g$, there are several pieces of important information used in the execution environment that the execution agent must provide; these are contained in the tuple $I$:
+\subsection{执行环境}
 
+除了系统状态$\boldsymbol{\sigma}$ 和 计算过程中剩余的燃料 $g$ 外, 还有一些在计算过程中需要提供的信息, 这些信息组成了元组 $I$:
 \begin{itemize}
-\item $I_a$, the address of the account which owns the code that is executing.
-\item $I_o$, the sender address of the transaction that originated this execution.
-\item $I_p$, the price of gas in the transaction that originated this execution.
-\item $I_\mathbf{d}$, the byte array that is the input data to this execution; if the execution agent is a transaction, this would be the transaction data.
-\item $I_s$, the address of the account which caused the code to be executing; if the execution agent is a transaction, this would be the transaction sender.
-\item $I_v$, the value, in Wei, passed to this account as part of the same procedure as execution; if the execution agent is a transaction, this would be the transaction value.
-\item $I_\mathbf{b}$, the byte array that is the machine code to be executed.
-\item $I_H$, the block header of the present block.
-\item $I_e$, the depth of the present message-call or contract-creation (i.e. the number of {\small CALL}s or {\small CREATE}s being executed at present).
+\item $I_a$, 拥有正在执行的代码的账户地址。
+\item $I_o$, 发起这次交易的发送者地址。
+\item $I_p$, 发起这次交易中的燃料价格。
+\item $I_\mathbf{d}$, 执行过程中的输入字节数组；如果这次执行是一个交易，这个就是交易数据。
+\item $I_s$, 触发代码执行的账户地址；如果这次执行是一个交易，则为交易发送者地址。
+\item $I_v$, 以 Wei 为单位的值,作为计算中的一部分传递给这个账户;如果这次执行是一个交易, 这个值为转账额度。
+\item $I_\mathbf{b}$, 机器代码字节数组, 会用来执行。
+\item $I_H$, 当前区块的区块头。
+\item $I_e$, 当前消息调用或合约创建的深度(例如: 当前 {\small CALL}s 或 {\small CREATE}s 被执行的次数)。
 \end{itemize}
 
-The execution model defines the function $\Xi$, which can compute the resultant state $\boldsymbol{\sigma}'$, the remaining gas $g'$, the accrued substate $A$ and the resultant output, $\mathbf{o}$, given these definitions. For the present context, we will defined it as:
+执行模型定义了函数 $\Xi$, 用来计算结果状态 $\boldsymbol{\sigma}'$, 剩余的燃料 $g'$, 产生的子状态 $A$ 和结果输出 $\mathbf{o}$, 根据当前的上下文,我们定义:
 \begin{equation}
 (\boldsymbol{\sigma}', g', A, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}, g, I)
 \end{equation}
 
-where we will remember that $A$, the accrued substate is defined as the tuple of the suicides set $\mathbf{s}$, the log series $\mathbf{l}$ and the refunds $r$:
-
+应该还记得 $A$, 这个产生的子状态定义为自毁集合 $\mathbf{s}$、 日志系列 $\mathbf{l}$ 和 回推金额 $r$ 的元组:
 \begin{equation}
 A \equiv (\mathbf{s}, \mathbf{l}, r)
 \end{equation}
 
-\subsection{Execution Overview}
+\subsection{执行概述}
 
-We must now define the $\Xi$ function. In most practical implementations this will be modelled as an iterative progression of the pair comprising the full system state, $\boldsymbol{\sigma}$ and the machine state, $\boldsymbol{\mu}$. Formally, we define it recursively with a function $X$. This uses an iterator function $O$ (which defines the result of a single cycle of the state machine) together with functions $Z$ which determines if the present state is an exceptional halting state of the machine and $H$, specifying the output data of the instruction if and only if the present state is a normal halting state of the machine.
+我们现在必须去定义函数 $\Xi$。在大多实际执行过程中, 将会整个系统状态 $\boldsymbol{\sigma}$ 和机器状态 $\boldsymbol{\mu}$ 的迭代过程建模。我们定义一个递归函数 $X$, 它使用这个迭代函数 $O$(定义状态机中单循环的结果), 定义函数 $Z$ 用来表示当前状态是一个异常终止状态, 定义函数 $H$ 表示当前状态是正常终止时得到的结果数据。
 
-The empty sequence, denoted $()$, is not equal to the empty set, denoted $\varnothing$; this is important when interpreting the output of $H$, which evaluates to $\varnothing$ when execution is to continue but a series (potentially empty) when execution should halt.
+空序列使用 $()$ 表示,它不等于空的集合 $\varnothing$；这对理解 $H$ 的输出结果非常重要, 当 $H$ 的输出结果是 $\varnothing$ 时需要继续执行,但当 $H$ 的输出结果是时一个空的序列时执行应该终止。
+
 \begin{eqnarray}
 \Xi(\boldsymbol{\sigma}, g, I) & \equiv & (\boldsymbol{\sigma}'\!, \boldsymbol{\mu}'_g, A, \mathbf{o}) \\
 (\boldsymbol{\sigma}, \boldsymbol{\mu}'\!, A, ..., \mathbf{o}) & \equiv & X\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A^0\!, I)\big) \\
@@ -880,27 +887,27 @@ where
 (a, b, c, d) \cdot e & \equiv & (a, b, c, d, e)
 \end{eqnarray}
 
-Note that, when we evaluate $\Xi$, we drop the fourth element $I'$ and extract the remaining gas $\boldsymbol{\mu}'_g$ from the resultant machine state $\boldsymbol{\mu}'$.
+需要注意的是, 我们在推导 $\Xi$ 时, 我们去掉了第4个元素 $I'$ 并从结果状态 $\boldsymbol{\mu}'$ 中提取了剩余的燃料 $\boldsymbol{\mu}'_g$
 
-$X$ is thus cycled (recursively here, but implementations are generally expected to use a simple iterative loop) until either $Z$ becomes true indicating that the present state is exceptional and that the machine must be halted and any changes discarded or until $H$ becomes a series (rather than the empty set) indicating that the machine has reached a controlled halt.
+$X$ 被循环调用（这里是递归，但是通常是去执行一个简单的迭代循环）直到 $Z$  变成 true,表示当前状态有异常并且需要终止, 并且所有的改动都会被舍弃;  或者直到 $H$ 变成了一个序列（不是空集合），表示达到了正常的终止状态。
 
-\subsubsection{Machine State}
-The machine state $\boldsymbol{\mu}$ is defined as the tuple $(g, pc, \mathbf{m}, i, \mathbf{s})$ which are the gas available, the program counter $pc \in \mathbb{P}_{256}$ , the memory contents, the active number of words in memory (counting continuously from position 0), and the stack contents. The memory contents $\boldsymbol{\mu}_\mathbf{m}$ are a series of zeroes of size $2^{256}$.
+\subsubsection{机器状态}
+机器状态 $\boldsymbol{\mu}$ 定义为一个元组 $(g, pc, \mathbf{m}, i, \mathbf{s})$ ,包括可用的燃料 $g$, 程序计数器 $pc \in \mathbb{P}_{256}$ ,内存内容 $\mathbf{m}$ , 内存中激活的字数(从位置 0 开始连续计数) $i$,以及栈内容 $\mathbf{s}$。内存内容 $\boldsymbol{\mu}_\mathbf{m}$ 表示空间大小为 $2^{256}$ 但内容都是 0 的空间。
 
-For the ease of reading, the instruction mnemonics, written in small-caps (\eg \space {\small ADD}), should be interpreted as their numeric equivalents; the full table of instructions and their specifics is given in Appendix \ref{app:vm}.
+为了提高可读性, 使用小型大写字母(例如 {\small ADD})的指令助记符都应该看作对应的数字方程式, 详细的指标表及定义见附录 \ref{app:vm} 。
 
-For the purposes of defining $Z$, $H$ and $O$, we define $w$ as the current operation to be executed:
+为了更好的定义 $Z$, $H$ 和 $O$, 我们定义 $w$ 为当前待执行的指令:
 \begin{equation}\label{eq:currentoperation}
 w \equiv \begin{cases} I_\mathbf{b}[\boldsymbol{\mu}_{pc}] & \text{if} \quad \boldsymbol{\mu}_{pc} < \lVert I_\mathbf{b} \rVert \\
 \text{\small STOP} & \text{otherwise}
 \end{cases}
 \end{equation}
 
-We also assume the fixed amounts of $\mathbf{\delta}$ and $\mathbf{\alpha}$, specifying the stack items removed and added, both subscriptable on the instruction and an instruction cost function $C$ evaluating to the full cost, in gas, of executing the given instruction.
+我们使用 $\mathbf{\delta}$ 表示栈操作移除的元素数, 使用 $\mathbf{\alpha}$ 表示栈操作添加的元素数, 可以使用指令作为  $\mathbf{\delta}$ 、 $\mathbf{\alpha}$ 和指令费用函数 $C$ 的小标, $C$ 表示执行指定指令消耗的燃料。
 
-\subsubsection{Exceptional Halting}
+\subsubsection{异常终止}
 
-The exceptional halting function $Z$ is defined as:
+异常终止函数 $Z$ 定义如下:
 \begin{equation}
 Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv
 \begin{array}[t]{l}
@@ -912,20 +919,22 @@ Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv
 \end{array}
 \end{equation}
 
-This states that the execution is in an exceptional halting state if there is insufficient gas, if the instruction is invalid (and therefore its $\delta$ subscript is undefined), if there are insufficient stack items, if a {\small JUMP}/{\small JUMPI} destination is invalid or the new stack size would be larger then 1024. The astute reader will realise that this implies that no instruction can, through its execution, cause an exceptional halt.
 
-\subsubsection{Jump Destination Validity}
+以下情况都会发生异常而进入终止状态: 燃料不足、无效指令（无效指令的 $\delta$ 下角标不会进行定义）、缺少栈数据、指令 {\small JUMP}/{\small JUMPI} 的目标地址无效、新的栈大小会大于1024。聪明的读者将很容易发现,在整个执行过程中没有一个指令能显式触发异常而终止。
 
-We previously used $D$ as the function to determine the set of valid jump destinations given the code that is being run. We define this as any position in the code occupied by a {\small JUMPDEST} instruction.
 
-All such positions must be on valid instruction boundaries, rather than sitting in the data portion of {\small PUSH} operations and must appear within the explicitly defined portion of the code (rather than in the implicitly defined {\small STOP} operations that trail it).
+\subsubsection{跳转地址验证}
 
-Formally:
+我们之前使用 $D$ 作为一个函数去定义正在运行的指定代码的有效跳转地址的集合。我们使用 JUMPDEST 指令表示代码可以跳转的地址。
+
+这些跳转地址都必须在有效指令边界内，并且需要在显示定义在代码中,而不是基于 {\small PUSH} 指令操作的数据。（也不是使用隐含定义的 {\small STOP} 指令去跟踪它）。
+
+正式定义如下:
 \begin{equation}
 D(\mathbf{c}) \equiv D_J(\mathbf{c}, 0)
 \end{equation}
 
-where:
+其中:
 \begin{equation}
 D_J(\mathbf{c}, i) \equiv \begin{cases}
 \{\} & \text{if} \quad i \geqslant |\mathbf{c}|  \\
@@ -934,16 +943,17 @@ D_J(\mathbf{c}, N(i, \mathbf{c}[i])) & \text{otherwise} \\
 \end{cases}
 \end{equation}
 
-where $N$ is the next valid instruction position in the code, skipping the data of a {\small PUSH} instruction, if any:
+$N$ 是代码中下一个有效指令位置, 如果有 {\small PUSH} 指令,会跳过相关数据。
+
 \begin{equation}
 N(i, w) \equiv \begin{cases}
 i + w - \text{\small PUSH1} + 2 & \text{if} \quad w \in [\text{\small PUSH1}, \text{\small PUSH32}] \\
 i + 1 & \text{otherwise} \end{cases}
 \end{equation}
 
-\subsubsection{Normal Halting}
+\subsubsection{正常停止}
 
-The normal halting function $H$ is defined:
+正常停止的函数 $H$ 定义如下:
 \begin{equation}
 H(\boldsymbol{\mu}, I) \equiv \begin{cases}
 H_{\text{\tiny RETURN}}(\boldsymbol{\mu}) & \text{if} \quad w = \text{\small RETURN} \\
@@ -952,11 +962,11 @@ H_{\text{\tiny RETURN}}(\boldsymbol{\mu}) & \text{if} \quad w = \text{\small RET
 \end{cases}
 \end{equation}
 
-The data-returning halt operation, \text{\small RETURN}, has a special function $H_{\text{\tiny RETURN}}$, defined in Appendix \ref{app:vm}.
+数据返回停止操作 \text{\small RETURN}, 在附录 \ref{app:vm} 中有详细的定义,函数名字是 $H_{\text{\tiny RETURN}}$ 。
 
-\subsection{The Execution Cycle}
+\subsection{执行周期}
+序列的最左侧的、低端的数据被添加到栈或从栈中移除；所有其它数据都被保留不变:
 
-Stack items are added or removed from the left-most, lower-indexed portion of the series; all other items remain unchanged:
 \begin{eqnarray}
 O\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I)\big) & \equiv & (\boldsymbol{\sigma}', \boldsymbol{\mu}', A', I) \\
 \Delta & \equiv & \mathbf{\alpha}_w - \mathbf{\delta}_w \\
@@ -964,7 +974,8 @@ O\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I)\big) & \equiv & (\boldsymbol
 \quad \forall x \in [\mathbf{\alpha}_w, \lVert\boldsymbol{\mu}'_\mathbf{s}\rVert): \boldsymbol{\mu}'_\mathbf{s}[x] & \equiv & \boldsymbol{\mu}_\mathbf{s}[x+\Delta]
 \end{eqnarray}
 
-The gas is reduced by the instruction's gas cost and for most instructions, the program counter increments on each cycle, for the three exceptions, we assume a function $J$, subscripted by one of two instructions, which evaluates to the according value:
+对与大多数指令,燃料随着指令的执行而减少,每个周期程序计数器都会增加; 有三个特例，我们定义函数  $J$，下角标是二个指令中的一个，如下：
+
 \begin{eqnarray}
 \quad \boldsymbol{\mu}'_{g} & \equiv & \boldsymbol{\mu}_{g} - C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \\
 \quad \boldsymbol{\mu}'_{pc} & \equiv & \begin{cases}
@@ -974,7 +985,7 @@ N(\boldsymbol{\mu}_{pc}, w) & \text{otherwise}
 \end{cases}
 \end{eqnarray}
 
-In general, we assume the memory, self-destruct set and system state don't change:
+在一般情况下，我们认为内存、自毁集合和系统状态不改变:
 \begin{eqnarray}
 \boldsymbol{\mu}'_\mathbf{m} & \equiv & \boldsymbol{\mu}_\mathbf{m} \\
 \boldsymbol{\mu}'_i & \equiv & \boldsymbol{\mu}_i \\
@@ -982,41 +993,44 @@ A' & \equiv & A \\
 \boldsymbol{\sigma}' & \equiv & \boldsymbol{\sigma}
 \end{eqnarray}
 
-However, instructions do typically alter one or several components of these values. Altered components listed by instruction are noted in Appendix \ref{app:vm}, alongside values for $\alpha$ and $\delta$ and a formal description of the gas requirements.
 
-\section{Blocktree to Blockchain} \label{ch:ghost}
+然而，指令通常会改变一个到几个元素的值。附录 \ref{app:vm} 列出了指令修改的元素,以及入栈数 $\alpha$ 、出栈数 $\delta$ 和燃料消耗。
 
-The canonical blockchain is a path from root to leaf through the entire block tree. In order to have consensus over which path it is, conceptually we identify the path that has had the most computation done upon it, or, the \textit{heaviest} path. Clearly one factor that helps determine the heaviest path is the block number of the leaf, equivalent to the number of blocks, not counting the unmined genesis block, in the path. The longer the path, the greater the total mining effort that must have been done in order to arrive at the leaf. This is akin to existing schemes, such as that employed in Bitcoin-derived protocols.
+\section{区块树到区块链} \label{ch:ghost}
 
-Since a block header includes the difficulty, the header alone is enough to validate the computation done. Any block contributes toward the total computation or \textit{total difficulty} of a chain.
+权威的区块链是覆盖整个区块树的从根节点到叶子节点的路径。为了形成是路径共识，我们通过最大的计算量，或者说是最重的路径来识别它。识别最重路径的一个有效的因素是叶子节点的数量，它也是路径中区块的数量，不包含没有进行挖框的创世块(译者注:创始块通过硬编码写在了代码中及区块链中)。路径越长，到达最后一个叶子节点的代价越大。这和已有的比特币及其衍生协议类似。
 
-Thus we define the total difficulty of block $B$ recursively as:
+因为一个区块头包含难度信息，所以仅通过区块头就能验证已经做了挖矿计算。区块链中的任意一个区块都对总的计算或区块链难度有贡献。
+
+我们递归地定义区块 $B$ 的难度：
+
 \begin{eqnarray}
 B_t & \equiv & B'_t + B_d \\
 B' & \equiv & P(B_H)
 \end{eqnarray}
 
-As such given a block $B$, $B_t$ is its total difficulty, $B'$ is its parent block and $B_d$ is its difficulty.
+给定区块 $B$, $B_t$ 是它的总难度, $B'$ 是它的父块难度, $B_d$ 是它的难度。
 
-\section{Block Finalisation} \label{ch:finalisation}
+\section{区块定稿} \label{ch:finalisation}
 
+区块定稿涉及到 4 个步骤:
 The process of finalising a block involves four stages:
 
 \begin{enumerate}
-\item Validate (or, if mining, determine) ommers;
-\item validate (or, if mining, determine) transactions;
-\item apply rewards;
-\item verify (or, if mining, compute a valid) state and nonce.
+\item 验证叔链(如果是挖矿,确定叔链);
+\item 验证交易(如果是挖矿,确定交易);
+\item 应用奖励;
+\item 验证状态和随机数(如果是挖矿,计算有效的状态和随机数)。
 \end{enumerate}
 
-\subsection{Ommer Validation}
+\subsection{叔链验证}
 
-The validation of ommer headers means nothing more than verifying that each ommer header is both a valid header and satisfies the relation of $N$th-generation ommer to the present block where $N \leq 6$. The maximum of ommer headers is two. Formally:
+验证叔链头意味着需要验证每个叔链头的有效性并且是当前区块父块的第 $N$ 代, $N$ ≤ 6, 最多只能有2个叔链头, 公式如下:
 \begin{equation}
 \lVert B_\mathbf{U} \rVert \leqslant 2 \bigwedge_{U \in B_\mathbf{U}} V(U) \; \wedge \; k(U, P(B_H)_H, 6)
 \end{equation}
 
-where $k$ denotes the ``is-kin'' property:
+$k$ 表示直系关系:
 \begin{equation}
 k(U, H, n) \equiv \begin{cases} false & \text{if} \quad n = 0 \\
 s(U, H) &\\
@@ -1024,24 +1038,22 @@ s(U, H) &\\
 \end{cases}
 \end{equation}
 
-and $s$ denotes the ``is-sibling'' property:
+$s$ 表示兄弟关系:
 \begin{equation}
 s(U, H) \equiv (P(H) = P(U)\; \wedge \; H \neq U \; \wedge \; U \notin B(H)_\mathbf{U})
 \end{equation}
-where $B(H)$ is the block of the corresponding header $H$.
+$B(H)$ 表示对应的区块头 $H$.
 
-\subsection{Transaction Validation}
+\subsection{交易验证}
 
-%where $s[i]$ equals the root of the state trie immediately after the execution of the transaction $B_\mathbf{T}[i]$, and $g[i]$ the total gas used immediately after said transaction.
+使用的燃料数量一定要和交易列表中列出的一致：区块燃料总使用量 ${B_H}_g$ ，应该和这个区块中所有交易使用的燃料量之和相等：
 
-The given \textbf{gasUsed} must correspond faithfully to the transactions listed: ${B_H}_g$, the total gas used in the block, must be equal to the accumulated gas used according to the final transaction:
 \begin{equation}
 {B_H}_g = \ell(\mathbf{R})_u
 \end{equation}
 
-\subsection{Reward Application}
-
-The application of rewards to a block involves raising the balance of the accounts of the beneficiary address of the block and each ommer by a certain amount. We raise the block's beneficiary account by $R_b$; for each ommer, we raise the block's beneficiary by an additional $\frac{1}{32}$ of the block reward and the beneficiary of the ommer gets rewarded depending on the block number. Formally we define the function $\Omega$:
+\subsection{奖励}
+对一个区块, 会奖励当前区块的受益账户及叔链账户。以 $R_b$ 表示当前区块受益者的固定奖励额度;对每个叔链, 奖励当前区块受益者固定奖励的 $\frac{1}{32}$, 叔链受益者的奖励额度取决于区块编号。 我们定义函数 $\Omega$ :
 \begin{eqnarray}
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
 \boldsymbol{\sigma}'[{B_H}_c]_b & = & \boldsymbol{\sigma}[{B_H}_c]_b + (1 + \frac{\lVert B_\mathbf{U}\rVert}{32})R_b \\
@@ -1049,15 +1061,16 @@ The application of rewards to a block involves raising the balance of the accoun
  \boldsymbol{\sigma}'[U_c]_b & = & \boldsymbol{\sigma}[U_c]_b + (1 + \frac{1}{8} (U_i - {B_H}_i)) R_b
 \end{eqnarray}
 
-If there are collisions of the beneficiary addresses between ommers and the block (i.e. two ommers with the same beneficiary address or an ommer with the same beneficiary address as the present block), additions are applied cumulatively.
+如果叔链和区块的受益者账号冲突（比如：两个相同的叔链受益者账户或者一个叔链受益者账户和当前区块的受益者账户相同），额外的奖励会累积。
 
-We define the block reward as 5 Ether:
+我们定义区块的奖励会 5 以太币:
 \begin{equation}
 \text{Let} \quad R_b = 5 \times 10^{18}
 \end{equation}
 
-\subsection{State \& Nonce Validation}\label{sec:statenoncevalidation}
+\subsection{状态和随机数验证}\label{sec:statenoncevalidation}
 
+我们定义函数 $\Gamma$, 映射到区块 $B$ 的初始状态:
 We may now define the function, $\Gamma$, that maps a block $B$ to its initiation state:
 \begin{equation}
 \Gamma(B) \equiv \begin{cases}
@@ -1066,25 +1079,27 @@ We may now define the function, $\Gamma$, that maps a block $B$ to its initiatio
 \end{cases}
 \end{equation}
 
-Here, $\mathtt{\small TRIE}(L_S(\boldsymbol{\sigma}_i))$ means the hash of the root node of a trie of state $\boldsymbol{\sigma}_i$; it is assumed that implementations will store this in the state database, trivial and efficient since the trie is by nature an immutable data structure.
+其中，$\mathtt{\small TRIE}(L_S(\boldsymbol{\sigma}_i))$ 表示状态 $\boldsymbol{\sigma}_i$ 对应字典树根节点的哈希;执行时会将其保存在状态数据库中,字典树结构天生不易变,所以它是高效的。
 
-And finally define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
+最后定义区块转换函数 $\Phi$，映射了一个不完整区块 $B$ 到一个完整的区块 $B'$：
 \begin{eqnarray}
 \Phi(B) & \equiv & B': \quad B' = B^* \quad \text{except:} \\
 B'_n & = & n: \quad x \leqslant \frac{2^{256}}{H_d} \\
 B'_m & = & m \quad \text{with } (x, m) = \mathtt{PoW}(B^*_{\hcancel{n}}, n, \mathbf{d}) \\
 B^* & \equiv & B \quad \text{except:} \quad B^*_r = r(\Pi(\Gamma(B), B))
 \end{eqnarray}
-With $\mathbf{d}$ being a dataset as specified in appendix \ref{app:ethash}.
+其中 $\mathbf{d}$ 是一个数据集, 详见附录 \ref{app:ethash}。
 
-As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of $\Omega$, the block finalisation function and $\Upsilon$, the transaction-evaluation function, both now well-defined.
+就像在本文开始定义的那样,$\Pi$ 是状态转换函数，通过区块定稿函数 $\Omega$ 和交易演变函数 $\Upsilon$ 去定义 $\Pi$。
 
-As previously detailed, $\mathbf{R}[n]_{\boldsymbol{\sigma}}$, $\mathbf{R}[n]_\mathbf{l}$ and $\mathbf{R}[n]_u$ are the $n$th corresponding states, logs and cumulative gas used after each transaction ($\mathbf{R}[n]_b$, the fourth component in the tuple, has already been defined in terms of the logs). The former is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
+之前的定义中，$\mathbf{R}[n]_{\boldsymbol{\sigma}}$, $\mathbf{R}[n]_\mathbf{l}$ 和 $\mathbf{R}[n]_u$，表示第 n 个对应的状态、日志和累计使用的燃料（在元组中的第四个元素 $\mathbf{R}[n]_b$，之前以日志条目去定义）。前者简单定义为通过对之前的交易状态执行交易得到新的结果状态（如果是第一个交易，之前的交易状态为创始块的状态）:
+
 \begin{equation}
 \mathbf{R}[n]_{\boldsymbol{\sigma}} = \begin{cases} \Gamma(B) & \text{if} \quad n < 0 \\ \Upsilon(\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n]) & \text{otherwise} \end{cases}
 \end{equation}
 
-In the case of $B_\mathbf{R}[n]_u$, we take a similar approach defining each item as the gas used in evaluating the corresponding transaction summed with the previous item (or zero, if it is the first), giving us a running total:
+对于 $B_\mathbf{R}[n]_u$, 我们定义从之前的交易转变对应交易的累计使用燃料（如果是第一个,则为 0 ）：
+
 \begin{equation}
 \mathbf{R}[n]_u = \begin{cases} 0 & \text{if} \quad n < 0 \\
 \begin{array}[b]{l}
@@ -1093,83 +1108,84 @@ In the case of $B_\mathbf{R}[n]_u$, we take a similar approach defining each ite
  & \text{otherwise} \end{cases}
 \end{equation}
 
-For $\mathbf{R}[n]_\mathbf{l}$, we utilise the $\Upsilon^\mathbf{l}$ function that we conveniently defined in the transaction execution function.
+对于 $\mathbf{R}[n]_\mathbf{l}$, 我们使用之前定义的交易执行函数 $\Upsilon^\mathbf{l}$。
 \begin{equation}
 \mathbf{R}[n]_\mathbf{l} =
 \Upsilon^\mathbf{l}(\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n])
 \end{equation}
 
-Finally, we define $\Pi$ as the new state given the block reward function $\Omega$ applied to the final transaction's resultant state, $\ell(B_\mathbf{R})_{\boldsymbol{\sigma}}$:
+最后,我们定义函数 $\Pi$ 是在交易结果状态 $\ell(B_\mathbf{R})_{\boldsymbol{\sigma}}$ 之上执行了回报函数  $\Omega$ 后的新状态::
 \begin{equation}
 \Pi(\boldsymbol{\sigma}, B) \equiv \Omega(B, \ell(\mathbf{R})_{\boldsymbol{\sigma}})
 \end{equation}
 
-Thus the complete block-transition mechanism, less $\mathtt{PoW}$, the proof-of-work function is defined.
+到此,我们完成了区块转换机制以及工作量证明 $\mathtt{PoW}$ 的定义。
 
-\subsection{Mining Proof-of-Work} \label{ch:pow}
+\subsection{挖矿和工作量证明} \label{ch:pow}
 
-The mining proof-of-work (PoW) exists as a cryptographically secure nonce that proves beyond reasonable doubt that a particular amount of computation has been expended in the determination of some token value $n$. It is utilised to enforce the blockchain security by giving meaning and credence to the notion of difficulty (and, by extension, total difficulty). However, since mining new blocks comes with an attached reward, the proof-of-work not only functions as a method of securing confidence that the blockchain will remain canonical into the future, but also as a wealth distribution mechanism.
+工作量证明（PoW）通过加密安全随机数,来保证要获得要确定满足一定条件的 $n$,要花费一定量的计算资源。通过计算给定意义的数值和难度系数来增加区块链安全性。然而因为挖出一个新的区块会附带一些奖励，工作量证明不仅是保证区块链权威的安全函数，而且也是一个健康的分配机制。
 
-For both reasons, there are two important goals of the proof-of-work function; firstly, it should be as accessible as possible to as many people as possible. The requirement of, or reward from, specialised and uncommon hardware should be minimised. This makes the distribution model as open as possible, and, ideally, makes the act of mining a simple swap from electricity to Ether at roughly the same rate for anyone around the world.
+处于以上原因，工作量证明函数有两个重要的目标：首先，它应该是尽可能的被更多人去接受。对定制的特别硬件的需求或者回报，应该被减到最小。 这使得分配模型尽可能开放，理想情况是，通过挖矿消耗电力获得以太币, 在全世界各个地方都是一样的比例。
 
-Secondly, it should not be possible to make super-linear profits, and especially not so with a high initial barrier. Such a mechanism allows a well-funded adversary to gain a troublesome amount of the network's total mining power and as such gives them a super-linear reward (thus skewing distribution in their favour) as well as reducing the network security.
+第二，应该不允许获得超线性的收益，尤其是在有一个非常高的初始障碍条件下。如果允许这样, 一个资金充足的恶意者可以获得引起麻烦的网络挖矿算力, 并允许给他们获得超线性的汇报（按他们的医院改变收益分布）,并且会弱化网络的安全性。
 
-One plague of the Bitcoin world is ASICs. These are specialised pieces of compute hardware that exist only to do a single task. In Bitcoin's case the task is the SHA256 hash function. While ASICs exist for a proof-of-work function, both goals are placed in jeopardy. Because of this, a proof-of-work function that is ASIC-resistant (i.e. difficult or economically inefficient to implement in specialised compute hardware) has been identified as the proverbial silver bullet.
+比特币的世界中一个灾难是 ASICs。有一些计算硬件仅仅是为了做一个简单的任务而存在。在比特币的案例中，这个任务就是 SHA256 哈希函数。当 ASICs 为了工作量证明函数而存在时，两个的目标会变得危险。因此，一个可抵抗 ASIC 的工作量证明函数（比如难以在专用硬件上执行,或者在专用硬件执行时并不划算）可以作为众所周知的银弹。
 
-Two directions exist for ASIC resistance; firstly make it sequential memory-hard, i.e. engineer the function such that the determination of the nonce requires a lot of memory and bandwidth such that the memory cannot be used in parallel to discover multiple nonces simultaneously. The second is to make the type of computation it would need to do general-purpose; the meaning of ``specialised hardware''  for a general-purpose task set is, naturally, general purpose hardware and as such commodity desktop computers are likely to be pretty close to ``specialised hardware'' for the task. For Ethereum 1.0 we have chosen the first path.
+防止 ASIC 漏洞的两个方向：第一是去让它变成有序列的内存困难，比如：设计一个函数,确定随机数需要大量的内存和带宽,以至于这些内存不能被并行地去计算随机数。第二个方向是让计算变得更普遍化; 对于这个普遍化的计算,使得特殊硬件和普通的桌面计算机计算起来都差不多。在以太坊 1.0中，我们选择了第一个方向。
 
-More formally, the proof-of-work function takes the form of $\mathtt{PoW}$:
+以太坊的工作量证明函数如下:
+
 \begin{equation}
 m = H_m \quad \wedge \quad n \leqslant \frac{2^{256}}{H_d} \quad \text{with} \quad (m, n) = \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})
 \end{equation}
 
-Where $H_{\hcancel{n}}$ is the new block's header but \textit{without} the nonce and mix-hash components; $H_n$ is the nonce of the header; $\mathbf{d}$ is a large data set needed to compute the mixHash and $H_d$ is the new block's difficulty value (i.e. the block difficulty from section \ref{ch:ghost}). $\mathtt{PoW}$ is the proof-of-work function which evaluates to an array with the first item being the mixHash and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. The underlying algorithm is called Ethash and is described below.
+其中 $H_{\hcancel{n}}$ 是没有包含随机数和混合哈希元素的新区块头; $H_n$ 是区块头的随机数；$\mathbf{d}$ 是一个需要计算混合哈希值的数据集合;$H_d$ 是新区块的难度值（区块难度详见小结 \ref{ch:ghost} ）。$\mathtt{PoW}$ 是工作量证明函数，这个函数根据数组做计算, 这个数组中的第一个元素是混合哈希,第二个元素是依赖于 $H$ 和 $\mathbf{d}$ 的加密伪随机数。这个算法称为 Ethash , 下文会详细介绍。
+
 \subsubsection{Ethash}
-Ethash is the PoW algorithm for Ethereum 1.0. It is the latest version of Dagger-Hashimoto, introduced by \cite{dagger} and \cite{hashimoto}, although it can no longer appropriately be called that since many of the original features of both algorithms have been drastically changed in the last month of research and development. The general route that the algorithm takes is as follows:
 
-There exists a seed which can be computed for each block by scanning through the block headers up until that point. From the seed, one can compute a pseudorandom cache, $J_{cacheinit}$ bytes in initial size. Light clients store the cache. From the cache, we can generate a dataset, $J_{datasetinit}$ bytes in initial size, with the property that each item in the dataset depends on only a small number of items from the cache. Full clients and miners store the dataset. The dataset grows linearly with time.
+Ethash 是以太坊 1.0 的 PoW 算法。它是 Dagger-Hashimoto 的最后版本，Buterin
+ [2013b] 和 Dryja[2014] 介绍过。再被它为 Dagger-Hashimoto 已不大合适, 因为很多算法的最初特性已经被大量地修改。这个算法的概况如下：
 
-Mining involves grabbing random slices of the dataset and hashing them together. Verification can be done with low memory by using the cache to regenerate the specific pieces of the dataset that you need, so you only need to store the cache. The large dataset is updated once every $J_{epoch}$ blocks, so the vast majority of a miner's effort will be reading the dataset, not making changes to it. The mentioned parameters as well as the algorithm is explained in detail in appendix \ref{app:ethash}.
+通过扫描区块头可以计算一个种子。根据种子，可以计算一个初始大小为 $J_{cacheinit}$ 字节位随机数缓存。轻节点客户端可以保存这个缓存。根据缓冲，我们能生成一个初始化为 $J_{datasetinit}$ 字节的数据集合，数据集合中每个元素依赖于缓冲中的一小部分数据。全节点客户和矿工保存着数据集合。数据集合随时间线性增长。
 
-\section{Implementing Contracts}
+挖矿涉及到组合数据集合的随机碎片并将他们哈希在一起。使用少量内存就可以验证, 可以借助缓存重新产生需要的数据片段, 所以仅需要保存缓存即可。大的数据集合每$J_{epoch}$ (译者注: 30000) 个区块更新一次，所以大多数矿工的工作都是读取这些数据集合，而不是尝试改变它。附录 \ref{app:ethash} 想 Ethash 的详细解释。
 
-There are several patterns of contracts engineering that allow particular useful behaviours; two of these that I will briefly discuss are data feeds and random numbers.
+\section{执行合约}
+有一些特别有用的合约模式；其中会讨论其中两个,分别是数据订阅和随机数。
 
-\subsection{Data Feeds}
-A data feed contract is one which provides a single service: it gives access to information from the external world within Ethereum. The accuracy and timeliness of this information is not guaranteed and it is the task of a secondary contract author---the contract that utilises the data feed---to determine how much trust can be placed in any single data feed.
+\subsection{数据订阅}
+一个数据订阅合约提供简单的服务：它允许外部的信息可以进入以太坊系统内。以太坊系统不会保证这个信息的精确度和及时性，这是第二方合约作者的任务, 第二方合约作者使用数据订阅并决定能否信任单个数据订阅服务。
 
-The general pattern involves a single contract within Ethereum which, when given a message call, replies with some timely information concerning an external phenomenon. An example might be the local temperature of New York City. This would be implemented as a contract that returned that value of some known point in storage. Of course this point in storage must be maintained with the correct such temperature, and thus the second part of the pattern would be for an external server to run an Ethereum node, and immediately on discovery of a new block, creates a new valid transaction, sent to the contract, updating said value in storage. The contract's code would accept such updates only from the identity contained on said server.
+通常的模式是,通过消息调用触发单个以太坊中合约，得到一个关于外部现象的信息回应。一个例子可能是纽约城市的本地温度。这个会作为合约执行并返回在存储中的一些值。当然存储中的这些值必须比如温度需要维护以保证准确, 这样模式中的第二方才可以将其作为外部服务来运行以太坊节点,当发现一个新区块时立即创建一个新的有效交易发送到合约并更新存贮中的值。合约代码将仅仅接受包含指定服务的数据更新。
 
-\subsection{Random Numbers}
-Providing random numbers within a deterministic system is, naturally, an impossible task. However, we can approximate with pseudo-random numbers by utilising data which is generally unknowable at the time of transacting. Such data might include the block's hash, the block's timestamp and the block's beneficiary address. In order to make it hard for malicious miner to control those values, one should use the {\small BLOCKHASH} operation in order to use hashes of the previous 256 blocks as pseudo-random numbers. For a series of such numbers, a trivial solution would be to add some constant amount and hashing the result.
+\subsection{随机数}
+在确定系统中提供随机数字,显然是一个不可能实现的任务。然而我们可以利用根据交易时还不可知的数据来生成伪随机数。比如区块哈希值、区块时间戳、区块受益人的地址。为了避免被矿工难以控制这些随机数,建议使用 {\small BLOCKHASH} 操作获得最近 256 个区块的某个区块哈希作为伪随机数。 对于获得这样一系列这样的数字，一个方法就是去增加一个常量并对结果做哈希。
 
-\section{Future Directions} \label{ch:future}
+\section{未来方向} \label{ch:future}
+未来状态数据库将不被强行维护所有之前的字典树状态。它应该对每个节点维护一定时间,并抛弃较久远的且不是检查点的节点；检查点或允许特别的区块状态字典树穿越的数据中的系列节点,可以用来最大限度的去替代一些计算, 来获得区块链中的任意一个状态。
 
-The state database won't be forced to maintain all past state trie structures into the future. It should maintain an age for each node and eventually discard nodes that are neither recent enough nor checkpoints; checkpoints, or a set of nodes in the database that allow a particular block's state trie to be traversed, could be used to place a maximum limit on the amount of computation needed in order to retrieve any state throughout the blockchain.
+区块链合并可以用来减少作为全节点或挖矿节点客户端需要下载的区块数量。及时将给定节点（也许每10000个区块）对应的的字典树压缩, 并在点对点网络中维护，且有效地重塑创世块。下载单个归档时,可以减少下载的区块数量。
 
-Blockchain consolidation could be used in order to reduce the amount of blocks a client would need to download to act as a full, mining, node. A compressed archive of the trie structure at given points in time (perhaps one in every 10,000th block) could be maintained by the peer network, effectively recasting the genesis block. This would reduce the amount to be downloaded to a single archive plus a hard maximum limit  of blocks.
+最后，或许会引导压缩区块链：可以抛弃在一定量的区块总没有发送或接受交易的字典树状态节点,以便减少状态数据库的增长。
 
-Finally, blockchain compression could perhaps be conducted: nodes in state trie that haven't sent/received a transaction in some constant amount of blocks could be thrown out, reducing both Ether-leakage and the growth of the state database.
+\subsection{可扩展性}
+可扩展性仍然是一个永恒的顾虑。因为一个一般化的状态交易函数，使得切分及并行化交易难以使用分而治之的策略。仍未解决的是，系统的平均交易值在增加, 但系统的能力范围却是固定的,其中低价值的交易保存在主账本中已无经济意义,因而会被忽略。尽管如此，一些策略存有可能发展为可扩展性的协议来解决此问题。
 
-\subsection{Scalability}
+一些形式的层次结构，通过合并小的轻量的链到主区块或通过组合小的交易集合构建主区块, 或许可能实现交易组合和区块构建的并行化。并行化机制也可以这样实现: 针对有优先顺序的并列的区块链,通过合并或抛弃无效交易来合并区块。
 
-Scalability remains an eternal concern. With a generalised state transition function, it becomes difficult to partition and parallelise transactions to apply the divide-and-conquer strategy. Unaddressed, the dynamic value-range of the system remains essentially fixed and as the average transaction value increases, the less valuable of them become ignored, being economically pointless to include in the main ledger. However, several strategies exist that may potentially be exploited to provide a considerably more scalable protocol.
+最后，可验证的计算，如果可用并且足够有效，可能提供一个方法允许工作量证明成为最后状态的验证。
 
-Some form of hierarchical structure, achieved by either consolidating smaller lighter-weight chains into the main block or building the main block through the incremental combination and adhesion (through proof-of-work) of smaller transaction sets may allow parallelisation of transaction combination and block-building. Parallelism could also come from a prioritised set of parallel blockchains, consolidated each block and with duplicate or invalid transactions thrown out accordingly.
+\section{结论} \label{ch:conclusion}
+我们已经介绍讨论并正式定义了以太坊协议。通过这个协议，读者可以太坊网络上部署一个节点并在一个去中心化的安全的开放系统中连接其它节点。合约可能会被授权, 以便计算性地确定和自动化执行交互规则。
 
-Finally, verifiable computation, if made generally available and efficient enough, may provide a route to allow the proof-of-work to be the verification of final state.
+\section{致谢}
 
-\section{Conclusion} \label{ch:conclusion}
+非常感谢 Aeron Buchanan 编写家园版本, Christoph Jentzsch 编写 Ethash 算法,Yoichi Hirai 做了 EIP-150 大多数更新。以太坊开发组织和社区提供了重要的维护和大量的矫正及建议,其中包括Gustav Simonsson, Pawe\l{} Bylica, Jutta Steiner, Nick Savers, Viktor Tr\'{o}n, Marko Simovic, Giacomo Tazzari, 当然,还包含Vitalik Buterin。
 
-I have introduced, discussed and formally defined the protocol of Ethereum. Through this protocol the reader may implement a node on the Ethereum network and join others in a decentralised secure social operating system. Contracts may be authored in order to algorithmically specify and autonomously enforce rules of interaction.
+\section{可用性}
+本文的英文源文件维护在 \url{https://github.com/ethereum/yellowpaper}. 一个自动生成的英文 PDF 格式文件见 \url{https://ethereum.github.io/yellowpaper/paper.pdf}。
 
-\section{Acknowledgements}
-
-Many thanks to Aeron Buchanan for authoring the Homestead revisions, Christoph Jentzsch for authoring the Ethash algorithm and Yoichi Hirai for doing most of the EIP-150 changes. Important maintenance, useful corrections and suggestions were provided by a number of others from the Ethereum DEV organisation and Ethereum community at large including Gustav Simonsson, Pawe\l{} Bylica, Jutta Steiner, Nick Savers, Viktor Tr\'{o}n, Marko Simovic, Giacomo Tazzari and, of course, Vitalik Buterin.
-
-\section{Availability}
-
-The source of this paper is maintained at \url{https://github.com/ethereum/yellowpaper/}. An auto-generated PDF is located at \url{https://ethereum.github.io/yellowpaper/paper.pdf}.
+本文的中文源文件维护在 \url{https://github.com/yuange1024/ethereum_yellowpaper}. 一个自动生成的中文 PDF 格式文件见 \url{https://github.com/yuange1024/ethereum_yellowpaper/blob/master/Paper_Chinese.pdf}。 (本段由译者增加)
 
 \bibliography{Biblio}
 \bibliographystyle{plainnat}
@@ -2234,5 +2250,6 @@ The mix is compressed as follows:
 E_{compress}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(\mathbf{m}[i + 4], \mathbf{m}[i + 5]), \mathbf{m}[i + 6]), \mathbf{m}[i + 7]), i + 8) & \text{otherwise}
 \end{cases}
 \end{equation}
+
 
 \end{document}
