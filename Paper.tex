@@ -705,13 +705,12 @@ g^{**} - c & \text{otherwise} \\
 \quad\boldsymbol{\sigma}'[a]_c = \texttt{\small KEC}(\mathbf{o}) & \text{otherwise}
 \end{cases} \\
 \nonumber \text{where} \\
-F &\equiv \big(\boldsymbol{\sigma}^{**} = \varnothing \ \vee\  g^{**} < c \ \vee\  |\mathbf{o}| > 24576\big\text{\footnotemark})
+F &\equiv \big(\boldsymbol{\sigma}^{**} = \varnothing \ \vee\  g^{**} < c \ \vee\  |\mathbf{o}| > 24576\big
 \end{align}
-\footnotetext{The 24576 byte limit for output contract code data $\mathbf{o}$ exists because a contract creation call can trigger O(n) cost in terms of reading the code from disk, preprocessing the code for VM execution, and also adding O(n) data to the Merkle proof for the block's proof-of-validity. With higher gas limits that can be caused by dynamic gas limit rules, this is a greater concern, and is especially inconvenient with light clients verifying proofs of validity or invalidity.}
 
-The exception in the determination of $\boldsymbol{\sigma}'$ dictates that $\mathbf{o}$, the resultant byte sequence from the execution of the initialisation code, specifies the final body code for the newly-created account.
+The exception in the determination of $\boldsymbol{\sigma}'$ dictates that $\mathbf{o}$, the resultant byte sequence from the execution of the initialisation code, specifies the final body code for the newly-created account. Note that the 24576 byte limit for $\mathbf{o}$ exists because a contract creation call can trigger O(n) cost in terms of reading the code from disk, preprocessing the code for VM execution, and also adding O(n) data to the Merkle proof for the block's proof-of-validity. With higher gas limits that can be caused by dynamic gas limit rules, this is a greater concern, and is especially inconvenient with light clients verifying proofs of validity or invalidity.
 
-Note that intention is that the result is either a successfully created new contract with its endowment, or no new contract with no transfer of value.
+Note that the intention is that the result is either a successfully created new contract with its endowment, or no new contract with no transfer of value.
 
 \subsection{Subtleties}
 Note that while the initialisation code is executing, the newly created address exists but with no intrinsic body code. Thus any message call received by it during this time causes no code to be executed. If the initialisation execution ends with a {\small SELFDESTRUCT} instruction, the matter is moot since the account will be deleted before the transaction is completed. For a normal {\small STOP} code, or if the code returned is otherwise empty, then the state is left with a zombie account, and any remaining balance will be locked into the account forever.
