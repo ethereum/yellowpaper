@@ -1766,7 +1766,7 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& 0 is left on the stack if the looked for block number is greater than the current block number \\
 &&&& or more than 256 blocks behind the current block. \\
 &&&& $P(h, n, a) \equiv \begin{cases} 0 & \text{if} \quad n > H_i \vee a = 256 \vee h = 0 \\ h & \text{if} \quad n = H_i \\ P(H_p, n, a + 1) & \text{otherwise} \end{cases}$ \\
-&&&& and we assert the header $H$ can be determined as its hash is the parent hash \\
+&&&& and we assert that the reason why the header $H$ can be determined is because its hash is the parent hash \\
 &&&& in the block following it. \\
 \midrule
 0x41 & {\small COINBASE} & 0 & 1 & Get the block's beneficiary address. \\
