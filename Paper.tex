@@ -705,7 +705,7 @@ g^{**} - c & \text{otherwise} \\
 \quad\boldsymbol{\sigma}'[a]_c = \texttt{\small KEC}(\mathbf{o}) & \text{otherwise}
 \end{cases} \\
 \nonumber \text{where} \\
-F &\equiv \big(\boldsymbol{\sigma}^{**} = \varnothing \ \vee\  g^{**} < c \ \vee\  |\mathbf{o}| > 24576\big
+F &\equiv \big(\boldsymbol{\sigma}^{**} = \varnothing \ \vee\  g^{**} < c \ \vee\  |\mathbf{o}| > 24576\big)
 \end{align}
 
 The exception in the determination of $\boldsymbol{\sigma}'$ dictates that $\mathbf{o}$, the resultant byte sequence from the execution of the initialisation code, specifies the final body code for the newly-created account. Note that the 24576 byte limit for $\mathbf{o}$ exists because a contract creation call can trigger O(n) cost in terms of reading the code from disk, preprocessing the code for VM execution, and also adding O(n) data to the Merkle proof for the block's proof-of-validity. With higher gas limits that can be caused by dynamic gas limit rules, this is a greater concern, and is especially inconvenient with light clients verifying proofs of validity or invalidity.
