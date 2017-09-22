@@ -1636,7 +1636,7 @@ Here given are the various exceptions to the state transition rules given in sec
 0x0a & {\small EXP} & 2 & 1 & Exponential operation. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0] ^ {\boldsymbol{\mu}_\mathbf{s}[1] }$ \\
 \midrule
-0x0b & {\small SIGNEXTEND} & 2 & 1 & Extend length of two's complement signed integer. \\
+0x0b & {\small SIGNEXTEND} & 2 & 1 & Extend the length of a two's complement signed integer. \\
 &&&& $ \forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \begin{cases} \boldsymbol{\mu}_\mathbf{s}[1]_t &\text{if} \quad i \leqslant t \quad \text{where} \; t = 256 - 8(\boldsymbol{\mu}_\mathbf{s}[0] + 1) \\ \boldsymbol{\mu}_\mathbf{s}[1]_i &\text{otherwise} \end{cases}$ \\
 \multicolumn{5}{l}{$\boldsymbol{\mu}_\mathbf{s}[x]_i$ gives the $i$th bit (counting from zero) of $\boldsymbol{\mu}_\mathbf{s}[x]$} \vspace{5pt} \\
 \end{tabular*}
@@ -1662,7 +1662,7 @@ Here given are the various exceptions to the state transition rules given in sec
 0x14 & {\small EQ} & 2 & 1 & Equality comparison. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] = \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
-0x15 & {\small ISZERO} & 1 & 1 & Simple not operator. \\
+0x15 & {\small ISZERO} & 1 & 1 & This is the logical negation operation, also called the logical complement or the NOT operation. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] = 0 \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
 0x16 & {\small AND} & 2 & 1 & Bitwise AND operation. \\
@@ -1677,9 +1677,9 @@ Here given are the various exceptions to the state transition rules given in sec
 0x19 & {\small NOT} & 1 & 1 & Bitwise NOT operation. \\
 &&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0]_i = 0 \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
-0x1a & {\small BYTE} & 2 & 1 & Retrieve single byte from word. \\
+0x1a & {\small BYTE} & 2 & 1 & Retrieve a single byte from a word. \\
 &&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \begin{cases} \boldsymbol{\mu}_\mathbf{s}[1]_{(i + 8\boldsymbol{\mu}_\mathbf{s}[0])} & \text{if} \quad i < 8 \wedge \boldsymbol{\mu}_\mathbf{s}[0] < 32 \\ 0 & \text{otherwise} \end{cases} $\\
-&&&& For Nth byte, we count from the left (i.e. N=0 would be the most significant in big endian). \\
+&&&& For the Nth byte, we count from the left (i.e. $N=0$ would be the most significant in big endian). \\
 \bottomrule
 \end{tabular*}
 
@@ -1687,7 +1687,7 @@ Here given are the various exceptions to the state transition rules given in sec
 \toprule
 \multicolumn{5}{c}{\textbf{20s: SHA3}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
-0x20 & {\small SHA3} & 2 & 1 & Compute Keccak-256 hash. \\
+0x20 & {\small SHA3} & 2 & 1 & Compute a Keccak-256 hash. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \mathtt{\tiny Keccak}(\boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[0] \dots (\boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1] - 1) ])$ \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[1])$ \\
 \bottomrule
@@ -1697,53 +1697,53 @@ Here given are the various exceptions to the state transition rules given in sec
 \toprule
 \multicolumn{5}{c}{\textbf{30s: Environmental Information}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
-0x30 & {\small ADDRESS} & 0 & 1 & Get address of currently executing account. \\
+0x30 & {\small ADDRESS} & 0 & 1 & Get the address of the currently executing account. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_a$ \\
 \midrule
-0x31 & {\small BALANCE} & 1 & 1 & Get balance of the given account. \\
+0x31 & {\small BALANCE} & 1 & 1 & Get the balance of the given account. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}\boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[0]]_b& \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}] \neq \varnothing\\0&\text{otherwise}\end{cases}$ \\
 \midrule
-0x32 & {\small ORIGIN} & 0 & 1 & Get execution origination address. \\
+0x32 & {\small ORIGIN} & 0 & 1 & Get the address that the execution originated from. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_o$ \\
-&&&& This is the sender of original transaction; it is never an account with non-empty \\
+&&&& This is the sender of the original transaction; it is never an account with non-empty \\
 &&&& associated code. \\
 \midrule
-0x33 & {\small CALLER} & 0 & 1 & Get caller address. \\
+0x33 & {\small CALLER} & 0 & 1 & Get the caller address. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_s$ \\
 &&&& This is the address of the account that is directly responsible for this execution. \\
 \midrule
-0x34 & {\small CALLVALUE} & 0 & 1 & Get deposited value by the instruction/transaction responsible for this execution. \\
+0x34 & {\small CALLVALUE} & 0 & 1 & Get the deposited value by the instruction/transaction responsible for this execution. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_v$ \\
 \midrule
-0x35 & {\small CALLDATALOAD} & 1 & 1 & Get input data of current environment. \\
+0x35 & {\small CALLDATALOAD} & 1 & 1 & Get the input data of the current environment. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_\mathbf{d}[ \boldsymbol{\mu}_\mathbf{s}[0] \dots (\boldsymbol{\mu}_\mathbf{s}[0] + 31) ] \quad \text{with} \quad I_\mathbf{d}[x] = 0 \quad \text{if} \quad x \geqslant \lVert I_\mathbf{d} \rVert$ \\
 &&&& This pertains to the input data passed with the message call instruction or transaction. \\
 \midrule
-0x36 & {\small CALLDATASIZE} & 0 & 1 & Get size of input data in current environment. \\
+0x36 & {\small CALLDATASIZE} & 0 & 1 & Get the size of the input data in the current environment. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \lVert I_\mathbf{d} \rVert$ \\
 &&&& This pertains to the input data passed with the message call instruction or transaction. \\
 \midrule
-0x37 & {\small CALLDATACOPY} & 3 & 0 & Copy input data in current environment to memory. \\
+0x37 & {\small CALLDATACOPY} & 3 & 0 & Copy the input data in the current environment to memory. \\
 &&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_\mathbf{s}[2] - 1\} } \boldsymbol{\mu}'_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[0] + i ] \equiv
 \begin{cases} I_\mathbf{d}[\boldsymbol{\mu}_\mathbf{s}[1] + i] & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] + i < \lVert I_\mathbf{d} \rVert \\ 0 & \text{otherwise} \end{cases}$\\
 &&&& The additions in $\boldsymbol{\mu}_\mathbf{s}[1] + i$ are not subject to the $2^{256}$ modulo. \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[2])$ \\
 &&&& This pertains to the input data passed with the message call instruction or transaction. \\
 \midrule
-0x38 & {\small CODESIZE} & 0 & 1 & Get size of code running in current environment. \\
+0x38 & {\small CODESIZE} & 0 & 1 & Get the size of code running in the current environment. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \lVert I_\mathbf{b} \rVert$ \\
 \midrule
-0x39 & {\small CODECOPY} & 3 & 0 & Copy code running in current environment to memory. \\
+0x39 & {\small CODECOPY} & 3 & 0 & Copy code running in the current environment to memory. \\
 &&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_\mathbf{s}[2] - 1\} } \boldsymbol{\mu}'_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[0] + i ] \equiv
 \begin{cases} I_\mathbf{b}[\boldsymbol{\mu}_\mathbf{s}[1] + i] & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] + i < \lVert I_\mathbf{b} \rVert \\ \text{\small STOP} & \text{otherwise} \end{cases}$\\
 &&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[2])$ \\
 &&&& The additions in $\boldsymbol{\mu}_\mathbf{s}[1] + i$ are not subject to the $2^{256}$ modulo. \\
 \midrule
-0x3a & {\small GASPRICE} & 0 & 1 & Get price of gas in current environment. \\
+0x3a & {\small GASPRICE} & 0 & 1 & Get the price of gas in the current environment. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_p$ \\
-&&&& This is gas price specified by the originating transaction.\\
+&&&& This is the gas price specified by the originating transaction.\\
 \midrule
-0x3b & {\small EXTCODESIZE} & 1 & 1 & Get size of an account's code. \\
+0x3b & {\small EXTCODESIZE} & 1 & 1 & Get the size of an account's code. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \lVert \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}]_c \rVert$ \\
 \midrule
 0x3c & {\small EXTCODECOPY} & 4 & 0 & Copy an account's code to memory. \\
@@ -1789,27 +1789,27 @@ Here given are the various exceptions to the state transition rules given in sec
 \toprule
 \multicolumn{5}{c}{\textbf{50s: Stack, Memory, Storage and Flow Operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
-0x50 & {\small POP} & 1 & 0 & Remove item from stack. \\
+0x50 & {\small POP} & 1 & 0 & Remove the top, first item from the stack. \\
 \midrule
-0x51 & {\small MLOAD} & 1 & 1 & Load word from memory. \\
+0x51 & {\small MLOAD} & 1 & 1 & Load the first word from memory. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[0] \dots (\boldsymbol{\mu}_\mathbf{s}[0] + 31) ]$ \\
 &&&& $\boldsymbol{\mu}'_i \equiv \max(\boldsymbol{\mu}_i, \ceil{ (\boldsymbol{\mu}_\mathbf{s}[0] + 32) \div 32 })$ \\
 &&&& The addition in the calculation of $\boldsymbol{\mu}'_i$ is not subject to the $2^{256}$ modulo. \\
 \midrule
-0x52 & {\small MSTORE} & 2 & 0 & Save word to memory. \\
+0x52 & {\small MSTORE} & 2 & 0 & Save the first word (which is the first item in the stack) to memory. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[0] \dots (\boldsymbol{\mu}_\mathbf{s}[0] + 31) ] \equiv \boldsymbol{\mu}_\mathbf{s}[1]$ \\
 &&&& $\boldsymbol{\mu}'_i \equiv \max(\boldsymbol{\mu}_i, \ceil{ (\boldsymbol{\mu}_\mathbf{s}[0] + 32) \div 32 })$ \\
 &&&& The addition in the calculation of $\boldsymbol{\mu}'_i$ is not subject to the $2^{256}$ modulo. \\
 \midrule
-0x53 & {\small MSTORE8} & 2 & 0 & Save byte to memory. \\
+0x53 & {\small MSTORE8} & 2 & 0 & Save the first byte to memory. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[0] ] \equiv (\boldsymbol{\mu}_\mathbf{s}[1] \bmod 256) $ \\
 &&&& $\boldsymbol{\mu}'_i \equiv \max(\boldsymbol{\mu}_i, \ceil{ (\boldsymbol{\mu}_\mathbf{s}[0] + 1) \div 32 })$ \\
 &&&& The addition in the calculation of $\boldsymbol{\mu}'_i$ is not subject to the $2^{256}$ modulo. \\
 \midrule
-0x54 & {\small SLOAD} & 1 & 1 & Load word from storage. \\
+0x54 & {\small SLOAD} & 1 & 1 & Load the first word from storage. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\sigma}[I_a]_\mathbf{s}[\boldsymbol{\mu}_\mathbf{s}[0]]$ \\
 \midrule
-0x55 & {\small SSTORE} & 2 & 0 & Save word to storage. \\
+0x55 & {\small SSTORE} & 2 & 0 & Save the first word to storage. \\
 &&&& $\boldsymbol{\sigma}'[I_a]_\mathbf{s}[ \boldsymbol{\mu}_\mathbf{s}[0] ] \equiv \boldsymbol{\mu}_\mathbf{s}[1] $ \\
 &&&& $C_{\text{\tiny SSTORE}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
 G_{sset} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \; \wedge \; \boldsymbol{\sigma}[I_a]_\mathbf{s}[\boldsymbol{\mu}_\mathbf{s}[0]] = 0 \\
@@ -1840,7 +1840,7 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_{g}$ \\
 \midrule
 0x5b & {\small JUMPDEST} & 0 & 0 & Mark a valid destination for jumps. \\
-&&&& This operation has no effect on machine state during execution. \\
+&&&& This operation has no effect on the machine state during execution. \\
 \bottomrule
 \end{tabular*}
 
@@ -1848,24 +1848,24 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 \toprule
 \multicolumn{5}{c}{\textbf{60s \& 70s: Push Operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
-0x60 & {\small PUSH1} & 0 & 1 & Place 1 byte item on stack. \\
+0x60 & {\small PUSH1} & 0 & 1 & Place a 1 byte item on the stack. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv c(\boldsymbol{\mu}_{pc} + 1)$ \\
 &&&& $\text{where} \quad c(x) \equiv \begin{cases} I_\mathbf{b}[x] & \text{if} \quad x < \lVert I_\mathbf{b} \rVert \\ 0 & \text{otherwise} \end{cases}$ \\
 &&&& The bytes are read in line from the program code's bytes array. \\
 &&&& The function $c$ ensures the bytes default to zero if they extend past the limits.\\
-&&&& The byte is right-aligned (takes the lowest significant place in big endian). \\
+&&&& The byte is right-aligned (\ie it takes the lowest significant place and the last, highest address, which is the big-endian interpretation). \\
 \midrule
-0x61 & {\small PUSH2} & 0 & 1 & Place 2-byte item on stack. \\
+0x61 & {\small PUSH2} & 0 & 1 & Place a 2-byte item on the stack. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{c}\big( (\boldsymbol{\mu}_{pc} + 1) \dots (\boldsymbol{\mu}_{pc} + 2) \big)$ \\
 &&&& with $\boldsymbol{c}(\boldsymbol{x}) \equiv (c(\boldsymbol{x}_0), ..., c(\boldsymbol{x}_{\lVert x \rVert -1})) $ with $c$ as defined as above. \\
-&&&& The bytes are right-aligned (takes the lowest significant place in big endian). \\
+&&&& Similarly, the bytes are right-aligned (\ie they take the lowest significant place and the last, highest address, which is the big-endian interpretation). \\
 \midrule
 \multicolumn{1}{c}{\vdots} & \multicolumn{1}{c}{\vdots} & \vdots & \vdots & \multicolumn{1}{c}{\vdots} \\
 \midrule
 0x7f & {\small PUSH32} & 0 & 1 & Place 32-byte (full word) item on stack. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{c}\big((\boldsymbol{\mu}_{pc} + 1) \dots (\boldsymbol{\mu}_{pc} + 32) \big)$ \\
 &&&& where $\boldsymbol{c}$ is defined as above. \\
-&&&& The bytes are right-aligned (takes the lowest significant place in big endian). \\
+&&&& Similarly, the bytes are right-aligned (\ie they take the lowest significant place and the last, highest address, which is the big-endian interpretation). \\
 \bottomrule
 \end{tabular*}
 
@@ -1873,15 +1873,15 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 \toprule
 \multicolumn{5}{c}{\textbf{80s: Duplication Operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
-0x80 & {\small DUP1} & 1 & 2 & Duplicate 1st stack item. \\
+0x80 & {\small DUP1} & 1 & 2 & Duplicate the 1st stack item. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0]$ \\
 \midrule
-0x81 & {\small DUP2} & 2 & 3 & Duplicate 2nd stack item. \\
+0x81 & {\small DUP2} & 2 & 3 & Duplicate the 2nd stack item. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[1]$ \\
 \midrule
 \multicolumn{1}{c}{\vdots} & \multicolumn{1}{c}{\vdots} & \vdots & \vdots & \multicolumn{1}{c}{\vdots} \\
 \midrule
-0x8f & {\small DUP16} & 16 & 17 & Duplicate 16th stack item. \\
+0x8f & {\small DUP16} & 16 & 17 & Duplicate the 16th stack item. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[15]$ \\
 \bottomrule
 \end{tabular*}
