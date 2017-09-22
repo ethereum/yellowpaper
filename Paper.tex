@@ -52,7 +52,7 @@
 %\pagecolor{lightpink}
 
 \begin{abstract}
-The blockchain paradigm when coupled with cryptographically-secured transactions has demonstrated its utility through a number of projects, not least Bitcoin. Each such project can be seen as a simple application on a decentralised, but singleton, compute resource. We can call this paradigm a transactional singleton machine with shared-state.
+The blockchain paradigm when coupled with cryptographically-secured transactions has demonstrated its utility through a number of projects, not the least being Bitcoin. Each such project can be seen as a simple application on a decentralised, but singleton, compute resource. We can call this paradigm a transactional singleton machine with shared-state.
 
 Ethereum implements this paradigm in a generalised manner. Furthermore it provides a plurality of such resources, each with a distinct state and operating code but able to interact through a message-passing framework with others. We discuss its design, implementation issues, the opportunities it provides and the future hurdles we envisage.
 \end{abstract}
@@ -82,7 +82,7 @@ Overall, I wish to provide a system such that users can be guaranteed that no ma
 
 \cite{dwork92pricingvia} provided the first work into the usage of a cryptographic proof of computational expenditure (``proof-of-work'') as a means of transmitting a value signal over the Internet. The value-signal was utilised here as a spam deterrence mechanism rather than any kind of currency, but critically demonstrated the potential for a basic data channel to carry a \textit{strong economic signal}, allowing a receiver to make a physical assertion without having to rely upon \textit{trust}. \cite{back2002hashcash} later produced a system in a similar vein.
 
-The first example of utilising the proof-of-work as a strong economic signal to secure a currency was by \cite{vishnumurthy03karma:a}. In this instance, the token was used to keep peer-to-peer file trading in check, ensuring ``consumers'' be able to make micro-payments to ``suppliers'' for their services. The security model afforded by the proof-of-work was augmented with digital signatures and a ledger in order to ensure that the historical record couldn't be corrupted and that malicious actors could not spoof payment or unjustly complain about service delivery. Five years later, \cite{nakamoto2008bitcoin} introduced another such proof-of-work-secured value token, somewhat wider in scope. The fruits of this project, Bitcoin, became the first widely adopted global decentralised transaction ledger.
+The first example of utilising the proof-of-work as a strong economic signal to secure a currency was by \cite{vishnumurthy03karma:a}. In this instance, the token was used to keep peer-to-peer file trading in check, providing ``consumers'' with the ability to make micro-payments to ``suppliers'' for their services. The security model afforded by the proof-of-work was augmented with digital signatures and a ledger in order to ensure that the historical record couldn't be corrupted and that malicious actors could not spoof payment or unjustly complain about service delivery. Five years later, \cite{nakamoto2008bitcoin} introduced another such proof-of-work-secured value token, somewhat wider in scope. The fruits of this project, Bitcoin, became the first widely adopted global decentralised transaction ledger.
 
 Other projects built on Bitcoin's success; the alt-coins introduced numerous other currencies through alteration to the protocol. Some of the best known are Litecoin and Primecoin, discussed by \cite{sprankel2013technical}. Other projects sought to take the core value content mechanism of the protocol and repurpose it; \cite{aron2012bitcoin} discusses, for example, the Namecoin project which aims to provide a decentralised name-resolution system.
 
@@ -92,7 +92,7 @@ Additional work has been done in the area with discarding the decentralisation f
 
 Early work on smart contracts has been done by \cite{szabo1997formalizing} and \cite{miller1997future}. Around the 1990s it became clear that algorithmic enforcement of agreements could become a significant force in human cooperation. Though no specific system was proposed to implement such a system, it was proposed that the future of law would be heavily affected by such systems. In this light, Ethereum may be seen as a general implementation of such a \textit{crypto-law} system.
 
-%E language?
+%E language/glossary?
 
 \section{The Blockchain Paradigm} \label{ch:overview}
 
@@ -103,7 +103,7 @@ Ethereum, taken as a whole, can be viewed as a transaction-based state machine: 
 
 where $\Upsilon$ is the Ethereum state transition function. In Ethereum, $\Upsilon$, together with $\boldsymbol{\sigma}$ are considerably more powerful then any existing comparable system; $\Upsilon$ allows components to carry out arbitrary computation, while $\boldsymbol{\sigma}$ allows components to store arbitrary state between transactions.
 
-Transactions are collated into blocks; blocks are chained together using a cryptographic hash as a means of reference. Blocks function as a journal, recording a series of transactions together with the previous block and an identifier for the final state (though do not store the final state itself---that would be far too big). They also punctuate the transaction series with incentives for nodes to \textit{mine}. This incentivisation takes place as a state-transition function, adding value to a nominated account.
+Transactions are collated into blocks; blocks are chained together using a cryptographic hash as a means of reference. Blocks function as a journal or ledger, recording a series of transactions together with the previous block and an identifier for the final state (though blocks do not store the final state itself---that would be far too big). They also punctuate the transaction series with incentives for nodes to \textit{mine}. This incentivisation takes place as a state-transition function, adding value to a nominated account.
 
 Mining is the process of dedicating effort (working) to bolster one series of transactions (a block) over any other potential competitor block. It is achieved thanks to a cryptographically secure proof. This scheme is known as a proof-of-work and is discussed in detail in section \ref{ch:pow}.
 
@@ -833,7 +833,7 @@ A \equiv (\mathbf{s}, \mathbf{l}, r)
 
 We must now define the $\Xi$ function. In most practical implementations this will be modelled as an iterative progression of the pair comprising the full system state, $\boldsymbol{\sigma}$ and the machine state, $\boldsymbol{\mu}$. Formally, we define it recursively with a function $X$. This uses an iterator function $O$ (which defines the result of a single cycle of the state machine) together with functions $Z$ which determines if the present state is an exceptional halting state of the machine and $H$, specifying the output data of the instruction if and only if the present state is a normal halting state of the machine.
 
-The empty sequence, denoted $()$, is not equal to the empty set, denoted $\varnothing$; this is important when interpreting the output of $H$, which evaluates to $\varnothing$ when execution is to continue but a series (potentially empty) when execution should halt.
+The empty sequence, denoted ,\hyperref[emptySequence]{''$()$''}, is not equal to the empty set, denoted $\varnothing$; this is important when interpreting the output of $H$, which evaluates to $\varnothing$ when execution is to continue but a series (potentially empty) when execution should halt.
 \begin{eqnarray}
 \Xi(\boldsymbol{\sigma}, g, I) & \equiv & (\boldsymbol{\sigma}'\!, \boldsymbol{\mu}'_g, A, \mathbf{o}) \\
 (\boldsymbol{\sigma}, \boldsymbol{\mu}'\!, A, ..., \mathbf{o}) & \equiv & X\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A^0\!, I)\big) \\
@@ -924,7 +924,7 @@ The normal halting function $H$ is defined:
 \begin{equation}
 H(\boldsymbol{\mu}, I) \equiv \begin{cases}
 H_{\text{\tiny RETURN}}(\boldsymbol{\mu}) & \text{if} \quad w = \text{\small RETURN} \\
-() & \text{if} \quad w \in \{ \text{\small STOP}, \text{\small SELFDESTRUCT} \} \\
+() & \text{if} \quad w \in \{ \text{\hyperref[STOP]{''\small STOP''}}, \text{\small SELFDESTRUCT} \} \\
 \varnothing & \text{otherwise}
 \end{cases}
 \end{equation}
@@ -1132,7 +1132,7 @@ Finally, blockchain compression could perhaps be conducted: nodes in state trie 
 
 Scalability remains an eternal concern. With a generalised state transition function, it becomes difficult to partition and parallelise transactions to apply the divide-and-conquer strategy. Unaddressed, the dynamic value-range of the system remains essentially fixed and as the average transaction value increases, the less valuable of them become ignored, being economically pointless to include in the main ledger. However, several strategies exist that may potentially be exploited to provide a considerably more scalable protocol.
 
-Some form of hierarchical structure, achieved by either consolidating smaller lighter-weight chains into the main block or building the main block through the incremental combination and adhesion (through proof-of-work) of smaller transaction sets may allow parallelisation of transaction combination and block-building. Parallelism could also come from a prioritised set of parallel blockchains, consolidated each block and with duplicate or invalid transactions thrown out accordingly.
+Some form of hierarchical structure, achieved by either consolidating smaller lighter-weight chains into the main block or building the main block through the incremental combination and adhesion (through proof-of-work) of smaller transaction sets may allow parallelisation of transaction combination and block-building. Parallelism could also come from a prioritised set of parallel blockchains, consolidating each block and with duplicate or invalid transactions thrown out accordingly.
 
 Finally, verifiable computation, if made generally available and efficient enough, may provide a route to allow the proof-of-work to be the verification of final state.
 
@@ -1600,7 +1600,7 @@ Here given are the various exceptions to the state transition rules given in sec
 \multicolumn{5}{c}{\textbf{0s: Stop and Arithmetic Operations}} \\
 \multicolumn{5}{l}{All arithmetic is modulo $2^{256}$ unless otherwise noted. The zero-th power of zero $0^0$ is defined to be one.} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
-0x00 & {\small STOP} & 0 & 0 & Halts execution. \\
+0x00 & {\small STOP} & 0 & 0 & Halts execution, see \label{STOP} and \label{emptySequence}. \\
 \midrule
 0x01 & {\small ADD} & 2 & 1 & Addition operation. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1]$ \\
