@@ -1397,7 +1397,7 @@ The method of signing transactions is similar to the `Electrum style signatures'
 
 It is assumed that the sender has a valid private key $p_r$, which is a randomly selected positive integer (represented as a byte array of length 32 in big-endian form) in the range \hbox{$[1, \mathtt{\tiny secp256k1n} - 1]$}.
 
-We assert the functions $\mathtt{\small ECDSAPUBKEY}$, $\mathtt{\small ECDSARECOVER}$ and $\mathtt{\small ECDSASIGN}$. These are formally defined in the literature, \eg by \cite{ECDSAcerticom} and \cite{ECDSAWikipedia}.
+We assert the functions $\mathtt{\small ECDSAPUBKEY}$, $\mathtt{\small ECDSARECOVER}$ and $\mathtt{\small ECDSASIGN}$. These are formally defined in the literature, \eg by \cite{ECDSAcerticom} and \cite{ECDSAWikipedia}. \footnote{For the former citation, refer to section 6.2 for ECDSAPUBKEY, and section 7 for ECDSASIGN and ECDSARECOVER (assuming that the former is for signature generation and the latter is for signature verification).}
 \begin{eqnarray}
 \mathtt{\small ECDSAPUBKEY}(p_r \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64} \\
 \mathtt{\small ECDSASIGN}(e \in \mathbb{B}_{32}, p_r \in \mathbb{B}_{32}) & \equiv & (v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) \\
