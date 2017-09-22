@@ -1599,41 +1599,41 @@ Here given are the various exceptions to the state transition rules given in sec
 \multicolumn{5}{c}{\textbf{0s: Stop and Arithmetic Operations}} \\
 \multicolumn{5}{l}{All arithmetic is modulo $2^{256}$ unless otherwise noted. The zero-th power of zero $0^0$ is defined to be one.} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
-0x00 & {\small STOP} & 0 & 0 & Halts execution, see \label{STOP} and \label{emptySequence}. \\
+0x00 & {\small STOP} & 0 & 0 & This operation halts execution, see \label{STOP} and \label{emptySequence} for further information. \\
 \midrule
-0x01 & {\small ADD} & 2 & 1 & Addition operation. \\
+0x01 & {\small ADD} & 2 & 1 & This is the addition operation. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1]$ \\
 \midrule
-0x02 & {\small MUL} & 2 & 1 & Multiplication operation. \\
+0x02 & {\small MUL} & 2 & 1 & This is the multiplication operation. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0] \times \boldsymbol{\mu}_\mathbf{s}[1]$ \\
 \midrule
-0x03 & {\small SUB} & 2 & 1 & Subtraction operation. \\
+0x03 & {\small SUB} & 2 & 1 & This is the subtraction operation. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0] - \boldsymbol{\mu}_\mathbf{s}[1]$ \\
 \midrule
-0x04 & {\small DIV} & 2 & 1 & Integer division operation. \\
+0x04 & {\small DIV} & 2 & 1 & This is the integer division operation. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0\\ \lfloor\boldsymbol{\mu}_\mathbf{s}[0] \div \boldsymbol{\mu}_\mathbf{s}[1]\rfloor & \text{otherwise}\end{cases}$  \\
 \midrule
-0x05 & {\small SDIV} & 2 & 1 & Signed integer division operation (truncated). \\
+0x05 & {\small SDIV} & 2 & 1 & This is the signed integer division operation (truncated). \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0\\ -2^{255} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] = -2^{255} \wedge \quad \boldsymbol{\mu}_\mathbf{s}[1] = -1\\ \mathbf{sgn} (\boldsymbol{\mu}_\mathbf{s}[0] \div \boldsymbol{\mu}_\mathbf{s}[1]) \lfloor |\boldsymbol{\mu}_\mathbf{s}[0] \div \boldsymbol{\mu}_\mathbf{s}[1]| \rfloor & \text{otherwise}\end{cases}$  \\
 &&&& Where all values are treated as two's complement signed 256-bit integers. \\
 &&&& Note the overflow semantic when $-2^{255}$ is negated.\\
 \midrule
-0x06 & {\small MOD} & 2 & 1 & Modulo remainder operation. \\
+0x06 & {\small MOD} & 2 & 1 & This is the modulo remainder operation. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0\\ \boldsymbol{\mu}_\mathbf{s}[0] \bmod \boldsymbol{\mu}_\mathbf{s}[1] & \text{otherwise}\end{cases}$  \\
 \midrule
-0x07 & {\small SMOD} & 2 & 1 & Signed modulo remainder operation. \\
+0x07 & {\small SMOD} & 2 & 1 & This is the signed modulo remainder operation. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0\\ \mathbf{sgn} (\boldsymbol{\mu}_\mathbf{s}[0]) (|\boldsymbol{\mu}_\mathbf{s}[0]| \bmod |\boldsymbol{\mu}_\mathbf{s}[1]|) & \text{otherwise}\end{cases}$  \\
 &&&& Where all values are treated as two's complement signed 256-bit integers. \\
 \midrule
-0x08 & {\small ADDMOD} & 3 & 1 & Modulo addition operation. \\
+0x08 & {\small ADDMOD} & 3 & 1 & This is the modulo addition operation. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] = 0\\ (\boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1]) \mod \boldsymbol{\mu}_\mathbf{s}[2] & \text{otherwise}\end{cases}$  \\
 &&&& All intermediate calculations of this operation are not subject to the $2^{256}$ modulo. \\
 \midrule
-0x09 & {\small MULMOD} & 3 & 1 & Modulo multiplication operation. \\
+0x09 & {\small MULMOD} & 3 & 1 & This is the modulo multiplication operation. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] = 0\\ (\boldsymbol{\mu}_\mathbf{s}[0] \times \boldsymbol{\mu}_\mathbf{s}[1]) \mod \boldsymbol{\mu}_\mathbf{s}[2] & \text{otherwise}\end{cases}$  \\
 &&&& All intermediate calculations of this operation are not subject to the $2^{256}$ modulo. \\
 \midrule
-0x0a & {\small EXP} & 2 & 1 & Exponential operation. \\
+0x0a & {\small EXP} & 2 & 1 & This is the exponential operation. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0] ^ {\boldsymbol{\mu}_\mathbf{s}[1] }$ \\
 \midrule
 0x0b & {\small SIGNEXTEND} & 2 & 1 & Extend the length of a two's complement signed integer. \\
@@ -1645,36 +1645,36 @@ Here given are the various exceptions to the state transition rules given in sec
 \toprule
 \multicolumn{5}{c}{\textbf{10s: Comparison \& Bitwise Logic Operations}} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
-0x10 & {\small LT} & 2 & 1 & Less-than comparison. \\
+0x10 & {\small LT} & 2 & 1 & This is the less-than comparison. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] < \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
-0x11 & {\small GT} & 2 & 1 & Greater-than comparison. \\
+0x11 & {\small GT} & 2 & 1 & This is the greater-than comparison. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
-0x12 & {\small SLT} & 2 & 1 & Signed less-than comparison. \\
+0x12 & {\small SLT} & 2 & 1 & This is the signed less-than comparison. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] < \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 &&&& Where all values are treated as two's complement signed 256-bit integers. \\
 \midrule
-0x13 & {\small SGT} & 2 & 1 & Signed greater-than comparison. \\
+0x13 & {\small SGT} & 2 & 1 & This is the signed greater-than comparison. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 &&&& Where all values are treated as two's complement signed 256-bit integers. \\
 \midrule
-0x14 & {\small EQ} & 2 & 1 & Equality comparison. \\
+0x14 & {\small EQ} & 2 & 1 & This is the equality comparison. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] = \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
 0x15 & {\small ISZERO} & 1 & 1 & This is the logical negation operation, also called the logical complement or the NOT operation. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] = 0 \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
-0x16 & {\small AND} & 2 & 1 & Bitwise AND operation. \\
+0x16 & {\small AND} & 2 & 1 & This is the bitwise AND operation. \\
 &&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \boldsymbol{\mu}_\mathbf{s}[0]_i \wedge \boldsymbol{\mu}_\mathbf{s}[1]_i$ \\
 \midrule
-0x17 & {\small OR} & 2 & 1 & Bitwise OR operation. \\
+0x17 & {\small OR} & 2 & 1 & This is the bitwise OR operation. \\
 &&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \boldsymbol{\mu}_\mathbf{s}[0]_i \vee \boldsymbol{\mu}_\mathbf{s}[1]_i$ \\
 \midrule
-0x18 & {\small XOR} & 2 & 1 & Bitwise XOR operation. \\
+0x18 & {\small XOR} & 2 & 1 & This is the bitwise XOR operation. \\
 &&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \boldsymbol{\mu}_\mathbf{s}[0]_i \oplus \boldsymbol{\mu}_\mathbf{s}[1]_i$ \\
 \midrule
-0x19 & {\small NOT} & 1 & 1 & Bitwise NOT operation. \\
+0x19 & {\small NOT} & 1 & 1 & This is the bitwise NOT operation. \\
 &&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0]_i = 0 \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
 0x1a & {\small BYTE} & 2 & 1 & Retrieve a single byte from a word. \\
@@ -1890,17 +1890,17 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 \toprule
 \multicolumn{5}{c}{\textbf{90s: Exchange Operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
-0x90 & {\small SWAP1} & 2 & 2 & Exchange 1st and 2nd stack items. \\
+0x90 & {\small SWAP1} & 2 & 2 & Exchange the 1st and the 2nd stack items. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[1]$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[1] \equiv \boldsymbol{\mu}_\mathbf{s}[0]$ \\
 \midrule
-0x91 & {\small SWAP2} & 3 & 3 & Exchange 1st and 3rd stack items. \\
+0x91 & {\small SWAP2} & 3 & 3 & Exchange the 1st and the 3rd stack items. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[2]$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[2] \equiv \boldsymbol{\mu}_\mathbf{s}[0]$ \\
 \midrule
 \multicolumn{1}{c}{\vdots} & \multicolumn{1}{c}{\vdots} & \vdots & \vdots & \multicolumn{1}{c}{\vdots} \\
 \midrule
-0x9f & {\small SWAP16} & 17 & 17 & Exchange 1st and 17th stack items. \\
+0x9f & {\small SWAP16} & 17 & 17 & Exchange the 1st and the 17th stack items. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[16]$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[16] \equiv \boldsymbol{\mu}_\mathbf{s}[0]$ \\
 \bottomrule
@@ -1915,15 +1915,15 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 \multicolumn{5}{l}{$\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[1])$}\\
 \multicolumn{5}{l}{The entry's topic series, $\mathbf{t}$, differs accordingly:}\vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
-0xa0 & {\small LOG0} & 2 & 0 & Append log record with no topics. \\
+0xa0 & {\small LOG0} & 2 & 0 & Append the log record with no topics. \\
 &&&& $\mathbf{t} \equiv ()$ \\
 \midrule
-0xa1 & {\small LOG1} & 3 & 0 & Append log record with one topic. \\
+0xa1 & {\small LOG1} & 3 & 0 & Append the log record with one topic. \\
 &&&& $\mathbf{t} \equiv (\boldsymbol{\mu}_\mathbf{s}[2])$ \\
 \midrule
 \multicolumn{1}{c}{\vdots} & \multicolumn{1}{c}{\vdots} & \vdots & \vdots & \multicolumn{1}{c}{\vdots} \\
 \midrule
-0xa4 & {\small LOG4} & 6 & 0 & Append log record with four topics. \\
+0xa4 & {\small LOG4} & 6 & 0 & Append the log record with four topics. \\
 &&&& $\mathbf{t} \equiv (\boldsymbol{\mu}_\mathbf{s}[2], \boldsymbol{\mu}_\mathbf{s}[3], \boldsymbol{\mu}_\mathbf{s}[4], \boldsymbol{\mu}_\mathbf{s}[5])$ \\
 \bottomrule
 \end{tabular*}
@@ -1938,11 +1938,11 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& $\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except} \quad \boldsymbol{\sigma}^*[I_a]_n = \boldsymbol{\sigma}[I_a]_n + 1$ \\
 &&&& $A' \equiv A \Cup A^+$ which implies: $A'_\mathbf{s} \equiv A_\mathbf{s} \cup A^+_\mathbf{s} \quad \wedge \quad A'_\mathbf{l} \equiv A_\mathbf{l} \cdot A^+_\mathbf{l} \quad \wedge \quad A'_\mathbf{r} \equiv A_\mathbf{r} + A^+_\mathbf{r}$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
-&&&& where $x=0$ if the code execution for this operation failed due to an exceptional halting \\
+&&&& where $x=0$ if the code execution for this operation failed due to an exceptional halting: \\
 &&&& $Z(\boldsymbol{\sigma}^*, \boldsymbol{\mu}, I) = \top$ or $I_e = 1024$ \\
-&&&& (the maximum call depth limit is reached) or $\boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\sigma}[I_a]_b$ (balance of the caller is too \\
-&&&& low to fulfil the value transfer); and otherwise $x=A(I_a, \boldsymbol{\sigma}[I_a]_n)$, the address of the newly \\
-&&&& created account, otherwise. \\
+&&&& (the maximum call depth limit is reached) or $\boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\sigma}[I_a]_b$ (the balance of the caller is  \\
+&&&& too low to fulfil the value transfer); and otherwise $x=A(I_a, \boldsymbol{\sigma}[I_a]_n)$, the address of the  \\
+&&&& newly created account. \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[1], \boldsymbol{\mu}_\mathbf{s}[2])$ \\
 &&&& Thus the operand order is: value, input offset, input size. \\
 \midrule
