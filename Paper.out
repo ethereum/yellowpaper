@@ -1,0 +1,57 @@
+\BOOKMARK [1][-]{section.1}{1. Introduction}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{1.1. Driving Factors}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{1.2. Previous Work}{section.1}% 3
+\BOOKMARK [1][-]{section.2}{2. The Blockchain Paradigm}{}% 4
+\BOOKMARK [2][-]{subsection.2.1}{2.1. Value}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.2}{2.2. Which History?}{section.2}% 6
+\BOOKMARK [1][-]{section.3}{3. Conventions}{}% 7
+\BOOKMARK [1][-]{section.4}{4. Blocks, State and Transactions}{}% 8
+\BOOKMARK [2][-]{subsection.4.1}{4.1. World State}{section.4}% 9
+\BOOKMARK [2][-]{subsection.4.2}{4.2. The Transaction}{section.4}% 10
+\BOOKMARK [2][-]{subsection.4.3}{4.3. The Block}{section.4}% 11
+\BOOKMARK [1][-]{section.5}{5. Gas and Payment}{}% 12
+\BOOKMARK [1][-]{section.6}{6. Transaction Execution}{}% 13
+\BOOKMARK [2][-]{subsection.6.1}{6.1. Substate}{section.6}% 14
+\BOOKMARK [2][-]{subsection.6.2}{6.2. Execution}{section.6}% 15
+\BOOKMARK [1][-]{section.7}{7. Contract Creation}{}% 16
+\BOOKMARK [2][-]{subsection.7.1}{7.1. Subtleties}{section.7}% 17
+\BOOKMARK [1][-]{section.8}{8. Message Call}{}% 18
+\BOOKMARK [1][-]{section.9}{9. Execution Model}{}% 19
+\BOOKMARK [2][-]{subsection.9.1}{9.1. Basics}{section.9}% 20
+\BOOKMARK [2][-]{subsection.9.2}{9.2. Fees Overview}{section.9}% 21
+\BOOKMARK [2][-]{subsection.9.3}{9.3. Execution Environment}{section.9}% 22
+\BOOKMARK [2][-]{subsection.9.4}{9.4. Execution Overview}{section.9}% 23
+\BOOKMARK [2][-]{subsection.9.5}{9.5. The Execution Cycle}{section.9}% 24
+\BOOKMARK [1][-]{section.10}{10. Blocktree to Blockchain}{}% 25
+\BOOKMARK [1][-]{section.11}{11. Block Finalisation}{}% 26
+\BOOKMARK [2][-]{subsection.11.1}{11.1. Ommer Validation}{section.11}% 27
+\BOOKMARK [2][-]{subsection.11.2}{11.2. Transaction Validation}{section.11}% 28
+\BOOKMARK [2][-]{subsection.11.3}{11.3. Reward Application}{section.11}% 29
+\BOOKMARK [2][-]{subsection.11.4}{11.4. State \046 Nonce Validation}{section.11}% 30
+\BOOKMARK [2][-]{subsection.11.5}{11.5. Mining Proof-of-Work}{section.11}% 31
+\BOOKMARK [1][-]{section.12}{12. Implementing Contracts}{}% 32
+\BOOKMARK [2][-]{subsection.12.1}{12.1. Data Feeds}{section.12}% 33
+\BOOKMARK [2][-]{subsection.12.2}{12.2. Random Numbers}{section.12}% 34
+\BOOKMARK [1][-]{section.13}{13. Future Directions}{}% 35
+\BOOKMARK [2][-]{subsection.13.1}{13.1. Scalability}{section.13}% 36
+\BOOKMARK [1][-]{section.14}{14. Conclusion}{}% 37
+\BOOKMARK [1][-]{section.15}{15. Acknowledgements}{}% 38
+\BOOKMARK [1][-]{section.16}{16. Availability}{}% 39
+\BOOKMARK [1][-]{section*.1}{References}{}% 40
+\BOOKMARK [1][-]{appendix.A}{Appendix A. Terminology}{}% 41
+\BOOKMARK [1][-]{appendix.B}{Appendix B. Recursive Length Prefix}{}% 42
+\BOOKMARK [1][-]{appendix.C}{Appendix C. Hex-Prefix Encoding}{}% 43
+\BOOKMARK [1][-]{appendix.D}{Appendix D. Modified Merkle Patricia Tree}{}% 44
+\BOOKMARK [2][-]{subsection.D.1}{D.1. Trie Database}{appendix.D}% 45
+\BOOKMARK [1][-]{appendix.E}{Appendix E. Precompiled Contracts}{}% 46
+\BOOKMARK [1][-]{appendix.F}{Appendix F. Signing Transactions}{}% 47
+\BOOKMARK [1][-]{appendix.G}{Appendix G. Fee Schedule}{}% 48
+\BOOKMARK [1][-]{appendix.H}{Appendix H. Virtual Machine Specification}{}% 49
+\BOOKMARK [2][-]{subsection.H.1}{H.1. Gas Cost}{appendix.H}% 50
+\BOOKMARK [2][-]{subsection.H.2}{H.2. Instruction Set}{appendix.H}% 51
+\BOOKMARK [1][-]{appendix.I}{Appendix I. Genesis Block}{}% 52
+\BOOKMARK [1][-]{appendix.J}{Appendix J. Ethash}{}% 53
+\BOOKMARK [2][-]{subsection.J.1}{J.1. Definitions}{appendix.J}% 54
+\BOOKMARK [2][-]{subsection.J.2}{J.2. Size of dataset and cache}{appendix.J}% 55
+\BOOKMARK [2][-]{subsection.J.3}{J.3. Dataset generation}{appendix.J}% 56
+\BOOKMARK [2][-]{subsection.J.4}{J.4. Proof-of-work function}{appendix.J}% 57
