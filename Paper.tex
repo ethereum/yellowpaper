@@ -1,5 +1,6 @@
 \documentclass[9pt,oneside]{amsart}
 \usepackage{cancel}
+%\usepackage{tweaklist}
 \usepackage{xspace}
 \usepackage{graphicx}
 \usepackage{multicol}
@@ -19,17 +20,25 @@
 \usepackage{afterpage}
 \usepackage{tikz}
 \usepackage{underscore}
+%\usepackage{lipsum} % to generate filler text for testing of document rendering
 \usepackage{hyperref}
+
+%\usepackage{longtable}
+% https://stackoverflow.com/a/1918465/7438857
+%tabularx seems better
+
+\usepackage{tabularx}
+%https://stackoverflow.com/a/1919447/7438857
+
 \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
-% "hyperref loads the url package internally. Use \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref} to pass the option to the url package when it is loaded by hyperref. This avoids any package option clashes." Source: https://tex.stackexchange.com/questions/3033/forcing-linebreaks-in-url/3034#comment44478_3034. 
-% Note also this: "If the \PassOptionsToPackage{hyphens}{url} approach does not work, maybe it's "because you're trying to load the url package with a specific option, but it's being loaded by one of your packages before that with a different set of options. Try loading the url package earlier than the package that requires it. If it's loaded by the document class, try using \RequirePackage[hyphens]{url} before the document class." Source: https://tex.stackexchange.com/questions/3033/forcing-linebreaks-in-url/3034#comment555944_3034
-% \usepackage{tweaklist}
+% "hyperref loads the url package internally. Use \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref} to pass the option to the url package when it is loaded by hyperref. This avoids any package option clashes." Source: <https://tex.stackexchange.com/questions/3033/forcing-linebreaks-in-url/3034#comment44478_3034>. 
+% Note also this: "If the \PassOptionsToPackage{hyphens}{url} approach does not work, maybe it's "because you're trying to load the url package with a specific option, but it's being loaded by one of your packages before that with a different set of options. Try loading the url package earlier than the package that requires it. If it's loaded by the document class, try using \RequirePackage[hyphens]{url} before the document class." Source: <https://tex.stackexchange.com/questions/3033/forcing-linebreaks-in-url/3034#comment555944_3034>.
 
 \makeatletter
 \g@addto@macro{\UrlBreaks}{\UrlOrds}
 \makeatother
 %\PassOptionsToPackage{url}\g@addto@macro{\UrlBreaks}{\UrlOrds}
-% info on the above command: https://tex.stackexchange.com/posts/10419/revisions
+% info on the above command: <https://tex.stackexchange.com/posts/10419/revisions>. Note that the three preceding lines, as well as \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref} did not fix the error where if a URL breaks over a page, it shows a snippet in the header as shown here: <https://i.stack.imgur.com/tYUe2.png>. The following command did fix this error.
 
 \expandafter\def\expandafter\UrlBreaks\expandafter{\UrlBreaks%  save the current one
   \do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j%
@@ -38,6 +47,14 @@
   \do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N%
   \do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X%
   \do\Y\do\Z}
+
+%\sloppy
+%\setlength{\emergencystretch}{2pt}
+% These don't appear to make a difference with the preceding use of the \hypens package and \expandafter.
+% https://tex.stackexchange.com/a/59131/143781
+% <https://tex.stackexchange.com/questions/241343/what-is-the-meaning-of-fussy-sloppy-emergencystretch-tolerance-hbadness>
+
+
 
 \input{Version.tex}
 
@@ -1473,11 +1490,12 @@ The assertion that the sender of a signed transaction equals the address of the 
 \forall T: \forall p_r: S(G(T, p_r)) \equiv A(p_r)
 \end{equation}
 
+\newpage
 \section{Fee Schedule}\label{app:fees}
 
 The fee schedule $G$ is a tuple of 31 scalar values corresponding to the relative costs, in gas, of a number of abstract operations that a transaction may effect.
 
-\begin{tabular*}{\columnwidth}[h]{lrl}
+\begin{tabularx}{\textwidth}{lrX}
 \toprule
 Name & Value & Description* \\
 \midrule
@@ -1519,7 +1537,7 @@ $G_{blockhash}$ & 20 & This is a payment for a {\small BLOCKHASH} operation. \\
 
 %extern u256 const c_copyGas;			///< Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
 \bottomrule
-\end{tabular*}
+\end{tabularx}
 
 \section{Virtual Machine Specification}\label{app:vm}
 
@@ -1617,7 +1635,8 @@ O(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \equiv (\boldsymbol{\sigma}', \bo
 
 Here given are the various exceptions to the state transition rules given in section \ref{ch:model} specified for each instruction, together with the additional instruction-specific definitions of $J$ and $C$. For each instruction, also specified is $\alpha$, the additional items placed on the stack and $\delta$, the items removed from the stack, as defined in section \ref{ch:model}.
 
-\begin{tabular*}{\columnwidth}[h]{rlrrl}
+%\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\begin{tabularx}{\textwidth}{rlrrX}
 \toprule
 \multicolumn{5}{c}{\textbf{0s: Stop and Arithmetic Operations}} \\
 \multicolumn{5}{l}{All arithmetic is modulo $2^{256}$ unless otherwise noted. The zero-th power of zero $0^0$ is defined to be one.} \vspace{5pt} \\
@@ -1663,9 +1682,9 @@ Here given are the various exceptions to the state transition rules given in sec
 0x0b & {\small SIGNEXTEND} & 2 & 1 & Extend the length of a two's complement signed integer. \\
 &&&& $ \forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \begin{cases} \boldsymbol{\mu}_\mathbf{s}[1]_t &\text{if} \quad i \leqslant t \quad \text{where} \; t = 256 - 8(\boldsymbol{\mu}_\mathbf{s}[0] + 1) \\ \boldsymbol{\mu}_\mathbf{s}[1]_i &\text{otherwise} \end{cases}$ \\
 \multicolumn{5}{l}{$\boldsymbol{\mu}_\mathbf{s}[x]_i$ gives the $i$th bit (counting from zero) of $\boldsymbol{\mu}_\mathbf{s}[x]$} \vspace{5pt} \\
-\end{tabular*}
+\end{tabularx}
 
-\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\begin{tabularx}{\textwidth}{rlrrX}
 \toprule
 \multicolumn{5}{c}{\textbf{10s: Comparison \& Bitwise Logic Operations}} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
@@ -1705,9 +1724,9 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \begin{cases} \boldsymbol{\mu}_\mathbf{s}[1]_{(i + 8\boldsymbol{\mu}_\mathbf{s}[0])} & \text{if} \quad i < 8 \wedge \boldsymbol{\mu}_\mathbf{s}[0] < 32 \\ 0 & \text{otherwise} \end{cases} $\\
 &&&& For the Nth byte, we count from the left (i.e. $N=0$ would be the most significant in big endian). \\
 \bottomrule
-\end{tabular*}
+\end{tabularx}
 
-\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\begin{tabularx}{\textwidth}{rlrrX}
 \toprule
 \multicolumn{5}{c}{\textbf{20s: SHA3}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
@@ -1715,9 +1734,9 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \mathtt{\tiny Keccak}(\boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[0] \dots (\boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1] - 1) ])$ \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[1])$ \\
 \bottomrule
-\end{tabular*}
+\end{tabularx}
 
-\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\begin{tabularx}{\textwidth}{rlrrX}
 \toprule
 \multicolumn{5}{c}{\textbf{30s: Environmental Information}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
@@ -1729,8 +1748,7 @@ Here given are the various exceptions to the state transition rules given in sec
 \midrule
 0x32 & {\small ORIGIN} & 0 & 1 & Get the address that the execution originated from. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_o$ \\
-&&&& This is the sender of the original transaction; it is never an account with non-empty \\
-&&&& associated code. \\
+&&&& This is the sender of the original transaction; it is never an account with non-empty associated code. \\
 \midrule
 0x33 & {\small CALLER} & 0 & 1 & Get the caller address. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_s$ \\
@@ -1777,20 +1795,17 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[1], \boldsymbol{\mu}_\mathbf{s}[3])$ \\
 &&&& The additions in $\boldsymbol{\mu}_\mathbf{s}[2] + i$ are not subject to the $2^{256}$ modulo. \\
 \bottomrule
-\end{tabular*}
+\end{tabularx}
 
-\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\begin{tabularx}{\textwidth}{rlrrX}
 \toprule
 \multicolumn{5}{c}{\textbf{40s: Block Information}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x40 & {\small BLOCKHASH} & 1 & 1 & Get the hash of one of the 256 most recent complete blocks. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv P(I_{H_p}, \boldsymbol{\mu}_\mathbf{s}[0], 0)$ \\
-&&&& where $P$ is the hash of a block of a particular number, up to a maximum age.\\
-&&&& 0 is left on the stack if the looked for block number is greater than the current block number \\
-&&&& or more than 256 blocks behind the current block. \\
+&&&& where $P$ is the hash of a block of a particular number, up to a maximum age. 0 is left on the stack if the looked for block number is greater than the current block number or more than 256 blocks behind the current block. \\
 &&&& $P(h, n, a) \equiv \begin{cases} 0 & \text{if} \quad n > H_i \vee a = 256 \vee h = 0 \\ h & \text{if} \quad n = H_i \\ P(H_p, n, a + 1) & \text{otherwise} \end{cases}$ \\
-&&&& and we assert that the reason why the header $H$ can be determined is because its hash is the parent hash \\
-&&&& in the block following it. \\
+&&&& and we assert that the reason why the header $H$ can be determined is because its hash is the parent hash in the block following it. \\
 \midrule
 0x41 & {\small COINBASE} & 0 & 1 & Get the block's beneficiary address. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_H}_c$ \\
@@ -1807,9 +1822,9 @@ Here given are the various exceptions to the state transition rules given in sec
 0x45 & {\small GASLIMIT} & 0 & 1 & Get the block's gas limit. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_H}_l$ \\
 \bottomrule
-\end{tabular*}
+\end{tabularx}
 
-\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\begin{tabularx}{\textwidth}{rlrrX}
 \toprule
 \multicolumn{5}{c}{\textbf{50s: Stack, Memory, Storage and Flow Operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
@@ -1852,23 +1867,21 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& $J_{\text{\tiny JUMPI}}(\boldsymbol{\mu}) \equiv \begin{cases} \boldsymbol{\mu}_\mathbf{s}[0] & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \\ \boldsymbol{\mu}_{pc} + 1 & \text{otherwise} \end{cases} $ \\
 &&&& This has the effect of writing said value to $\boldsymbol{\mu}_{pc}$. See section \ref{ch:model}. \\
 \midrule
-0x58 & {\small PC} & 0 & 1 & Get the value of the program counter \textit{prior} to the increment \\
-&&&&  corresponding to this instruction. \\
+0x58 & {\small PC} & 0 & 1 & Get the value of the program counter \textit{prior} to the increment corresponding to this instruction. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_{pc}$ \\
 \midrule
 0x59 & {\small MSIZE} & 0 & 1 & Get the size of active memory in bytes. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv 32\boldsymbol{\mu}_{i}$ \\
 \midrule
-0x5a & {\small GAS} & 0 & 1 & Get the amount of available gas, including the corresponding reduction \\
-&&&& for the cost of this instruction. \\
+0x5a & {\small GAS} & 0 & 1 & Get the amount of available gas, including the corresponding reduction for the cost of this instruction. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_{g}$ \\
 \midrule
 0x5b & {\small JUMPDEST} & 0 & 0 & Mark a valid destination for jumps. \\
 &&&& This operation has no effect on the machine state during execution. \\
 \bottomrule
-\end{tabular*}
+\end{tabularx}
 
-\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\begin{tabularx}{\textwidth}{rlrrX}
 \toprule
 \multicolumn{5}{c}{\textbf{60s \& 70s: Push Operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
@@ -1891,9 +1904,9 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& where $\boldsymbol{c}$ is defined as above. \\
 &&&& Similarly, the bytes are right-aligned (\ie they take the lowest significant place and the last, highest address, which is the big-endian interpretation). \\
 \bottomrule
-\end{tabular*}
+\end{tabularx}
 
-\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\begin{tabularx}{\textwidth}{rlrrX}
 \toprule
 \multicolumn{5}{c}{\textbf{80s: Duplication Operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
@@ -1908,9 +1921,9 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 0x8f & {\small DUP16} & 16 & 17 & Duplicate the 16th stack item. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[15]$ \\
 \bottomrule
-\end{tabular*}
+\end{tabularx}
 
-\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\begin{tabularx}{\textwidth}{rlrrX}
 \toprule
 \multicolumn{5}{c}{\textbf{90s: Exchange Operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
@@ -1928,9 +1941,9 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[16]$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[16] \equiv \boldsymbol{\mu}_\mathbf{s}[0]$ \\
 \bottomrule
-\end{tabular*}
+\end{tabularx}
 
-\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\begin{tabularx}{\textwidth}{rlrrX}
 \toprule
 \multicolumn{5}{c}{\textbf{a0s: Logging Operations}} \vspace{5pt} \\
 \multicolumn{5}{l}{For all logging operations, the state change is to append an additional log entry on to the substate's log series:}\\
@@ -1950,9 +1963,9 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 0xa4 & {\small LOG4} & 6 & 0 & Append the log record with four topics. \\
 &&&& $\mathbf{t} \equiv (\boldsymbol{\mu}_\mathbf{s}[2], \boldsymbol{\mu}_\mathbf{s}[3], \boldsymbol{\mu}_\mathbf{s}[4], \boldsymbol{\mu}_\mathbf{s}[5])$ \\
 \bottomrule
-\end{tabular*}
+\end{tabularx}
 
-\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\begin{tabularx}{\textwidth}{rlrrX}
 \toprule
 \multicolumn{5}{c}{\textbf{f0s: System operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
@@ -1964,8 +1977,7 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
 &&&& where $x=0$ if the code execution for this operation failed due to an exceptional halting: \\
 &&&& $Z(\boldsymbol{\sigma}^*, \boldsymbol{\mu}, I) = \top$ or $I_e = 1024$ \\
-&&&& (the maximum call depth limit is reached) or $\boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\sigma}[I_a]_b$ (the balance of the caller is  \\
-&&&& too low to fulfil the value transfer); and otherwise $x=A(I_a, \boldsymbol{\sigma}[I_a]_n)$, the address of the  \\
+&&&& (the maximum call depth limit is reached) or $\boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\sigma}[I_a]_b$ (the balance of the caller is too low to fulfil the value transfer); and otherwise $x=A(I_a, \boldsymbol{\sigma}[I_a]_n)$, the address of the  \\
 &&&& newly created account. \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[1], \boldsymbol{\mu}_\mathbf{s}[2])$ \\
 &&&& Thus the operand order is: value, input offset, input size. \\
@@ -2016,21 +2028,13 @@ G_{newaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}
 &&&& This has the effect of halting the execution at this point with output defined.\\
 &&&& See section \ref{ch:model}. \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[1])$ \\
-\end{tabular*}
+\end{tabularx}
 
-\begin{tabular*}{\columnwidth}[h]{rlrrl}
+\begin{tabularx}{\textwidth}{rlrrX}
 \midrule
-0xf4 & {\small DELEGATECALL} & 6 & 1 & Message-call into this account with an alternative account's code, but persisting\\
-&&&& the current values for {\it sender} and {\it value}. \\
-&&&& Compared with {\small CALL}, {\small DELEGATECALL} takes one fewer arguments.  The omitted\\
-&&&& argument is $\boldsymbol{\mu}_\mathbf{s}[2]$. As a result, $\boldsymbol{\mu}_\mathbf{s}[3]$, $\boldsymbol{\mu}_\mathbf{s}[4]$, $\boldsymbol{\mu}_\mathbf{s}[5]$ and $\boldsymbol{\mu}_\mathbf{s}[6]$ in the definition of {\small CALL} \\
-&&&& should respectively be replaced with $\boldsymbol{\mu}_\mathbf{s}[2]$, $\boldsymbol{\mu}_\mathbf{s}[3]$, $\boldsymbol{\mu}_\mathbf{s}[4]$ and $\boldsymbol{\mu}_\mathbf{s}[5]$. \\
-&&&& Otherwise exactly equivalent to {\small CALL} except: \\
+0xf4 & {\small DELEGATECALL} & 6 & 1 & Message-call into this account with an alternative account's code, but persistingthe current values for {\it sender} and {\it value}. Compared with {\small CALL}, {\small DELEGATECALL} takes one fewer arguments.  The omitted argument is $\boldsymbol{\mu}_\mathbf{s}[2]$. As a result, $\boldsymbol{\mu}_\mathbf{s}[3]$, $\boldsymbol{\mu}_\mathbf{s}[4]$, $\boldsymbol{\mu}_\mathbf{s}[5]$ and $\boldsymbol{\mu}_\mathbf{s}[6]$ in the definition of {\small CALL} should respectively be replaced with $\boldsymbol{\mu}_\mathbf{s}[2]$, $\boldsymbol{\mu}_\mathbf{s}[3]$, $\boldsymbol{\mu}_\mathbf{s}[4]$ and $\boldsymbol{\mu}_\mathbf{s}[5]$. Otherwise it is exactly equivalent to {\small CALL} except: \\
 &&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}^*, I_s, I_o, I_a, t,\\\quad \boldsymbol{\mu}_\mathbf{s}[0], I_p, 0, I_v, \mathbf{i}, I_e + 1)\end{array} & \text{if} \quad I_v \leqslant \boldsymbol{\sigma}[I_a]_b \;\wedge\; I_e < 1024 \\ (\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
-&&&& Note the changes (in addition to that of the fourth parameter) to the second \\
-&&&& and ninth parameters to the call $\Theta$.\\
-&&&& This means that the recipient is in fact the same account as at present, simply\\
-&&&& that the code is overwritten {\it and} the context is almost entirely identical.\\
+&&&& Note the changes (in addition to that of the fourth parameter) to the second and ninth parameters to the call $\Theta$. This means that the recipient is in fact the same account as at present, simplythat the code is overwritten {\it and} the context is almost entirely identical.\\
 \midrule
 0xfe & {\small INVALID} & $\varnothing$ & $\varnothing$ & Designated invalid instruction. \\
 \midrule
@@ -2047,7 +2051,7 @@ G_{newaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}
 0 & \text{otherwise}
 \end{cases}$ \\
 \bottomrule
-\end{tabular*}
+\end{tabularx}
 
 %\section{Low-level Lisp-like Language}\label{app:lll}
 %The Low-level Lisp-like Language is a language created in order to efficiently author low-level programs (contracts) without having to resort to EVM-Assembly.
@@ -2067,7 +2071,7 @@ The proof-of-concept series include a development premine, making the state root
 \subsection{Definitions}
 We employ the following definitions:
 
-\begin{tabular*}{\columnwidth}[h]{lrl}
+\begin{tabularx}{\textwidth}{rlrrX}
 \toprule
 Name & Value & Description \\
 \midrule
@@ -2083,7 +2087,7 @@ $J_{parents}$ & 256 & Number of parents of each dataset element. \\
 $J_{cacherounds}$ & 3 & Number of rounds in cache production. \\
 $J_{accesses}$ & 64 & Number of accesses in hashimoto loop. \\
 \bottomrule
-\end{tabular*}
+\end{tabularx}
 
 \subsection{Size of dataset and cache}
 The size for Ethash's cache $\mathbf{c} \in \mathbb{B}$  and dataset $\mathbf{d} \in \mathbb{B}$ depend on the epoch, which in turn depends on the block number.
