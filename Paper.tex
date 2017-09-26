@@ -21,7 +21,8 @@
 \usepackage{tikz}
 \usepackage{underscore}
 %\usepackage{lipsum} % to generate filler text for testing of document rendering
-\usepackage{hyperref}
+\usepackage[bookmarks=true, unicode=true, pdftitle={Ethereum Yellow Paper: a formal specification of Ethereum, a programmable blockchain}, pdfauthor={Gavin Wood and others as per https://github.com/ethereum/yellowpaper/commits/master},pdfkeywords={Ethereum, Yellow Paper, blockchain, virtual machine, cryptography, decentralised, singleton, transaction, generalised},pdfborder={0 0 0.5 [3 3]}]{hyperref}
+%,pagebackref=true
 
 %\usepackage{longtable}
 % https://stackoverflow.com/a/1918465/7438857
@@ -38,7 +39,7 @@
 \g@addto@macro{\UrlBreaks}{\UrlOrds}
 \makeatother
 %\PassOptionsToPackage{url}\g@addto@macro{\UrlBreaks}{\UrlOrds}
-% info on the above command: <https://tex.stackexchange.com/posts/10419/revisions>. Note that the three preceding lines, as well as \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref} did not fix the error where if a URL breaks over a page, it shows a snippet in the header as shown here: <https://i.stack.imgur.com/tYUe2.png>. The following command did fix this error.
+% info on the above command: <https://tex.stackexchange.com/posts/10419/revisions>. Note that the three preceding lines, as well as \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref} did not fix the error where if a URL breaks over a page, it shows a snippet in the header as shown here: <https://i.stack.imgur.com/tYUe2.png>. The following command did fix this error, however only because it happened to compact the text, preventing a URL from breaking over a page. If you force a URL to break over a page, the error still occurs.
 
 \expandafter\def\expandafter\UrlBreaks\expandafter{\UrlBreaks%  save the current one
   \do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j%
@@ -47,13 +48,12 @@
   \do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N%
   \do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X%
   \do\Y\do\Z}
-
+% More info: <https://tex.stackexchange.com/questions/392832/how-to-ensure-that-a-url-break-over-a-page-doesnt-add-a-tiny-url-box-in-the-hea>.
 %\sloppy
 %\setlength{\emergencystretch}{2pt}
 % These don't appear to make a difference with the preceding use of the \hypens package and \expandafter.
 % https://tex.stackexchange.com/a/59131/143781
 % <https://tex.stackexchange.com/questions/241343/what-is-the-meaning-of-fussy-sloppy-emergencystretch-tolerance-hbadness>
-
 
 
 \input{Version.tex}
@@ -132,7 +132,7 @@ For a list of terms used in this paper, refer to Appendix \ref{ch:Terminology}.
 
 \section{The Blockchain Paradigm} \label{ch:overview}
 
-Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissible. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg, be things such as reducing an account balance without an equal and opposite increase elsewhere. A valid state transition is one which comes about through a transaction. Formally:
+Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissible. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg, be things such as reducing an account balance without an equal and opposite increase elsewhere. A valid state transition is one which comes about through a transaction. Formally:\hypertarget{Upsilon}{}
 \begin{equation}
 \boldsymbol{\sigma}_{t+1} \equiv \Upsilon(\boldsymbol{\sigma}_t, T)
 \end{equation}
@@ -147,10 +147,10 @@ Formally, we expand to:
 \begin{eqnarray}
 \boldsymbol{\sigma}_{t+1} & \equiv & \Pi(\boldsymbol{\sigma}_t, B) \\
 B & \equiv & (..., (T_0, T_1, ...) ) \\
-\Pi(\boldsymbol{\sigma}, B) & \equiv & \Omega(B, \Upsilon(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...)
+\Pi(\boldsymbol{\sigma}, B) & \equiv & \hyperlink{Omega}{\Omega}(B, \hyperlink{Upsilon}{\Upsilon}(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...)
 \end{eqnarray}
 
-Where $\Omega$ is the block-finalisation state transition function (a function that rewards a nominated party); $B$ is this block, which includes a series of transactions amongst some other components; and $\Pi$ is the block-level state-transition function.
+Where \hyperlink{Omega}{$\Omega$} is the block-finalisation state transition function (a function that rewards a nominated party); $B$ is this block, which includes a series of transactions amongst some other components; and $\Pi$ is the block-level state-transition function.
 
 This is the basis of the blockchain paradigm, a model that forms the backbone of not only Ethereum, but all decentralised consensus-based transaction systems to date.
 
@@ -190,7 +190,7 @@ I use a number of typographical conventions for the formal notation, some of whi
 
 The two sets of highly structured, `top-level', state values, are denoted with bold lowercase Greek letters. They fall into those of world-state, which are denoted $\boldsymbol{\sigma}$ (or a variant thereupon) and those of machine-state, $\boldsymbol{\mu}$.
 
-Functions operating on highly structured values are denoted with an upper-case greek letter, \eg $\Upsilon$, the Ethereum state transition function.
+Functions operating on highly structured values are denoted with an upper-case greek letter, \eg \hyperlink{Upsilon}{$\Upsilon$}, the Ethereum state transition function.
 
 For most functions, an uppercase letter is used, e.g. $C$, the general cost function. These may be subscripted to denote specialised variants, \eg $C_\text{\tiny SSTORE}$, the cost function for the {\tiny SSTORE} operation. For specialised and possibly externally defined functions, I may format as typewriter text, \eg the Keccak-256 hash function (as per the winning entry to the SHA-3 contest) is denoted $\texttt{KEC}$ (and generally referred to as plain Keccak). Also $\texttt{KEC512}$ is referring to the Keccak 512 hash function.
 
@@ -210,7 +210,7 @@ When considering variants of existing values, I follow the rule that within a gi
 
 When considering the use of existing functions, given a function $f$, the function $f^*$ denotes a similar, element-wise version of the function mapping instead between sequences. It is formally defined in section \ref{ch:block}.
 
-I define a number of useful functions throughout. One of the more common is $\ell$, which evaluates to the last item in the given sequence:
+I define a number of useful functions throughout. \hypertarget{ell}{}One of the more common is $\ell$, which evaluates to the last item in the given sequence:
 
 \begin{equation}
 \ell(\mathbf{x}) \equiv \mathbf{x}[\lVert \mathbf{x} \rVert - 1]
@@ -328,7 +328,7 @@ T_\mathbf{t} \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_t \neq \varno
 
 \subsection{The Block} \label{ch:block}
 
-The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$, and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{ommers}\footnote{\textit{ommer} is the most prevalent (not saying much) gender-neutral term to mean ``sibling of parent''; see \url{http://nonbinary.org/wiki/Gender_neutral_language\#Family_Terms}}). The block header contains several pieces of information:
+The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$, and a set of other \hypertarget{ommerheaders}{block headers $\mathbf{U}$} that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{ommers}\footnote{\textit{ommer} is the most prevalent (which is not saying much, as it is not a well-known word) gender-neutral term to mean ``sibling of parent''; see \url{http://nonbinary.org/wiki/Gender_neutral_language\#Family_Terms}}). The block header contains several pieces of information:
 
 %\textit{TODO: Introduce logs}
 
@@ -337,7 +337,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[ommersHash] The Keccak 256-bit hash of the ommers list portion of this block; formally $H_o$.
 \item[beneficiary] The 160-bit address to which all fees collected from the successful mining of this block be transferred; formally $H_c$.
 \item[stateRoot] The Keccak 256-bit hash of the root node of the state trie, after all transactions are executed and finalisations applied; formally $H_r$.
-\item[transactionsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with each transaction in the transactions list portion of the block; formally $H_t$.
+\item[transactionsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with each transaction in the transactions list portion of the block; formally $H_t$.\hypertarget{H e}{}
 \item[receiptsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with the receipts of each transaction in the transactions list portion of the block; formally $H_e$.
 \item[logsBloom] The Bloom filter composed from indexable information (logger address and log topics) contained in each log entry from the receipt of each transaction in the transactions list; formally $H_b$.
 \item[difficulty] A scalar value corresponding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_d$.
@@ -356,25 +356,25 @@ The other two components in the block are simply a list of ommer block headers (
 B \equiv (B_H, B_\mathbf{T}, B_\mathbf{U})
 \end{equation}
 
-\subsubsection{Transaction Receipt}
+\hypertarget{Transaction Receipt}{\subsubsection{Transaction Receipt}}
 
 In order to encode information about a transaction concerning which it may be useful to form a zero-knowledge proof, or index and search, we encode a receipt of each transaction containing certain information from concerning its execution.
-Each receipt, denoted $B_\mathbf{R}[i]$ for the $i$th transaction, is placed in an index-keyed trie and the root recorded in the header as $H_e$.
+Each receipt, denoted $B_\mathbf{R}[i]$ for the $i$th transaction, is placed in an index-keyed trie and the root recorded in the header as \hyperlink{H e}{$H_e$}.
 
-The transaction receipt is a tuple of four items comprising the post-transaction state, $R_{\boldsymbol{\sigma}}$, the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_u$, the set of logs created through execution of the transaction, $R_\mathbf{l}$ and the Bloom filter composed from information in those logs, $R_b$:
+The transaction receipt is a tuple of four items \hypertarget{Rsigma}{comprising the post-transaction state, $R_{\boldsymbol{\sigma}}$}, \hypertarget{Ru}{the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_u$}, the set of logs created through execution of the transaction, $R_\mathbf{l}$ and the Bloom filter composed from information in those logs, \hyperlink{R b}{$R_b$}:
 \begin{equation}
-R \equiv (R_{\boldsymbol{\sigma}}, R_u, R_b, R_\mathbf{l})
+R \equiv (R_{\boldsymbol{\sigma}}, R_u, \hyperlink{R b}{R_b}, R_\mathbf{l})
 \end{equation}
 
 The function $L_R$ trivially prepares a transaction receipt for being transformed into an RLP-serialised byte array:
 \begin{equation}
-L_R(R) \equiv (\mathtt{\small TRIE}(L_S(R_{\boldsymbol{\sigma}})), R_u, R_b, R_\mathbf{l})
+L_R(R) \equiv (\mathtt{\small TRIE}(L_S(R_{\boldsymbol{\sigma}})), R_u, \hyperlink{R b}{R_b}, R_\mathbf{l})
 \end{equation}
 thus the post-transaction state, $R_{\boldsymbol{\sigma}}$ is encoded into a trie structure, the root of which forms the first item.
 
-We assert $R_u$, the cumulative gas used is a positive integer and that the logs Bloom, $R_b$, is a hash of size 2048 bits (256 bytes):
+We assert $R_u$, the cumulative gas used is a positive integer and that the logs Bloom, \hyperlink{R b}{$R_b$}, is a hash of size 2048 bits (256 bytes):
 \begin{equation}
-R_u \in \mathbb{P} \quad \wedge \quad R_b \in \mathbb{B}_{256}
+R_u \in \mathbb{P} \quad \wedge \quad \hyperlink{R b}{R_b} \in \mathbb{B}_{256}
 \end{equation}
 
 %Notably $B_\mathbf{T}$ does not get serialised into the block by the block preparation function $L_B$; it is merely a convenience equivalence.
@@ -522,7 +522,7 @@ Where $H_{\hcancel{n}}$ is the new block's header $H$, but \textit{without} the 
 
 This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propagate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the \hyperlink{block nonce}{block nonce} must satisfy this requirement, and because its satisfaction depends on the contents of the block and in turn its composed transactions, creating new, valid, blocks is difficult and, over time, requires approximately the total compute power of the trustworthy portion of the mining peers.
 
-Thus we are able to define the block header validity function $V(H)$:
+Thus we are able to define the \hypertarget{BlockHeaderValidityFunction}{block header validity function $V(H)$}:\label{eq:BlockHeaderValidityFunction}
 \begin{eqnarray}
 V(H) & \equiv &  n \leqslant \frac{2^{256}}{H_d} \wedge m = H_m \quad \wedge \\
 & & H_d = D(H) \quad \wedge \\
@@ -550,7 +550,7 @@ In general, Ether used to purchase gas that is not refunded is delivered to the 
 
 \section{Transaction Execution} \label{ch:transactions}
 
-The execution of a transaction is the most complex part of the Ethereum protocol: it defines the state transition function $\Upsilon$. It is assumed that any transactions executed first pass the initial tests of intrinsic validity. These include:
+The execution of a transaction is the most complex part of the Ethereum protocol: it defines the state transition function \hyperlink{Upsilon}{$\Upsilon$}. It is assumed that any transactions executed first pass the initial tests of intrinsic validity. These include:
 
 \begin{enumerate}
 \item The transaction is well-formed RLP, with no additional trailing bytes;
@@ -560,12 +560,12 @@ The execution of a transaction is the most complex part of the Ethereum protocol
 \item the sender account balance contains at least the cost, $v_0$, required in up-front payment.
 \end{enumerate}
 
-Formally, we consider the function $\Upsilon$, with $T$ being a transaction and $\boldsymbol{\sigma}$ the state:
+Formally, we consider the function \hyperlink{Upsilon}{$\Upsilon$}, with $T$ being a transaction and $\boldsymbol{\sigma}$ the state:
 \begin{equation}
 \boldsymbol{\sigma}' = \Upsilon(\boldsymbol{\sigma}, T)
 \end{equation}
 
-Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define $\Upsilon^g$ to evaluate to the amount of gas used in the execution of a transaction and $\Upsilon^\mathbf{l}$ to evaluate to the transaction's accrued log items, both to be formally defined later.
+Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define \hyperlink{Upsilong}{$\Upsilon^g$} to evaluate to the amount of gas used in the execution of a transaction and \hyperlink{Upsilonl}{$\Upsilon^\mathbf{l}$} to evaluate to the transaction's accrued log items, both to be formally defined later.
 
 \subsection{Substate}
 Throughout transaction execution, we accrue certain information that is acted upon immediately following the transaction. We call this \textit{transaction substate}, and represent it as $A$, which is a tuple:
@@ -605,11 +605,11 @@ S(T) & \neq & \varnothing \quad \wedge \\
 T_n & = & \boldsymbol{\sigma}[S(T)]_n \quad \wedge \\
 g_0 & \leqslant & T_g \quad \wedge \\
 v_0 & \leqslant & \boldsymbol{\sigma}[S(T)]_b \quad \wedge \\
-T_g & \leqslant & {B_H}_l - \ell(B_\mathbf{R})_u
+T_g & \leqslant & {B_H}_l - \hyperlink{ell}{\ell}\hyperlink{Ru}{(\mathbf{R})_u}
 \end{array}
 \end{equation}
 
-Note the final condition; the sum of the transaction's gas limit, $T_g$, and the gas utilised in this block prior, given by $\ell(B_\mathbf{R})_u$, must be no greater than the block's \textbf{gasLimit}, ${B_H}_l$.
+Note the final condition; the sum of the transaction's gas limit, $T_g$, and the gas utilised in this block prior, given by $ \hyperlink{ell}{\ell}(B_\mathbf{R})_u$, must be no greater than the block's \textbf{gasLimit}, ${B_H}_l$.
 
 The execution of a valid transaction begins with an irrevocable change made to the state: the \hyperlink{account nonce}{nonce of the account of the sender}, $S(T)$, is incremented by one and the balance is reduced by part of the up-front cost, $T_gT_p$. The gas available for the proceeding computation, $g$, is defined as $T_g - g_0$. The computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
 
@@ -657,13 +657,13 @@ The final state, $\boldsymbol{\sigma}'$, is reached after deleting all accounts 
 \forall i \in A_\mathbf{s}: \boldsymbol{\sigma}'[i] & \equiv & \varnothing
 \end{eqnarray}
 
-And finally, we specify $\Upsilon^g$, the total gas used in this transaction and $\Upsilon^\mathbf{l}$, the logs created by this transaction:
+\hypertarget{Upsilong}{And finally, we specify $\Upsilon^g$, the total gas used in this transaction}\hypertarget{Upsilonl}{ and $\Upsilon^\mathbf{l}$, the logs created by this transaction:}
 \begin{eqnarray}
 \Upsilon^g(\boldsymbol{\sigma}, T) & \equiv & T_g - g' \\
 \Upsilon^\mathbf{l}(\boldsymbol{\sigma}, T) & \equiv & A_\mathbf{l}
 \end{eqnarray}
 
-These are used to help define the transaction receipt, discussed later.
+These are used to help define the \hyperlink{Transaction Receipt}{transaction receipt}.
 
 \section{Contract Creation} \label{ch:create}
 
@@ -751,7 +751,7 @@ The exception in the determination of $\boldsymbol{\sigma}'$ dictates that $\mat
 Note that the intention is that the result is either a successfully created new contract with its endowment, or no new contract with no transfer of value.
 
 \subsection{Subtleties}
-Note that while the initialisation code is executing, the newly created address exists but with no intrinsic body code. Thus any message call received by it during this time causes no code to be executed. If the initialisation execution ends with a {\small SELFDESTRUCT} instruction, the matter is moot since the account will be deleted before the transaction is completed. For a normal {\small STOP} code, or if the code returned is otherwise empty, then the state is left with a zombie account, and any remaining balance will be locked into the account forever.
+Note that while the initialisation code is executing, the newly created address exists but with no intrinsic body code. Thus any message call received by it during this time causes no code to be executed. If the initialisation execution ends with a \hyperlink{SELFDESTRUCT}{\small SELFDESTRUCT} instruction, the matter is moot since the account will be deleted before the transaction is completed. For a normal {\small STOP} code, or if the code returned is otherwise empty, then the state is left with a zombie account, and any remaining balance will be locked into the account forever.
 
 \section{Message Call} \label{ch:call}
 In the case of executing a message call, several parameters are required: sender ($s$), transaction originator ($o$), recipient ($r$), the account whose code is to be executed ($c$, usually the same as recipient), available gas ($g$), value ($v$) and gas price ($p$) together with an arbitrary length byte array, $\mathbf{d}$, the input data of the call and finally the present depth of the message-call/contract-creation stack ($e$).
@@ -963,12 +963,12 @@ The normal halting function $H$ is defined:
 \begin{equation} \label{eq:Normal Halting}
 H(\boldsymbol{\mu}, I) \equiv \begin{cases}
 H_{\text{\tiny RETURN}}(\boldsymbol{\mu}) & \text{if} \quad w = \text{\small RETURN} \\
-() & \text{if} \quad w \in \text{\small STOP}, \text{\small SELFDESTRUCT} \} \\
+() & \text{if} \quad w \in \text{\small STOP}, \text{\hyperlink{SELFDESTRUCT}{\small SELFDESTRUCT}} \\
 \varnothing & \text{otherwise}
 \end{cases}
 \end{equation}
 
-The data-returning halt operation, \text{\small RETURN}, has a special function $H_{\text{\tiny RETURN}}$, defined in Appendix \ref{app:vm}. Note also the difference between the empty sequence and the empty set as discussed \hyperlink{emptySequence}{here}.
+The data-returning halt operation, \hyperlink{RETURN}{\text{\small RETURN}}, has a special function $H_{\text{\tiny RETURN}}$. Note also the difference between the empty sequence and the empty set as discussed \hyperlink{emptySequence}{here}.
 
 \subsection{The Execution Cycle}
 
@@ -982,8 +982,8 @@ O\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I)\big) & \equiv & (\boldsymbol
 
 The gas is reduced by the instruction's gas cost and for most instructions, the program counter increments on each cycle, for the three exceptions, we assume a function $J$, subscripted by one of two instructions, which evaluates to the according value:
 \begin{eqnarray}
-\quad \boldsymbol{\mu}'_{g} & \equiv & \boldsymbol{\mu}_{g} - C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \\
-\quad \boldsymbol{\mu}'_{pc} & \equiv & \begin{cases}
+\quad \boldsymbol{\mu}'_{g} & \equiv & \boldsymbol{\mu}_{g} - C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I)  \\
+\hypertarget{JUMP}{} \hypertarget{JUMPI}{} \label{eq:JUMP} \quad \boldsymbol{\mu}'_{pc} & \equiv & \begin{cases}
 J_{\text{JUMP}}(\boldsymbol{\mu}) & \text{if} \quad w = \text{\small JUMP} \\
 J_{\text{JUMPI}}(\boldsymbol{\mu}) & \text{if} \quad w = \text{\small JUMPI} \\
 N(\boldsymbol{\mu}_{pc}, w) & \text{otherwise}
@@ -1027,9 +1027,9 @@ The process of finalising a block involves four stages:
 
 \subsection{Ommer Validation}
 
-The validation of ommer headers means nothing more than verifying that each ommer header is both a valid header and satisfies the relation of $N$th-generation ommer to the present block where $N \leq 6$. The maximum of ommer headers is two. Formally:
+The validation of \hyperlink{ommerheaders}{ommer headers} means nothing more than verifying that each ommer header is both a valid header and satisfies the relation of $N$th-generation ommer to the present block where $N \leq 6$. The maximum of ommer headers is two. Formally:
 \begin{equation}
-\lVert B_\mathbf{U} \rVert \leqslant 2 \bigwedge_{U \in B_\mathbf{U}} V(U) \; \wedge \; k(U, P(B_H)_H, 6)
+\lVert B_\mathbf{U} \rVert \leqslant 2 \bigwedge_{U \in B_\mathbf{U}} \hyperlink{BlockHeaderValidityFunction}{V(U)} \; \wedge \; k(U, P(B_H)_H, 6)
 \end{equation}
 
 where $k$ denotes the ``is-kin'' property:
@@ -1052,24 +1052,24 @@ where $B(H)$ is the block of the corresponding header $H$.
 
 The given \textbf{gasUsed} must correspond faithfully to the transactions listed: ${B_H}_g$, the total gas used in the block, must be equal to the accumulated gas used according to the final transaction:
 \begin{equation}
-{B_H}_g = \ell(\mathbf{R})_u
+{B_H}_g = \hyperlink{ell}{\ell}\hyperlink{Ru}{(\mathbf{R})_u}
 \end{equation}
 
 \subsection{Reward Application}
 
-The application of rewards to a block involves raising the balance of the accounts of the beneficiary address of the block and each ommer by a certain amount. We raise the block's beneficiary account by $R_b$; for each ommer, we raise the block's beneficiary by an additional $\frac{1}{32}$ of the block reward and the beneficiary of the ommer gets rewarded depending on the block number. Formally we define the function $\Omega$:
+The application of rewards to a block involves raising the balance of the accounts of the beneficiary address of the block and each ommer by a certain amount. We raise the block's beneficiary account by \hyperlink{R b}{$R_b$}; for each ommer, we raise the block's beneficiary by an additional $\frac{1}{32}$ of the block reward and the beneficiary of the ommer gets rewarded depending on the block number. \hypertarget{Omega}{Formally we define the function $\Omega$, the block-finalisation state transition function (a function that rewards a nominated party):}
 \begin{eqnarray}
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
-\boldsymbol{\sigma}'[{B_H}_c]_b & = & \boldsymbol{\sigma}[{B_H}_c]_b + (1 + \frac{\lVert B_\mathbf{U}\rVert}{32})R_b \\
+\boldsymbol{\sigma}'[{B_H}_c]_b & = & \boldsymbol{\sigma}[{B_H}_c]_b + (1 + \frac{\lVert B_\mathbf{U}\rVert}{32})\hyperlink{R b}{R_b} \\
 \forall_{U \in B_\mathbf{U}}: \\ \nonumber
- \boldsymbol{\sigma}'[U_c]_b & = & \boldsymbol{\sigma}[U_c]_b + (1 + \frac{1}{8} (U_i - {B_H}_i)) R_b
+ \boldsymbol{\sigma}'[U_c]_b & = & \boldsymbol{\sigma}[U_c]_b + (1 + \frac{1}{8} (U_i - {B_H}_i)) \hyperlink{R b}{R_b}
 \end{eqnarray}
 
 If there are collisions of the beneficiary addresses between ommers and the block (i.e. two ommers with the same beneficiary address or an ommer with the same beneficiary address as the present block), additions are applied cumulatively.
 
 We define the block reward as 5 Ether:
 \begin{equation}
-\text{Let} \quad R_b = 5 \times 10^{18}
+\text{Let} \quad \hyperlink{R b}{R_b} = 5 \times 10^{18}
 \end{equation}
 
 \subsection{State \& Nonce Validation}\label{sec:statenoncevalidation}
@@ -1084,7 +1084,7 @@ We may now define the function, $\Gamma$, that maps a block $B$ to its initiatio
 
 Here, $\mathtt{\small TRIE}(L_S(\boldsymbol{\sigma}_i))$ means the hash of the root node of a trie of state $\boldsymbol{\sigma}_i$; it is assumed that implementations will store this in the state database, trivial and efficient since the trie is by nature an immutable data structure.
 
-And finally define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
+And finally we define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
 \begin{eqnarray}
 \Phi(B) & \equiv & B': \quad B' = B^* \quad \text{except:} \\
 B'_n & = & n: \quad x \leqslant \frac{2^{256}}{H_d} \\
@@ -1093,34 +1093,34 @@ B^* & \equiv & B \quad \text{except:} \quad B^*_r = r(\Pi(\Gamma(B), B))
 \end{eqnarray}
 With $\mathbf{d}$ being a dataset as specified in appendix \ref{app:ethash}.
 
-As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of $\Omega$, the block finalisation function and $\Upsilon$, the transaction-evaluation function, both now well-defined.
+As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of \hyperlink{Omega}{$\Omega$}, the block finalisation function and \hyperlink{Upsilon}{$\Upsilon$}, the transaction-evaluation function, both now well-defined.
 
-As previously detailed, $\mathbf{R}[n]_{\boldsymbol{\sigma}}$, $\mathbf{R}[n]_\mathbf{l}$ and $\mathbf{R}[n]_u$ are the $n$th corresponding states, logs and cumulative gas used after each transaction ($\mathbf{R}[n]_b$, the fourth component in the tuple, has already been defined in terms of the logs). The former is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
+\hyperlink{Transaction Receipt}{As previously detailed}, $\mathbf{R}[n]_{\boldsymbol{\sigma}}$, $\mathbf{R}[n]_\mathbf{l}$ and $\mathbf{R}[n]_u$ are the $n$th corresponding states, logs and cumulative gas used after each transaction ($\mathbf{R}[n]_b$, the fourth component in the tuple, has already been defined in terms of the logs). The former is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
 \begin{equation}
-\mathbf{R}[n]_{\boldsymbol{\sigma}} = \begin{cases} \Gamma(B) & \text{if} \quad n < 0 \\ \Upsilon(\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n]) & \text{otherwise} \end{cases}
+\mathbf{R}[n]_{\boldsymbol{\sigma}} = \begin{cases} \Gamma(B) & \text{if} \quad n < 0 \\ \hyperlink{Upsilon}{\Upsilon}(\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n]) & \text{otherwise} \end{cases}
 \end{equation}
 
 In the case of $B_\mathbf{R}[n]_u$, we take a similar approach defining each item as the gas used in evaluating the corresponding transaction summed with the previous item (or zero, if it is the first), giving us a running total:
 \begin{equation}
 \mathbf{R}[n]_u = \begin{cases} 0 & \text{if} \quad n < 0 \\
 \begin{array}[b]{l}
-\Upsilon^g(\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n])\\ \quad + \mathbf{R}[n-1]_u
+\hyperlink{Upsilong}{\Upsilon^g}(\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n])\\ \quad + \mathbf{R}[n-1]_u
 \end{array}
  & \text{otherwise} \end{cases}
 \end{equation}
 
-For $\mathbf{R}[n]_\mathbf{l}$, we utilise the $\Upsilon^\mathbf{l}$ function that we conveniently defined in the transaction execution function.
+For $\mathbf{R}[n]_\mathbf{l}$, we utilise the \hyperlink{Upsilonl}{$\Upsilon^\mathbf{l}$} function that we conveniently defined in the transaction execution function.
 \begin{equation}
 \mathbf{R}[n]_\mathbf{l} =
-\Upsilon^\mathbf{l}(\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n])
+\hyperlink{Upsilonl}{\Upsilon^\mathbf{l}}(\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n])
 \end{equation}
 
-Finally, we define $\Pi$ as the new state given the block reward function $\Omega$ applied to the final transaction's resultant state, $\ell(B_\mathbf{R})_{\boldsymbol{\sigma}}$:
+Finally, we define $\Pi$ as the new state given the block reward function \hyperlink{Omega}{$\Omega$} applied to the final transaction's resultant state, $\hyperlink{ell}{\ell}(B_\mathbf{R})_{\boldsymbol{\sigma}}$:
 \begin{equation}
-\Pi(\boldsymbol{\sigma}, B) \equiv \Omega(B, \ell(\mathbf{R})_{\boldsymbol{\sigma}})
+\Pi(\boldsymbol{\sigma}, B) \equiv \hyperlink{Omega}{\Omega}(B, \ell(\hyperlink{Rsigma}{\mathbf{R})_{\boldsymbol{\sigma}}})
 \end{equation}
 
-Thus the complete block-transition mechanism, less $\mathtt{PoW}$, the proof-of-work function is defined.
+Thus the complete block-transition mechanism is defined, except for $\mathtt{PoW}$, the proof-of-work function.
 
 \subsection{Mining Proof-of-Work} \label{ch:pow}
 
@@ -1249,7 +1249,7 @@ Where $\mathbb{O}$ is the set of bytes. Thus $\mathbb{B}$ is the set of all sequ
 
 We define the RLP function as $\mathtt{\tiny RLP}$ through two sub-functions, the first handling the instance when the value is a byte array, the second when it is a sequence of further values:
 \begin{equation}
-\mathtt{\tiny RLP}(\mathbf{x}) \equiv \begin{cases} R_b(\mathbf{x}) & \text{if} \quad \mathbf{x} \in \mathbb{B} \\ R_l(\mathbf{x}) & \text{otherwise} \end{cases}
+\mathtt{\tiny RLP}(\mathbf{x}) \equiv \begin{cases} \hyperlink{R b}{R_b}(\mathbf{x}) & \text{if} \quad \mathbf{x} \in \mathbb{B} \\ R_l(\mathbf{x}) & \text{otherwise} \end{cases}
 \end{equation}
 
 If the value to be serialised is a byte-array, the RLP serialisation takes one of three forms:
@@ -1259,8 +1259,8 @@ If the value to be serialised is a byte-array, the RLP serialisation takes one o
 \item If the byte-array contains fewer than 56 bytes, then the output is equal to the input prefixed by the byte equal to the length of the byte array plus 128.
 \item Otherwise, the output is equal to the input prefixed by the minimal-length byte-array which when interpreted as a big-endian integer is equal to the length of the input byte array, which is itself prefixed by the number of bytes required to faithfully encode this length value plus 183.
 \end{itemize}
-
-Formally, we define $R_b$:
+\hypertarget{R b}{
+Formally, we define $R_b$:}
 \begin{eqnarray}
 R_b(\mathbf{x}) & \equiv & \begin{cases}
 \mathbf{x} & \text{if} \quad \lVert \mathbf{x} \rVert = 1 \wedge \mathbf{x}[0] < 128 \\
@@ -1437,7 +1437,7 @@ The method of signing transactions is similar to the `Electrum style signatures'
 
 It is assumed that the sender has a valid private key $p_r$, which is a randomly selected positive integer (represented as a byte array of length 32 in big-endian form) in the range \hbox{$[1, \mathtt{\tiny secp256k1n} - 1]$}.
 
-We assert the functions $\mathtt{\small ECDSAPUBKEY}$, $\mathtt{\small ECDSARECOVER}$ and $\mathtt{\small ECDSASIGN}$. These are formally defined in the literature, \eg by \cite{ECDSAcerticom} and \cite{ECDSAWikipedia}. \footnote{For the former citation, refer to section 6.2 for ECDSAPUBKEY, and section 7 for ECDSASIGN and ECDSARECOVER (assuming that the former is for signature generation and the latter is for signature verification).}
+We assert the functions $\mathtt{\small ECDSAPUBKEY}$, $\mathtt{\small ECDSARECOVER}$ and $\mathtt{\small ECDSASIGN}$. These are formally defined in the literature, \eg by \cite{ECDSAcerticom} and \cite{ECDSAWikipedia}. \footnote{For the former citation, refer to section 6.2 for ECDSAPUBKEY, and section 7 for ECDSASIGN and ECDSARECOVER.} %(assuming that the former is for signature generation and the latter is for signature verification)
 \begin{eqnarray}
 \mathtt{\small ECDSAPUBKEY}(p_r \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64} \\
 \mathtt{\small ECDSASIGN}(e \in \mathbb{B}_{32}, p_r \in \mathbb{B}_{32}) & \equiv & (v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) \\
@@ -1511,15 +1511,15 @@ $G_{sload}$ & 200 & This is paid for an {\small SLOAD} operation. \\
 $G_{jumpdest}$ & 1 & This is paid for a {\small JUMPDEST} operation. \\
 $G_{sset}$ & 20000 & This is paid for an {\small SSTORE} operation when the storage value is set to non-zero from zero. \\
 $G_{sreset}$ & 5000 & This is the amount for an {\small SSTORE} operation when the storage value's zeroness remains unchanged or is set to zero. \\
-$R_{sclear}$ & 15000 & This is the refund given (added into the refund counter) when the storage value is set to zero from non-zero. \\
-$R_{selfdestruct}$ & 24000 & This is the refund given (added into the refund counter) for self-destructing an account. \\
-$G_{selfdestruct}$ & 5000 & This is the amount of gas to pay for a {\small SELFDESTRUCT} operation. \\
+$R_{sclear}$ & 15000 & This is the refund given (added into the refund counter) when the storage value is set to zero from non-zero. \hypertarget{Rselfdestruct}{}\\
+$R_{selfdestruct}$ & 24000 & This is the refund given (added into the refund counter) for self-destructing an account. \hypertarget{Gselfdestruct}{}\\
+$G_{selfdestruct}$ & 5000 & This is the amount of gas to pay for a \hyperlink{SELFDESTRUCT}{\small SELFDESTRUCT} operation. \\
 $G_{create}$ & 32000 & This is paid for a {\small CREATE} operation. \\
 $G_{codedeposit}$ & 200 & This is paid per byte for a {\small CREATE} operation to succeed in placing code into the state. \\
 $G_{call}$ & 700 & This is paid for a {\small CALL} operation. \\
 $G_{callvalue}$ & 9000 & This is paid for a non-zero value transfer as part of the {\small CALL} operation. \\
-$G_{callstipend}$ & 2300 & This is a stipend for the called contract subtracted from $G_{callvalue}$ for a non-zero value transfer. \\
-$G_{newaccount}$ & 25000 & This is paid for a {\small CALL} or for a {\small SELFDESTRUCT} operation which creates an account. \\
+$G_{callstipend}$ & 2300 & This is a stipend for the called contract subtracted from $G_{callvalue}$ for a non-zero value transfer. \hypertarget{Gnewaccount}{}\\
+$G_{newaccount}$ & 25000 & This is paid for a {\small CALL} or for a \hyperlink{SELFDESTRUCT}{\small SELFDESTRUCT} operation which creates an account. \\
 $G_{exp}$ & 10 & This is a partial payment for an {\small EXP} operation. \\
 $G_{expbyte}$ & 50 & This is a partial payment when multiplied by $\lceil\log_{256}(exponent)\rceil$ for the {\small EXP} operation. \\
 $G_{memory}$ & 3 & This is paid for every additional word when expanding memory. \\
@@ -1562,7 +1562,7 @@ G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+2G_{logtopic} & \text{if
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+3G_{logtopic} & \text{if} \quad w = \text{\small LOG3} \\
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+4G_{logtopic} & \text{if} \quad w = \text{\small LOG4} \\
 C_\text{\tiny CALL}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small CALL} \lor \text{\small CALLCODE} \lor \text{\small DELEGATECALL} \\
-C_\text{\tiny SELFDESTRUCT}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SELFDESTRUCT} \\
+\hyperlink{C tiny SELFDESTRUCT}{C_\text{\tiny SELFDESTRUCT}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\hyperlink{SELFDESTRUCT}{\small SELFDESTRUCT}} \\
 G_{create} & \text{if} \quad w = \text{\small CREATE}\\
 G_{sha3}+G_{sha3word} \lceil \mathbf{s}[1] \div 32 \rceil & \text{if} \quad w = \text{\small SHA3}\\
 G_{jumpdest} & \text{if} \quad w = \text{\small JUMPDEST}\\
@@ -1589,7 +1589,7 @@ where:
 C_{mem}(a) \equiv G_{memory} \cdot a + \Big\lfloor \dfrac{a^2}{512} \Big\rfloor
 \end{equation}
 
-with $C_\text{\tiny CALL}$, $C_\text{\tiny SELFDESTRUCT}$ and $C_\text{\tiny SSTORE}$ as specified in the appropriate section below. We define the following subsets of instructions:
+with \hyperlink{tiny CALL}{$C_\text{\tiny CALL}$}, \hyperlink{C tiny SELFDESTRUCT}{$C_\text{\tiny SELFDESTRUCT}$} and \hyperlink{C tiny SSTORE}{$C_\text{\tiny SSTORE}$} as specified in the appropriate section below. We define the following subsets of instructions:
 
 $W_{zero}$ = \{{\small STOP}, {\small RETURN}\}
 
@@ -1849,7 +1849,7 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\sigma}[I_a]_\mathbf{s}[\boldsymbol{\mu}_\mathbf{s}[0]]$ \\
 \midrule
 0x55 & {\small SSTORE} & 2 & 0 & Save the first word to storage. \\
-&&&& $\boldsymbol{\sigma}'[I_a]_\mathbf{s}[ \boldsymbol{\mu}_\mathbf{s}[0] ] \equiv \boldsymbol{\mu}_\mathbf{s}[1] $ \\
+&&&& $\boldsymbol{\sigma}'[I_a]_\mathbf{s}[ \boldsymbol{\mu}_\mathbf{s}[0] ] \equiv \boldsymbol{\mu}_\mathbf{s}[1] $ \hypertarget{C tiny SSTORE}{}\\
 &&&& $C_{\text{\tiny SSTORE}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
 G_{sset} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \; \wedge \; \boldsymbol{\sigma}[I_a]_\mathbf{s}[\boldsymbol{\mu}_\mathbf{s}[0]] = 0 \\
 G_{sreset} & \text{otherwise}
@@ -1861,11 +1861,11 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 \midrule
 0x56 & {\small JUMP} & 1 & 0 & Alter the program counter. \\
 &&&& $J_{\text{\tiny JUMP}}(\boldsymbol{\mu}) \equiv \boldsymbol{\mu}_\mathbf{s}[0] $ \\
-&&&& This has the effect of writing said value to $\boldsymbol{\mu}_{pc}$. See section \ref{ch:model}. \\
+&&&& This has the effect of writing said value to $\boldsymbol{\mu}_{pc}$. See equation \hyperlink{JUMP}{\ref{eq:JUMP}}. \\
 \midrule
 0x57 & {\small JUMPI} & 2 & 0 & Conditionally alter the program counter. \\
 &&&& $J_{\text{\tiny JUMPI}}(\boldsymbol{\mu}) \equiv \begin{cases} \boldsymbol{\mu}_\mathbf{s}[0] & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \\ \boldsymbol{\mu}_{pc} + 1 & \text{otherwise} \end{cases} $ \\
-&&&& This has the effect of writing said value to $\boldsymbol{\mu}_{pc}$. See section \ref{ch:model}. \\
+&&&& This has the effect of writing said value to $\boldsymbol{\mu}_{pc}$. See section \hyperlink{JUMPI}{\ref{eq:JUMP}}. \\
 \midrule
 0x58 & {\small PC} & 0 & 1 & Get the value of the program counter \textit{prior} to the increment corresponding to this instruction. \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_{pc}$ \\
@@ -1996,7 +1996,7 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& $\boldsymbol{\mu}_\mathbf{s}[2] > \boldsymbol{\sigma}[I_a]_b$ (not enough funds) or $I_e = 1024$ (call depth limit reached); $x=1$ \\
 &&&& otherwise. \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[3], \boldsymbol{\mu}_\mathbf{s}[4]), \boldsymbol{\mu}_\mathbf{s}[5], \boldsymbol{\mu}_\mathbf{s}[6])$ \\
-&&&& Thus the operand order is: gas, to, value, in offset, in size, out offset, out size. \\
+&&&& Thus the operand order is: gas, to, value, in offset, in size, out offset, out size. \hypertarget{tiny CALL}{}\\
 &&&& $C_{\text{\tiny CALL}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) + C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$ \\
 &&&& $C_{\text{\tiny CALLGAS}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv  \begin{cases}
 C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) + G_{callstipend} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \neq 0 \\
@@ -2021,33 +2021,33 @@ G_{newaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}
 &&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}^*, I_a, I_o, I_a, t,\\\quad C_{\text{\tiny CALLGAS}}(\boldsymbol{\mu}), I_p, \boldsymbol{\mu}_\mathbf{s}[2], \boldsymbol{\mu}_\mathbf{s}[2], \mathbf{i}, I_e + 1)\end{array} & \begin{array}{l}\text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \leqslant \boldsymbol{\sigma}[I_a]_b \;\wedge\\ \quad\quad{}I_e < 1024\end{array} \\ (\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
 &&&& Note the change in the fourth parameter to the call $\Theta$ from the 2nd stack value $\boldsymbol{\mu}_\mathbf{s}[1]$\\
 &&&& (as in {\small CALL}) to the present address $I_a$. This means that the recipient is in fact the\\
-&&&& same account as at present, simply that the code is overwritten.\\
+&&&& same account as at present, simply that the code is overwritten.\hypertarget{RETURN}{}\\
 \midrule
 0xf3 & {\small RETURN} & 2 & 0 & Halt execution returning output data. \\
 &&&& $H_{\text{\tiny RETURN}}(\boldsymbol{\mu}) \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[0] \dots ( \boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1] - 1 ) ]$ \\
 &&&& This has the effect of halting the execution at this point with output defined.\\
-&&&& See section \ref{ch:model}. \\
+&&&& See equation \ref{eq:Normal Halting}. \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[1])$ \\
 \end{tabularx}
 
 \begin{tabularx}{\textwidth}{rlrrX}
 \midrule
-0xf4 & {\small DELEGATECALL} & 6 & 1 & Message-call into this account with an alternative account's code, but persistingthe current values for {\it sender} and {\it value}. Compared with {\small CALL}, {\small DELEGATECALL} takes one fewer arguments.  The omitted argument is $\boldsymbol{\mu}_\mathbf{s}[2]$. As a result, $\boldsymbol{\mu}_\mathbf{s}[3]$, $\boldsymbol{\mu}_\mathbf{s}[4]$, $\boldsymbol{\mu}_\mathbf{s}[5]$ and $\boldsymbol{\mu}_\mathbf{s}[6]$ in the definition of {\small CALL} should respectively be replaced with $\boldsymbol{\mu}_\mathbf{s}[2]$, $\boldsymbol{\mu}_\mathbf{s}[3]$, $\boldsymbol{\mu}_\mathbf{s}[4]$ and $\boldsymbol{\mu}_\mathbf{s}[5]$. Otherwise it is exactly equivalent to {\small CALL} except: \\
+0xf4 & {\small DELEGATECALL} & 6 & 1 & Message-call into this account with an alternative account's code, but persisting the current values for {\it sender} and {\it value}. Compared with {\small CALL}, {\small DELEGATECALL} takes one fewer arguments.  The omitted argument is $\boldsymbol{\mu}_\mathbf{s}[2]$. As a result, $\boldsymbol{\mu}_\mathbf{s}[3]$, $\boldsymbol{\mu}_\mathbf{s}[4]$, $\boldsymbol{\mu}_\mathbf{s}[5]$ and $\boldsymbol{\mu}_\mathbf{s}[6]$ in the definition of {\small CALL} should respectively be replaced with $\boldsymbol{\mu}_\mathbf{s}[2]$, $\boldsymbol{\mu}_\mathbf{s}[3]$, $\boldsymbol{\mu}_\mathbf{s}[4]$ and $\boldsymbol{\mu}_\mathbf{s}[5]$. Otherwise it is exactly equivalent to {\small CALL} except: \\
 &&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}^*, I_s, I_o, I_a, t,\\\quad \boldsymbol{\mu}_\mathbf{s}[0], I_p, 0, I_v, \mathbf{i}, I_e + 1)\end{array} & \text{if} \quad I_v \leqslant \boldsymbol{\sigma}[I_a]_b \;\wedge\; I_e < 1024 \\ (\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
-&&&& Note the changes (in addition to that of the fourth parameter) to the second and ninth parameters to the call $\Theta$. This means that the recipient is in fact the same account as at present, simplythat the code is overwritten {\it and} the context is almost entirely identical.\\
+&&&& Note the changes (in addition to that of the fourth parameter) to the second and ninth parameters to the call $\Theta$. This means that the recipient is in fact the same account as at present, simply that the code is overwritten {\it and} the context is almost entirely identical.\\
 \midrule
-0xfe & {\small INVALID} & $\varnothing$ & $\varnothing$ & Designated invalid instruction. \\
+0xfe & {\small INVALID} & $\varnothing$ & $\varnothing$ & Designated invalid instruction. \hypertarget{SELFDESTRUCT}{}\\
 \midrule
 0xff & {\small SELFDESTRUCT} & 1 & 0 & Halt execution and register account for later deletion. \\
 &&&& $A'_\mathbf{s} \equiv A_\mathbf{s} \cup \{ I_a \}$ \\
 &&&& $\boldsymbol{\sigma}'[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}]_b \equiv \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}]_b + \boldsymbol{\sigma}[I_a]_b$ \\
 &&&& $\boldsymbol{\sigma}'[I_a]_b \equiv 0$ \\
 &&&& $A'_{r} \equiv A_{r} + \begin{cases}
-R_{selfdestruct} & \text{if} \quad I_a \notin A_\mathbf{s} \\
-0 & \text{otherwise}
-\end{cases}$ \\
-&&&& $C_{\text{\tiny SELFDESTRUCT}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv G_{selfdestruct} + \begin{cases}
-G_{newaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}] = \varnothing \\
+\hyperlink{Rselfdestruct}{R_{selfdestruct}} & \text{if} \quad I_a \notin A_\mathbf{s} \\
+0 & \text{otherwise} 
+\end{cases}$ \hypertarget{C tiny SELFDESTRUCT}{}\\
+&&&& $ C_{\text{\tiny SELFDESTRUCT}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \hyperlink{Gselfdestruct}{G_{selfdestruct}} + \begin{cases}
+\hyperlink{Gnewaccount}{G_{newaccount}} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}] = \varnothing \\
 0 & \text{otherwise}
 \end{cases}$ \\
 \bottomrule
