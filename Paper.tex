@@ -21,7 +21,7 @@
 \usepackage{tikz}
 \usepackage{underscore}
 %\usepackage{lipsum} % to generate filler text for testing of document rendering
-\usepackage[bookmarks=true, unicode=true, pdftitle={Ethereum Yellow Paper: a formal specification of Ethereum, a programmable blockchain}, pdfauthor={Gavin Wood and others as per https://github.com/ethereum/yellowpaper/commits/master},pdfkeywords={Ethereum, Yellow Paper, blockchain, virtual machine, cryptography, decentralised, singleton, transaction, generalised},pdfborder={0 0 0.5 [3 3]}]{hyperref}
+\usepackage[bookmarks=true, unicode=true, pdftitle={Ethereum Yellow Paper: a formal specification of Ethereum, a programmable blockchain}, pdfauthor={Gavin Wood and others as per https://github.com/ethereum/yellowpaper/commits/master},pdfkeywords={Ethereum, Yellow Paper, blockchain, virtual machine, cryptography, decentralised, singleton, transaction, generalised},pdfborder={0 0 0.5 [1 3]}]{hyperref}
 %,pagebackref=true
 
 %\usepackage{longtable}
@@ -143,6 +143,7 @@ Transactions are collated into blocks; blocks are chained together using a crypt
 
 Mining is the process of dedicating effort (working) to bolster one series of transactions (a block) over any other potential competitor block. It is achieved thanks to a cryptographically secure proof. This scheme is known as a proof-of-work and is discussed in detail in section \ref{ch:pow}.
 
+\hypertarget{Pi}{}
 Formally, we expand to:
 \begin{eqnarray}
 \boldsymbol{\sigma}_{t+1} & \equiv & \Pi(\boldsymbol{\sigma}_\mathbf{t}, B) \\
@@ -336,10 +337,10 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \begin{description}\hypertarget{H p}{
 \item[parentHash] The Keccak 256-bit hash of the parent block's header, in its entirety; formally $H_\mathbf{p}$.}
 \item[ommersHash] The Keccak 256-bit hash of the ommers list portion of this block; formally $\hyperlink{H o}{H_\mathbf{o}}$.\hypertarget{H c}{
-\item[beneficiary] The 160-bit address to which all fees collected from the successful mining of this block be transferred; formally $H_\mathbf{c}$.}
-\item[stateRoot] The Keccak 256-bit hash of the root node of the state trie, after all transactions are executed and finalisations applied; formally \hyperlink{H r}{$H_\mathbf{r}$}.
-\item[transactionsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with each transaction in the transactions list portion of the block; formally \hyperlink{H t}{$H_\mathbf{t}$}.
-\item[receiptsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with the receipts of each transaction in the transactions list portion of the block; formally \hyperlink{H e}{$H_\mathbf{e}$}.
+\item[beneficiary] The 160-bit address to which all fees collected from the successful mining of this block shall be transferred; formally $H_\mathbf{c}$.}
+\item[stateRoot] The Keccak 256-bit hash of the root node of the state \hyperlink{trie}{trie}, after all transactions are executed and finalisations applied; formally \hyperlink{H r}{$H_\mathbf{r}$}.
+\item[transactionsRoot] The Keccak 256-bit hash of the root node of the \hyperlink{trie}{trie} structure populated with each transaction in the transactions list portion of the block; formally \hyperlink{H t}{$H_\mathbf{t}$}.
+\item[receiptsRoot] The Keccak 256-bit hash of the root node of the \hyperlink{trie}{trie} structure populated with the receipts of each transaction in the transactions list portion of the block; formally \hyperlink{H e}{$H_\mathbf{e}$}.
 \item[logsBloom] The Bloom filter composed from indexable information (logger address and log topics) contained in each log entry from the receipt of each transaction in the transactions list; formally \hyperlink{H b}{$H_\mathbf{b}.$}\hypertarget{H d}{
 \item[difficulty] A scalar value corresponding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_\mathbf{d}$}.\hypertarget{H i}{
 \item[number] A scalar value equal to the number of ancestor blocks. The genesis block has a number of zero; formally $H_\mathbf{i}$.}\hypertarget{H l}{
@@ -351,16 +352,16 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \hypertarget{block nonce}{\hypertarget{H n}{
 \item[nonce] A 64-bit hash which proves combined with the mix-hash that a sufficient amount of computation has been carried out on this block; formally $H_\mathbf{n}$.}}
 \end{description}
-
-The other two components in the block are simply a list of ommer block headers (of the same format as above) and a series of the transactions. Formally, we can refer to a block $B$:
+\hypertarget{B U}{
+The other two components in the block are simply a list of ommer block headers (of the same format as above), $B_\mathbf{U}$, and a series of the transactions, $B_\mathbf{T}$. Formally, we can refer to a block $B$:
 \begin{equation}
 B \equiv (B_H, B_\mathbf{T}, B_\mathbf{U})
-\end{equation}
+\end{equation}}
 
 \hypertarget{Transaction Receipt}{\subsubsection{Transaction Receipt}}
 
 In order to encode information about a transaction concerning which it may be useful to form a zero-knowledge proof, or index and search, we encode a receipt of each transaction containing certain information from concerning its execution.
-Each receipt, denoted $B_\mathbf{R}[i]$ for the $i$th transaction, is placed in an index-keyed trie and the root recorded in the header as \hyperlink{H e}{$H_\mathbf{e}$}.
+Each receipt, denoted $B_\mathbf{R}[i]$ for the $i$th transaction, is placed in an index-keyed \hyperlink{trie}{trie} and the root recorded in the header as \hyperlink{H e}{$H_\mathbf{e}$}.
 
 The transaction receipt is a tuple of four items \hypertarget{R sigma}{comprising the post-transaction state, $R_{\boldsymbol{\sigma}}$}, \hypertarget{R u}{the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_\mathbf{u}$}, the set of logs created through execution of the transaction, \hyperlink{R l}{$R_\mathbf{l}$} and the Bloom filter composed from information in those logs, \hyperlink{R b}{$R_\mathbf{b}$}:
 \begin{equation}
@@ -369,9 +370,9 @@ R \equiv (R_{\boldsymbol{\sigma}}, R_\mathbf{u}, \hyperlink{R b}{R_\mathbf{b}}, 
 
 The function $L_R$ trivially prepares a transaction receipt for being transformed into an RLP-serialised byte array:
 \begin{equation}
-L_R(R) \equiv (\mathtt{\small TRIE}(L_S(R_{\boldsymbol{\sigma}})), \hyperlink{R u}{R_\mathbf{u}}, \hyperlink{R b}{R_\mathbf{b}}, \hyperlink{R l}{R_\mathbf{l}})
+L_R(R) \equiv (\mathtt{\small \hyperlink{trie}{TRIE}}(L_S(R_{\boldsymbol{\sigma}})), \hyperlink{R u}{R_\mathbf{u}}, \hyperlink{R b}{R_\mathbf{b}}, \hyperlink{R l}{R_\mathbf{l}})
 \end{equation}
-thus the post-transaction state, $R_{\boldsymbol{\sigma}}$ is encoded into a trie structure, the root of which forms the first item.
+thus the post-transaction state, $R_{\boldsymbol{\sigma}}$ is encoded into a \hyperlink{trie}{trie} structure, the root of which forms the first item.
 
 We assert $\hyperlink{R u}{R_\mathbf{u}}$, the cumulative gas used is a positive integer and that the logs Bloom, \hyperlink{R b}{$R_\mathbf{b}$}, is a hash of size 2048 bits (256 bytes):
 \begin{equation}
@@ -408,8 +409,8 @@ where $\mathcal{B}$ is the bit reference function such that $\mathcal{B}_j(\math
 We can assert a block's validity if and only if it satisfies several conditions: it must be internally consistent with the ommer and transaction block hashes and the given transactions $B_\mathbf{T}$ (as specified in sec \ref{ch:finalisation}), when executed in order on the base state $\boldsymbol{\sigma}$ (derived from the final state of the parent block), result in a new state of the identity $H_\mathbf{r}$:
 \begin{equation}
 \begin{array}[t]{lclc}\hypertarget{H r}{
-H_\mathbf{r} &\equiv& \mathtt{\small TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) & \wedge }\hypertarget{H o}{\\
-H_\mathbf{o} &\equiv& \mathtt{\small KEC}(\mathtt{\small RLP}(L_H^*(B_\mathbf{U})))} & \wedge \hypertarget{H t}{\\
+H_\mathbf{r} &\equiv& \mathtt{\small \hyperlink{trie}{TRIE}}(L_S(\hyperlink{Pi}{\Pi}(\boldsymbol{\sigma}, B))) & \wedge }\hypertarget{H o}{\\
+H_\mathbf{o} &\equiv& \mathtt{\small KEC}(\mathtt{\small RLP}(L_H^*(\hyperlink{B U}{B_\mathbf{U}})))} & \wedge \hypertarget{H t}{\\
 H_\mathbf{t} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert, i \in \mathbb{P}: p(i, L_\mathbf{T}(B_\mathbf{T}[i]))\}) }& \wedge \hypertarget{H e}{\\
 H_\mathbf{e} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{R} \rVert, i \in \mathbb{P}: p(i, L_R(B_\mathbf{R}[i]))\})} & \wedge \hypertarget{H b}{\\
 H_\mathbf{b} &\equiv& \bigvee_{\mathbf{r} \in B_\mathbf{R}} \big( \mathbf{r}_\mathbf{b} \big)}
@@ -428,14 +429,14 @@ Furthermore:
 
 Thus $\texttt{\small TRIE}(L_S(\boldsymbol{\sigma}))$ is the root node hash of the Merkle Patricia tree structure containing the key-value pairs of the state $\boldsymbol{\sigma}$ with values encoded using RLP, and $P(B_H)$ is the parent block of $B$, defined directly.
 
-The values stemming from the computation of transactions, specifically the transaction receipts, $B_\mathbf{R}$, and that defined through the transactions state-accumulation function, $\Pi$, are formalised later in section \ref{sec:statenoncevalidation}.
+The values stemming from the computation of transactions, specifically the transaction receipts, $B_\mathbf{R}$, and that defined through the transaction's \hyperlink{Pi}{state-accumulation function, $\Pi$,} are formalised later in section \ref{sec:statenoncevalidation}.
 
 \subsubsection{Serialisation}
 
 The function $L_B$ and $L_H$ are the preparation functions for a block and block header respectively. Much like the transaction receipt preparation function $L_R$, we assert the types and order of the structure for when the RLP transformation is required:
 \begin{eqnarray}
 \quad L_H(H) & \equiv & (\begin{array}[t]{l}\hyperlink{H p}{H_\mathbf{p}}, \hyperlink{H o}{H_\mathbf{o}}, \hyperlink{H c}{H_\mathbf{c}}, \hyperlink{H r}{H_\mathbf{r}}, \hyperlink{H t}{H_\mathbf{t}}, \hyperlink{H e}{H_\mathbf{e}}, \hyperlink{H b}{H_\mathbf{b}}, \hyperlink{H d}{H_\mathbf{d}},\\ \hyperlink{H i}{H_\mathbf{i}}, \hyperlink{H l}{H_\mathbf{l}}, \hyperlink{H g}{H_\mathbf{g}}, \hyperlink{H s}{H_\mathbf{s}}, \hyperlink{H x}{H_\mathbf{x}}, \hyperlink{H m}{H_\mathbf{m}}, \hyperlink{H n}{H_\mathbf{n}} \; )\end{array} \\
-\quad L_B(B) & \equiv & \big( L_H(B_H), L_\mathbf{T}^*(B_\mathbf{T}), L_H^*(B_\mathbf{U}) \big)
+\quad L_B(B) & \equiv & \big( L_H(B_H), L_\mathbf{T}^*(B_\mathbf{T}), L_H^*(\hyperlink{B U}{B_\mathbf{U}}) \big)
 \end{eqnarray}
 
 With $L_\mathbf{T}^*$ and $L_H^*$ being element-wise sequence transformations, thus:
@@ -688,7 +689,7 @@ The account's nonce is initially defined as zero, the balance as the value passe
 \boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except:}
 \end{equation}
 \begin{eqnarray}
-\boldsymbol{\sigma}^*[a] &\equiv& \big( 0, v + v', \mathtt{\tiny TRIE}(\varnothing), \mathtt{\tiny KEC}\big(()\big) \big) \\
+\boldsymbol{\sigma}^*[a] &\equiv& \big( 0, v + v', \mathtt{\tiny \hyperlink{trie}{TRIE}}(\varnothing), \mathtt{\tiny KEC}\big(()\big) \big) \\
 \boldsymbol{\sigma}^*[s]_\mathbf{b} &\equiv& \boldsymbol{\sigma}[s]_\mathbf{b} - v
 \end{eqnarray}
 
@@ -782,7 +783,7 @@ Throughout the present work, it is assumed that if $\boldsymbol{\sigma}_1[r]$ wa
 \end{equation}
 \begin{equation}
 \begin{cases}
-\boldsymbol{\sigma}_1'[r] \equiv (v, 0, \mathtt{\tiny KEC}(()), \mathtt{\tiny TRIE}(\varnothing)) & \text{if} \quad \boldsymbol{\sigma}[r] = \varnothing \\
+\boldsymbol{\sigma}_1'[r] \equiv (v, 0, \mathtt{\tiny KEC}(()), \mathtt{\tiny \hyperlink{trie}{TRIE}}(\varnothing)) & \text{if} \quad \boldsymbol{\sigma}[r] = \varnothing \\
 \boldsymbol{\sigma}_1'[r]_\mathbf{b} \equiv \boldsymbol{\sigma}[r]_\mathbf{b} + v & \text{otherwise}
 \end{cases}
 \end{equation}
@@ -1031,7 +1032,7 @@ The process of finalising a block involves four stages:
 
 The validation of \hyperlink{ommerheaders}{ommer headers} means nothing more than verifying that each ommer header is both a valid header and satisfies the relation of $N$th-generation ommer to the present block where $N \leq 6$. The maximum of ommer headers is two. Formally:
 \begin{equation}
-\lVert B_\mathbf{U} \rVert \leqslant 2 \bigwedge_{U \in B_\mathbf{U}} \hyperlink{BlockHeaderValidityFunction}{V(U)} \; \wedge \; k(U, P(B_H)_H, 6)
+\lVert \hyperlink{B U}{B_\mathbf{U}} \rVert \leqslant 2 \bigwedge_{U \in \hyperlink{B U}{B_\mathbf{U}}} \hyperlink{BlockHeaderValidityFunction}{V(U)} \; \wedge \; k(U, P(B_H)_H, 6)
 \end{equation}
 
 where $k$ denotes the ``is-kin'' property:
@@ -1052,50 +1053,51 @@ where $B(H)$ is the block of the corresponding header $H$.
 
 %where $s[i]$ equals the root of the state trie immediately after the execution of the transaction $B_\mathbf{T}[i]$, and $g[i]$ the total gas used immediately after said transaction.
 
-The given \textbf{gasUsed} must correspond faithfully to the transactions listed: ${B_H}_\mathbf{g}$, the total gas used in the block, must be equal to the accumulated gas used according to the final transaction:
+The given \textbf{gasUsed} must correspond faithfully to the transactions listed: \hyperlink{H g}{${B_H}_\mathbf{g}$}, the total gas used in the block, must be equal to the accumulated gas used according to the final transaction:
 \begin{equation}
-{B_H}_\mathbf{g} = \hyperlink{ell}{\ell}\hyperlink{R u}{(\mathbf{R})_\mathbf{u}}
+\hyperlink{H g}{{B_H}_\mathbf{g}} = \hyperlink{ell}{\ell}\hyperlink{R u}{(\mathbf{R})_\mathbf{u}}
 \end{equation}
 
 \subsection{Reward Application}
 
-The application of rewards to a block involves raising the balance of the accounts of the beneficiary address of the block and each ommer by a certain amount. We raise the block's beneficiary account by \hyperlink{R b}{$R_\mathbf{b}$}; for each ommer, we raise the block's beneficiary by an additional $\frac{1}{32}$ of the block reward and the beneficiary of the ommer gets rewarded depending on the block number. \hypertarget{Omega}{Formally we define the function $\Omega$, the block-finalisation state transition function (a function that rewards a nominated party):}
+The application of rewards to a block involves raising the balance of the accounts of the beneficiary address of the block and each ommer by a certain amount. We raise the block's beneficiary account by \hyperlink{block reward R b}{$R_\mathbf{b}$}; for each ommer, we raise the block's beneficiary by an additional $\frac{1}{32}$ of the block reward and the beneficiary of the ommer gets rewarded depending on the block number. \hypertarget{Omega}{Formally we define the function $\Omega$, the block-finalisation state transition function (a function that rewards a nominated party):}
 \begin{eqnarray}
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
-\boldsymbol{\sigma}'[{B_H}_\mathbf{c}]_\mathbf{b} & = & \boldsymbol{\sigma}[{B_H}_\mathbf{c}]_\mathbf{b} + (1 + \frac{\lVert B_\mathbf{U}\rVert}{32})\hyperlink{R b}{R_\mathbf{b}} \\
+\boldsymbol{\sigma}'[\hyperlink{H c}{{B_H}_\mathbf{c}}]_\mathbf{b} & = & \boldsymbol{\sigma}[{B_H}_\mathbf{c}]_\mathbf{b} + (1 + \frac{\lVert \hyperlink{B U}{B_\mathbf{U}}\rVert}{32})\hyperlink{block reward R b}{R_\mathbf{b}} \\
 \forall_{U \in B_\mathbf{U}}: \\ \nonumber
- \boldsymbol{\sigma}'[U_\mathbf{c}]_\mathbf{b} & = & \boldsymbol{\sigma}[U_\mathbf{c}]_\mathbf{b} + (1 + \frac{1}{8} (U_\mathbf{i} - {B_H}_\mathbf{i})) \hyperlink{R b}{R_\mathbf{b}}
+ \boldsymbol{\sigma}'[U_\mathbf{c}]_\mathbf{b} & = & \boldsymbol{\sigma}[U_\mathbf{c}]_\mathbf{b} + (1 + \frac{1}{8} (U_\mathbf{i} - \hyperlink{H i}{{B_H}_\mathbf{i}})) \hyperlink{block reward R b}{R_\mathbf{b}}
 \end{eqnarray}
 
-If there are collisions of the beneficiary addresses between ommers and the block (i.e. two ommers with the same beneficiary address or an ommer with the same beneficiary address as the present block), additions are applied cumulatively.
+If there are collisions of the beneficiary addresses between ommers and the block (i.e. two ommers with the same beneficiary address or an ommer with the same beneficiary address as the present block), additions are applied cumulatively.\hypertarget{block reward R b}{}
 
 We define the block reward as 5 Ether:
 \begin{equation}
-\text{Let} \quad \hyperlink{R b}{R_\mathbf{b}} = 5 \times 10^{18}
+\text{Let} \quad R_\mathbf{b} = 5 \times 10^{18}
 \end{equation}
 
 \subsection{State \& Nonce Validation}\label{sec:statenoncevalidation}
 
+\hypertarget{Gamma}{
 We may now define the function, $\Gamma$, that maps a block $B$ to its initiation state:
 \begin{equation}
 \Gamma(B) \equiv \begin{cases}
 \boldsymbol{\sigma}_0 & \text{if} \quad P(B_H) = \varnothing \\
-\boldsymbol{\sigma}_\mathbf{i}: \mathtt{\small TRIE}(L_S(\boldsymbol{\sigma}_\mathbf{i})) = {P(B_H)_H}_\mathbf{r} & \text{otherwise}
+\boldsymbol{\sigma}_\mathbf{i}: \mathtt{\small \hyperlink{trie}{TRIE}}(L_S(\boldsymbol{\sigma}_\mathbf{i})) = {P(B_H)_H}_\mathbf{r} & \text{otherwise}
 \end{cases}
 \end{equation}
-
-Here, $\mathtt{\small TRIE}(L_S(\boldsymbol{\sigma}_\mathbf{i}))$ means the hash of the root node of a trie of state $\boldsymbol{\sigma}_\mathbf{i}$; it is assumed that implementations will store this in the state database, trivial and efficient since the trie is by nature an immutable data structure.
+}
+Here, $\mathtt{\small TRIE}(L_S(\boldsymbol{\sigma}_\mathbf{i}))$ means the hash of the root node of a trie of state $\boldsymbol{\sigma}_\mathbf{i}$; it is assumed that implementations will store this in the state database, which is trivial and efficient since the trie is by nature an immutable data structure.
 \hypertarget{Phi}{
 And finally we define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:}
 \begin{eqnarray}
 \Phi(B) & \equiv & B': \quad B' = B^* \quad \text{except:} \\
-B'\mathbf{n} & = & \mathbf{n}: \quad x \leqslant \frac{2^{256}}{\hyperlink{H d}{H_\mathbf{d}}} \\
-B'_\mathbf{m} & = & \mathbf{m} \quad \text{with } (\mathbf{x}, \mathbf{m}) = \mathtt{PoW}(B^*_{\hyperlink{h cancel n}{\hcancel{n}}}, \mathbf{n}, \mathbf{d}) \\
-B^* & \equiv & B \quad \text{except:} \quad B^*_\mathbf{r} = r(\Pi(\Gamma(B), B))
+B'_\mathbf{n} & = & n: \quad x \leqslant \frac{2^{256}}{\hyperlink{H d}{H_\mathbf{d}}} \\
+B'_\mathbf{m} & = & m \quad \text{with } (x, m) = \mathtt{PoW}(B^*_{\hyperlink{h cancel n}{\hcancel{n}}}, n, \mathbf{d}) \\
+B^* & \equiv & B \quad \text{except:} \quad B^*_\mathbf{r} = r(\hyperlink{Pi}{\Pi}(\Gamma(B), B))
 \end{eqnarray}
 With $\mathbf{d}$ being a dataset as specified in appendix \ref{app:ethash}.
 
-As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of \hyperlink{Omega}{$\Omega$}, the block finalisation function and \hyperlink{Upsilon}{$\Upsilon$}, the transaction-evaluation function, both now well-defined.
+As specified at the beginning of the present work, \hyperlink{Pi}{$\Pi$ is the state-transition function}, which is defined in terms of \hyperlink{Omega}{$\Omega$}, the block finalisation function and \hyperlink{Upsilon}{$\Upsilon$}, the transaction-evaluation function, both now well-defined.
 
 \hyperlink{Transaction Receipt}{As previously detailed}, $\mathbf{R}[n]_{\boldsymbol{\sigma}}$, $\mathbf{R}[n]_\mathbf{l}$ and $\mathbf{R}[n]_\mathbf{u}$ are the $n$th corresponding states, logs and cumulative gas used after each transaction ($\mathbf{R}[n]_\mathbf{b}$, the fourth component in the tuple, has already been defined in terms of the logs). The former is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
 \begin{equation}
@@ -1117,7 +1119,7 @@ For $\mathbf{R}[n]_\mathbf{l}$, we utilise the \hyperlink{Upsilonl}{$\Upsilon^\m
 \hyperlink{Upsilonl}{\Upsilon^\mathbf{l}}(\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n])
 \end{equation}
 
-Finally, we define $\Pi$ as the new state given the block reward function \hyperlink{Omega}{$\Omega$} applied to the final transaction's resultant state, $\hyperlink{ell}{\ell}(B_\mathbf{R})_{\boldsymbol{\sigma}}$:
+Finally, we define \hyperlink{Pi}{$\Pi$} as the new state given the block reward function \hyperlink{Omega}{$\Omega$} applied to the final transaction's resultant state, $\hyperlink{ell}{\ell}(B_\mathbf{R})_{\boldsymbol{\sigma}}$:
 \begin{equation}
 \Pi(\boldsymbol{\sigma}, B) \equiv \hyperlink{Omega}{\Omega}(B, \ell(\hyperlink{R sigma}{\mathbf{R})_{\boldsymbol{\sigma}}})
 \end{equation}
@@ -1139,7 +1141,6 @@ Two directions exist for ASIC resistance; firstly make it sequential memory-hard
 More formally, the proof-of-work function takes the form of $\mathtt{PoW}$:
 \begin{equation}
 m = H_\mathbf{m} \quad \wedge \quad \mathbf{n} \leqslant \frac{2^{256}}{\hyperlink{H d}{H_\mathbf{d}}} \quad \text{with} \quad (\mathbf{m}, \mathbf{n}) = \mathtt{PoW}(H_{\hyperlink{h cancel n}{\hcancel{n}}}, H_\mathbf{n}, \mathbf{d})
-m = H_m \quad \wedge \quad n \leqslant \frac{2^{256}}{H_d} \quad \text{with} \quad (m, n) = \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})
 \end{equation}
 
 Where $H_{\hyperlink{h cancel n}{\hcancel{n}}}$ is the new block's header but \textit{without} the nonce and mix-hash components; $\hyperlink{H n}{H_\mathbf{n}}$ is the nonce of the block header; $\mathbf{d}$ is a large data set needed to compute the mixHash and $\hyperlink{H d}{H_\mathbf{d}}$ is the new block's difficulty value (i.e. the block difficulty from section \ref{ch:ghost}). $\mathtt{PoW}$ is the proof-of-work function which evaluates to an array with the first item being the mixHash and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. The underlying algorithm is called Ethash and is described below.
@@ -1164,7 +1165,7 @@ Providing random numbers within a deterministic system is, naturally, an impossi
 
 \section{Future Directions} \label{ch:future}
 
-The state database won't be forced to maintain all past state trie structures into the future. It should maintain an age for each node and eventually discard nodes that are neither recent enough nor checkpoints; checkpoints, or a set of nodes in the database that allow a particular block's state trie to be traversed, could be used to place a maximum limit on the amount of computation needed in order to retrieve any state throughout the blockchain.
+The state database won't be forced to maintain all past state \hyperlink{trie}{trie} structures into the future. It should maintain an age for each node and eventually discard nodes that are neither recent enough nor checkpoints; checkpoints, or a set of nodes in the database that allow a particular block's state trie to be traversed, could be used to place a maximum limit on the amount of computation needed in order to retrieve any state throughout the blockchain.
 
 Blockchain consolidation could be used in order to reduce the amount of blocks a client would need to download to act as a full, mining, node. A compressed archive of the trie structure at given points in time (perhaps one in every 10,000th block) could be maintained by the peer network, effectively recasting the genesis block. This would reduce the amount to be downloaded to a single archive plus a hard maximum limit  of blocks.
 
@@ -1318,6 +1319,7 @@ f(t) & \equiv & \begin{cases} 2 & \text{if} \quad t \neq 0 \\ 0 & \text{otherwis
 
 Thus the high nibble of the first byte contains two flags; the lowest bit encoding the oddness of the length and the second-lowest encoding the flag $t$. The low nibble of the first byte is zero in the case of an even number of nibbles and the first nibble in the case of an odd number. All remaining nibbles (now an even number) fit properly into the remaining bytes.
 
+\hypertarget{trie}{}
 \section{Modified Merkle Patricia Tree}\label{app:trie}
 The modified Merkle Patricia tree (trie) provides a persistent data structure to map between arbitrary-length binary data (byte arrays). It is defined in terms of a mutable data structure to map between 256-bit binary fragments and arbitrary-length binary data, typically implemented as a database. The core of the trie, and its sole requirement in terms of the protocol specification is to provide a single value that identifies a given set of key-value pairs, which may be either a 32 byte sequence or the empty byte sequence. It is left as an implementation consideration to store and maintain the structure of the trie in a manner that allows effective and efficient realisation of the protocol.
 
