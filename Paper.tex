@@ -21,12 +21,16 @@
 \usepackage{tikz}
 \usepackage{underscore}
 %\usepackage{lipsum} % to generate filler text for testing of document rendering
+\usepackage[english]{babel}
+\usepackage [autostyle]{csquotes}
+\MakeOuterQuote{"}
 \usepackage[bookmarks=true, unicode=true, pdftitle={Ethereum Yellow Paper: a formal specification of Ethereum, a programmable blockchain}, pdfauthor={Gavin Wood and others as per https://github.com/ethereum/yellowpaper/commits/master},pdfkeywords={Ethereum, Yellow Paper, blockchain, virtual machine, cryptography, decentralised, singleton, transaction, generalised},pdfborder={0 0 0.5 [1 3]}]{hyperref}
 %,pagebackref=true
 
 %\usepackage{longtable}
 % https://stackoverflow.com/a/1918465/7438857
 %tabularx seems better
+
 
 \usepackage{tabularx}
 %https://stackoverflow.com/a/1919447/7438857
@@ -55,6 +59,7 @@
 % https://tex.stackexchange.com/a/59131/143781
 % <https://tex.stackexchange.com/questions/241343/what-is-the-meaning-of-fussy-sloppy-emergencystretch-tolerance-hbadness>
 
+%\usepackage{glossaries}
 
 \input{Version.tex}
 
@@ -143,15 +148,14 @@ Transactions are collated into blocks; blocks are chained together using a crypt
 
 Mining is the process of dedicating effort (working) to bolster one series of transactions (a block) over any other potential competitor block. It is achieved thanks to a cryptographically secure proof. This scheme is known as a proof-of-work and is discussed in detail in section \ref{ch:pow}.
 
-\hypertarget{Pi}{}
 Formally, we expand to:
 \begin{eqnarray}
-\boldsymbol{\sigma}_{t+1} & \equiv & \Pi(\boldsymbol{\sigma}_\mathbf{t}, B) \\
+\boldsymbol{\sigma}_{t+1} & \equiv & \hyperlink{Pi}{\Pi}(\boldsymbol{\sigma}_\mathbf{t}, B) \\
 B & \equiv & (..., (T_0, T_1, ...) ) \\
 \Pi(\boldsymbol{\sigma}, B) & \equiv & \hyperlink{Omega}{\Omega}(B, \hyperlink{Upsilon}{\Upsilon}(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...)
 \end{eqnarray}
 
-Where \hyperlink{Omega}{$\Omega$} is the block-finalisation state transition function (a function that rewards a nominated party); $B$ is this block, which includes a series of transactions amongst some other components; and $\Pi$ is the block-level state-transition function.
+Where \hyperlink{Omega}{$\Omega$} is the block-finalisation state transition function (a function that rewards a nominated party); $B$ is this block, which includes a series of transactions amongst some other components; and $\hyperlink{Pi}{\Pi}$ is the block-level state-transition function.
 
 This is the basis of the blockchain paradigm, a model that forms the backbone of not only Ethereum, but all decentralised consensus-based transaction systems to date.
 
@@ -177,7 +181,7 @@ Throughout the present work, any reference to value, in the context of Ether, cu
 
 \subsection{Which History?}
 
-Since the system is decentralised and all parties have an opportunity to create a new block on some older pre-existing block, the resultant structure is necessarily a tree of blocks. In order to form a consensus as to which path, from root (the genesis block) to leaf (the block containing the most recent transactions) through this tree structure, known as the blockchain, there must be an agreed-upon scheme. If there is ever a disagreement between nodes as to which root-to-leaf path down the block tree is the `best' blockchain, then a \textit{fork} occurs.
+Since the system is decentralised and all parties have an opportunity to create a new block on some older pre-existing block, the resultant structure is necessarily a tree of blocks. In order to form a consensus as to which path, from root (the \hyperlink{GenesisBlock}{genesis block}) to leaf (the block containing the most recent transactions) through this tree structure, known as the blockchain, there must be an agreed-upon scheme. If there is ever a disagreement between nodes as to which root-to-leaf path down the block tree is the `best' blockchain, then a \textit{fork} occurs.
 
 This would mean that past a given point in time (block), multiple states of the system may coexist: some nodes believing one block to contain the canonical transactions, other nodes believing some other block to be canonical, potentially containing radically different or incompatible transactions. This is to be avoided at all costs as the uncertainty that would ensue would likely kill all confidence in the entire system.
 
@@ -343,10 +347,10 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[receiptsRoot] The Keccak 256-bit hash of the root node of the \hyperlink{trie}{trie} structure populated with the receipts of each transaction in the transactions list portion of the block; formally \hyperlink{H e}{$H_\mathbf{e}$}.
 \item[logsBloom] The Bloom filter composed from indexable information (logger address and log topics) contained in each log entry from the receipt of each transaction in the transactions list; formally \hyperlink{H b}{$H_\mathbf{b}.$}\hypertarget{H d}{
 \item[difficulty] A scalar value corresponding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_\mathbf{d}$}.\hypertarget{H i}{
-\item[number] A scalar value equal to the number of ancestor blocks. The genesis block has a number of zero; formally $H_\mathbf{i}$.}\hypertarget{H l}{
+\item[number] A scalar value equal to the number of ancestor blocks. The \hyperlink{GenesisBlock}{genesis block} has a number of zero; formally $H_\mathbf{i}$.}\hypertarget{H l}{
 \item[gasLimit] A scalar value equal to the current limit of gas expenditure per block; formally $H_\mathbf{l}$.}\hypertarget{H g}{
-\item[gasUsed] A scalar value equal to the total gas used in transactions in this block; formally $H_\mathbf{g}$.}
-\item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally \hyperlink{H s}{$H_\mathbf{s}$}.\hypertarget{H x}{
+\item[gasUsed] A scalar value equal to the total gas used in transactions in this block; formally $H_\mathbf{g}$.}\hypertarget{H s}{
+\item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally {$H_\mathbf{s}$}.}\hypertarget{H x}{
 \item[extraData] An arbitrary byte array containing data relevant to this block. This must be 32 bytes or fewer; formally $H_\mathbf{x}$.}\hypertarget{H m}{
 \item[mixHash] A 256-bit hash which proves combined with the nonce that a sufficient amount of computation has been carried out on this block; formally $H_\mathbf{m}$.}
 \hypertarget{block nonce}{\hypertarget{H n}{
@@ -363,7 +367,8 @@ B \equiv (B_H, B_\mathbf{T}, B_\mathbf{U})
 In order to encode information about a transaction concerning which it may be useful to form a zero-knowledge proof, or index and search, we encode a receipt of each transaction containing certain information from concerning its execution.
 Each receipt, denoted $B_\mathbf{R}[i]$ for the $i$th transaction, is placed in an index-keyed \hyperlink{trie}{trie} and the root recorded in the header as \hyperlink{H e}{$H_\mathbf{e}$}.
 
-The transaction receipt is a tuple of four items \hypertarget{R sigma}{comprising the post-transaction state, $R_{\boldsymbol{\sigma}}$}, \hypertarget{R u}{the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_\mathbf{u}$}, the set of logs created through execution of the transaction, \hyperlink{R l}{$R_\mathbf{l}$} and the Bloom filter composed from information in those logs, \hyperlink{R b}{$R_\mathbf{b}$}:
+\hypertarget{R}{}
+The transaction receipt, $R$, is a tuple of four items \hypertarget{R sigma}{comprising the post-transaction state, $R_{\boldsymbol{\sigma}}$}, \hypertarget{R u}{the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_\mathbf{u}$}, the set of logs created through execution of the transaction, \hyperlink{R l}{$R_\mathbf{l}$} and the Bloom filter composed from information in those logs, \hyperlink{R b}{$R_\mathbf{b}$}:
 \begin{equation}
 R \equiv (R_{\boldsymbol{\sigma}}, R_\mathbf{u}, \hyperlink{R b}{R_\mathbf{b}}, \hyperlink{R l}{R_\mathbf{l}})
 \end{equation}
@@ -391,10 +396,10 @@ O_\mathbf{a} \in \mathbb{B}_{20} \quad \wedge \quad \forall_{t \in O_\mathbf{t}}
 
 We define the Bloom filter function, $M$, to reduce a log entry into a single 256-byte hash:
 \begin{equation}
-M(O) \equiv \bigvee_{t \in \{O_\mathbf{a}\} \cup O_\mathbf{t}} \big( M_{3:2048}(t) \big)
+M(O) \equiv \hyperlink{bigvee}{\bigvee}_{t \in \{O_\mathbf{a}\} \cup O_\mathbf{t}} \big( M_{3:2048}(t) \big)
 \end{equation}
 
-where $M_{3:2048}$ is a specialised Bloom filter that sets three bits out of 2048, given an arbitrary byte sequence. It does this through taking the low-order 11 bits of each of the first three pairs of bytes in a Keccak-256 hash of the byte sequence./footnote{11 bits $= 2^2048$, and the low-order 11 bits is the modulo 2048 of the operand, which is in this case is "each of the first three pairs of bytes in a Keccak-256 hash of the byte sequence."} Formally:
+where $M_{3:2048}$ is a specialised Bloom filter that sets three bits out of 2048, given an arbitrary byte sequence. It does this through taking the low-order 11 bits of each of the first three pairs of bytes in a Keccak-256 hash of the byte sequence.\footnote{11 bits $= 2^{2048}$, and the low-order 11 bits is the modulo 2048 of the operand, which is in this case is "each of the first three pairs of bytes in a Keccak-256 hash of the byte sequence".} Formally:
 \begin{eqnarray}
 M_{3:2048}(\mathbf{x}: \mathbf{x} \in \mathbb{B}) & \equiv & \mathbf{y}: \mathbf{y} \in \mathbb{B}_{256} \quad \text{where:}\\
 \mathbf{y} & = & (0, 0, ..., 0) \quad \text{except:}\\
@@ -410,10 +415,10 @@ We can assert a block's validity if and only if it satisfies several conditions:
 \begin{equation}
 \begin{array}[t]{lclc}\hypertarget{H r}{
 H_\mathbf{r} &\equiv& \mathtt{\small \hyperlink{trie}{TRIE}}(L_S(\hyperlink{Pi}{\Pi}(\boldsymbol{\sigma}, B))) & \wedge }\hypertarget{H o}{\\
-H_\mathbf{o} &\equiv& \mathtt{\small KEC}(\mathtt{\small RLP}(L_H^*(\hyperlink{B U}{B_\mathbf{U}})))} & \wedge \hypertarget{H t}{\\
+H_\mathbf{o} &\equiv& \mathtt{\small KEC}(\mathtt{\small RLP}(L_H^*(\hyperlink{B U}{B_\mathbf{U}}))) & \wedge }\hypertarget{H t}{\\
 H_\mathbf{t} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert, i \in \mathbb{P}: p(i, L_\mathbf{T}(B_\mathbf{T}[i]))\}) }& \wedge \hypertarget{H e}{\\
-H_\mathbf{e} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{R} \rVert, i \in \mathbb{P}: p(i, L_R(B_\mathbf{R}[i]))\})} & \wedge \hypertarget{H b}{\\
-H_\mathbf{b} &\equiv& \bigvee_{\mathbf{r} \in B_\mathbf{R}} \big( \mathbf{r}_\mathbf{b} \big)}
+H_\mathbf{e} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert \hyperlink{Transaction Receipt}{B_\mathbf{R}} \rVert, i \in \mathbb{P}: p(i, L_R(B_\mathbf{R}[i]))\}) & \wedge }\hypertarget{H b}{\hypertarget{r}{\\
+H_\mathbf{b} &\equiv& \hyperlink{bigvee}{\bigvee}_{\mathbf{r} \in B_\mathbf{R}} \big( \mathbf{r}_\mathbf{b} \big)}}
 \end{array}
 \end{equation}
 
@@ -429,7 +434,7 @@ Furthermore:
 
 Thus $\texttt{\small TRIE}(L_S(\boldsymbol{\sigma}))$ is the root node hash of the Merkle Patricia tree structure containing the key-value pairs of the state $\boldsymbol{\sigma}$ with values encoded using RLP, and $P(B_H)$ is the parent block of $B$, defined directly.
 
-The values stemming from the computation of transactions, specifically the transaction receipts, $B_\mathbf{R}$, and that defined through the transaction's \hyperlink{Pi}{state-accumulation function, $\Pi$,} are formalised later in section \ref{sec:statenoncevalidation}.
+The values stemming from the computation of transactions, specifically the \hyperlink{transaction Receipt}{transaction receipts, $B_\mathbf{R}$}, and that defined through the transaction's \hyperlink{Pi}{stateR-accumulation function, $\Pi$}, are formalised later in section \ref{sec:statenoncevalidation}.
 
 \subsubsection{Serialisation}
 
@@ -516,7 +521,7 @@ This mechanism enforces a homeostasis in terms of the time between blocks; a sma
 
 The nonce of a block, $\hyperlink{H n}{H_\mathbf{n}}$, must satisfy the relations:
 \begin{equation}
-n \leqslant \frac{2^{256}}{\hyperlink{H d}{H_\mathbf{d}}} \quad \wedge \quad \mathbf{m} = \hyperlink{H m}{H_\mathbf{m}}
+n \leqslant \frac{2^{256}}{\hyperlink{H d}{H_\mathbf{d}}} \quad \wedge \quad m = \hyperlink{H m}{H_\mathbf{m}}
 \end{equation}
 with $(n, m) = \mathtt{PoW}(H_{\hcancel{n}}, \hyperlink{H n}{H_\mathbf{n}}, \mathbf{d})$.
 
@@ -537,7 +542,7 @@ V(H) & \equiv &  n \leqslant \frac{2^{256}}{\hyperlink{H d}{H_\mathbf{d}}} \wedg
 & & \hyperlink{H i}{H_\mathbf{i}} = {P(H)_H}_\mathbf{i} +1 \quad \wedge \\
 & & \lVert \hyperlink{H x}{H_\mathbf{x}} \rVert \le 32
 \end{eqnarray}
-where $(\mathbf{n}, \mathbf{m}) = \mathtt{PoW}(H_{\hyperlink{h cancel n}{\hcancel{n}}}, \hyperlink{H n}{H_\mathbf{n}}, \mathbf{d})$
+where $(n, m) = \mathtt{PoW}(H_{\hyperlink{h cancel n}{\hcancel{n}}}, \hyperlink{H n}{H_\mathbf{n}}, \mathbf{d})$
 
 Noting additionally that \textbf{extraData} must be at most 32 bytes.
 
@@ -1005,7 +1010,7 @@ However, instructions do typically alter one or several components of these valu
 
 \section{Blocktree to Blockchain} \label{ch:ghost}
 
-The canonical blockchain is a path from root to leaf through the entire block tree. In order to have consensus over which path it is, conceptually we identify the path that has had the most computation done upon it, or, the \textit{heaviest} path. Clearly one factor that helps determine the heaviest path is the block number of the leaf, equivalent to the number of blocks, not counting the unmined genesis block, in the path. The longer the path, the greater the total mining effort that must have been done in order to arrive at the leaf. This is akin to existing schemes, such as that employed in Bitcoin-derived protocols.
+The canonical blockchain is a path from root to leaf through the entire block tree. In order to have consensus over which path it is, conceptually we identify the path that has had the most computation done upon it, or, the \textit{heaviest} path. Clearly one factor that helps determine the heaviest path is the block number of the leaf, equivalent to the number of blocks, not counting the unmined \hyperlink{GenesisBlock}{genesis block}, in the path. The longer the path, the greater the total mining effort that must have been done in order to arrive at the leaf. This is akin to existing schemes, such as that employed in Bitcoin-derived protocols.
 
 Since a block header includes the difficulty, the header alone is enough to validate the computation done. Any block contributes toward the total computation or \textit{total difficulty} of a chain.
 
@@ -1093,7 +1098,7 @@ And finally we define $\Phi$, the block transition function, which maps an incom
 \Phi(B) & \equiv & B': \quad B' = B^* \quad \text{except:} \\
 B'_\mathbf{n} & = & n: \quad x \leqslant \frac{2^{256}}{\hyperlink{H d}{H_\mathbf{d}}} \\
 B'_\mathbf{m} & = & m \quad \text{with } (x, m) = \mathtt{PoW}(B^*_{\hyperlink{h cancel n}{\hcancel{n}}}, n, \mathbf{d}) \\
-B^* & \equiv & B \quad \text{except:} \quad B^*_\mathbf{r} = r(\hyperlink{Pi}{\Pi}(\Gamma(B), B))
+B^* & \equiv & B \quad \text{except:} \quad {\hyperlink{Transaction Receipt}{B^*_\mathbf{r}}} = \hyperlink{r}{r}(\hyperlink{Pi}{\Pi}(\Gamma(B), B))
 \end{eqnarray}
 With $\mathbf{d}$ being a dataset as specified in appendix \ref{app:ethash}.
 
@@ -1104,7 +1109,7 @@ As specified at the beginning of the present work, \hyperlink{Pi}{$\Pi$ is the s
 \mathbf{R}[n]_{\boldsymbol{\sigma}} = \begin{cases} \Gamma(B) & \text{if} \quad n < 0 \\ \hyperlink{Upsilon}{\Upsilon}(\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n]) & \text{otherwise} \end{cases}
 \end{equation}
 
-In the case of $B_\mathbf{R}[n]_\mathbf{u}$, we take a similar approach defining each item as the gas used in evaluating the corresponding transaction summed with the previous item (or zero, if it is the first), giving us a running total:
+In the case of \hyperlink{Transaction Receipt}{${B_\mathbf{R}}[n]_\mathbf{u}$}, we take a similar approach defining each item as the gas used in evaluating the corresponding transaction summed with the previous item (or zero, if it is the first), giving us a running total:
 \begin{equation}
 \mathbf{R}[n]_\mathbf{u} = \begin{cases} 0 & \text{if} \quad n < 0 \\
 \begin{array}[b]{l}
@@ -1119,10 +1124,11 @@ For $\mathbf{R}[n]_\mathbf{l}$, we utilise the \hyperlink{Upsilonl}{$\Upsilon^\m
 \hyperlink{Upsilonl}{\Upsilon^\mathbf{l}}(\mathbf{R}[n - 1]_{\boldsymbol{\sigma}}, B_\mathbf{T}[n])
 \end{equation}
 
+\hypertarget{Pi}{
 Finally, we define \hyperlink{Pi}{$\Pi$} as the new state given the block reward function \hyperlink{Omega}{$\Omega$} applied to the final transaction's resultant state, $\hyperlink{ell}{\ell}(B_\mathbf{R})_{\boldsymbol{\sigma}}$:
 \begin{equation}
 \Pi(\boldsymbol{\sigma}, B) \equiv \hyperlink{Omega}{\Omega}(B, \ell(\hyperlink{R sigma}{\mathbf{R})_{\boldsymbol{\sigma}}})
-\end{equation}
+\end{equation}}
 
 Thus the complete block-transition mechanism is defined, except for $\mathtt{PoW}$, the proof-of-work function.
 
@@ -1134,22 +1140,22 @@ For both reasons, there are two important goals of the proof-of-work function; f
 
 Secondly, it should not be possible to make super-linear profits, and especially not so with a high initial barrier. Such a mechanism allows a well-funded adversary to gain a troublesome amount of the network's total mining power and as such gives them a super-linear reward (thus skewing distribution in their favour) as well as reducing the network security.
 
-One plague of the Bitcoin world is ASICs. These are specialised pieces of compute hardware that exist only to do a single task. In Bitcoin's case the task is the SHA256 hash function. While ASICs exist for a proof-of-work function, both goals are placed in jeopardy. Because of this, a proof-of-work function that is ASIC-resistant (i.e. difficult or economically inefficient to implement in specialised compute hardware) has been identified as the proverbial silver bullet.
+One plague of the Bitcoin world is ASICs. These are specialised pieces of compute hardware that exist only to do a single task (\cite{ASICSmithMJS}, \cite{ASICWiki}). In Bitcoin's case the task is the SHA256 hash function (\cite{ASICbitcoinwiki}). While ASICs exist for a proof-of-work function, both goals are placed in jeopardy. Because of this, a proof-of-work function that is ASIC-resistant (i.e. difficult or economically inefficient to implement in specialised compute hardware) has been identified as the proverbial silver bullet.
 
-Two directions exist for ASIC resistance; firstly make it sequential memory-hard, i.e. engineer the function such that the determination of the \hyperlink{block nonce}{nonce} requires a lot of memory and bandwidth such that the memory cannot be used in parallel to discover multiple nonces simultaneously. The second is to make the type of computation it would need to do general-purpose; the meaning of ``specialised hardware''  for a general-purpose task set is, naturally, general purpose hardware and as such commodity desktop computers are likely to be pretty close to ``specialised hardware'' for the task. For Ethereum 1.0 we have chosen the first path.
+Two directions exist for ASIC resistance; firstly make it sequential memory-hard, i.e. engineer the function such that the determination of the \hyperlink{block nonce}{nonce} requires a lot of memory and bandwidth such that the memory cannot be used in parallel to discover multiple nonces simultaneously. The second is to make the type of computation it would need to do general-purpose; the meaning of ``specialised hardware''  for a general-purpose task set is, naturally, general purpose hardware and as such commodity desktop computers are likely to be pretty close to ``specialised hardware'' for the task. For Ethereum \textit{Frontier} and \textit{Homestead} we have chosen the first path.
 
 More formally, the proof-of-work function takes the form of $\mathtt{PoW}$:
 \begin{equation}
-m = H_\mathbf{m} \quad \wedge \quad \mathbf{n} \leqslant \frac{2^{256}}{\hyperlink{H d}{H_\mathbf{d}}} \quad \text{with} \quad (\mathbf{m}, \mathbf{n}) = \mathtt{PoW}(H_{\hyperlink{h cancel n}{\hcancel{n}}}, H_\mathbf{n}, \mathbf{d})
+m = \hyperlink{H m}{H_\mathbf{m}} \quad \wedge \quad n \leqslant \frac{2^{256}}{\hyperlink{H d}{H_\mathbf{d}}} \quad \text{with} \quad (m, n) = \mathtt{PoW}(H_{\hyperlink{h cancel n}{\hcancel{n}}}, H_\mathbf{n}, \mathbf{d})
 \end{equation}
 
-Where $H_{\hyperlink{h cancel n}{\hcancel{n}}}$ is the new block's header but \textit{without} the nonce and mix-hash components; $\hyperlink{H n}{H_\mathbf{n}}$ is the nonce of the block header; $\mathbf{d}$ is a large data set needed to compute the mixHash and $\hyperlink{H d}{H_\mathbf{d}}$ is the new block's difficulty value (i.e. the block difficulty from section \ref{ch:ghost}). $\mathtt{PoW}$ is the proof-of-work function which evaluates to an array with the first item being the mixHash and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. The underlying algorithm is called Ethash and is described below.
+Where $H_{\hyperlink{h cancel n}{\hcancel{n}}}$ is the new block's header but \textit{without} the nonce and mix-hash components; $\hyperlink{H n}{H_\mathbf{n}}$ is the nonce of the block header; $\mathbf{d}$ is a large data set needed to compute the mixHash and $\hyperlink{H d}{H_\mathbf{d}}$ is the new block's difficulty value (i.e. the block difficulty from section \ref{ch:ghost}). $\mathtt{PoW}$ is the proof-of-work function which evaluates to an array with the first item being the mixHash and the second item being the \hyperlink{block nonce}{block nonce}, a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. The underlying algorithm is called Ethash and is described below.
 \subsubsection{Ethash}
-Ethash is the PoW algorithm for Ethereum 1.0. It is the latest version of Dagger-Hashimoto, introduced by \cite{dagger} and \cite{hashimoto}, although it can no longer appropriately be called that since many of the original features of both algorithms have been drastically changed in the last month of research and development. The general route that the algorithm takes is as follows:
+Ethash is the PoW algorithm for Ethereum \textit{Frontier} and \textit{Homestead}. It is the latest version of Dagger-Hashimoto, introduced by \cite{dagger} and \cite{hashimoto}, although it can no longer appropriately be called that since many of the original features of both algorithms were drastically changed with R\&D from February 2015 until May 4 2015 (\cite{commitdateforEthash}). The general route that the algorithm takes is as follows:
 
-There exists a seed which can be computed for each block by scanning through the block headers up until that point. From the seed, one can compute a pseudorandom cache, $J_{cacheinit}$ bytes in initial size. Light clients store the cache. From the cache, we can generate a dataset, $J_{datasetinit}$ bytes in initial size, with the property that each item in the dataset depends on only a small number of items from the cache. Full clients and miners store the dataset. The dataset grows linearly with time.
+There exists a seed which can be computed for each block by scanning through the block headers up until that point. From the seed, one can compute a pseudorandom cache, \hyperlink{Jcacheinit}{$J_{cacheinit}$} bytes in initial size. Light clients store the cache. From the cache, we can generate a dataset, \hyperlink{Jdatasetinit}{$J_{datasetinit}$} bytes in initial size, with the property that each item in the dataset depends on only a small number of items from the cache. Full clients and miners store the dataset. The dataset grows linearly with time.
 
-Mining involves grabbing random slices of the dataset and hashing them together. Verification can be done with low memory by using the cache to regenerate the specific pieces of the dataset that you need, so you only need to store the cache. The large dataset is updated once every $J_{epoch}$ blocks, so the vast majority of a miner's effort will be reading the dataset, not making changes to it. The mentioned parameters as well as the algorithm is explained in detail in appendix \ref{app:ethash}.
+Mining involves grabbing random slices of the dataset and hashing them together. Verification can be done with low memory by using the cache to regenerate the specific pieces of the dataset that you need, so you only need to store the cache. The large dataset is updated once every \hyperlink{Jepoch}{$J_{epoch}$} blocks, so the vast majority of a miner's effort will be reading the dataset, not making changes to it. The mentioned parameters as well as the algorithm is explained in detail in appendix \ref{app:ethash}.
 
 \section{Implementing Contracts}
 
@@ -1167,7 +1173,7 @@ Providing random numbers within a deterministic system is, naturally, an impossi
 
 The state database won't be forced to maintain all past state \hyperlink{trie}{trie} structures into the future. It should maintain an age for each node and eventually discard nodes that are neither recent enough nor checkpoints; checkpoints, or a set of nodes in the database that allow a particular block's state trie to be traversed, could be used to place a maximum limit on the amount of computation needed in order to retrieve any state throughout the blockchain.
 
-Blockchain consolidation could be used in order to reduce the amount of blocks a client would need to download to act as a full, mining, node. A compressed archive of the trie structure at given points in time (perhaps one in every 10,000th block) could be maintained by the peer network, effectively recasting the genesis block. This would reduce the amount to be downloaded to a single archive plus a hard maximum limit  of blocks.
+Blockchain consolidation could be used in order to reduce the amount of blocks a client would need to download to act as a full, mining, node. A compressed archive of the trie structure at given points in time (perhaps one in every 10,000th block) could be maintained by the peer network, effectively recasting the \hyperlink{GenesisBlock}{genesis block}. This would reduce the amount to be downloaded to a single archive plus a hard maximum limit  of blocks.
 
 Finally, blockchain compression could perhaps be conducted: nodes in state trie that haven't sent/received a transaction in some constant amount of blocks could be thrown out, reducing both Ether-leakage and the growth of the state database.
 
@@ -1239,6 +1245,7 @@ The source of this paper is maintained at \url{https://github.com/ethereum/yello
 
 \end{description}
 
+\hypertarget{rlp}{}
 \section{Recursive Length Prefix}\label{app:rlp}
 This is a serialisation method for encoding arbitrarily structured binary data (byte arrays).
 
@@ -2061,6 +2068,7 @@ G_{newaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}
 %\section{Low-level Lisp-like Language}\label{app:lll}
 %The Low-level Lisp-like Language is a language created in order to efficiently author low-level programs (contracts) without having to resort to EVM-Assembly.
 
+\hypertarget{GenesisBlock}{}
 \section{Genesis Block}\label{app:genesis}
 
 The genesis block is 15 items, and is specified thus:
@@ -2068,54 +2076,55 @@ The genesis block is 15 items, and is specified thus:
 \big( \big( 0_{256}, \mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big), 0_{160}, stateRoot, 0, 0, 0_{2048}, 2^{17}, 0, 0, 3141592, time, 0, 0_{256},  \mathtt{\tiny KEC}\big( (42) \big) \big), (), () \big)
 \end{equation}
 
-Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $0_{160}$ refers to the beneficiary address, a 160-bit hash which is all zeroes; $0_{2048}$ refers to the log bloom, 2048-bit of all zeros; $2^{17}$ refers to the difficulty; the transaction trie root, receipt trie root, gas used, block number and extradata are both $0$, being equivalent to the empty byte array. The sequences of both ommers and transactions are empty and represented by $()$. $\mathtt{\tiny KEC}\big( (42) \big)$ refers to the Keccak hash of a byte array of length one whose first and only byte is of value 42, used for the \hyperlink{block nonce}{nonce}. $\mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big)$ value refers to the hash of the ommer lists in RLP, both empty lists.
+Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $0_{160}$ refers to the \hyperlink{H c}{beneficiary address}, a 160-bit hash which is all zeroes; $0_{2048}$ refers to the \hyperlink{H b}{log bloom}, a 2048-bit sequence of all zeros; $2^{17}$ refers to the \hyperlink{H d}{difficulty}; the \hyperlink{H t}{transaction trie root}, \hyperlink{H e}{receipt trie root}, \hyperlink{H g}{gas used}, \hyperlink{H i}{block number} and \hyperlink{H x}{extradata} are all $0$ (listed in the order of decimal zeros in the above sequence), being equivalent to the empty byte array. The sequences of both ommers and transactions are empty and represented by $()$. $\mathtt{\tiny KEC}\big( (42) \big)$ refers to the Keccak hash of a byte array of length one whose first and only byte is of value 42, used for the \hyperlink{block nonce}{nonce}. $\mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big)$ value refers to the hash of the ommer lists in \hyperlink{rlp}{RLP}, both empty lists.
 
-The proof-of-concept series include a development premine, making the state root hash some value $stateRoot$. Also $time$ will be set to the initial timestamp of the genesis block. The latest documentation should be consulted for those values.
+The proof-of-concept series includes a development premine, making the state root hash some value $stateRoot$. Also \hyperlink{H s}{$time$} will be set to the initial timestamp of the genesis block. The latest documentation should be consulted for those values.
 
 \section{Ethash}\label{app:ethash}
 \subsection{Definitions}
 We employ the following definitions:
 
-\begin{tabularx}{\textwidth}{rlrrX}
+\begin{tabularx}{\textwidth}{rlX}
 \toprule
 Name & Value & Description \\
-\midrule
-$J_{wordbytes}$ & 4  & Bytes in word. \\
-$J_{datasetinit}$ & $2^{30}$ & Bytes in dataset at genesis. \\
-$J_{datasetgrowth}$ & $2^{23}$ & Dataset growth per epoch. \\
-$J_{cacheinit}$ & $2^{24}$ & Bytes in cache at genesis. \\
-$J_{cachegrowth}$ & $2^{17}$ & Cache growth per epoch. \\
-$J_{epoch}$ & 30000 & Blocks per epoch. \\
-$J_{mixbytes}$ & 128 & mix length in bytes. \\
-$J_{hashbytes}$ & 64 & Hash length in bytes. \\
-$J_{parents}$ & 256 & Number of parents of each dataset element. \\
-$J_{cacherounds}$ & 3 & Number of rounds in cache production. \\
-$J_{accesses}$ & 64 & Number of accesses in hashimoto loop. \\
+\midrule 
+\hypertarget{Jwordbytes}{
+$J_{wordbytes}$ & 4  & This is the bytes in a word. }\hypertarget{Jdatasetinit}{\\
+$J_{datasetinit}$ & $2^{30}$ & This is the bytes in the dataset at genesis. }\hypertarget{Jdatasetgrowth}{\\
+$J_{datasetgrowth}$ & $2^{23}$ & This is the dataset growth per epoch. }\hypertarget{Jcacheinit}{\\
+$J_{cacheinit}$ & $2^{24}$ & This is the bytes in the cache at genesis. }\hypertarget{Jcachegrowth}{\\
+$J_{cachegrowth}$ & $2^{17}$ & This is the cache growth per epoch. }\hypertarget{Jepoch}{\\
+$J_{epoch}$ & 30000 & This is the blocks per epoch. }\hypertarget{Jmixbytes}{\\
+$J_{mixbytes}$ & 128 & This is the mix length in bytes. }\hypertarget{Jhashbytes}{\\
+$J_{hashbytes}$ & 64 & This is the hash length in bytes. }\hypertarget{Jparents}{\\
+$J_{parents}$ & 256 & This is the number of parents of each dataset element. }\hypertarget{Jcacherounds}{\\
+$J_{cacherounds}$ & 3 & This is the number of rounds in cache production. }\hypertarget{Jaccesses}{\\
+$J_{accesses}$ & 64 & This is the number of accesses in a hashimoto loop. }\\
 \bottomrule
 \end{tabularx}
 
 \subsection{Size of dataset and cache}
 The size for Ethash's cache $\mathbf{c} \in \mathbb{B}$  and dataset $\mathbf{d} \in \mathbb{B}$ depend on the epoch, which in turn depends on the block number.
 \begin{equation}
- E_{epoch}(\hyperlink{H i}{H_\mathbf{i}}) = \left\lfloor\frac{\hyperlink{H i}{H_\mathbf{i}}}{J_{epoch}}\right\rfloor
+ E_{epoch}(\hyperlink{H i}{H_\mathbf{i}}) = \left\lfloor\frac{\hyperlink{H i}{H_\mathbf{i}}}{\hyperlink{Jepoch}{J_{epoch}}}\right\rfloor
 \end{equation}
-The size of the dataset growth by $J_{datasetgrowth}$ bytes, and the size of the cache by $J_{cachegrowth}$ bytes, every epoch. In order to avoid regularity leading to cyclic behavior, the size must be a prime number. Therefore the size is reduced by a multiple of $J_{mixbytes}$, for the dataset, and $J_{hashbytes}$ for the cache.
+The size of the dataset growth is \hyperlink{Jdatasetgrowth}{$J_{datasetgrowth}$} bytes, and the size of the cache growth is \hyperlink{Jcachegrowth}{$J_{cachegrowth}$} bytes, where the growth of each occurs every epoch. In order to avoid regularity leading to cyclic behavior, the size must be a prime number. Therefore the size is reduced by a multiple of \hyperlink{Jmixbytes}{$J_{mixbytes}$}, for the dataset, and \hyperlink{Jhashbytes}{$J_{hashbytes}$} for the cache.
 Let $d_{size} = \lVert \mathbf{d} \rVert$ be the size of the dataset. Which is calculated using
 \begin{equation}
- d_{size} = E_{prime}(J_{datasetinit} + J_{datasetgrowth} \cdot E_{epoch} - J_{mixbytes}, J_{mixbytes})
+ d_{size} = E_{prime}(\hyperlink{Jdatasetinit}{\hyperlink{Jdatasetinit}{J_{datasetinit}}} + \hyperlink{Jdatasetgrowth}{J_{datasetgrowth}} \cdot E_{epoch} - \hyperlink{Jmixbytes}{J_{mixbytes}}, J_{mixbytes})
 \end{equation}
 The size of the cache, $c_{size}$, is calculated using
 \begin{equation}
- \mathbf{c}_{size} = E_{prime}(J_{cacheinit} + J_{cachegrowth} \cdot E_{epoch} - J_{hashbytes}, J_{hashbytes})
+ c_{size} = E_{prime}(\hyperlink{Jcacheinit}{J_{cacheinit}} + \hyperlink{cachegrowth}{J_{cachegrowth}} \cdot E_{epoch} - \hyperlink{Jhashbytes}{J_{hashbytes}}, J_{hashbytes})
 \end{equation}
 \begin{equation}
  E_{prime}(x, y) = \begin{cases}
 x & \text{if} \quad x / y \in \mathbb{P} \\
-E_{prime}(x - 1 \cdot y, y) & \text{otherwise}
+E_{prime}((x - 1) \cdot y, y) & \text{otherwise}
 \end{cases}
 \end{equation}
 \subsection{Dataset generation}
-In order the generate the dataset we need the cache $\mathbf{c}$, which is an array of bytes. It depends on the cache size  $c_{size}$ and the seed hash $\mathbf{s} \in \mathbb{B}_{32}$.
+In order the generate the dataset we need the cache $c$, which is an array of bytes. It depends on the cache size  $c_{size}$ and the seed hash $s \in \mathbb{B}_{32}$.
 \subsubsection{Seed hash}
 The seed hash is different for every epoch. For the first epoch it is the Keccak-256 hash of a series of 32 bytes of zeros. For every other epoch it is always the Keccak-256 hash of the previous seed hash:
 \begin{equation}
@@ -2124,13 +2133,13 @@ The seed hash is different for every epoch. For the first epoch it is the Keccak
 \begin{equation}
  C_{seedhash}(\hyperlink{H i}{H_\mathbf{i}}) = \begin{cases}
 \texttt{KEC}(\mathbf{0}_{32}) & \text{if} \quad E_{epoch}(\hyperlink{H i}{H_\mathbf{i}}) = 0 \quad  \\
-\texttt{KEC}(C_{seedhash}(\hyperlink{H i}{H_\mathbf{i}} - J_{epoch})) & \text{otherwise}
+\texttt{KEC}(C_{seedhash}(\hyperlink{H i}{H_\mathbf{i}} - \hyperlink{Jepoch}{J_{epoch}})) & \text{otherwise}
 \end{cases}
 \end{equation}
 With $\mathbf{0}_{32}$ being 32 bytes of zeros.
 
 \subsubsection{Cache}
-The cache production process involves using the seed hash to first sequentially filling up $c_{size}$ bytes of memory, then performing $J_{cacherounds}$ passes of the RandMemoHash algorithm created by \cite{lerner2014randmemohash}. The initial cache $\mathbf{c'}$, being an array of arrays of single bytes, will be constructed as follows.
+The cache production process involves using the seed hash to first sequentially fil up $c_{size}$ bytes of memory, then performing \hyperlink{Jcacherounds}{$J_{cacherounds}$} passes of the RandMemoHash algorithm created by \cite{lerner2014randmemohash}. The initial cache $\mathbf{c'}$, being an array of arrays of single bytes, will be constructed as follows.
 
 We define the array $\mathbf{c}_{i}$, consisting of 64 single bytes,  as the $i$th element of the initial cache:
 \begin{equation}
@@ -2144,11 +2153,11 @@ Therefore $ \mathbf{c'}$ can be defined as
  \mathbf{c'}[i] = \mathbf{c}_{i} \quad \forall \quad i < n
 \end{equation}
 \begin{equation}
- n = \left\lfloor\frac{c_{size}}{J_{hashbytes}}\right\rfloor
+ n = \left\lfloor\frac{c_{size}}{\hyperlink{Jhashbytes}{J_{hashbytes}}}\right\rfloor
 \end{equation}
-The cache is calculated by performing $J_{cacherounds}$ rounds of the RandMemoHash algorithm to the inital cache $\mathbf{c'}$:
+The cache is calculated by performing \hyperlink{Jcacherounds}{$J_{cacherounds}$} rounds of the RandMemoHash algorithm to the inital cache $\mathbf{c'}$:
 \begin{equation}
- \mathbf{c} = E_{cacherounds}(\mathbf{c'}, J_{cacherounds})
+ \mathbf{c} = E_{cacherounds}(\mathbf{c'}, \hyperlink{Jcacherounds}{J_{cacherounds}})
 \end{equation}
 \begin{equation}
  E_{cacherounds}(\mathbf{x}, y) = \begin{cases}
@@ -2167,9 +2176,9 @@ Where a single round modifies each subset of the cache as follows:
 \end{multline}
 
 \subsubsection{Full dataset calculation} \label{dataset}
-Essentially, we combine data from $J_{parents}$ pseudorandomly selected cache nodes, and hash that to compute the dataset. The entire dataset is then generated by a number of items, each $J_{hashbytes}$ bytes in size:
+Essentially, we combine data from $J_{parents}$ pseudorandomly selected cache nodes, and hash that to compute the dataset. The entire dataset is then generated by a number of items, each \hyperlink{Jhashbytes}{$J_{hashbytes}$} bytes in size:
 \begin{equation}
- \mathbf{d}[i] = E_{datasetitem}(\mathbf{c}, i) \quad \forall \quad i < \left\lfloor\frac{d_{size}}{J_{hashbytes}}\right\rfloor
+ \mathbf{d}[i] = E_{datasetitem}(\mathbf{c}, i) \quad \forall \quad i < \left\lfloor\frac{d_{size}}{\hyperlink{Jhashbytes}{J_{hashbytes}}}\right\rfloor
 \end{equation}
 In order to calculate the single item we use an algorithm inspired by the FNV hash (\cite{FowlerNollVo1991FNVHash}) in some cases as a non-associative substitute for XOR.
 \begin{equation}
@@ -2188,12 +2197,12 @@ E_{mix}(\mathbf{m}, \mathbf{c}, i, p + 1) & \text{otherwise}
 \begin{equation}
  E_{mix}(\mathbf{m}, \mathbf{c}, i, p) = \begin{cases}
 \texttt{KEC512}(\mathbf{c}[i \mod \mathbf{c}_{size}] \oplus i) & \text{if} \quad p = 0 \\
-E_\text{\tiny FNV}\big(\mathbf{m}, \mathbf{c}[E_\text{\tiny FNV}(i \oplus p, \mathbf{m}[p \mod \lfloor J_{hashbytes} / J_{wordbytes} \rfloor]) \mod \mathbf{c}_{size}] \big) & \text{otherwise}
+E_\text{\tiny FNV}\big(\mathbf{m}, \mathbf{c}[E_\text{\tiny FNV}(i \oplus p, \mathbf{m}[p \mod \lfloor \hyperlink{Jhashbytes}{J_{hashbytes}} / \hyperlink{Jwordbytes}{J_{wordbytes}} \rfloor]) \mod \mathbf{c}_{size}] \big) & \text{otherwise}
 \end{cases}
 \end{equation}
 
 \subsection{Proof-of-work function}
-Essentially, we maintain a "mix" $J_{mixbytes}$ bytes wide, and repeatedly sequentially fetch $J_{mixbytes}$ bytes from the full dataset and use the $E_\text{\tiny FNV}$ function to combine it with the mix. $J_{mixbytes}$ bytes of sequential access are used so that each round of the algorithm always fetches a full page from RAM, minimizing translation lookaside buffer misses which ASICs would theoretically be able to avoid.
+Essentially, we maintain a "mix" \hyperlink{Jmixbytes}{$J_{mixbytes}$} bytes wide, and repeatedly sequentially fetch \hyperlink{Jmixbytes}{$J_{mixbytes}$} bytes from the full dataset and use the $E_\text{\tiny FNV}$ function to combine it with the mix. \hyperlink{Jmixbytes}{$J_{mixbytes}$} bytes of sequential access are used so that each round of the algorithm always fetches a full page from RAM, minimizing translation lookaside buffer misses which ASICs would theoretically be able to avoid.
 
 If the output of this algorithm is below the desired target, then the \hyperlink{block nonce}{nonce} is valid. Note that the extra application of \texttt{KEC} at the end ensures that there exists an intermediate nonce which can be provided to prove that at least a small amount of work was done; this quick outer PoW verification can be used for anti-DDoS purposes. It also serves to provide statistical assurance that the result is an unbiased, 256 bit number.
 
@@ -2220,12 +2229,12 @@ The dataset $\mathbf{d}$ is obtained as described in section \ref{dataset}.
 
 The number of replicated sequences in the mix is:
 \begin{equation}
- n_{mix} =  \left\lfloor\frac{J_{mixbytes}}{J_{hashbytes}}\right\rfloor
+ n_{mix} =  \left\lfloor\frac{\hyperlink{Jmixbytes}{J_{mixbytes}}}{\hyperlink{Jhashbytes}{J_{hashbytes}}}\right\rfloor
 \end{equation}
 In order to add random dataset nodes to the mix, the $E_{accesses}$ function is used:
 \begin{equation}
  E_{accesses}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i) = \begin{cases}
-E_{mixdataset}(\mathbf{d}, \mathbf{m},  \mathbf{s}, i) & \text{if} \quad i = J_{accesses} -2 \\
+E_{mixdataset}(\mathbf{d}, \mathbf{m},  \mathbf{s}, i) & \text{if} \quad i = \hyperlink{Jaccesses}{J_{accesses}} -2 \\
 E_{accesses}(E_{mixdataset}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i), \mathbf{s}, i + 1) & \text{otherwise}
 \end{cases}
 \end{equation}
@@ -2234,7 +2243,7 @@ E_{accesses}(E_{mixdataset}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i), \mathbf{s}, 
 \end{equation}
 $E_{newdata}$ returns an array with $n_{mix}$ elements:
 \begin{equation}
- E_{newdata}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i)[j] = \mathbf{d}[E_\text{\tiny FNV}(i \oplus \mathbf{s}[0], \mathbf{m}[i \mod \left\lfloor\frac{J_{mixbytes}}{J_{wordbytes}}\right\rfloor]) \mod \left\lfloor\frac{d_{size} / J_{hashbytes}}{n_{mix}}\right\rfloor \cdot n_{mix} + j] \quad \forall \quad j < n_{mix}
+ E_{newdata}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i)[j] = \mathbf{d}[E_\text{\tiny FNV}(i \oplus \mathbf{s}[0], \mathbf{m}[i \mod \left\lfloor\frac{\hyperlink{Jmixbytes}{J_{mixbytes}}}{\hyperlink{Jwordbytes}{J_{wordbytes}}}\right\rfloor]) \mod \left\lfloor\frac{d_{size} / \hyperlink{Jhashbytes}{J_{hashbytes}}}{n_{mix}}\right\rfloor \cdot n_{mix} + j] \quad \forall \quad j < n_{mix}
 \end{equation}
 The mix is compressed as follows:
 \begin{equation}
@@ -2243,5 +2252,15 @@ The mix is compressed as follows:
 E_{compress}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(\mathbf{m}[i + 4], \mathbf{m}[i + 5]), \mathbf{m}[i + 6]), \mathbf{m}[i + 7]), i + 8) & \text{otherwise}
 \end{cases}
 \end{equation}
+
+\section{List of mathematical symbols}\label{app:symbols}
+\begin{tabularx}{\textwidth}{lcX}
+\toprule
+Symbol & Latex Command & Description \\
+\midrule
+\hypertarget{bigvee}{
+$\bigvee$ & \verb|\bigvee| & This is the least upper bound, supremum, or join of all elements operated on. Thus it is the greatest element of such elements. More information is here: \cite{LatticeOrder}.}\\
+\bottomrule
+\end{tabularx}
 
 \end{document}
