@@ -29,11 +29,13 @@
 
 %\usepackage{longtable}
 % https://stackoverflow.com/a/1918465/7438857
-%tabularx seems better
+%tabularx seems better, but we can include this if we need tables to break, as well as tabu and longtabu
 
 
 \usepackage{tabularx}
 %https://stackoverflow.com/a/1919447/7438857
+
+\usepackage{tabu}
 
 \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
 % "hyperref loads the url package internally. Use \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref} to pass the option to the url package when it is loaded by hyperref. This avoids any package option clashes." Source: <https://tex.stackexchange.com/questions/3033/forcing-linebreaks-in-url/3034#comment44478_3034>. 
@@ -1153,9 +1155,9 @@ Where $H_{\hyperlink{h cancel n}{\hcancel{n}}}$ is the new block's header but \t
 \subsubsection{Ethash}
 Ethash is the PoW algorithm for Ethereum \textit{Frontier} and \textit{Homestead}. It is the latest version of Dagger-Hashimoto, introduced by \cite{dagger} and \cite{hashimoto}, although it can no longer appropriately be called that since many of the original features of both algorithms were drastically changed with R\&D from February 2015 until May 4 2015 (\cite{commitdateforEthash}). The general route that the algorithm takes is as follows:
 
-There exists a seed which can be computed for each block by scanning through the block headers up until that point. From the seed, one can compute a pseudorandom cache, \hyperlink{Jcacheinit}{$J_{cacheinit}$} bytes in initial size. Light clients store the cache. From the cache, we can generate a dataset, \hyperlink{Jdatasetinit}{$J_{datasetinit}$} bytes in initial size, with the property that each item in the dataset depends on only a small number of items from the cache. Full clients and miners store the dataset. The dataset grows linearly with time.
+There exists a seed which can be computed for each block by scanning through the block headers up until that point. From the seed, one can compute a pseudorandom cache, \hyperlink{Jcacheinit}{$J_{\rm{cacheinit}}$} bytes in initial size. Light clients store the cache. From the cache, we can generate a dataset, \hyperlink{Jdatasetinit}{$J_{\rm{datasetinit}}$} bytes in initial size, with the property that each item in the dataset depends on only a small number of items from the cache. Full clients and miners store the dataset. The dataset grows linearly with time.
 
-Mining involves grabbing random slices of the dataset and hashing them together. Verification can be done with low memory by using the cache to regenerate the specific pieces of the dataset that you need, so you only need to store the cache. The large dataset is updated once every \hyperlink{Jepoch}{$J_{epoch}$} blocks, so the vast majority of a miner's effort will be reading the dataset, not making changes to it. The mentioned parameters as well as the algorithm is explained in detail in appendix \ref{app:ethash}.
+Mining involves grabbing random slices of the dataset and hashing them together. Verification can be done with low memory by using the cache to regenerate the specific pieces of the dataset that you need, so you only need to store the cache. The large dataset is updated once every \hyperlink{Jepoch}{$J_{\rm{epoch}}$} blocks, so the vast majority of a miner's effort will be reading the dataset, not making changes to it. The mentioned parameters as well as the algorithm is explained in detail in appendix \ref{app:ethash}.
 
 \section{Implementing Contracts}
 
@@ -2043,7 +2045,7 @@ G_{newaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}
 \end{tabularx}
 
 \begin{tabularx}{\textwidth}{rlrrX}
-\midrule
+\toprule
 0xf4 & {\small DELEGATECALL} & 6 & 1 & Message-call into this account with an alternative account's code, but persisting the current values for {\it sender} and {\it value}. Compared with {\small CALL}, {\small DELEGATECALL} takes one fewer arguments.  The omitted argument is $\boldsymbol{\mu}_\mathbf{s}[2]$. As a result, $\boldsymbol{\mu}_\mathbf{s}[3]$, $\boldsymbol{\mu}_\mathbf{s}[4]$, $\boldsymbol{\mu}_\mathbf{s}[5]$ and $\boldsymbol{\mu}_\mathbf{s}[6]$ in the definition of {\small CALL} should respectively be replaced with $\boldsymbol{\mu}_\mathbf{s}[2]$, $\boldsymbol{\mu}_\mathbf{s}[3]$, $\boldsymbol{\mu}_\mathbf{s}[4]$ and $\boldsymbol{\mu}_\mathbf{s}[5]$. Otherwise it is exactly equivalent to {\small CALL} except: \\
 &&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}^*, I_\mathbf{s}, I_\mathbf{o}, I_\mathbf{a}, t,\\\quad \boldsymbol{\mu}_\mathbf{s}[0], I_\mathbf{p}, 0, \hyperlink{I v}{I_\mathbf{v}}, \mathbf{i}, I_\mathbf{e} + 1)\end{array} & \text{if} \quad \hyperlink{I v}{I_\mathbf{v}} \leqslant \boldsymbol{\sigma}[I_\mathbf{a}]_\mathbf{b} \;\wedge\; I_\mathbf{e} < 1024 \\ (\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
 &&&& Note the changes (in addition to that of the fourth parameter) to the second and ninth parameters to the call $\Theta$. This means that the recipient is in fact the same account as at present, simply that the code is overwritten {\it and} the context is almost entirely identical.\\
@@ -2082,40 +2084,43 @@ The proof-of-concept series includes a development premine, making the state roo
 
 \section{Ethash}\label{app:ethash}
 \subsection{Definitions}
+
 We employ the following definitions:
 
-\begin{tabularx}{\textwidth}{rlX}
+%\begin{tabularx}{\textwidth}{lrX}
+\begin{tabu}{X[,l]X[-r]X[-l]} 
 \toprule
 Name & Value & Description \\
 \midrule 
-\hypertarget{Jwordbytes}{
-$J_{wordbytes}$ & 4  & This is the bytes in a word. }\hypertarget{Jdatasetinit}{\\
-$J_{datasetinit}$ & $2^{30}$ & This is the bytes in the dataset at genesis. }\hypertarget{Jdatasetgrowth}{\\
-$J_{datasetgrowth}$ & $2^{23}$ & This is the dataset growth per epoch. }\hypertarget{Jcacheinit}{\\
-$J_{cacheinit}$ & $2^{24}$ & This is the bytes in the cache at genesis. }\hypertarget{Jcachegrowth}{\\
-$J_{cachegrowth}$ & $2^{17}$ & This is the cache growth per epoch. }\hypertarget{Jepoch}{\\
-$J_{epoch}$ & 30000 & This is the blocks per epoch. }\hypertarget{Jmixbytes}{\\
-$J_{mixbytes}$ & 128 & This is the mix length in bytes. }\hypertarget{Jhashbytes}{\\
-$J_{hashbytes}$ & 64 & This is the hash length in bytes. }\hypertarget{Jparents}{\\
-$J_{parents}$ & 256 & This is the number of parents of each dataset element. }\hypertarget{Jcacherounds}{\\
-$J_{cacherounds}$ & 3 & This is the number of rounds in cache production. }\hypertarget{Jaccesses}{\\
-$J_{accesses}$ & 64 & This is the number of accesses in a hashimoto loop. }\\
+\hypertarget{Jwordbytes}{}
+$J_{\rm{wordbytes}}$ & 4  & This is the bytes in a word. \hypertarget{Jdatasetinit}{ \\
+$J_{\rm{{datasetinit}}$ & $2^{30}$ & This is the bytes in the dataset at genesis. }\hypertarget{Jdatasetgrowth}{\\
+$J_{\rm{{datasetgrowth}$ & $2^{23}$ & This is the dataset growth per epoch. }\hypertarget{Jcacheinit}{\\
+$J_{\rm{{cacheinit}}$ & $2^{24}$ & This is the bytes in the cache at genesis. }\hypertarget{Jcachegrowth}{\\
+$J_{\rm{{cachegrowth}}$ & $2^{17}$ & This is the cache growth per epoch. }\hypertarget{Jepoch}{\\
+$J_{\rm{{epoch}}$ & 30000 & This is the blocks per epoch. }\hypertarget{Jmixbytes}{\\
+$J_{\rm{{mixbytes}}$ & 128 & This is the mix length in bytes. }\hypertarget{Jhashbytes}{\\
+$J_{\rm{{hashbytes}}$ & 64 & This is the hash length in bytes. }\hypertarget{Jparents}{\\
+$J_{\rm{\rm{{parents}}}$ & 256 & This is the number of parents of each dataset element. }\hypertarget{Jcacherounds}{\\
+$J_{\rm{{cacherounds}}$ & 3 & This is the number of rounds in cache production. }\hypertarget{Jaccesses}{\\
+$J_{\rm{{accesses}}$ & 64 & This is the number of accesses in a hashimoto loop. }\\
 \bottomrule
-\end{tabularx}
+\end{tabu}
+%\end{tabularx}
 
 \subsection{Size of dataset and cache}
 The size for Ethash's cache $\mathbf{c} \in \mathbb{B}$  and dataset $\mathbf{d} \in \mathbb{B}$ depend on the epoch, which in turn depends on the block number.
 \begin{equation}
- E_{epoch}(\hyperlink{H i}{H_\mathbf{i}}) = \left\lfloor\frac{\hyperlink{H i}{H_\mathbf{i}}}{\hyperlink{Jepoch}{J_{epoch}}}\right\rfloor
+E_{\rm{epoch}}(\hyperlink{H i}{H_\mathbf{i}}) = \left\lfloor\frac{\hyperlink{H i}{H_\mathbf{i}}}{\hyperlink{Jepoch}{J_{\rm{epoch}}}}\right\rfloor
 \end{equation}
-The size of the dataset growth is \hyperlink{Jdatasetgrowth}{$J_{datasetgrowth}$} bytes, and the size of the cache growth is \hyperlink{Jcachegrowth}{$J_{cachegrowth}$} bytes, where the growth of each occurs every epoch. In order to avoid regularity leading to cyclic behavior, the size must be a prime number. Therefore the size is reduced by a multiple of \hyperlink{Jmixbytes}{$J_{mixbytes}$}, for the dataset, and \hyperlink{Jhashbytes}{$J_{hashbytes}$} for the cache.
-Let $d_{size} = \lVert \mathbf{d} \rVert$ be the size of the dataset. Which is calculated using
+The size of the dataset growth is \hyperlink{Jdatasetgrowth}{$J_{\rm{{datasetgrowth}$} bytes, and the size of the cache growth is \hyperlink{Jcachegrowth}{$J_\rm{{cachegrowth}}$} bytes, where the growth of each occurs every epoch. In order to avoid regularity leading to cyclic behavior, the size must be a prime number. Therefore the size is reduced by a multiple of \hyperlink{Jmixbytes}{$J_\rm{{mixbytes}}$}, for the dataset, and \hyperlink{Jhashbytes}{$J_\rm{{hashbytes}}$} for the cache.\hypertarget{dsize}{
+Let $d_{size} = \lVert \mathbf{d} \rVert$ be the size of the dataset. Which is calculated using:}
 \begin{equation}
- d_{size} = E_{prime}(\hyperlink{Jdatasetinit}{\hyperlink{Jdatasetinit}{J_{datasetinit}}} + \hyperlink{Jdatasetgrowth}{J_{datasetgrowth}} \cdot E_{epoch} - \hyperlink{Jmixbytes}{J_{mixbytes}}, J_{mixbytes})
+ d_{size} = E_{prime}(\hyperlink{Jdatasetinit}{\hyperlink{Jdatasetinit}{J_{\rm{{datasetinit}}}} + \hyperlink{Jdatasetgrowth}{J_{\rm{{datasetgrowth}} \cdot E_\rm{{epoch}} - \hyperlink{Jmixbytes}{J_\rm{{mixbytes}}}, J_\rm{{mixbytes}})
 \end{equation}
 The size of the cache, $c_{size}$, is calculated using
 \begin{equation}
- c_{size} = E_{prime}(\hyperlink{Jcacheinit}{J_{cacheinit}} + \hyperlink{cachegrowth}{J_{cachegrowth}} \cdot E_{epoch} - \hyperlink{Jhashbytes}{J_{hashbytes}}, J_{hashbytes})
+ c_{size} = E_{prime}(\hyperlink{Jcacheinit}{J_\rm{{cacheinit}}} + \hyperlink\rm{{cachegrowth}}{J_\rm{{cachegrowth}}} \cdot E_\rm{{epoch}} - \hyperlink{Jhashbytes}{J_\rm{{hashbytes}}}, J_\rm{{hashbytes}})
 \end{equation}
 \begin{equation}
  E_{prime}(x, y) = \begin{cases}
@@ -2128,18 +2133,18 @@ In order the generate the dataset we need the cache $c$, which is an array of by
 \subsubsection{Seed hash}
 The seed hash is different for every epoch. For the first epoch it is the Keccak-256 hash of a series of 32 bytes of zeros. For every other epoch it is always the Keccak-256 hash of the previous seed hash:
 \begin{equation}
- \mathbf{s} = C_{seedhash}(\hyperlink{H i}{H_\mathbf{i}})
+ s = C_{seedhash}(\hyperlink{H i}{H_\mathbf{i}})
 \end{equation}
 \begin{equation}
  C_{seedhash}(\hyperlink{H i}{H_\mathbf{i}}) = \begin{cases}
-\texttt{KEC}(\mathbf{0}_{32}) & \text{if} \quad E_{epoch}(\hyperlink{H i}{H_\mathbf{i}}) = 0 \quad  \\
-\texttt{KEC}(C_{seedhash}(\hyperlink{H i}{H_\mathbf{i}} - \hyperlink{Jepoch}{J_{epoch}})) & \text{otherwise}
+\texttt{KEC}(\mathbf{0}_{32}) & \text{if} \quad E_\rm{{epoch}}(\hyperlink{H i}{H_\mathbf{i}}) = 0 \quad  \\
+\texttt{KEC}(C_{seedhash}(\hyperlink{H i}{H_\mathbf{i}} - \hyperlink{Jepoch}{J_\rm{{epoch}}})) & \text{otherwise}
 \end{cases}
 \end{equation}
 With $\mathbf{0}_{32}$ being 32 bytes of zeros.
 
 \subsubsection{Cache}
-The cache production process involves using the seed hash to first sequentially fil up $c_{size}$ bytes of memory, then performing \hyperlink{Jcacherounds}{$J_{cacherounds}$} passes of the RandMemoHash algorithm created by \cite{lerner2014randmemohash}. The initial cache $\mathbf{c'}$, being an array of arrays of single bytes, will be constructed as follows.
+The cache production process involves using the seed hash to first sequentially fill up $c_{size}$ bytes of memory, then performing \hyperlink{Jcacherounds}{$J_\rm{{cacherounds}}$} passes of the RandMemoHash algorithm created by \cite{lerner2014randmemohash}. The initial cache $\mathbf{c'}$, being an array of arrays of single bytes, will be constructed as follows.
 
 We define the array $\mathbf{c}_{i}$, consisting of 64 single bytes,  as the $i$th element of the initial cache:
 \begin{equation}
@@ -2153,32 +2158,33 @@ Therefore $ \mathbf{c'}$ can be defined as
  \mathbf{c'}[i] = \mathbf{c}_{i} \quad \forall \quad i < n
 \end{equation}
 \begin{equation}
- n = \left\lfloor\frac{c_{size}}{\hyperlink{Jhashbytes}{J_{hashbytes}}}\right\rfloor
+ n = \left\lfloor\frac{c_{size}}{\hyperlink{Jhashbytes}{J_\rm{{hashbytes}}}}\right\rfloor
 \end{equation}
-The cache is calculated by performing \hyperlink{Jcacherounds}{$J_{cacherounds}$} rounds of the RandMemoHash algorithm to the inital cache $\mathbf{c'}$:
+The cache is calculated by performing \hyperlink{Jcacherounds}{$J_\rm{{cacherounds}}$} rounds of the RandMemoHash algorithm to the inital cache $\mathbf{c'}$:
 \begin{equation}
- \mathbf{c} = E_{cacherounds}(\mathbf{c'}, \hyperlink{Jcacherounds}{J_{cacherounds}})
+ \mathbf{c} = E_\rm{{cacherounds}}(\mathbf{c'}, \hyperlink{Jcacherounds}{J_\rm{{cacherounds}}})
 \end{equation}
 \begin{equation}
- E_{cacherounds}(\mathbf{x}, y) = \begin{cases}
+ E_\rm{{cacherounds}}(\mathbf{x}, y) = \begin{cases}
 \mathbf{x} & \text{if} \quad y = 0 \quad  \\
 E_\text{\tiny RMH}(\mathbf{x}) & \text{if} \quad y = 1 \quad  \\
-E_{cacherounds}(E_\text{\tiny RMH}(\mathbf{x}), y -1 ) & \text{otherwise}
+E_\rm{{cacherounds}}(E_\text{\tiny RMH}(\mathbf{x}), y -1 ) & \text{otherwise}
 \end{cases}
 \end{equation}
 Where a single round modifies each subset of the cache as follows:
 \begin{equation}
  E_\text{\tiny RMH}(\mathbf{x}) = \big( E_{rmh}(\mathbf{x}, 0), E_{rmh}(\mathbf{x}, 1), ... , E_{rmh}(\mathbf{x}, n - 1) \big)
 \end{equation}
+\hypertarget{Ecacherounds}{}
 \begin{multline}
   E_{rmh}(\mathbf{x}, i) = \texttt{KEC512}(\mathbf{x'}[(i - 1 + n) \mod n] \oplus \mathbf{x'}[\mathbf{x'}[i][0] \mod n]) \\
   \text{with} \quad \mathbf{x'} = \mathbf{x} \quad \text{except} \quad \mathbf{x'}[j] = E_{rmh}(\mathbf{x}, j) \quad \forall \quad j < i
 \end{multline}
 
 \subsubsection{Full dataset calculation} \label{dataset}
-Essentially, we combine data from $J_{parents}$ pseudorandomly selected cache nodes, and hash that to compute the dataset. The entire dataset is then generated by a number of items, each \hyperlink{Jhashbytes}{$J_{hashbytes}$} bytes in size:
+Essentially, we combine data from $J_\rm{{parents}}$ pseudorandomly selected cache nodes, and hash that to compute the dataset. The entire dataset is then generated by a number of items, each \hyperlink{Jhashbytes}{$J_\rm{{hashbytes}}$} bytes in size:
 \begin{equation}
- \mathbf{d}[i] = E_{datasetitem}(\mathbf{c}, i) \quad \forall \quad i < \left\lfloor\frac{d_{size}}{\hyperlink{Jhashbytes}{J_{hashbytes}}}\right\rfloor
+ \mathbf{d}[i] = E_{datasetitem}(\mathbf{c}, i) \quad \forall \quad i < \left\lfloor\frac{\hyperlink{dsize}{d_{size}}}{\hyperlink{Jhashbytes}{J_\rm{{hashbytes}}}}\right\rfloor
 \end{equation}
 In order to calculate the single item we use an algorithm inspired by the FNV hash (\cite{FowlerNollVo1991FNVHash}) in some cases as a non-associative substitute for XOR.
 \begin{equation}
@@ -2186,23 +2192,23 @@ In order to calculate the single item we use an algorithm inspired by the FNV ha
 \end{equation}
 The single item of the dataset can now be calculated as:
 \begin{equation}
- E_{datasetitem}(\mathbf{c}, i) = E_{parents}(\mathbf{c}, i, -1, \varnothing)
+ E_{datasetitem}(\mathbf{c}, i) = E_\rm{{parents}}(\mathbf{c}, i, -1, \varnothing)
 \end{equation}
 \begin{equation}
-  E_{parents}(\mathbf{c}, i, p, \mathbf{m}) = \begin{cases}
-E_{parents}(\mathbf{c}, i, p +1, E_{mix}(\mathbf{m}, \mathbf{c}, i, p + 1)) & \text{if} \quad p < J_{parents} -2 \\
+  E_\rm{{parents}}(\mathbf{c}, i, p, \mathbf{m}) = \begin{cases}
+E_\rm{{parents}}(\mathbf{c}, i, p +1, E_{mix}(\mathbf{m}, \mathbf{c}, i, p + 1)) & \text{if} \quad p < J_\rm{{parents}} -2 \\
 E_{mix}(\mathbf{m}, \mathbf{c}, i, p + 1) & \text{otherwise}
 \end{cases}
 \end{equation}
 \begin{equation}
  E_{mix}(\mathbf{m}, \mathbf{c}, i, p) = \begin{cases}
 \texttt{KEC512}(\mathbf{c}[i \mod \mathbf{c}_{size}] \oplus i) & \text{if} \quad p = 0 \\
-E_\text{\tiny FNV}\big(\mathbf{m}, \mathbf{c}[E_\text{\tiny FNV}(i \oplus p, \mathbf{m}[p \mod \lfloor \hyperlink{Jhashbytes}{J_{hashbytes}} / \hyperlink{Jwordbytes}{J_{wordbytes}} \rfloor]) \mod \mathbf{c}_{size}] \big) & \text{otherwise}
+E_\text{\tiny FNV}\big(\mathbf{m}, \mathbf{c}[E_\text{\tiny FNV}(i \oplus p, \mathbf{m}[p \mod \lfloor \hyperlink{Jhashbytes}{J_\rm{{hashbytes}}} / \hyperlink{Jwordbytes}{J_{\rm{wordbytes}}} \rfloor]) \mod \mathbf{c}_{size}] \big) & \text{otherwise}
 \end{cases}
 \end{equation}
 
 \subsection{Proof-of-work function}
-Essentially, we maintain a "mix" \hyperlink{Jmixbytes}{$J_{mixbytes}$} bytes wide, and repeatedly sequentially fetch \hyperlink{Jmixbytes}{$J_{mixbytes}$} bytes from the full dataset and use the $E_\text{\tiny FNV}$ function to combine it with the mix. \hyperlink{Jmixbytes}{$J_{mixbytes}$} bytes of sequential access are used so that each round of the algorithm always fetches a full page from RAM, minimizing translation lookaside buffer misses which ASICs would theoretically be able to avoid.
+Essentially, we maintain a "mix" \hyperlink{Jmixbytes}{$J_\rm{{mixbytes}}$} bytes wide, and repeatedly sequentially fetch \hyperlink{Jmixbytes}{$J_\rm{{mixbytes}}$} bytes from the full dataset and use the $E_\text{\tiny FNV}$ function to combine it with the mix. \hyperlink{Jmixbytes}{$J_\rm{{mixbytes}}$} bytes of sequential access are used so that each round of the algorithm always fetches a full page from RAM, minimizing translation lookaside buffer misses which ASICs would theoretically be able to avoid.
 
 If the output of this algorithm is below the desired target, then the \hyperlink{block nonce}{nonce} is valid. Note that the extra application of \texttt{KEC} at the end ensures that there exists an intermediate nonce which can be provided to prove that at least a small amount of work was done; this quick outer PoW verification can be used for anti-DDoS purposes. It also serves to provide statistical assurance that the result is an unbiased, 256 bit number.
 
@@ -2212,7 +2218,7 @@ The PoW-function returns an array with the compressed mix as its first item and 
 \end{equation}
 With $H_{\hyperlink{h cancel n}{\hcancel{n}}}$ being the hash of the header without the \hyperlink{block nonce}{nonce}. The compressed mix $\mathbf{m}_\mathbf{c}$ is obtained as follows:
 \begin{equation}
- \mathbf{m}_\mathbf{c}(\mathbf{h}, \mathbf{n}, \mathbf{d}) = E_{compress}(E_{accesses}(\mathbf{d}, \sum_{i = 0}^{n_{mix}} \mathbf{s}_\mathbf{h}(\mathbf{h}, \mathbf{n}), \mathbf{s}_\mathbf{h}(\mathbf{h}, \mathbf{n}), -1), -4)
+ \mathbf{m}_\mathbf{c}(\mathbf{h}, \mathbf{n}, \mathbf{d}) = E_{compress}(E_\rm{{accesses}}(\mathbf{d}, \sum_{i = 0}^{n_{mix}} \mathbf{s}_\mathbf{h}(\mathbf{h}, \mathbf{n}), \mathbf{s}_\mathbf{h}(\mathbf{h}, \mathbf{n}), -1), -4)
 \end{equation}
 
 The seed hash being:
@@ -2229,13 +2235,13 @@ The dataset $\mathbf{d}$ is obtained as described in section \ref{dataset}.
 
 The number of replicated sequences in the mix is:
 \begin{equation}
- n_{mix} =  \left\lfloor\frac{\hyperlink{Jmixbytes}{J_{mixbytes}}}{\hyperlink{Jhashbytes}{J_{hashbytes}}}\right\rfloor
+ n_{mix} =  \left\lfloor\frac{\hyperlink{Jmixbytes}{J_\rm{{mixbytes}}}}{\hyperlink{Jhashbytes}{J_\rm{{hashbytes}}}}\right\rfloor
 \end{equation}
-In order to add random dataset nodes to the mix, the $E_{accesses}$ function is used:
+In order to add random dataset nodes to the mix, the $E_\rm{{accesses}}$ function is used:
 \begin{equation}
- E_{accesses}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i) = \begin{cases}
-E_{mixdataset}(\mathbf{d}, \mathbf{m},  \mathbf{s}, i) & \text{if} \quad i = \hyperlink{Jaccesses}{J_{accesses}} -2 \\
-E_{accesses}(E_{mixdataset}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i), \mathbf{s}, i + 1) & \text{otherwise}
+ E_\rm{{accesses}}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i) = \begin{cases}
+E_{mixdataset}(\mathbf{d}, \mathbf{m},  \mathbf{s}, i) & \text{if} \quad i = \hyperlink{Jaccesses}{J_\rm{{accesses}}} -2 \\
+E_\rm{{accesses}}(E_{mixdataset}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i), \mathbf{s}, i + 1) & \text{otherwise}
 \end{cases}
 \end{equation}
 \begin{equation}
@@ -2243,7 +2249,7 @@ E_{accesses}(E_{mixdataset}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i), \mathbf{s}, 
 \end{equation}
 $E_{newdata}$ returns an array with $n_{mix}$ elements:
 \begin{equation}
- E_{newdata}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i)[j] = \mathbf{d}[E_\text{\tiny FNV}(i \oplus \mathbf{s}[0], \mathbf{m}[i \mod \left\lfloor\frac{\hyperlink{Jmixbytes}{J_{mixbytes}}}{\hyperlink{Jwordbytes}{J_{wordbytes}}}\right\rfloor]) \mod \left\lfloor\frac{d_{size} / \hyperlink{Jhashbytes}{J_{hashbytes}}}{n_{mix}}\right\rfloor \cdot n_{mix} + j] \quad \forall \quad j < n_{mix}
+ E_{newdata}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i)[j] = \mathbf{d}[E_\text{\tiny FNV}(i \oplus \mathbf{s}[0], \mathbf{m}[i \mod \left\lfloor\frac{\hyperlink{Jmixbytes}{J_\rm{{mixbytes}}}}{\hyperlink{Jwordbytes}{J_{\rm{wordbytes}}}}\right\rfloor]) \mod \left\lfloor\frac{\hyperlink{dsize}{d_{size}}}{\hyperlink{Jhashbytes}{J_\rm{{hashbytes}}}}{n_{mix}}\right\rfloor \cdot n_{mix} + j] \quad \forall \quad j < n_{mix}
 \end{equation}
 The mix is compressed as follows:
 \begin{equation}
