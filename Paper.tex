@@ -437,7 +437,7 @@ Furthermore:
 
 Thus $\texttt{\small TRIE}(L_S(\boldsymbol{\sigma}))$ is the root node hash of the Merkle Patricia tree structure containing the key-value pairs of the state $\boldsymbol{\sigma}$ with values encoded using RLP, and $P(B_H)$ is the parent block of $B$, defined directly.
 
-The values stemming from the computation of transactions, specifically the \hyperlink{transaction Receipt}{transaction receipts, $B_\mathbf{R}$}, and that defined through the transaction's \hyperlink{Pi}{stateR-accumulation function, $\Pi$}, are formalised later in section \ref{sec:statenoncevalidation}.
+The values stemming from the computation of transactions, specifically the \hyperlink{Transaction Receipt}{transaction receipts, $B_\mathbf{R}$}, and that defined through the transaction's \hyperlink{Pi}{stateR-accumulation function, $\Pi$}, are formalised later in section \ref{sec:statenoncevalidation}.
 
 \subsubsection{Serialisation}
 
@@ -612,8 +612,8 @@ The validity is determined as:
 \begin{equation}
 \begin{array}[t]{rcl}
 S(T) & \neq & \varnothing \quad \wedge \\
-\boldsymbol{\sigma}[S(T)] & \neq & \varnothing \quad \wedge \\
-T_\mathbf{n} & = & \boldsymbol{\sigma}[S(T)]_\mathbf{n} \quad \wedge \\
+\boldsymbol{\sigma}[S(T)] & \neq & \varnothing \quad \wedge \hypertarget{transaction nonce}{\\
+T_\mathbf{n} & = & \boldsymbol{\sigma}[S(T)]_\mathbf{n} \quad \wedge \\}
 g_0 & \leqslant & T_\mathbf{g} \quad \wedge \\
 v_0 & \leqslant & \boldsymbol{\sigma}[S(T)]_\mathbf{b} \quad \wedge \\
 T_\mathbf{g} & \leqslant & {B_H}_\mathbf{l} - \hyperlink{ell}{\ell}\hyperlink{R u}{(B_\mathbf{R})_\mathbf{u}}
@@ -1156,7 +1156,7 @@ Where $H_{\hyperlink{h cancel n}{\hcancel{n}}}$ is the new block's header but \t
 \subsubsection{Ethash}
 Ethash is the PoW algorithm for Ethereum \textit{Frontier} and \textit{Homestead}. It is the latest version of Dagger-Hashimoto, introduced by \cite{dagger} and \cite{hashimoto}, although it can no longer appropriately be called that since many of the original features of both algorithms were drastically changed with R\&D from February 2015 until May 4 2015 (\cite{commitdateforEthash}). The general route that the algorithm takes is as follows:
 
-There exists a seed which can be computed for each block by scanning through the block headers up until that point. From the seed, one can compute a pseudorandom cache, \hyperlink{Jcacheinit}{$J_{\mathrm{cacheinit}}$} bytes in initial size. Light clients store the cache. From the cache, we can generate a dataset, \hyperlink{Jdatasetinit}{$J_{\rm{datasetinit}}$} bytes in initial size, with the property that each item in the dataset depends on only a small number of items from the cache. Full clients and miners store the dataset. The dataset grows linearly with time.
+There exists a seed which can be computed for each block by scanning through the block headers up until that point. From the seed, one can compute a pseudorandom cache, \hyperlink{Jcacheinit}{$J_{\mathrm{cacheinit}}$} bytes in initial size. Light clients store the cache. From the cache, we can generate a dataset, \hyperlink{Jdatasetinit}{$J_{\mathrm{datasetinit}}$} bytes in initial size, with the property that each item in the dataset depends on only a small number of items from the cache. Full clients and miners store the dataset. The dataset grows linearly with time.
 
 Mining involves grabbing random slices of the dataset and hashing them together. Verification can be done with low memory by using the cache to regenerate the specific pieces of the dataset that you need, so you only need to store the cache. The large dataset is updated once every \hyperlink{Jepoch}{$J_{\mathrm{epoch}}$} blocks, so the vast majority of a miner's effort will be reading the dataset, not making changes to it. The mentioned parameters as well as the algorithm is explained in detail in appendix \ref{app:ethash}.
 
@@ -2090,19 +2090,19 @@ We employ the following definitions:
 \begin{tabularx}{\textwidth}{lrX}
 %\begin{tabu}{X[,l]X[,r]X[,l]} 
 \toprule
-Name & Value & Description \hypertarget{Jwordbytes}{} \\
+Name & Value & Description \hypertarget{Jwordbytes}{ \\
 \midrule 
-$J_\mathrm{wordbytes}$ & 4  & This is the bytes in a word. \hypertarget{Jdatasetinit}{} \\
-$J_\mathrm{datasetinit}$ & $2^{30}$ & This is the bytes in the dataset at genesis. \hypertarget{Jdatasetgrowth}{} \\
-$J_\mathrm{datasetgrowth}$ & $2^{23}$ & This is the dataset growth per epoch.  \hypertarget{Jcacheinit}{\\
-$J_\mathrm{cacheinit}$ & $2^{24}$ & This is the bytes in the cache at genesis.}\hypertarget{Jcachegrowth}{\\
-$J_\mathrm{cachegrowth}$ & $2^{17}$ & This is the cache growth per epoch.}\hypertarget{Jepoch}{\\
-$J_\mathrm{epoch}$ & 30000 & This is the blocks per epoch.}\hypertarget{Jmixbytes}{\\
-$J_\mathrm{mixbytes}$ & 128 & This is the mix length in bytes.}\hypertarget{Jhashbytes}{\\
-$J_\mathrm{hashbytes}$ & 64 & This is the hash length in bytes.}\hypertarget{Jparents}{\\
-$J_\mathrm{parents}$ & 256 & This is the number of parents of each dataset element.}\hypertarget{Jcacherounds}{\\
-$J_\mathrm{cacherounds}$ & 3 & This is the number of rounds in cache production.}\hypertarget{Jaccesses}{\\
-$J_\mathrm{accesses}$ & 64 & This is the number of accesses in a hashimoto loop.}\\
+$J_{\mathrm{wordbytes}}$ & 4  & This is the bytes in a word. }\hypertarget{Jdatasetinit}{ \\
+$J_{\mathrm{datasetinit}}$ & $2^{30}$ & This is the bytes in the dataset at genesis. }\hypertarget{Jdatasetgrowth}{ \\
+$J_{\mathrm{datasetgrowth}}$ & $2^{23}$ & This is the dataset growth per epoch. }\hypertarget{Jcacheinit}{\\
+$J_{\mathrm{cacheinit}}$ & $2^{24}$ & This is the bytes in the cache at genesis.}\hypertarget{Jcachegrowth}{\\
+$J_{\mathrm{cachegrowth}}$ & $2^{17}$ & This is the cache growth per epoch.}\hypertarget{Jepoch}{\\
+$J_{\mathrm{epoch}}$ & 30000 & This is the blocks per epoch.}\hypertarget{Jmixbytes}{\\
+$J_{\mathrm{mixbytes}}$ & 128 & This is the mix length in bytes.}\hypertarget{Jhashbytes}{\\
+$J_{\mathrm{hashbytes}}$ & 64 & This is the hash length in bytes.}\hypertarget{Jparents}{\\
+$J_{\mathrm{parents}}$ & 256 & This is the number of parents of each dataset element.}\hypertarget{Jcacherounds}{\\
+$J_{\mathrm{cacherounds}}$ & 3 & This is the number of rounds in cache production.}\hypertarget{Jaccesses}{\\
+$J_{\mathrm{accesses}}$ & 64 & This is the number of accesses in a hashimoto loop.}\\
 \bottomrule
 %\end{tabu}
 \end{tabularx}
@@ -2110,16 +2110,16 @@ $J_\mathrm{accesses}$ & 64 & This is the number of accesses in a hashimoto loop.
 \subsection{Size of dataset and cache}
 The size for Ethash's cache $\mathbf{c} \in \mathbb{B}$  and dataset $\mathbf{d} \in \mathbb{B}$ depend on the epoch, which in turn depends on the block number.
 \begin{equation}
-E_{\mathrm{epoch}}(\hyperlink{H i}{H_\mathbf{i}}) = \left\lfloor\frac{\hyperlink{H i}{H_\mathbf{i}}}{\hyperlink{Jepoch}{J_\mathrm{epoch}}}\right\rfloor
+E_{\mathrm{epoch}}(\hyperlink{H i}{H_\mathbf{i}}) = \left\lfloor\frac{\hyperlink{H i}{H_\mathbf{i}}}{\hyperlink{Jepoch}{J_{\mathrm{epoch}}}}\right\rfloor
 \end{equation}
-The size of the dataset growth is \hyperlink{Jdatasetgrowth}{$J_\mathrm{datasetgrowth}$} bytes, and the size of the cache growth is \hyperlink{Jcachegrowth}{$J_{\mathrm{cachegrowth}}$} bytes, where the growth of each occurs every epoch. In order to avoid regularity leading to cyclic behavior, the size must be a prime number. Therefore the size is reduced by a multiple of \hyperlink{Jmixbytes}{$J_{\mathrm{mixbytes}}$}, for the dataset, and \hyperlink{Jhashbytes}{$J_{\mathrm{hashbytes}}$} for the cache.\hypertarget{dsize}{
+The size of the dataset growth is \hyperlink{Jdatasetgrowth}{$J_{\mathrm{datasetgrowth}}$} bytes, and the size of the cache growth is \hyperlink{Jcachegrowth}{$J_{\mathrm{cachegrowth}}$} bytes, where the growth of each occurs every epoch. In order to avoid regularity leading to cyclic behavior, the size must be a prime number. Therefore the size is reduced by a multiple of \hyperlink{Jmixbytes}{$J_{\mathrm{mixbytes}}$}, for the dataset, and \hyperlink{Jhashbytes}{$J_{\mathrm{hashbytes}}$} for the cache.\hypertarget{dsize}{
 Let $d_{size} = \lVert \mathbf{d} \rVert$ be the size of the dataset. Which is calculated using:}
 \begin{equation}
- d_{size} = E_{prime}(\hyperlink{Jdatasetinit}{\hyperlink{Jdatasetinit}{J_{\mathrm{datasetinit}}}} + \hyperlink{Jdatasetgrowth}{J_{\mathrm{datasetgrowth}} \cdot E_{\mathrm{epoch}} - \hyperlink{Jmixbytes}{J_\{rm{mixbytes}}}, J_{\mathrm{mixbytes}})
+ d_{size} = E_{prime}(\hyperlink{Jdatasetinit}{J_{\mathrm{datasetinit}}} + \hyperlink{Jdatasetgrowth}{J_{\mathrm{datasetgrowth}}} \cdot E_{\mathrm{epoch}} - \hyperlink{Jmixbytes}{J_{\mathrm{mixbytes}}}, J_{\mathrm{mixbytes}})
 \end{equation}
 The size of the cache, $c_{size}$, is calculated using
 \begin{equation}
- c_{size} = E_{prime}(\hyperlink{Jcacheinit}{J_{\mathrm{cacheinit}}} + \hyperlink{\mathrm{cachegrowth}}{J_{\mathrm{cachegrowth}}} \cdot E_{\mathrm{epoch}} - \hyperlink{Jhashbytes}{J_{\mathrm{hashbytes}}}, J_{\mathrm{hashbytes}})
+ c_{size} = E_{prime}(\hyperlink{Jcacheinit}{J_{\mathrm{cacheinit}}} + \hyperlink{Jcachegrowth}{J_{\mathrm{cachegrowth}}} \cdot E_{\mathrm{epoch}} - \hyperlink{Jhashbytes}{J_{\mathrm{hashbytes}}}, J_{\mathrm{hashbytes}})
 \end{equation}
 \begin{equation}
  E_{prime}(x, y) = \begin{cases}
@@ -2161,7 +2161,7 @@ Therefore $ \mathbf{c'}$ can be defined as
 \end{equation}
 The cache is calculated by performing \hyperlink{Jcacherounds}{$J_{\mathrm{cacherounds}}$} rounds of the RandMemoHash algorithm to the inital cache $\mathbf{c'}$:
 \begin{equation}
- \mathbf{c} = E_{\mathrm{cacherounds}}(\mathbf{c'}, \hyperlink{Jcacherounds}{J_{\mathrm{cacherounds}}})
+ \mathbf{c} = E_{\mathrm{cacherounds}}(\mathbf{c'}, J_{\mathrm{cacherounds}})
 \end{equation}
 \begin{equation}
  E_{\mathrm{cacherounds}}(\mathbf{x}, y) = \begin{cases}
@@ -2207,7 +2207,7 @@ E_\text{\tiny FNV}\big(\mathbf{m}, \mathbf{c}[E_\text{\tiny FNV}(i \oplus p, \ma
 \end{equation}
 
 \subsection{Proof-of-work function}
-Essentially, we maintain a "mix" \hyperlink{Jmixbytes}{$J_{\mathrm{mixbytes}}$} bytes wide, and repeatedly sequentially fetch \hyperlink{Jmixbytes}{$J_{\mathrm{mixbytes}}$} bytes from the full dataset and use the $E_\text{\tiny FNV}$ function to combine it with the mix. \hyperlink{Jmixbytes}{$J_{\mathrm{mixbytes}}$} bytes of sequential access are used so that each round of the algorithm always fetches a full page from RAM, minimizing translation lookaside buffer misses which ASICs would theoretically be able to avoid.
+Essentially, we maintain a "mix" \hyperlink{Jmixbytes}{$J_{\mathrm{mixbytes}}$} bytes wide, and repeatedly sequentially fetch $J_{\mathrm{mixbytes}}$ bytes from the full dataset and use the $E_\text{\tiny FNV}$ function to combine it with the mix. $J_{\mathrm{mixbytes}}$ bytes of sequential access are used so that each round of the algorithm always fetches a full page from RAM, minimizing translation lookaside buffer misses which ASICs would theoretically be able to avoid.
 
 If the output of this algorithm is below the desired target, then the \hyperlink{block nonce}{nonce} is valid. Note that the extra application of \texttt{KEC} at the end ensures that there exists an intermediate nonce which can be provided to prove that at least a small amount of work was done; this quick outer PoW verification can be used for anti-DDoS purposes. It also serves to provide statistical assurance that the result is an unbiased, 256 bit number.
 
