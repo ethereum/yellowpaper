@@ -1,6 +1,9 @@
 \documentclass[9pt,oneside]{amsart}
 \usepackage{cancel}
 %\usepackage{tweaklist}
+\usepackage[utf8]{inputenc}
+\DeclareUnicodeCharacter{C3}{\"{e}}
+\DeclareUnicodeCharacter{AD}{\Huge [ICI]}
 \usepackage{xspace}
 \usepackage{graphicx}
 \usepackage{multicol}
@@ -60,8 +63,6 @@
 % These don't appear to make a difference with the preceding use of the \hypens package and \expandafter.
 % https://tex.stackexchange.com/a/59131/143781
 % <https://tex.stackexchange.com/questions/241343/what-is-the-meaning-of-fussy-sloppy-emergencystretch-tolerance-hbadness>
-
-\usepackage[utf8]{inputenc}
 
 %\usepackage{glossaries}
 
@@ -2093,10 +2094,10 @@ We employ the following definitions:
 %\begin{tabularx}{\textwidth}{lrX}
 \begin{tabu}{X[,l]X[,r]X[,l]} 
 \toprule
-Name & Value & Description \hypertarget{Jwordbytes}{ \\
+Name & Value & Description \hypertarget{Jwordbytes}{\\
 \midrule 
-$J_{\mathrm{wordbytes}}$ & 4  & This is the bytes in a word. }\hypertarget{Jdatasetinit}{ \\
-$J_{\mathrm{datasetinit}}$ & $2^{30}$ & This is the bytes in the dataset at genesis. }\hypertarget{Jdatasetgrowth}{ \\
+$J_{\mathrm{wordbytes}}$ & 4  & This is the bytes in a word.}\hypertarget{Jdatasetinit}{\\
+$J_{\mathrm{datasetinit}}$ & $2^{30}$ & This is the bytes in the dataset at genesis. }\hypertarget{Jdatasetgrowth}{\\
 $J_{\mathrm{datasetgrowth}}$ & $2^{23}$ & This is the dataset growth per epoch. }\hypertarget{Jcacheinit}{\\
 $J_{\mathrm{cacheinit}}$ & $2^{24}$ & This is the bytes in the cache at genesis.}\hypertarget{Jcachegrowth}{\\
 $J_{\mathrm{cachegrowth}}$ & $2^{17}$ & This is the cache growth per epoch.}\hypertarget{Jepoch}{\\
