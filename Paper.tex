@@ -1539,7 +1539,7 @@ $G_{\mathrm{callstipend}}$ & 2300 & This is a stipend for the called contract su
 $G_{\mathrm{newaccount}}$ & 25000 & This is paid for a {\small CALL} or for a \hyperlink{selfdestruct}{\small SELFDESTRUCT} operation which creates an account. \\
 $G_{\mathrm{exp}}$ & 10 & This is a partial payment for an {\small EXP} operation. \\
 $G_{\mathrm{expbyte}}$ & 50 & This is a partial payment when multiplied by $\lceil\log_{256}(exponent)\rceil$ for the {\small EXP} operation. \\
-$G_{\mathrm{memory}}$ & 3 & This is paid for every additional word when expanding memory. \hypertarget{txcreate}{\\
+$G_{\mathrm{memory}}$ & 3 & This is paid for every additional word when expanding memory. \hypertarget{Gtxcreate}{\\
 $G_{\mathrm{txcreate}}$ & 32000 & This is paid by all contract-creating transactions after the {\it Homestead transition}.}\hypertarget{Gtxdatazero}{\\
 $G_{\mathrm{txdatazero}}$ & 4 & This is paid for every zero byte of data or code for a transaction.}\hypertarget{Gtxdatanonzero}{ \\
 $G_{\mathrm{txdatanonzero}}$ & 68 & This is paid for every non-zero byte of data or code for a transaction.}\hypertarget{Gtransaction}{ \\
@@ -2053,9 +2053,9 @@ G_{\mathrm{newaccount}} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\
 &&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}^*, I_\mathbf{s}, I_\mathbf{o}, I_\mathbf{a}, t,\\\quad \boldsymbol{\mu}_\mathbf{s}[0], I_\mathbf{p}, 0, \hyperlink{I v}{I_\mathbf{v}}, \mathbf{i}, I_\mathbf{e} + 1)\end{array} & \text{if} \quad \hyperlink{I v}{I_\mathbf{v}} \leqslant \boldsymbol{\sigma}[I_\mathbf{a}]_\mathbf{b} \;\wedge\; I_\mathbf{e} < 1024 \\ (\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
 &&&& Note the changes (in addition to that of the fourth parameter) to the second and ninth parameters to the call $\Theta$. This means that the recipient is in fact the same account as at present, simply that the code is overwritten {\it and} the context is almost entirely identical.\\
 \midrule
-0xfe & {\small INVALID} & $\varnothing$ & $\varnothing$ & Designated invalid instruction. \hypertarget{\mathrm{selfdestruct}}{}\\
+0xfe & {\small INVALID} & $\varnothing$ & $\varnothing$ & Designated invalid instruction. \hypertarget{selfdestruct}{\\
 \midrule
-0xff & {\small SELFDESTRUCT} & 1 & 0 & Halt execution and register account for later deletion. \\
+0xff & {\small SELFDESTRUCT} & 1 & 0 & Halt execution and register account for later deletion. }\\
 &&&& $A'_\mathbf{s} \equiv A_\mathbf{s} \cup \{ I_\mathbf{a} \}$ \\
 &&&& $\boldsymbol{\sigma}'[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}]_\mathbf{b} \equiv \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}]_\mathbf{b} + \boldsymbol{\sigma}[I_\mathbf{a}]_\mathbf{b}$ \\
 &&&& $\boldsymbol{\sigma}'[I_\mathbf{a}]_\mathbf{b} \equiv 0$ \\
