@@ -35,7 +35,7 @@
 %https://stackoverflow.com/a/1919447/7438857
 
 % Tabu seems more flexible, and generally better.
-\usepackage{tabu}
+\usepackage{tabu} %requires array.
 
 \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
 % "hyperref loads the url package internally. Use \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref} to pass the option to the url package when it is loaded by hyperref. This avoids any package option clashes." Source: <https://tex.stackexchange.com/questions/3033/forcing-linebreaks-in-url/3034#comment44478_3034>. 
@@ -2090,8 +2090,8 @@ The proof-of-concept series includes a development premine, making the state roo
 \subsection{Definitions}
 We employ the following definitions:
 
-\begin{tabularx}{\textwidth}{lrX}
-%\begin{tabu}{X[,l]X[,r]X[,l]} 
+%\begin{tabularx}{\textwidth}{lrX}
+\begin{tabu}{X[,l]X[,r]X[,l]} 
 \toprule
 Name & Value & Description \hypertarget{Jwordbytes}{ \\
 \midrule 
@@ -2107,8 +2107,8 @@ $J_{\mathrm{parents}}$ & 256 & This is the number of parents of each dataset ele
 $J_{\mathrm{cacherounds}}$ & 3 & This is the number of rounds in cache production.}\hypertarget{Jaccesses}{\\
 $J_{\mathrm{accesses}}$ & 64 & This is the number of accesses in a hashimoto loop.}\\
 \bottomrule
-%\end{tabu}
-\end{tabularx}
+\end{tabu}
+%\end{tabularx}
 
 \subsection{Size of dataset and cache}
 The size for Ethash's cache $\mathbf{c} \in \mathbb{B}$  and dataset $\mathbf{d} \in \mathbb{B}$ depend on the epoch, which in turn depends on the block number.
