@@ -2085,11 +2085,11 @@ The genesis block is 15 items, and is specified thus:
 
 Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $0_{160}$ refers to the \hyperlink{H c}{beneficiary address}, a 160-bit hash which is all zeroes; $0_{2048}$ refers to the \hyperlink{H b}{log bloom}, a 2048-bit sequence of all zeros; $2^{17}$ refers to the \hyperlink{H d}{difficulty}; the \hyperlink{H t}{transaction trie root}, \hyperlink{H e}{receipt trie root}, \hyperlink{H g}{gas used}, \hyperlink{H i}{block number} and \hyperlink{H x}{extradata} are all $0$ (listed in the order of decimal zeros in the above sequence), being equivalent to the empty byte array. The sequences of both ommers and transactions are empty and represented by $()$. $\mathtt{\tiny KEC}\big( (42) \big)$ refers to the Keccak hash of a byte array of length one whose first and only byte is of value 42, used for the \hyperlink{block nonce}{nonce}. $\mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big)$ value refers to the hash of the ommer lists in \hyperlink{rlp}{RLP}, both empty lists.
 
-The proof-of-concept series includes a development premine, making the state root hash some value $stateRoot$. Also \hyperlink{H s}{$time$} will be set to the initial timestamp of the genesis block. The latest documentation should be consulted for those values.$\mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big)$
+The proof-of-concept series includes a development premine, making the state root hash some value $stateRoot$. Also \hyperlink{H s}{$time$} will be set to the initial timestamp of the genesis block. The latest documentation should be consulted for those values.
 
 \section{Ethash}\label{app:ethash}
 \subsection{Definitions}
-We employ the following definitions:
+We employ the following definitions:$\mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big)$
 
 %\begin{tabularx}{\textwidth}{lrX}
 \begin{tabu}{X[,l]X[,r]X[,l]}
