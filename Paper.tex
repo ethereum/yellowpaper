@@ -2085,19 +2085,19 @@ The genesis block is 15 items, and is specified thus:
 
 Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $0_{160}$ refers to the \hyperlink{H c}{beneficiary address}, a 160-bit hash which is all zeroes; $0_{2048}$ refers to the \hyperlink{H b}{log bloom}, a 2048-bit sequence of all zeros; $2^{17}$ refers to the \hyperlink{H d}{difficulty}; the \hyperlink{H t}{transaction trie root}, \hyperlink{H e}{receipt trie root}, \hyperlink{H g}{gas used}, \hyperlink{H i}{block number} and \hyperlink{H x}{extradata} are all $0$ (listed in the order of decimal zeros in the above sequence), being equivalent to the empty byte array. The sequences of both ommers and transactions are empty and represented by $()$. $\mathtt{\tiny KEC}\big( (42) \big)$ refers to the Keccak hash of a byte array of length one whose first and only byte is of value 42, used for the \hyperlink{block nonce}{nonce}. $\mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big)$ value refers to the hash of the ommer lists in \hyperlink{rlp}{RLP}, both empty lists.
 
-The proof-of-concept series includes a development premine, making the state root hash some value $stateRoot$. Also \hyperlink{H s}{$time$} will be set to the initial timestamp of the genesis block. The latest documentation should be consulted for those values.
+The proof-of-concept series includes a development premine, making the state root hash some value $stateRoot$. Also \hyperlink{H s}{$time$} will be set to the initial timestamp of the genesis block. The latest documentation should be consulted for those values.$\mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big)$
 
-\section{Ethash} \label{app:ethash}
+\section{Ethash}\label{app:ethash}
 \subsection{Definitions}
 We employ the following definitions:
 
 %\begin{tabularx}{\textwidth}{lrX}
 \begin{tabu}{X[,l]X[,r]X[,l]}
 \toprule
-Name & Value & Description \hypertarget{Jwordbytes}{}\\
+Name & Value & Description \hypertarget{Jwordbytes}{} \\
 \midrule
 $J_{\mathrm{wordbytes}}$ & 4  & This is the bytes in a word.\hypertarget{Jdatasetinit}{}\\
-$J_{\mathrm{datasetinit}}$ & $2^{30}$ & This is the bytes in the dataset at genesis. \hypertarget{Jdatasetgrowth}{}\\
+$J_{\mathrm{datasetinit}}$ & $2^{30}$ & This is the bytes in the dataset at genesis. \hypertarget{Jdatasetgrowth}{} \\
 $J_{\mathrm{datasetgrowth}}$ & $2^{23}$ & This is the dataset growth per epoch. \hypertarget{Jcacheinit}{}\\
 $J_{\mathrm{cacheinit}}$ & $2^{24}$ & This is the bytes in the cache at genesis.\hypertarget{Jcachegrowth}{}\\
 $J_{\mathrm{cachegrowth}}$ & $2^{17}$ & This is the cache growth per epoch.\hypertarget{Jepoch}{}\\
@@ -2106,7 +2106,7 @@ $J_{\mathrm{mixbytes}}$ & 128 & This is the mix length in bytes.\hypertarget{Jha
 $J_{\mathrm{hashbytes}}$ & 64 & This is the hash length in bytes.\hypertarget{Jparents}{}\\
 $J_{\mathrm{parents}}$ & 256 & This is the number of parents of each dataset element.\hypertarget{Jcacherounds}{}\\
 $J_{\mathrm{cacherounds}}$ & 3 & This is the number of rounds in cache production.\hypertarget{Jaccesses}{}\\
-$J_{\mathrm{accesses}}$ & 64 & This is the number of accesses in a hashimoto loop.$\mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big)$\\
+$J_{\mathrm{accesses}}$ & 64 & This is the number of accesses in a hashimoto loop.\\
 \bottomrule
 \end{tabu}
 %\end{tabularx}
