@@ -1458,11 +1458,12 @@ It is assumed that the sender has a valid private key $p_r$, which is a randomly
 We assert the functions $\mathtt{\small ECDSAPUBKEY}$, $\mathtt{\small ECDSARECOVER}$ and $\mathtt{\small ECDSASIGN}$. These are formally defined in the literature, \eg by \cite{ECDSAcerticom} and \cite{ECDSAWikipedia}. \footnote{For the former citation, refer to section 6.2 for ECDSAPUBKEY, and section 7 for ECDSASIGN and ECDSARECOVER.} %(assuming that the former is for signature generation and the latter is for signature verification)
 \begin{eqnarray}
 \mathtt{\small ECDSAPUBKEY}(p_r \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64} \\
+\ e = \mathtt{\small HASH}(m) \\
 \mathtt{\small ECDSASIGN}(e \in \mathbb{B}_{32}, p_r \in \mathbb{B}_{32}) & \equiv & (v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) \\
 \mathtt{\small ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64}
 \end{eqnarray}
 
-Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer in the aforementioned range)\hypertarget{v}{. It is assumed that $v$ is the `recovery id', a 1 byte value specifying the sign and finiteness of the curve point; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid.}
+Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer in the aforementioned range). $e$ is the hash of the message $m$, using some cryptographic hash function such as SHA-3.\hypertarget{v}{It is assumed that $v$ is the `recovery id', a 1 byte value specifying the sign and finiteness of the curve point; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid.} 
 
 \newcommand{\slimit}{\ensuremath{\text{s-limit}}}
 
