@@ -1,7 +1,7 @@
 \documentclass[9pt,oneside]{amsart}
 \usepackage{cancel}
 %\usepackage{tweaklist}
-%\usepackage[utf8]{inputenc}
+\usepackage[utf8]{inputenc}
 %This character renders, so this shouldn't be needed: \DeclareUnicodeCharacter{C3}{\"{e}}
 %For testing: \DeclareUnicodeCharacter{AD}{\Huge [ICI]}
 \usepackage{xspace}
@@ -1458,12 +1458,12 @@ It is assumed that the sender has a valid private key $p_r$, which is a randomly
 We assert the functions $\mathtt{\small ECDSAPUBKEY}$, $\mathtt{\small ECDSARECOVER}$ and $\mathtt{\small ECDSASIGN}$. These are formally defined in the literature, \eg by \cite{ECDSAcerticom} and \cite{ECDSAWikipedia}.
 \begin{eqnarray}
 \mathtt{\small ECDSAPUBKEY}(p_r \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64} \\
-\ e & \equiv & \mathtt{\small HASH}(m) \\
+\ e & \equiv & \hyperlink{h T}{h(T)} \\
 \mathtt{\small ECDSASIGN}(e \in \mathbb{B}_{32}, p_r \in \mathbb{B}_{32}) & \equiv & (v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) \\
 \mathtt{\small ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64}
 \end{eqnarray}
 
-Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer in the aforementioned range). $e$ is the hash of the message $m$, using some cryptographic hash function such as SHA-3.\hypertarget{v}{It is assumed that $v$ is the `recovery id', a 1 byte value specifying the sign and finiteness of the curve point; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid.} 
+Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer in the aforementioned range). \hypertarget{v}{It is assumed that $v$ is the `recovery id', a 1 byte value specifying the sign and finiteness of the curve point; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid.} 
 
 \newcommand{\slimit}{\ensuremath{\text{s-limit}}}
 
@@ -1484,13 +1484,14 @@ For a given private key, $p_r$, the Ethereum address $A(p_r)$ (a 160-bit value) 
 A(p_r) = \mathcal{B}_{96..255}\big(\mathtt{\tiny KEC}\big( \mathtt{\small ECDSAPUBKEY}(p_r) \big) \big)
 \end{equation}
 
+\hypertarget{h T}{
 The message hash, $h(T)$, to be signed is the Keccak hash of the transaction without the latter three signature components, formally described as $T_\mathbf{r}$, $T_\mathbf{s}$ and $\hyperlink{T w}{T_\mathbf{w}}$:
 \begin{eqnarray}
 L_S(T) & \equiv & \begin{cases}
 (T_\mathbf{n}, T_\mathbf{p}, T_\mathbf{g}, T_\mathbf{t}, \hyperlink{T v}{T_\mathbf{v}}, T_\mathbf{i}) & \text{if} \; T_\mathbf{t} = 0\\
 (T_\mathbf{n}, T_\mathbf{p}, T_\mathbf{g}, T_\mathbf{t}, \hyperlink{T v}{T_\mathbf{v}}, T_\mathbf{d}) & \text{otherwise}
 \end{cases} \\
-h(T) & \equiv & \mathtt{\small KEC}( L_S(T) )
+h(T) & \equiv & \mathtt{\small KEC}( L_S(T) )}
 \end{eqnarray}
 
 \hyperlink{T w}{}\hypertarget{T r}{}\hypertarget{T s}{The signed transaction $G(T, p_r)$ is defined as:
