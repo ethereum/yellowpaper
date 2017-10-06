@@ -354,7 +354,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[stateRoot] The Keccak 256-bit hash of the root node of the state \hyperlink{trie}{trie}, after all transactions are executed and finalisations applied; formally \hyperlink{H r}{$H_\mathbf{r}$}.
 \item[transactionsRoot] The Keccak 256-bit hash of the root node of the \hyperlink{trie}{trie} structure populated with each transaction in the transactions list portion of the block; formally \hyperlink{H t}{$H_\mathbf{t}$}.
 \item[receiptsRoot] The Keccak 256-bit hash of the root node of the \hyperlink{trie}{trie} structure populated with the receipts of each transaction in the transactions list portion of the block; formally \hyperlink{H e}{$H_\mathbf{e}$}.
-\item[logsBloom] The Bloom filter composed from indexable information (logger address and log topics) contained in each log entry from the receipt of each transaction in the transactions list; formally \hyperlink{H b}{$H_\mathbf{b}.$}\hypertarget{H d}{
+\item[logsBloom] The Bloom filter composed from indexable information (logger address and log topics) contained in each log entry from the receipt of each transaction in the transactions list; formally \hyperlink{H b}{$H_\mathbf{b}.$}\hypertarlink{H d}{
 \item[difficulty] A scalar value corresponding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_\mathbf{d}$}.\hypertarget{H i}{
 \item[number] A scalar value equal to the number of ancestor blocks. The \hyperlink{GenesisBlock}{genesis block} has a number of zero; formally $H_\mathbf{i}$.}\hypertarget{H l}{
 \item[gasLimit] A scalar value equal to the current limit of gas expenditure per block; formally $H_\mathbf{l}$.}\hypertarget{H g}{
@@ -494,6 +494,7 @@ The block number is the parent's block number incremented by one:
 \newcommand{\expdiffsymb}{\ensuremath{\epsilon}}
 \newcommand{\diffadjustment}{x}
 
+\hypertarget{H d}{
 The canonical difficulty of a block of header $H$ is defined as $D(H)$:
 \begin{equation}
 D(H) \equiv \begin{dcases}
@@ -513,7 +514,7 @@ where:
 \end{equation}
 \begin{equation}
 \expdiffsymb \equiv \left\lfloor 2^{ \left\lfloor \hyperlink{H i}{H_\mathbf{i}} \div 100000 \right\rfloor - 2 } \right\rfloor
-\end{equation}
+\end{equation}}
 
 The canonical gas limit $\hyperlink{H l}{H_\mathbf{l}}$ of a block of header $H$ must fulfil the relation:
 \begin{eqnarray}
