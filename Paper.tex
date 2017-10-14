@@ -206,7 +206,7 @@ The two sets of highly structured, `top-level', state values, are denoted with b
 
 Functions operating on highly structured values are denoted with an upper-case greek letter, \eg \hyperlink{Upsilon}{$\Upsilon$}, the Ethereum state transition function.
 
-For most functions, an uppercase letter is used, e.g. $C$, the general cost function. These may be subscripted to denote specialised variants, \eg \hyperlink{C tiny SSTORE}{$C_\text{\tiny SSTORE}$}, the cost function for the \hyperlink{SSTORE}{\tiny SSTORE} operation. For specialised and possibly externally defined functions, I may format as typewriter text, \eg the Keccak-256 hash function (as per the winning entry to the SHA-3 contest, rather than later releases (\cite{Keccak}, \cite{KeccakWikipedia})) is denoted $\texttt{KEC}$ (and generally referred to as plain Keccak). Also $\texttt{KEC512}$ is referring to the Keccak 512 hash function.
+For most functions, an uppercase letter is used, e.g. $C$, the general cost function. These may be subscripted to denote specialised variants, \eg \hyperlink{C tiny SSTORE}{$C_\text{\tiny SSTORE}$}, the cost function for the \hyperlink{SSTORE}{\tiny SSTORE} operation. For specialised and possibly externally defined functions, I may format as typewriter text, \eg the Keccak-256 hash function (as per the winning entry to the SHA-3 contest, rather than later releases (\cite{Keccak}) is denoted $\texttt{KEC}$ (and generally referred to as plain Keccak). Also $\texttt{KEC512}$ is referring to the Keccak 512 hash function.
 
 Tuples are typically denoted with an upper-case letter, \eg $T$, is used to denote an Ethereum transaction. This symbol may, if accordingly defined, be subscripted to refer to an individual component, \eg  \hyperlink{transaction nonce}{$T_\mathbf{n}$, denotes the nonce of said transaction}. The form of the subscript is used to denote its type; \eg uppercase subscripts refer to tuples with subscriptable components.
 
@@ -516,7 +516,7 @@ where:
 \expdiffsymb \equiv \left\lfloor 2^{ \left\lfloor \hyperlink{H i}{H_\mathbf{i}} \div 100000 \right\rfloor - 2 } \right\rfloor
 \end{equation}}
 
-Note that \mindifficulty is the difficulty of the genesis block. The effect of the difficulty parameter \homesteadmod on a dynamic homeostasis of time between blocks, as the time between blocks varies, as discussed below. \expdiffsymb results in the difficulty increasing every 10000 blocks, which also stabilises the time difference between blocks, as computation power becomes more efficient, \eg with Moore's Law (\cite{Multichain}, \cite{THOMPSON200620}).
+Note that \mindifficulty is the difficulty of the genesis block. The effect of the difficulty parameter \homesteadmod on a dynamic homeostasis of time between blocks, as the time between blocks varies, as discussed below. \expdiffsymb results in the difficulty increasing every 10000 blocks. This is necessary to stabilise the time difference between blocks as  computation power becomes more efficient, with Moore's Law (\cite{THOMPSON200620}).
 
 \hypertarget{H l}{
 The canonical gas limit $\hyperlink{H l}{H_\mathbf{l}}$ of a block of header $H$ must fulfil the relation:
@@ -1459,11 +1459,11 @@ Finally, the fourth contract, the identity function $\Xi_{\mathtt{ID}}$ simply d
 
 \section{Signing Transactions}\label{app:signing}
 
-The method of signing transactions is similar to the `Electrum style signatures' as defined by \cite{npmElectrum2017}, heading "Managing styles with Radium" in the bullet point list. This method utilises the SECP-256k1 curve as described by \cite{secp256k1BitcoinWiki2016} and \cite{secp256k1StackExchange2014}, and is implemented similarly to as described by \cite{gura2004comparing} on p. 9 of 15, para. 3.
+The method of signing transactions is similar to the `Electrum style signatures' as defined by \cite{npmElectrum2017}, heading "Managing styles with Radium" in the bullet point list. This method utilises the SECP-256k1 curve as described by \cite{Courtois2014}, and is implemented similarly to as described by \cite{gura2004comparing} on p. 9 of 15, para. 3.
 
 It is assumed that the sender has a valid private key $p_r$, which is a randomly selected positive integer (represented as a byte array of length 32 in big-endian form) in the range \hbox{$[1, \mathtt{\tiny secp256k1n} - 1]$}.
 
-We assert the functions $\mathtt{\small ECDSAPUBKEY}$, $\mathtt{\small ECDSARECOVER}$ and $\mathtt{\small ECDSASIGN}$. These are formally defined in the literature, \eg by \cite{ECDSAcerticom} and \cite{ECDSAWikipedia}.
+We assert the functions $\mathtt{\small ECDSAPUBKEY}$, $\mathtt{\small ECDSARECOVER}$ and $\mathtt{\small ECDSASIGN}$. These are formally defined in the literature, \eg by \cite{ECDSAcerticom}.
 \begin{eqnarray}
 \mathtt{\small ECDSAPUBKEY}(p_r \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64} \\
 \ e & \equiv & \hyperlink{h T}{h(T)} \\
@@ -2278,7 +2278,7 @@ E_{\mathrm{compress}}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(\
 Symbol & Latex Command & Description \\
 \midrule
 \hypertarget{bigvee}{
-$\bigvee$ & \verb|\bigvee| & This is the least upper bound, supremum, or join of all elements operated on. Thus it is the greatest element of such elements (\cite{LatticeOrder}).}\\
+$\bigvee$ & \verb|\bigvee| & This is the least upper bound, supremum, or join of all elements operated on. Thus it is the greatest element of such elements (\cite{zbMATH01748069}).}\\
 \bottomrule
 \end{tabularx}
 
