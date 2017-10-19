@@ -20,6 +20,7 @@
 \usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{afterpage}
 \usepackage{tikz}
+\usepackage{tabularx}
 \usepackage{hyperref}
 
 \input{Version.tex}
@@ -2211,5 +2212,15 @@ The mix is compressed as follows:
 E_{compress}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(\mathbf{m}[i + 4], \mathbf{m}[i + 5]), \mathbf{m}[i + 6]), \mathbf{m}[i + 7]), i + 8) & \text{otherwise}
 \end{cases}
 \end{equation}
+
+\section{List of mathematical symbols}\label{app:symbols}
+\begin{tabularx}{\textwidth}{lcX}
+\toprule
+Symbol & Latex Command & Description \\
+\midrule
+\hypertarget{bigvee}{
+$\bigvee$ & \verb|\bigvee| & This is the least upper bound, supremum, or join of all elements operated on. Thus it is the greatest element of such elements (\cite{zbMATH01748069}).}\\
+\bottomrule
+\end{tabularx}
 
 \end{document}
