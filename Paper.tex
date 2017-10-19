@@ -20,6 +20,7 @@
 \usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{afterpage}
 \usepackage{tikz}
+\usepackage{tabu} %requires array.sty
 \usepackage{hyperref}
 
 \input{Version.tex}
@@ -123,7 +124,7 @@ This is the basis of the blockchain paradigm, a model that forms the backbone of
 In order to incentivise computation within the network, there needs to be an agreed method for transmitting value. To address this issue, Ethereum has an intrinsic currency, Ether, known also as {\small ETH} and sometimes referred to by the Old English \DH{}. The smallest subdenomination of Ether, and thus the one in which all integer values of the currency are counted, is the Wei. One Ether is defined as being $10^{18}$ Wei. There exist other subdenominations of Ether:
 \par
 \begin{center}
-\begin{tabular}{rl}
+\begin{tabu}{rl}
 \toprule
 Multiplier & Name \\
 \midrule
@@ -132,7 +133,7 @@ $10^{12}$ & Szabo \\
 $10^{15}$ & Finney \\
 $10^{18}$ & Ether \\
 \bottomrule
-\end{tabular}
+\end{tabu}
 \end{center}
 \par
 
@@ -2215,5 +2216,15 @@ The mix is compressed as follows:
 E_{compress}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(\mathbf{m}[i + 4], \mathbf{m}[i + 5]), \mathbf{m}[i + 6]), \mathbf{m}[i + 7]), i + 8) & \text{otherwise}
 \end{cases}
 \end{equation}
+
+\section{List of mathematical symbols}\label{app:symbols}
+\begin{tabularx}{\textwidth}{lcX}
+\toprule
+Symbol & Latex Command & Description \\
+\midrule
+\hypertarget{bigvee}{
+$\bigvee$ & \verb|\bigvee| & This is the least upper bound, supremum, or join of all elements operated on. Thus it is the greatest element of such elements (\cite{zbMATH01748069}).}\\
+\bottomrule
+\end{tabularx}
 
 \end{document}
