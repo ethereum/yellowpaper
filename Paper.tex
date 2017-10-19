@@ -1,10 +1,5 @@
 \documentclass[9pt,oneside]{amsart}
 %\usepackage{tweaklist}
-\usepackage[utf8]{inputenc}
-%\DeclareUnicodeCharacter{00A0}{ }
-%\DeclareUnicodeCharacter{C3 ab}{"e}
-%\DeclareUnicodeCharacter{C3 bc}{"u}
-%For testing: \DeclareUnicodeCharacter{AD}{\Huge [ICI]}
 \usepackage{url}
 \usepackage{cancel}
 \usepackage{xspace}
@@ -25,51 +20,6 @@
 \usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{afterpage}
 \usepackage{tikz}
-\usepackage{underscore}
-%\usepackage{lipsum} % to generate filler text for testing of document rendering
-\usepackage[english]{babel}
-\usepackage[autostyle]{csquotes}
-\MakeOuterQuote{"}
-\usepackage[bookmarks=true, unicode=true, pdftitle={Ethereum Yellow Paper: a formal specification of Ethereum, a programmable blockchain}, pdfauthor={Gavin Wood and others as per https://github.com/ethereum/yellowpaper/commits/master},pdfkeywords={Ethereum, Yellow Paper, blockchain, virtual machine, cryptography, decentralised, singleton, transaction, generalised},pdfborder={0 0 0.5 [1 3]}]{hyperref}
-%,pagebackref=true
-
-%\usepackage{longtable}
-%https://stackoverflow.com/questions/1918366/automated-line-breaks-in-latex-tables/1918465#1918465
-%tabularx seems better, but we can include this if we need tables to break across pages automatically, as well as tabu and longtabu
-
-\usepackage{tabularx}
-%https://stackoverflow.com/a/1919447/7438857
-
-% Tabu seems more flexible, and generally better.
-\usepackage{tabu} %requires array.
-
-\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
-% "hyperref loads the url package internally. Use \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref} to pass the option to the url package when it is loaded by hyperref. This avoids any package option clashes." Source: <https://tex.stackexchange.com/questions/3033/forcing-linebreaks-in-url/3034#comment44478_3034>. 
-% Note also this: "If the \PassOptionsToPackage{hyphens}{url} approach does not work, maybe it's "because you're trying to load the url package with a specific option, but it's being loaded by one of your packages before that with a different set of options. Try loading the url package earlier than the package that requires it. If it's loaded by the document class, try using \RequirePackage[hyphens]{url} before the document class." Source: <https://tex.stackexchange.com/questions/3033/forcing-linebreaks-in-url/3034#comment555944_3034>.
-
-\makeatletter
-\g@addto@macro{\UrlBreaks}{\UrlOrds}
-\makeatother
-
-% info on the above command: <https://tex.stackexchange.com/posts/10419/revisions>. Note that the three preceding lines, as well as \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref} did not fix the error where if a URL breaks over a page, it shows a snippet in the header as shown here: <https://i.stack.imgur.com/tYUe2.png>. The following command did fix this error, however only because it happened to compact the text, preventing a URL from breaking over a page. If you force a URL to break over a page, the error still occurs.
-
-\expandafter\def\expandafter\UrlBreaks\expandafter{\UrlBreaks%  save the current one
-  \do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j%
-  \do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t%
-  \do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D%
-  \do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N%
-  \do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X%
-  \do\Y\do\Z}
-% More info: <https://tex.stackexchange.com/questions/392832/how-to-ensure-that-a-url-break-over-a-page-doesnt-add-a-tiny-url-box-in-the-hea>.
-%\sloppy
-%\setlength{\emergencystretch}{2pt}
-% These don't appear to make a difference with the preceding use of the \hypens package and \expandafter.
-% https://tex.stackexchange.com/a/59131/143781
-% <https://tex.stackexchange.com/questions/241343/what-is-the-meaning-of-fussy-sloppy-emergencystretch-tolerance-hbadness>
-
-%\usepackage{glossaries}
-\usepackage{tabu} %requires array.sty
-\usepackage{hyperref}
 
 \input{Version.tex}
 
@@ -101,7 +51,7 @@
 %\pagecolor{lightpink}
 
 \begin{abstract}
-The blockchain paradigm when coupled with cryptographically-secured transactions has demonstrated its utility through a number of projects, not the least being Bitcoin. Each such project can be seen as a simple application on a decentralised, but singleton, compute resource. We can call this paradigm a transactional singleton machine with shared-state.
+The blockchain paradigm when coupled with cryptographically-secured transactions has demonstrated its utility through a number of projects, not least Bitcoin. Each such project can be seen as a simple application on a decentralised, but singleton, compute resource. We can call this paradigm a transactional singleton machine with shared-state.
 
 Ethereum implements this paradigm in a generalised manner. Furthermore it provides a plurality of such resources, each with a distinct state and operating code but able to interact through a message-passing framework with others. We discuss its design, implementation issues, the opportunities it provides and the future hurdles we envisage.
 \end{abstract}
@@ -131,7 +81,7 @@ Overall, I wish to provide a system such that users can be guaranteed that no ma
 
 \cite{dwork92pricingvia} provided the first work into the usage of a cryptographic proof of computational expenditure (``proof-of-work'') as a means of transmitting a value signal over the Internet. The value-signal was utilised here as a spam deterrence mechanism rather than any kind of currency, but critically demonstrated the potential for a basic data channel to carry a \textit{strong economic signal}, allowing a receiver to make a physical assertion without having to rely upon \textit{trust}. \cite{back2002hashcash} later produced a system in a similar vein.
 
-The first example of utilising the proof-of-work as a strong economic signal to secure a currency was by \cite{vishnumurthy03karma:a}. In this instance, the token was used to keep peer-to-peer file trading in check, providing ``consumers'' with the ability to make micro-payments to ``suppliers'' for their services. The security model afforded by the proof-of-work was augmented with digital signatures and a ledger in order to ensure that the historical record couldn't be corrupted and that malicious actors could not spoof payment or unjustly complain about service delivery. Five years later, \cite{nakamoto2008bitcoin} introduced another such proof-of-work-secured value token, somewhat wider in scope. The fruits of this project, Bitcoin, became the first widely adopted global decentralised transaction ledger.
+The first example of utilising the proof-of-work as a strong economic signal to secure a currency was by \cite{vishnumurthy03karma:a}. In this instance, the token was used to keep peer-to-peer file trading in check, ensuring ``consumers'' be able to make micro-payments to ``suppliers'' for their services. The security model afforded by the proof-of-work was augmented with digital signatures and a ledger in order to ensure that the historical record couldn't be corrupted and that malicious actors could not spoof payment or unjustly complain about service delivery. Five years later, \cite{nakamoto2008bitcoin} introduced another such proof-of-work-secured value token, somewhat wider in scope. The fruits of this project, Bitcoin, became the first widely adopted global decentralised transaction ledger.
 
 Other projects built on Bitcoin's success; the alt-coins introduced numerous other currencies through alteration to the protocol. Some of the best known are Litecoin and Primecoin, discussed by \cite{sprankel2013technical}. Other projects sought to take the core value content mechanism of the protocol and repurpose it; \cite{aron2012bitcoin} discusses, for example, the Namecoin project which aims to provide a decentralised name-resolution system.
 
@@ -141,20 +91,18 @@ Additional work has been done in the area with discarding the decentralisation f
 
 Early work on smart contracts has been done by \cite{szabo1997formalizing} and \cite{miller1997future}. Around the 1990s it became clear that algorithmic enforcement of agreements could become a significant force in human cooperation. Though no specific system was proposed to implement such a system, it was proposed that the future of law would be heavily affected by such systems. In this light, Ethereum may be seen as a general implementation of such a \textit{crypto-law} system.
 
-%E language/glossary?
-
-For a list of terms used in this paper, refer to Appendix \ref{ch:Terminology}.
+%E language?
 
 \section{The Blockchain Paradigm} \label{ch:overview}
 
-Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissible. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg, be things such as reducing an account balance without an equal and opposite increase elsewhere. A valid state transition is one which comes about through a transaction. Formally:\hypertarget{Upsilon}{}
+Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissible. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg, be things such as reducing an account balance without an equal and opposite increase elsewhere. A valid state transition is one which comes about through a transaction. Formally:
 \begin{equation}
-\boldsymbol{\sigma}_{t+1} \equiv \Upsilon(\boldsymbol{\sigma}_\mathrm{t}, T)
+\boldsymbol{\sigma}_{t+1} \equiv \Upsilon(\boldsymbol{\sigma}_t, T)
 \end{equation}
 
 where $\Upsilon$ is the Ethereum state transition function. In Ethereum, $\Upsilon$, together with $\boldsymbol{\sigma}$ are considerably more powerful then any existing comparable system; $\Upsilon$ allows components to carry out arbitrary computation, while $\boldsymbol{\sigma}$ allows components to store arbitrary state between transactions.
 
-Transactions are collated into blocks; blocks are chained together using a cryptographic hash as a means of reference. Blocks function as a journal or ledger, recording a series of transactions together with the previous block and an identifier for the final state (though blocks do not store the final state itself---that would be far too big). They also punctuate the transaction series with incentives for nodes to \textit{mine}. This incentivisation takes place as a state-transition function, adding value to a nominated account.
+Transactions are collated into blocks; blocks are chained together using a cryptographic hash as a means of reference. Blocks function as a journal, recording a series of transactions together with the previous block and an identifier for the final state (though do not store the final state itself---that would be far too big). They also punctuate the transaction series with incentives for nodes to \textit{mine}. This incentivisation takes place as a state-transition function, adding value to a nominated account.
 
 Mining is the process of dedicating effort (working) to bolster one series of transactions (a block) over any other potential competitor block. It is achieved thanks to a cryptographically secure proof. This scheme is known as a proof-of-work and is discussed in detail in section \ref{ch:pow}.
 
@@ -207,7 +155,7 @@ The two sets of highly structured, `top-level', state values, are denoted with b
 
 Functions operating on highly structured values are denoted with an upper-case greek letter, \eg $\Upsilon$, the Ethereum state transition function.
 
-For most functions, an uppercase letter is used, e.g. $C$, the general cost function. These may be subscripted to denote specialised variants, \eg $C_\text{\tiny SSTORE}$, the cost function for the {\tiny SSTORE} operation. For specialised and possibly externally defined functions, I may format as typewriter text, \eg the Keccak-256 hash function (as per the winning entry to the SHA-3 contest) is denoted $\texttt{KEC}$ (and generally referred to as plain Keccak). Also $\texttt{KEC512}$ is referring to the Keccak 512 hash function.
+For most functions, an uppercase letter is used, e.g. $C$, the general cost function. These may be subscripted to denote specialised variants, \eg $C_\text{\tiny SSTORE}$, the cost function for the {\tiny SSTORE} operation. For specialised and possibly externally defined functions, I may format as typewriter text, \eg the Keccak-256 hash function (as per the winning entry to the SHA-3 contest, rather than later releases [\cite{Keccak}]) is denoted $\texttt{KEC}$ (and generally referred to as plain Keccak). Also $\texttt{KEC512}$ is referring to the Keccak 512 hash function.
 
 Tuples are typically denoted with an upper-case letter, \eg $T$, is used to denote an Ethereum transaction. This symbol may, if accordingly defined, be subscripted to refer to an individual component, \eg $T_n$, denotes the nonce of said transaction. The form of the subscript is used to denote its type; \eg uppercase subscripts refer to tuples with subscriptable components.
 
@@ -1142,7 +1090,7 @@ For both reasons, there are two important goals of the proof-of-work function; f
 
 Secondly, it should not be possible to make super-linear profits, and especially not so with a high initial barrier. Such a mechanism allows a well-funded adversary to gain a troublesome amount of the network's total mining power and as such gives them a super-linear reward (thus skewing distribution in their favour) as well as reducing the network security.
 
-One plague of the Bitcoin world is ASICs. These are specialised pieces of compute hardware that exist only to do a single task. In Bitcoin's case the task is the SHA256 hash function. While ASICs exist for a proof-of-work function, both goals are placed in jeopardy. Because of this, a proof-of-work function that is ASIC-resistant (i.e. difficult or economically inefficient to implement in specialised compute hardware) has been identified as the proverbial silver bullet.
+One plague of the Bitcoin world is ASICs. These are specialised pieces of compute hardware that exist only to do a single task (\cite{ASICSmithMJS}). In Bitcoin's case the task is the SHA256 hash function (\cite{Courtois2014}). While ASICs exist for a proof-of-work function, both goals are placed in jeopardy. Because of this, a proof-of-work function that is ASIC-resistant (i.e. difficult or economically inefficient to implement in specialised compute hardware) has been identified as the proverbial silver bullet.
 
 Two directions exist for ASIC resistance; firstly make it sequential memory-hard, i.e. engineer the function such that the determination of the nonce requires a lot of memory and bandwidth such that the memory cannot be used in parallel to discover multiple nonces simultaneously. The second is to make the type of computation it would need to do general-purpose; the meaning of ``specialised hardware''  for a general-purpose task set is, naturally, general purpose hardware and as such commodity desktop computers are likely to be pretty close to ``specialised hardware'' for the task. For Ethereum 1.0 we have chosen the first path.
 
@@ -1445,11 +1393,11 @@ g_r &=& 15 + 3\Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil\\
 
 \section{Signing Transactions}\label{app:signing}
 
-The method of signing transactions is similar to the `Electrum style signatures'; it utilises the SECP-256k1 curve as described by \cite{gura2004comparing}.
+The method of signing transactions is similar to the `Electrum style signatures' as defined by \cite{npmElectrum2017}, heading "Managing styles with Radium" in the bullet point list. This method utilises the SECP-256k1 curve as described by \cite{Courtois2014}, and is implemented similarly to as described by \cite{gura2004comparing} on p. 9 of 15, para. 3.
 
 It is assumed that the sender has a valid private key $p_r$, which is a randomly selected positive integer (represented as a byte array of length 32 in big-endian form) in the range \hbox{$[1, \mathtt{\tiny secp256k1n} - 1]$}.
 
-We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARESTORE}$ and $\mathtt{\small ECDSAPUBKEY}$. These are formally defined in the literature.
+We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARESTORE}$ and $\mathtt{\small ECDSAPUBKEY}$. These are formally defined in the literature, \eg by \cite{ECDSAcerticom}.
 \begin{eqnarray}
 \mathtt{\small ECDSAPUBKEY}(p_r \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64} \\
 \mathtt{\small ECDSASIGN}(e \in \mathbb{B}_{32}, p_r \in \mathbb{B}_{32}) & \equiv & (v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) \\
