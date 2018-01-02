@@ -1182,7 +1182,7 @@ A data feed contract is one which provides a single service: it gives access to 
 The general pattern involves a single contract within Ethereum which, when given a message call, replies with some timely information concerning an external phenomenon. An example might be the local temperature of New York City. This would be implemented as a contract that returned that value of some known point in storage. Of course this point in storage must be maintained with the correct such temperature, and thus the second part of the pattern would be for an external server to run an Ethereum node, and immediately on discovery of a new block, creates a new valid transaction, sent to the contract, updating said value in storage. The contract's code would accept such updates only from the identity contained on said server.
 
 \subsection{Random Numbers}
-Providing random numbers within a deterministic system is, naturally, an impossible task. However, we can approximate with pseudo-random numbers by utilising data which is generally unknowable at the time of transacting. Such data might include the block's hash, the block's timestamp and the block's beneficiary address. In order to make it hard for malicious miner to control those values, one should use the {\small BLOCKHASH} operation in order to use hashes of the previous 256 blocks as pseudo-random numbers. For a series of such numbers, a trivial solution would be to add some constant amount and hashing the result.
+Providing random numbers within a deterministic system is, naturally, an impossible task. However, we can approximate with pseudo-random numbers by utilising data which is generally unknowable at the time of transacting. Such data might include the block's hash, the block's timestamp and the block's beneficiary address. In order to make it hard for malicious miner to control those values, one should use the {\small \hyperlink{blockhash}{BLOCKHASH}} operation in order to use hashes of the previous 256 blocks as pseudo-random numbers. For a series of such numbers, a trivial solution would be to add some constant amount and hashing the result.
 
 \section{Future Directions} \label{ch:future}
 
@@ -1568,7 +1568,7 @@ $G_{\mathrm{logtopic}}$ & 375 & This is paid for each topic of a {\small LOG} op
 $G_{\mathrm{sha3}}$ & 30 & This is paid for each {\small SHA3} operation. \\
 $G_{\mathrm{sha3word}}$ & 6 & This is paid for each word (rounded up) for input data to a {\small SHA3} operation. \\
 $G_{\mathrm{copy}}$ & 3 & This is a partial payment for {\small *COPY} operations, multiplied by the number of words copied, rounded up. \\
-$G_{\mathrm{blockhash}}$ & 20 & This is a payment for a {\small BLOCKHASH} operation. \\
+$G_{\mathrm{blockhash}}$ & 20 & This is a payment for a {\small \hyperlink{blockhash}{BLOCKHASH}} operation. \\
 
 %extern u256 const \mathbf{c}_copyGas;			///< Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
 \bottomrule
@@ -1610,7 +1610,7 @@ G_{\mathrm{mid}} & \text{if} \quad w \in W_{\mathrm{mid}}\\
 G_{\mathrm{\mathrm{high}}} & \text{if} \quad w \in W_{\mathrm{\mathrm{high}}}\\
 G_{\mathrm{extcode}} & \text{if} \quad w \in W_{\mathrm{extcode}}\\
 G_{\mathrm{balance}} & \text{if} \quad w = \text{\small BALANCE}\\
-G_{\mathrm{blockhash}} & \text{if} \quad w = \text{\small BLOCKHASH}\\
+G_{\mathrm{blockhash}} & \text{if} \quad w = \text{\small \hyperlink{blockhash}{BLOCKHASH}}\\
 \end{cases}
 \end{equation}
 \begin{equation}
@@ -1835,7 +1835,7 @@ Here given are the various exceptions to the state transition rules given in sec
 \begin{tabularx}{\textwidth}{rlrrX}
 \toprule
 \multicolumn{5}{c}{\textbf{40s: Block Information}} \vspace{5pt} \\
-\textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
+\textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \hypertarget{blockhash}{BLOCKHASH}\\
 0x40 & {\small BLOCKHASH} & 1 & 1 & Get the hash of one of the 256 most recent complete blocks. \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{s}}[0] \equiv P(I_{\hyperlink{H p}{H_{\mathrm{p}}}}, \boldsymbol{\mu}_{\mathrm{s}}[0], 0)$ \\
 &&&& where $P$ is the hash of a block of a particular number, up to a maximum age. 0 is left on the stack if the looked for block number is greater than the current block number or more than 256 blocks behind the current block. \\
