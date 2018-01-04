@@ -10,10 +10,5 @@
 <li>Changes to the difficulty adjustment formula to take uncles into account (<a href="https://github.com/ethereum/EIPs/issues/100">EIP 100</a>)</li>
 <li>Delay of the ice age / difficulty bomb by 1 year, and reduction of block reward from 5 to 3 ether (<a href="https://github.com/ethereum/EIPs/pull/669">EIP 649</a>)</li>
 </ul>
-<h2>What if something goes wrong?</h2>
-<p>In the event that a critical bug is discovered, the following communication channels will be utilized:</p>
-<ul>
-<li><a href="https://blog.ethereum.org/">Ethereum Foundation blog</a></li>
-<li><a href="https://twitter.com/ethereumproject">Ethereum Foundation Twitter account</a></li>
-</ul>
+
 Source: verbatim extract from [this Ethereum blog post](https://web.archive.org/web/20180104055521/https://blog.ethereum.org/2017/10/12/byzantium-hf-announcement/)
