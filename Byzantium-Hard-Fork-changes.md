@@ -11,4 +11,4 @@
 <li>Delay of the ice age / difficulty bomb by 1 year, and reduction of block reward from 5 to 3 ether (<a href="https://github.com/ethereum/EIPs/pull/669">EIP 649</a>)</li>
 </ul>
 
-Source: verbatim extract from [this Ethereum blog post](https://web.archive.org/web/20180104055521/https://blog.ethereum.org/2017/10/12/byzantium-hf-announcement/)
+Source: verbatim extract from [this Ethereum blog post](https://web.archive.org/web/20180104055521/https://blog.ethereum.org/2017/10/12/byzantium-hf-announcement/).
