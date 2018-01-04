@@ -11,9 +11,9 @@ For the Byzantium Hard Fork (of which the changes made by it are not included in
 ## The paper
 The paper comes as a single ``latex`` file ``Paper.tex``. 
 
-Here is the latest version of the PDF that is based on the changes that I've made:
+Here is the latest version of the PDF that is based on the changes that I've made (which is the same as the Paper.pdf file above):
 
-[Paper.pdf](https://github.com/ethereum/yellowpaper/files/1596574/Paper.pdf).
+[Paper.pdf](https://github.com/Ethereum-community/yellowpaper/blob/master/Paper.pdf).
 
 This version of the yellow paper can be used to get links that direct to specific info in the yellow paper, which is useful e.g. for pedagogical and academic purposes. [Here](
 https://github.com/ethereum/yellowpaper/files/1596574/Paper.pdf#blockhash) is an example of such a use. To get this link you just right click on a link that directs to the target that you want in the PDF (in a browser or program) and copy the link.
