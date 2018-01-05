@@ -2,6 +2,12 @@
 
 [![Gitter](https://badges.gitter.im/ethereum/yellowpaper.svg)](https://gitter.im/ethereum/yellowpaper?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+## You may be better off reading the Jello paper
+
+While James Ray hasn't finished reading it, the [Jello Paper](https://thehydra.io/evm/) seems like it may be a better alternative, since it is executable and thus better for formal verification, and thereby better at detecting bugs.
+
+
+
 ## This is not up-to-date
 
 This Yellow Paper does not include changes to Ethereum that have been made after [this commit, 759dcc, (after which this repository was branched from the Ethereum Foundation Yellow Paper repository, i.e. the latest shared commit in both repositories is this commit) on August 8 2017](https://github.com/jamesray1/yellowpaper/commit/759dccde49c3a1a457196665d1db06baba220bf0). See the ensuing discussion [here](https://gitter.im/ethereum/yellowpaper?at=5a4ad08e03838b2f2a5d350f) to gain a better understanding of why the Yellow paper won't be maintained by the Ethereum Foundation. In short, it is because the copyright from Gavin Wood's repo isn't specified, which means that by default the work is under exclusive copyright. This creates too much uncertainty from the Ethereum Foundation so they don't want to risk it, which is reasonable.
