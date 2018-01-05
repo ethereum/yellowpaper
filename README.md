@@ -4,9 +4,7 @@
 
 ## You may be better off reading the Jello paper
 
-While James Ray hasn't finished reading it, the [Jello Paper](https://thehydra.io/evm/) seems like it may be a better alternative, since it is executable and thus better for formal verification, and thereby better at detecting bugs.
-
-
+While James Ray hasn't finished reading the [Jello Paper](https://thehydra.io/evm/), it seems like it may be a better alternative, since it is executable and thus better for formal verification, and thereby better at detecting bugs.
 
 ## This is not up-to-date
 
