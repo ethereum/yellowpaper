@@ -11,10 +11,6 @@ It is free culture work, licensed under the Creative Commons Attribution Share-A
 
 The paper comes as a single ``latex`` file ``Paper.tex``. The latest version is generally available as a PDF at https://ethereum.github.io/yellowpaper/paper.pdf or just [yellowpaper.io](http://yellowpaper.io/) .
 
-## This is not up-to-date
-
-This Yellow Paper does not include changes to Ethereum that have been made after [this commit, 759dcc, (after which this repository was branched from the Ethereum Foundation Yellow Paper repository, i.e. the latest shared commit in both repositories is this commit) on August 8 2017](https://github.com/jamesray1/yellowpaper/commit/759dccde49c3a1a457196665d1db06baba220bf0). See the ensuing discussion [here](https://gitter.im/ethereum/yellowpaper?at=5a4ad08e03838b2f2a5d350f), as well as [here](https://github.com/ethereum/yellowpaper/pull/262#issuecomment-355496755) to gain a better understanding of why the Yellow paper won't be maintained by the Ethereum Foundation. In short, it is because the copyright from Gavin Wood's repo isn't specified, which means that by default the work is under exclusive copyright. This creates too much uncertainty from the Ethereum Foundation so they don't want to risk it, which is reasonable.
-
 ## Releases
 For the Byzantium Hard Fork (of which the changes made by it are not included in this paper), refer to [here](https://web.archive.org/web/20171026151615/https://github.com/ethereum/EIPs#accepted-eips-planned-for-adoption-in-the-byzantium-metropolis-hard-fork), which is an archive link showing the Byzantium EIPs. Also, refer to [here](yellowpaper/Byzantium-Hard-Fork-changes.md) for a quick summary of Byzantium EIPs. For further changes, e.g. the Constantinople Hard Fork (TBA) and Serenity, refer to the [the finalized list of EIPs in the Ethereum EIPs repository](https://github.com/ethereum/EIPS#finalized-eips-standards-that-have-been-adopted). Note that [this is an archive link in case the EIPs list is changed in a way that does not breakdown EIPs into different releases, as is the case up until now. This archive link lists the deferred Constantinople EIPs](https://web.archive.org/web/20180103233351/https://github.com/ethereum/EIPS). For changes in the Homestead release, see [this EIP](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-2.md). For more information about releases, see [here](https://github.com/ethereum/homestead-guide/blob/master/source/introduction/the-homestead-release.rst) (which has the latest changes) or [here](http://ethdocs.org/en/latest/introduction/the-homestead-release.html) (which doesn't have the latest changes as of January 8, 2018).
 
@@ -30,7 +26,12 @@ https://github.com/ethereum/yellowpaper/files/1596574/Paper.pdf#blockhash) is an
 
 How to build
 ---
-In order to build, use the supplied build script (``build.sh``. You can clone the directory with `git clone https://github.com/ethereum/yellowpaper.git` or use the URL of your forked clone, then `cd yellowpaper` and run `./build.sh`. Then open the produced PDF. If running `./build.sh` again, you can leave the PDF open; you don't need to close and reopen it for it to update). Following the first time, you can use the standard `pdflatex` tools like http://latex.informatik.uni-halle.de/latex-online/latex.php for compiling/preview. It can be viewed in ``PDF`` format after building.
+```
+git clone https://github.com/ethereum/yellowpaper.git
+cd yellowpaper
+./build.sh
+```
+Following buidling, you can use standard `pdflatex` tools like http://latex.informatik.uni-halle.de/latex-online/latex.php for compiling/preview. It can be viewed in ``PDF`` format after building.
 
 ## The Jello paper is an alternative
 
