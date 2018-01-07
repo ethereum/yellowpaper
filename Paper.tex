@@ -741,7 +741,7 @@ Throughout the present work, it is assumed that if $\boldsymbol{\sigma}_1[r]$ wa
 \end{equation}
 \begin{equation}
 \begin{cases}
-\boldsymbol{\sigma}_1'[r] \equiv (v, 0, \mathtt{\tiny KEC}(()), \mathtt{\tiny TRIE}(\varnothing)) & \text{if} \quad \boldsymbol{\sigma}[r] = \varnothing \\
+\boldsymbol{\sigma}_1'[r] \equiv (0, v, \mathtt{\tiny TRIE}(\varnothing), \mathtt{\tiny KEC}(())) & \text{if} \quad \boldsymbol{\sigma}[r] = \varnothing \\
 \boldsymbol{\sigma}_1'[r]_b \equiv \boldsymbol{\sigma}[r]_b + v & \text{otherwise}
 \end{cases}
 \end{equation}
@@ -2078,11 +2078,11 @@ The size of the cache, $c_{size}$, is calculated using
 \begin{equation}
  E_{prime}(x, y) = \begin{cases}
 x & \text{if} \quad x / y \in \mathbb{P} \\
-E_{prime}(x - 1 \cdot y, y) & \text{otherwise}
+E_{prime}((x - 1) \cdot y, y) & \text{otherwise}
 \end{cases}
 \end{equation}
 \subsection{Dataset generation}
-In order the generate the dataset we need the cache $\mathbf{c}$, which is an array of bytes. It depends on the cache size  $c_{size}$ and the seed hash $\mathbf{s} \in \mathbb{B}_{32}$.
+In order to generate the dataset we need the cache $\mathbf{c}$, which is an array of bytes. It depends on the cache size  $c_{size}$ and the seed hash $\mathbf{s} \in \mathbb{B}_{32}$.
 \subsubsection{Seed hash}
 The seed hash is different for every epoch. For the first epoch it is the Keccak-256 hash of a series of 32 bytes of zeros. For every other epoch it is always the Keccak-256 hash of the previous seed hash:
 \begin{equation}
