@@ -1,14 +1,15 @@
-# yellowpaper
+# Ethereum Yellow Paper
 
+[![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
 [![Gitter](https://badges.gitter.im/ethereum/yellowpaper.svg)](https://gitter.im/ethereum/yellowpaper?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-## This repo is not going to be maintained, as the original Yellow Paper can now be maintained
+The Yellow Paper is a formal definition of the Ethereum protocol, originally by Gavin Wood, currently maintained by Nick Savers and with contributions from many people around the world.
 
-The license was added [here](https://github.com/ethereum/yellowpaper/commit/fdea8446425fecc7d864ec7b19f98f80ba88790f).
+It is free culture work, licensed under the Creative Commons Attribution Share-Alike (CC-BY-SA)i version 4.0.
 
-## You may be better off reading the Jello paper
+## Usage
 
-While James Ray hasn't finished reading the [Jello Paper](https://thehydra.io/evm/), it seems like it may be a better alternative, since it is executable and thus better for formal verification, and thereby better at detecting bugs.
+The paper comes as a single ``latex`` file ``Paper.tex``. The latest version is generally available as a PDF at https://ethereum.github.io/yellowpaper/paper.pdf or just [yellowpaper.io](http://yellowpaper.io/) .
 
 ## This is not up-to-date
 
@@ -22,7 +23,7 @@ The paper comes as a single ``latex`` file ``Paper.tex``.
 
 Here is the latest version of the PDF that is based on the changes that I've made (which is the same as the Paper.pdf file above):
 
-[Paper.pdf](https://github.com/Ethereum-community/yellowpaper/blob/master/Paper.pdf).
+[Paper.pdf](https://github.com/ethereum/yellowpaper/blob/master/Paper.pdf).
 
 This version of the yellow paper can be used to get links that direct to specific info in the yellow paper, which is useful e.g. for pedagogical and academic purposes. [Here](
 https://github.com/ethereum/yellowpaper/files/1596574/Paper.pdf#blockhash) is an example of such a use. To get this link you just right click on a link that directs to the target that you want in the PDF (in a browser or program) and copy the link.
@@ -30,3 +31,7 @@ https://github.com/ethereum/yellowpaper/files/1596574/Paper.pdf#blockhash) is an
 How to build
 ---
 In order to build, use the supplied build script (``build.sh``. You can clone the directory with `git clone https://github.com/ethereum/yellowpaper.git` or use the URL of your forked clone, then `cd yellowpaper` and run `./build.sh`. Then open the produced PDF. If running `./build.sh` again, you can leave the PDF open; you don't need to close and reopen it for it to update). Following the first time, you can use the standard `pdflatex` tools like http://latex.informatik.uni-halle.de/latex-online/latex.php for compiling/preview. It can be viewed in ``PDF`` format after building.
+
+## The Jello paper is an alternative
+
+The [Jello Paper](https://thehydra.io/evm/) is an alternative or additional read. It is executable and thus better for formal verification, and thereby better at detecting bugs.
