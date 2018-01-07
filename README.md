@@ -2,6 +2,10 @@
 
 [![Gitter](https://badges.gitter.im/ethereum/yellowpaper.svg)](https://gitter.im/ethereum/yellowpaper?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+## This repo is not going to be maintained, as the original Yellow Paper can now be maintained
+
+The license was added [here](https://github.com/ethereum/yellowpaper/commit/fdea8446425fecc7d864ec7b19f98f80ba88790f)
+
 ## You may be better off reading the Jello paper
 
 While James Ray hasn't finished reading the [Jello Paper](https://thehydra.io/evm/), it seems like it may be a better alternative, since it is executable and thus better for formal verification, and thereby better at detecting bugs.
