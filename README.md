@@ -4,7 +4,7 @@
 
 ## This repo is not going to be maintained, as the original Yellow Paper can now be maintained
 
-The license was added [here](https://github.com/ethereum/yellowpaper/commit/fdea8446425fecc7d864ec7b19f98f80ba88790f)
+The license was added [here](https://github.com/ethereum/yellowpaper/commit/fdea8446425fecc7d864ec7b19f98f80ba88790f).
 
 ## You may be better off reading the Jello paper
 
