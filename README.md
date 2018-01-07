@@ -15,14 +15,11 @@ The paper comes as a single ``latex`` file ``Paper.tex``. The latest version is 
 This paper currently does not include changes to Ethereum after Byzantium, however if you like, feel free to make a PR! For further information on previous and planned releases, see [here](https://github.com/ethereum/wiki/wiki/Releases).
 
 ## The paper
-The paper comes as a single ``latex`` file ``Paper.tex``. 
 
-Here is the latest version of the PDF that is based on the changes that I've made (which is the same as the Paper.pdf file above):
-
-[Paper.pdf](https://github.com/ethereum/yellowpaper/blob/master/Paper.pdf).
-
-This version of the yellow paper can be used to get links that direct to specific info in the yellow paper, which is useful e.g. for pedagogical and academic purposes. [Here](
+[Here](https://github.com/ethereum/yellowpaper/blob/master/Paper.pdf) is the latest version of the PDF (which is the same as the Paper.pdf file above). This version of the yellow paper can be used to get links that direct to specific info in the yellow paper, which is useful e.g. for pedagogical and academic purposes. [Here](
 https://github.com/ethereum/yellowpaper/files/1596574/Paper.pdf#blockhash) is an example of such a use. To get this link you just right click on a link that directs to the target that you want in the PDF (in a browser or program) and copy the link.
+
+The paper also comes as a single ``latex`` file ``Paper.tex``, which is built as a PDF as follows.
 
 How to build
 ---
@@ -31,7 +28,7 @@ git clone https://github.com/ethereum/yellowpaper.git
 cd yellowpaper
 ./build.sh
 ```
-Following buidling, you can use standard `pdflatex` tools like http://latex.informatik.uni-halle.de/latex-online/latex.php for compiling/preview. It can be viewed in ``PDF`` format after building.
+This will create a PDF version of the Yellow Paper. Following buidling, you can also use standard `pdflatex` tools like http://latex.informatik.uni-halle.de/latex-online/latex.php for compiling/preview. 
 
 ## The Jello paper is an alternative
 
