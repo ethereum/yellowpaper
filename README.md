@@ -25,7 +25,3 @@ cd yellowpaper
 ./build.sh
 ```
 This will create a PDF version of the Yellow Paper. Following buidling, you can also use standard `pdflatex` tools like http://latex.informatik.uni-halle.de/latex-online/latex.php for compiling/preview. 
-
-## The Jello paper is an alternative
-
-The [Jello Paper](https://thehydra.io/evm/) is an alternative or additional read. It is executable and thus better for formal verification, and thereby better at detecting bugs.
