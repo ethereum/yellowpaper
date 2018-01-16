@@ -15,3 +15,15 @@ In order to build, use the supplied build script (``build.sh``). Following the f
 
 ## Other language versions
 - [Chinese](https://github.com/yuange1024/ethereum_yellowpaper) translated by YuanGe and GaoTianlu
+
+## Protocol Versions
+
+Each protocol version is specified in a branch in this repository.  The activation block of each version is specified in the links.
+
+| Branch          | Version                                                                           | Known Significant Issues |
+|-----------------|-----------------------------------------------------------------------------------|--------------------------|
+| master          | [Byzantium](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-609.md)         | Some EIPs not reflected  |
+| spurious-dragon | [Spurious Dragon](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-607.md)   | Some EIPs not reflected  |
+| (to be added)   | [Tangerine Whistle](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-608.md) |                          |
+| (to be added)   | [DAO Fork](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-779.md)          |                          |
+| homestead       | [Homestead](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-606.md)         |                          |
