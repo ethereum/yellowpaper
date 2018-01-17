@@ -1,0 +1,117 @@
+\begin{thebibliography}{18}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Aron({2012})]{aron2012bitcoin}
+Jacob Aron.
+\newblock {BitCoin software finds new life}.
+\newblock \emph{{New Scientist}}, {213}\penalty0 ({2847}):\penalty0 20, {2012}.
+
+\bibitem[Back({2002})]{back2002hashcash}
+Adam Back.
+\newblock {Hashcash - Amortizable Publicly Auditable Cost-Functions}.
+\newblock {2002}.
+\newblock URL \url{{http://www.hashcash.org/papers/amortizable.pdf}}.
+
+\bibitem[Boutellier 和 Heinzen({2014})]{boutellier2014pirates}
+Roman Boutellier and Mareike Heinzen.
+\newblock {Pirates, Pioneers, Innovators and Imitators}.
+\newblock In \emph{{Growth Through Innovation}}, pages 85--96. {Springer},
+  {2014}.
+
+\bibitem[Buterin({2013}{\natexlab{a}})]{buterin2013ethereum}
+Vitalik Buterin.
+\newblock {Ethereum: A Next-Generation Smart Contract and Decentralized
+  Application Platform}.
+\newblock {2013}{\natexlab{a}}.
+\newblock URL \url{{https://github.com/ethereum/wiki/wiki/White-Paper}}.
+
+\bibitem[Buterin({2013}{\natexlab{b}})]{dagger}
+Vitalik Buterin.
+\newblock {Dagger: A Memory-Hard to Compute, Memory-Easy to Verify Scrypt
+  Alternative}.
+\newblock {2013}{\natexlab{b}}.
+\newblock URL \url{{http://vitalik.ca/ethereum/dagger.html}}.
+
+\bibitem[Dryja({2014})]{hashimoto}
+Thaddeus Dryja.
+\newblock {Hashimoto: I/O bound proof of work}.
+\newblock {2014}.
+\newblock URL \url{{https://mirrorx.com/files/hashimoto.pdf}}.
+
+\bibitem[Dwork and Naor(1992)]{dwork92pricingvia}
+Cynthia Dwork and Moni Naor.
+\newblock Pricing via processing or combatting junk mail.
+\newblock In \emph{In 12th Annual International Cryptology Conference}, pages
+  139--147, 1992.
+
+\bibitem[Glenn~Fowler({1991})]{FowlerNollVo1991FNVHash}
+Phong~Vo Glenn~Fowler, Landon Curt~Noll.
+\newblock {Fowler–Noll–Vo hash function}.
+\newblock {1991}.
+\newblock URL
+  \url{{https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function#cite_note-2}}.
+
+\bibitem[Gura et~al.({2004})Gura, Patel, Wander, Eberle, and
+  Shantz]{gura2004comparing}
+Nils Gura, Arun Patel, Arvinderpal Wander, Hans Eberle, and Sheueling~Chang
+  Shantz.
+\newblock {Comparing elliptic curve cryptography and RSA on 8-bit CPUs}.
+\newblock In \emph{{Cryptographic Hardware and Embedded Systems-CHES 2004}},
+  pages 119--132. {Springer}, {2004}.
+
+\bibitem[Lerner({2014})]{lerner2014randmemohash}
+Sergio~Demian Lerner.
+\newblock {Strict Memory Hard Hashing Functions}.
+\newblock {2014}.
+\newblock URL \url{{http://www.hashcash.org/papers/memohash.pdf}}.
+
+\bibitem[Miller({1997})]{miller1997future}
+Mark Miller.
+\newblock {The Future of Law}.
+\newblock In \emph{{paper delivered at the Extro 3 Conference (August 9)}},
+  {1997}.
+
+\bibitem[Nakamoto({2008})]{nakamoto2008bitcoin}
+Satoshi Nakamoto.
+\newblock {Bitcoin: A peer-to-peer electronic cash system}.
+\newblock \emph{{Consulted}}, {1}:\penalty0 2012, {2008}.
+
+\bibitem[Rosenfeld({2012})]{colouredcoins2012rosenfeld}
+Meni Rosenfeld.
+\newblock {Overview of Colored Coins}.
+\newblock {2012}.
+\newblock URL \url{{https://bitcoil.co.il/BitcoinX.pdf}}.
+
+\bibitem[Sompolinsky and Zohar({2013})]{cryptoeprint:2013:881}
+Yonatan Sompolinsky and Aviv Zohar.
+\newblock {Accelerating Bitcoin{'}s Transaction Processing. Fast Money Grows on
+  Trees, Not Chains}, {2013}.
+\newblock URL \url{{Cryptology ePrint Archive, Report 2013/881}}.
+\newblock {http://eprint.iacr.org/}.
+
+\bibitem[Sprankel({2013})]{sprankel2013technical}
+Simon Sprankel.
+\newblock {Technical Basis of Digital Currencies}, {2013}.
+
+\bibitem[Szabo({1997})]{szabo1997formalizing}
+Nick Szabo.
+\newblock {Formalizing and securing relationships on public networks}.
+\newblock \emph{{First Monday}}, {2}\penalty0 ({9}), {1997}.
+
+\bibitem[Vishnumurthy et~al.(2003)Vishnumurthy, Chandrakumar, and
+  Sirer]{vishnumurthy03karma:a}
+Vivek Vishnumurthy, Sangeeth Chandrakumar, and Emin~Gün Sirer.
+\newblock Karma: A secure economic framework for peer-to-peer resource sharing,
+  2003.
+
+\bibitem[Willett({2013})]{mastercoin2013willett}
+J.~R. Willett.
+\newblock {MasterCoin Complete Specification}.
+\newblock {2013}.
+\newblock URL \url{{https://github.com/mastercoin-MSC/spec}}.
+
+\end{thebibliography}
