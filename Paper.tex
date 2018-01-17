@@ -33,8 +33,6 @@
 \definecolor{lightyellow}{rgb}{1,0.98,0.9}
 \definecolor{lightpink}{rgb}{1,0.94,0.95}
 
-\newcommand{\firsthomesteadblock}{\ensuremath{N_H}}
-
 \DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
 \newcommand*\eg{e.g.\@\xspace}
 \newcommand*\Eg{e.g.\@\xspace}
@@ -147,21 +145,23 @@ This would mean that past a given point in time (block), multiple states of the 
 
 The scheme we use in order to generate consensus is a simplified version of the GHOST protocol introduced by \cite{cryptoeprint:2013:881}. This process is described in detail in section \ref{ch:ghost}.
 
+Sometimes, a path follows a new protocol from a particular height.  This document describes one version of the protocol.  In order to follow back the history of a path, one might need to reference multiple versions of this document.
+
 \section{Conventions}\label{ch:conventions}
 
 I use a number of typographical conventions for the formal notation, some of which are quite particular to the present work:
 
 The two sets of highly structured, `top-level', state values, are denoted with bold lowercase Greek letters. They fall into those of world-state, which are denoted $\boldsymbol{\sigma}$ (or a variant thereupon) and those of machine-state, $\boldsymbol{\mu}$.
 
-Functions operating on highly structured values are denoted with an upper-case greek letter, \eg $\Upsilon$, the Ethereum state transition function.
+Functions operating on highly structured values are denoted with an upper-case Greek letter, \eg $\Upsilon$, the Ethereum state transition function.
 
 For most functions, an uppercase letter is used, e.g. $C$, the general cost function. These may be subscripted to denote specialised variants, \eg $C_\text{\tiny SSTORE}$, the cost function for the {\tiny SSTORE} operation. For specialised and possibly externally defined functions, I may format as typewriter text, \eg the Keccak-256 hash function (as per the winning entry to the SHA-3 contest) is denoted $\texttt{KEC}$ (and generally referred to as plain Keccak). Also $\texttt{KEC512}$ is referring to the Keccak 512 hash function.
 
 Tuples are typically denoted with an upper-case letter, \eg $T$, is used to denote an Ethereum transaction. This symbol may, if accordingly defined, be subscripted to refer to an individual component, \eg $T_n$, denotes the nonce of said transaction. The form of the subscript is used to denote its type; \eg uppercase subscripts refer to tuples with subscriptable components.
 
-Scalars and fixed-size byte sequences (or, synonymously, arrays) are denoted with a normal lower-case letter, \eg $n$ is used in the document to denote a transaction nonce. Those with a particularly special meaning may be greek, \eg $\delta$, the number of items required on the stack for a given operation.
+Scalars and fixed-size byte sequences (or, synonymously, arrays) are denoted with a normal lower-case letter, \eg $n$ is used in the document to denote a transaction nonce. Those with a particularly special meaning may be Greek, \eg $\delta$, the number of items required on the stack for a given operation.
 
-Arbitrary-length sequences are typically denoted as a bold lower-case letter, \eg $\mathbf{o}$ is used to denote the byte-sequence given as the output data of a message call. For particularly important values, a bold uppercase letter may be used.
+Arbitrary-length sequences are typically denoted as a bold lower-case letter, \eg $\mathbf{o}$ is used to denote the byte sequence given as the output data of a message call. For particularly important values, a bold uppercase letter may be used.
 
 Throughout, we assume scalars are positive integers and thus belong to the set $\mathbb{P}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{32}$ and the set of all positive integers smaller than $2^{256}$ is named $\mathbb{P}_{256}$. This is formally defined in section \ref{ch:block}.
 
@@ -233,14 +233,6 @@ where $v$ is the account validity function:
 \quad v(x) \equiv x_n \in \mathbb{P}_{256} \wedge x_b \in \mathbb{P}_{256} \wedge x_s \in \mathbb{B}_{32} \wedge x_c \in \mathbb{B}_{32}
 \end{equation}
 
-\subsection{Homestead} \label{ch:homestead}
-
-A significant block number for compatibility with the public network is the block marking the transition between the {\it Frontier} and {\it Homestead} phases of the platform, which we denote with the symbol \firsthomesteadblock, defined thus
-\begin{equation}
-\firsthomesteadblock \equiv 1,\! 150,\! 000
-\end{equation}
-The protocol was upgraded at this block, so this symbol appears in some equations to account for the changes.
-
 \subsection{The Transaction} \label{ch:transaction}
 
 A transaction (formally, $T$) is a single cryptographically-signed instruction constructed by an actor externally to the scope of Ethereum. While it is assumed that the ultimate external actor will be human in nature, software tools will be used in its construction and dissemination\footnote{Notably, such `tools' could ultimately become so causally removed from their human-based initiation---or humans may become so causally-neutral---that there could be a point at which they rightly be considered autonomous agents. \eg contracts may offer bounties to humans for being sent transactions to initiate their execution.}. There are two types of transactions: those which result in message calls and those which result in the creation of new accounts with associated code (known informally as `contract creation'). Both types specify a number of common fields:
@@ -290,15 +282,15 @@ where
 \mathbb{P}_n = \{ P: P \in \mathbb{P} \wedge P < 2^n \}
 \end{equation}
 
-The address hash $T_\mathbf{t}$ is slightly different: it is either a 20-byte address hash or, in the case of being a contract-creation transaction (and thus formally equal to $\varnothing$), it is the RLP empty byte-series and thus the member of $\mathbb{B}_0$:
+The address hash $T_\mathbf{t}$ is slightly different: it is either a 20-byte address hash or, in the case of being a contract-creation transaction (and thus formally equal to $\varnothing$), it is the RLP empty byte sequence and thus the member of $\mathbb{B}_0$:
 \begin{equation}
-T_t \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_t \neq \varnothing \\
+T_\mathbf{t} \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_t \neq \varnothing \\
 \mathbb{B}_{0} & \text{otherwise}\end{cases}
 \end{equation}
 
 \subsection{The Block} \label{ch:block}
 
-The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$, and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{ommers}\footnote{\textit{ommer} is the most prevalent (not saying much) gender-neutral term to mean ``sibling of parent''; see \url{http://nonbinary.org/wiki/Gender_neutral_language#Family_Terms}}). The block header contains several pieces of information:
+The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$, and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{ommers}\footnote{\textit{ommer} is the most prevalent (not saying much) gender-neutral term to mean ``sibling of parent''; see \url{https://nonbinary.miraheze.org/wiki/Gender_neutral_language#Aunt.2FUncle}}). The block header contains several pieces of information:
 
 %\textit{TODO: Introduce logs}
 
@@ -361,7 +353,7 @@ We define the Bloom filter function, $M$, to reduce a log entry into a single 25
 M(O) \equiv \bigvee_{t \in \{O_a\} \cup O_\mathbf{t}} \big( M_{3:2048}(t) \big)
 \end{equation}
 
-where $M_{3:2048}$ is a specialised Bloom filter that sets three bits out of 2048, given an arbitrary byte series. It does this through taking the low-order 11 bits of each of the first three pairs of bytes in a Keccak-256 hash of the byte series. Formally:
+where $M_{3:2048}$ is a specialised Bloom filter that sets three bits out of 2048, given an arbitrary byte sequence. It does this through taking the low-order 11 bits of each of the first three pairs of bytes in a Keccak-256 hash of the byte sequence. Formally:
 \begin{eqnarray}
 M_{3:2048}(\mathbf{x}: \mathbf{x} \in \mathbb{B}) & \equiv & \mathbf{y}: \mathbf{y} \in \mathbb{B}_{256} \quad \text{where:}\\
 \mathbf{y} & = & (0, 0, ..., 0) \quad \text{except:}\\
@@ -442,7 +434,6 @@ H_i \equiv {{P(H)_H}_i} + 1
 \end{equation}
 
 \newcommand{\mindifficulty}{D_0}
-\newcommand{\frontiermod}{\ensuremath{\varsigma_1}}
 \newcommand{\homesteadmod}{\ensuremath{\varsigma_2}}
 \newcommand{\expdiffsymb}{\ensuremath{\epsilon}}
 \newcommand{\diffadjustment}{x}
@@ -451,7 +442,6 @@ The canonical difficulty of a block of header $H$ is defined as $D(H)$:
 \begin{equation}
 D(H) \equiv \begin{dcases}
 \mindifficulty & \text{if} \quad H_i = 0\\
-\text{max}\!\left(\mindifficulty, {P(H)_H}_d + \diffadjustment\times\frontiermod + \expdiffsymb \right) & \text{if} \quad H_i<\firsthomesteadblock\\
 \text{max}\!\left(\mindifficulty, {P(H)_H}_d + \diffadjustment\times\homesteadmod + \expdiffsymb \right) & \text{otherwise}\\
 \end{dcases}
 \end{equation}
@@ -461,12 +451,6 @@ where:
 \end{equation}
 \begin{equation}
 \diffadjustment \equiv \left\lfloor\frac{{P(H)_H}_d}{2048}\right\rfloor
-\end{equation}
-\begin{equation}
-\frontiermod \equiv \begin{cases}
-1 & \text{if} \quad H_s < {P(H)_H}_s + 13 \\
--1 & \text{otherwise} \\
-\end{cases}
 \end{equation}
 \begin{equation}
 \homesteadmod \equiv \text{max}\left( 1 - \left\lfloor\frac{H_s - {P(H)_H}_s}{10}\right\rfloor, -99 \right)
@@ -479,7 +463,7 @@ The canonical gas limit $H_l$ of a block of header $H$ must fulfil the relation:
 \begin{eqnarray}
 & & H_l < {P(H)_H}_l + \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor \quad \wedge \\
 & & H_l > {P(H)_H}_l - \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor \quad \wedge \\
-& & H_l \geqslant 125000
+& & H_l \geqslant 5000
 \end{eqnarray}
 
 $H_s$ is the timestamp of block $H$ and must fulfil the relation:
@@ -506,7 +490,7 @@ V(H) & \equiv &  n \leqslant \frac{2^{256}}{H_d} \wedge m = H_m \quad \wedge \\
 & & H_g \le H_l  \quad \wedge \\
 & & H_l < {P(H)_H}_l + \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor  \quad \wedge \\
 & & H_l > {P(H)_H}_l - \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor  \quad \wedge \\
-& & H_l \geqslant 125000  \quad \wedge \\
+& & H_l \geqslant 5000  \quad \wedge \\
 & & H_s > {P(H)_H}_s \quad \wedge \\
 & & H_i = {P(H)_H}_i +1 \quad \wedge \\
 & & \lVert H_x \rVert \le 32
@@ -561,11 +545,11 @@ A^0 \equiv (\varnothing, (), 0)
 We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
 \begin{align}
 g_0 \equiv {} & \sum_{i \in T_\mathbf{i}, T_\mathbf{d}} \begin{cases} G_{txdatazero} & \text{if} \quad i = 0 \\ G_{txdatanonzero} & \text{otherwise} \end{cases} \\
-{} & + \begin{cases} G_\text{txcreate} & \text{if} \quad T_t = \varnothing \wedge H_i \geq \firsthomesteadblock \\ 0 & \text{otherwise} \end{cases} \\
+{} & + \begin{cases} G_\text{txcreate} & \text{if} \quad T_t = \varnothing \\ 0 & \text{otherwise} \end{cases} \\
 {} & + G_{transaction}
 \end{align}
 
-where $T_\mathbf{i},T_\mathbf{d}$ means the series of bytes of the transaction's associated data and initialisation EVM-code, depending on whether the transaction is for contract-creation or message-call. $G_\text{txcreate}$ is added if the transaction is contract-creating, but not if a result of EVM-code or before the {\it Homestead transition}. $G$ is fully defined in Appendix \ref{app:fees}.
+where $T_\mathbf{i},T_\mathbf{d}$ means the series of bytes of the transaction's associated data and initialisation EVM-code, depending on whether the transaction is for contract-creation or message-call. $G_\text{txcreate}$ is added if the transaction is contract-creating, but not if a result of EVM-code. $G$ is fully defined in Appendix \ref{app:fees}.
 
 %todo Explain g_d reason?
 
@@ -711,21 +695,21 @@ If such an exception does not occur, then the remaining gas is refunded to the o
 
 \begin{align}
 \quad g' &\equiv \begin{cases}
-0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
-g^{**} & \text{if} \quad g^{**}<c \wedge H_i<\firsthomesteadblock \\
+0 & \text{if} \quad F \\
 g^{**} - c & \text{otherwise} \\
 \end{cases} \\
 \quad \boldsymbol{\sigma}' &\equiv  \begin{cases}
-\boldsymbol{\sigma} & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
-\boldsymbol{\sigma}^{**} & \text{if} \quad g^{**}<c \wedge H_i<\firsthomesteadblock \\
+\boldsymbol{\sigma} & \text{if} \quad F \\
 \boldsymbol{\sigma}^{**} \quad \text{except:} & \\
 \quad\boldsymbol{\sigma}'[a]_c = \texttt{\small KEC}(\mathbf{o}) & \text{otherwise}
-\end{cases}
+\end{cases} \\
+\nonumber \text{where} \\
+F &\equiv \big(\boldsymbol{\sigma}^{**} = \varnothing \ \vee\  g^{**} < c \ \vee\  |\mathbf{o}| > 24576\big)
 \end{align}
 
 The exception in the determination of $\boldsymbol{\sigma}'$ dictates that $\mathbf{o}$, the resultant byte sequence from the execution of the initialisation code, specifies the final body code for the newly-created account.
 
-Note that the intention from block \firsthomesteadblock\ onwards ({\it Homestead}) is that the result is either a successfully created new contract with its endowment, or no new contract with no transfer of value. Before {\it Homestead}, if there is not enough gas to pay $c$, an account at the new contract's address is created, along with all the initialisation side-effects, and the value is transferred, but no contract code is deployed.
+Note that intention is that the result is either a successfully created new contract with its endowment, or no new contract with no transfer of value.
 
 \subsection{Subtleties}
 Note that while the initialisation code is executing, the newly created address exists but with no intrinsic body code. Thus any message call received by it during this time causes no code to be executed. If the initialisation execution ends with a {\small SELFDESTRUCT} instruction, the matter is moot since the account will be deleted before the transaction is completed. For a normal {\small STOP} code, or if the code returned is otherwise empty, then the state is left with a zombie account, and any remaining balance will be locked into the account forever.
@@ -757,7 +741,7 @@ Throughout the present work, it is assumed that if $\boldsymbol{\sigma}_1[r]$ wa
 \end{equation}
 \begin{equation}
 \begin{cases}
-\boldsymbol{\sigma}_1'[r] \equiv (v, 0, \mathtt{\tiny KEC}(()), \mathtt{\tiny TRIE}(\varnothing)) & \text{if} \quad \boldsymbol{\sigma}[r] = \varnothing \\
+\boldsymbol{\sigma}_1'[r] \equiv (0, v, \mathtt{\tiny TRIE}(\varnothing), \mathtt{\tiny KEC}(())) & \text{if} \quad \boldsymbol{\sigma}[r] = \varnothing \\
 \boldsymbol{\sigma}_1'[r]_b \equiv \boldsymbol{\sigma}[r]_b + v & \text{otherwise}
 \end{cases}
 \end{equation}
@@ -769,7 +753,11 @@ The account's associated code (identified as the fragment whose Keccak hash is $
 \boldsymbol{\sigma} & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
 \boldsymbol{\sigma}^{**} & \text{otherwise}
 \end{cases} \\
-(\boldsymbol{\sigma}^{**}, g', \mathbf{s}, \mathbf{o}) & \equiv & \begin{cases}
+g' & \equiv & \begin{cases}
+0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
+g^{**} & \text{otherwise}
+\end{cases} \\
+\qquad (\boldsymbol{\sigma}^{**}, g^{**}, A, \mathbf{o}) & \equiv & \begin{cases}
 \Xi_{\mathtt{ECREC}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 1 \\
 \Xi_{\mathtt{SHA256}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 2 \\
 \Xi_{\mathtt{RIP160}}(\boldsymbol{\sigma}_1, g, I) & \text{if} \quad r = 3 \\
@@ -829,7 +817,7 @@ In addition to the system state $\boldsymbol{\sigma}$, and the remaining gas for
 \item $I_e$, the depth of the present message-call or contract-creation (i.e. the number of {\small CALL}s or {\small CREATE}s being executed at present).
 \end{itemize}
 
-The execution model defines the function $\Xi$, which can compute the resultant state $\boldsymbol{\sigma}'$, the remaining gas $g'$, the accrued substate $A$ and the resultant output, $\mathbf{o}$, given these definitions. For the present context, we will defined it as:
+The execution model defines the function $\Xi$, which can compute the resultant state $\boldsymbol{\sigma}'$, the remaining gas $g'$, the accrued substate $A$ and the resultant output, $\mathbf{o}$, given these definitions. For the present context, we will define it as:
 \begin{equation}
 (\boldsymbol{\sigma}', g', A, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}, g, I)
 \end{equation}
@@ -846,7 +834,8 @@ We must now define the $\Xi$ function. In most practical implementations this wi
 
 The empty sequence, denoted $()$, is not equal to the empty set, denoted $\varnothing$; this is important when interpreting the output of $H$, which evaluates to $\varnothing$ when execution is to continue but a series (potentially empty) when execution should halt.
 \begin{eqnarray}
-\Xi(\boldsymbol{\sigma}, g, I) & \equiv & X_{0,1,2,4}\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A^0, I)\big) \\
+\Xi(\boldsymbol{\sigma}, g, I) & \equiv & (\boldsymbol{\sigma}'\!, \boldsymbol{\mu}'_g, A, \mathbf{o}) \\
+(\boldsymbol{\sigma}', \boldsymbol{\mu}'\!, A, ..., \mathbf{o}) & \equiv & X\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A^0\!, I)\big) \\
 \boldsymbol{\mu}_g & \equiv & g \\
 \boldsymbol{\mu}_{pc} & \equiv & 0 \\
 \boldsymbol{\mu}_\mathbf{m} & \equiv & (0, 0, ...) \\
@@ -864,10 +853,10 @@ X\big(O(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I)\big) & \text{otherwise}\\
 where
 \begin{eqnarray}
 \mathbf{o} & \equiv & H(\boldsymbol{\mu}, I) \\
-(a, b, c) \cdot d & \equiv & (a, b, c, d)
+(a, b, c, d) \cdot e & \equiv & (a, b, c, d, e)
 \end{eqnarray}
 
-Note that we must drop the fourth value in the tuple returned by $X$ to correctly evaluate $\Xi$, hence the subscript $X_{0,1,2,4}$.
+Note that, when we evaluate $\Xi$, we drop the fourth element $I'$ and extract the remaining gas $\boldsymbol{\mu}'_g$ from the resultant machine state $\boldsymbol{\mu}'$.
 
 $X$ is thus cycled (recursively here, but implementations are generally expected to use a simple iterative loop) until either $Z$ becomes true indicating that the present state is exceptional and that the machine must be halted and any changes discarded or until $H$ becomes a series (rather than the empty set) indicating that the machine has reached a controlled halt.
 
@@ -899,7 +888,7 @@ Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv
 \end{array}
 \end{equation}
 
-This states that the execution is in an exceptional halting state if there is insufficient gas, if the instruction is invalid (and therefore its $\delta$ subscript is undefined), if there are insufficient stack items, if a {\small JUMP}/{\small JUMPI} destination is invalid or the new stack size would be larger then 1024. The astute reader will realise that this implies that no instruction can, through its execution, cause an exceptional halt.
+This states that the execution is in an exceptional halting state if there is insufficient gas, if the instruction is invalid (and therefore its $\delta$ subscript is undefined), if there are insufficient stack items, if a {\small JUMP}/{\small JUMPI} destination is invalid or the new stack size would be larger than 1024. The astute reader will realise that this implies that no instruction can, through its execution, cause an exceptional halt.
 
 \subsubsection{Jump Destination Validity}
 
@@ -948,7 +937,7 @@ Stack items are added or removed from the left-most, lower-indexed portion of th
 O\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I)\big) & \equiv & (\boldsymbol{\sigma}', \boldsymbol{\mu}', A', I) \\
 \Delta & \equiv & \mathbf{\alpha}_w - \mathbf{\delta}_w \\
 \lVert\boldsymbol{\mu}'_\mathbf{s}\rVert & \equiv & \lVert\boldsymbol{\mu}_\mathbf{s}\rVert + \Delta \\
-\quad \forall x \in [\mathbf{\alpha}_w, \lVert\boldsymbol{\mu}'_\mathbf{s}\rVert): \boldsymbol{\mu}'_\mathbf{s}[x] & \equiv & \boldsymbol{\mu}_\mathbf{s}[x+\Delta]
+\quad \forall x \in [\mathbf{\alpha}_w, \lVert\boldsymbol{\mu}'_\mathbf{s}\rVert): \boldsymbol{\mu}'_\mathbf{s}[x] & \equiv & \boldsymbol{\mu}_\mathbf{s}[x-\Delta]
 \end{eqnarray}
 
 The gas is reduced by the instruction's gas cost and for most instructions, the program counter increments on each cycle, for the three exceptions, we assume a function $J$, subscripted by one of two instructions, which evaluates to the according value:
@@ -1287,7 +1276,7 @@ f(t) & \equiv & \begin{cases} 2 & \text{if} \quad t \neq 0 \\ 0 & \text{otherwis
 Thus the high nibble of the first byte contains two flags; the lowest bit encoding the oddness of the length and the second-lowest encoding the flag $t$. The low nibble of the first byte is zero in the case of an even number of nibbles and the first nibble in the case of an odd number. All remaining nibbles (now an even number) fit properly into the remaining bytes.
 
 \section{Modified Merkle Patricia Tree}\label{app:trie}
-The modified Merkle Patricia tree (trie) provides a persistent data structure to map between arbitrary-length binary data (byte arrays). It is defined in terms of a mutable data structure to map between 256-bit binary fragments and arbitrary-length binary data, typically implemented as a database. The core of the trie, and its sole requirement in terms of the protocol specification is to provide a single value that identifies a given set of key-value pairs, which may be either a 32 byte sequence or the empty byte sequence. It is left as an implementation consideration to store and maintain the structure of the trie in a manner the allows effective and efficient realisation of the protocol.
+The modified Merkle Patricia tree (trie) provides a persistent data structure to map between arbitrary-length binary data (byte arrays). It is defined in terms of a mutable data structure to map between 256-bit binary fragments and arbitrary-length binary data, typically implemented as a database. The core of the trie, and its sole requirement in terms of the protocol specification is to provide a single value that identifies a given set of key-value pairs, which may be either a 32 byte sequence or the empty byte sequence. It is left as an implementation consideration to store and maintain the structure of the trie in a manner that allows effective and efficient realisation of the protocol.
 
 Formally, we assume the input value $\mathfrak{I}$, a set containing pairs of byte sequences:
 \begin{equation}
@@ -1408,7 +1397,7 @@ The method of signing transactions is similar to the `Electrum style signatures'
 
 It is assumed that the sender has a valid private key $p_r$, which is a randomly selected positive integer (represented as a byte array of length 32 in big-endian form) in the range \hbox{$[1, \mathtt{\tiny secp256k1n} - 1]$}.
 
-We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARESTORE}$ and $\mathtt{\small ECDSAPUBKEY}$. These are formally defined in the literature.
+We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARECOVER}$ and $\mathtt{\small ECDSAPUBKEY}$. These are formally defined in the literature.
 \begin{eqnarray}
 \mathtt{\small ECDSAPUBKEY}(p_r \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64} \\
 \mathtt{\small ECDSASIGN}(e \in \mathbb{B}_{32}, p_r \in \mathbb{B}_{32}) & \equiv & (v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) \\
@@ -1422,11 +1411,8 @@ Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed fro
 We declare that a signature is invalid unless all the following conditions are true:
 \begin{align}
 0 < r &< \mathtt{\tiny secp256k1n} \\
-0 < s &< \begin{dcases}
-\mathtt{\tiny secp256k1n} & \text{if} \quad H_i < \firsthomesteadblock \\
-\mathtt{\tiny secp256k1n} \div 2 + 1 & \text{otherwise} \\
-\end{dcases} \\
- v &\in \{27,28\}
+0 < s &< \mathtt{\tiny secp256k1n} \div 2 + 1 \\
+v &\in \{27,28\}
 \end{align}
 where:
 \begin{align}
@@ -1494,7 +1480,7 @@ $G_{callvalue}$ & 9000 & Paid for a non-zero value transfer as part of the {\sma
 $G_{callstipend}$ & 2300 & A stipend for the called contract subtracted from $G_{callvalue}$ for a non-zero value transfer. \\
 $G_{newaccount}$ & 25000 & Paid for a {\small CALL} or {\small SELFDESTRUCT} operation which creates an account. \\
 $G_{exp}$ & 10 & Partial payment for an {\small EXP} operation. \\
-$G_{expbyte}$ & 10 & Partial payment when multiplied by $\lceil\log_{256}(exponent)\rceil$ for the {\small EXP} operation. \\
+$G_{expbyte}$ & 50 & Partial payment when multiplied by $\lceil\log_{256}(exponent)\rceil$ for the {\small EXP} operation. \\
 $G_{memory}$ & 3 & Paid for every additional word when expanding memory. \\
 $G_\text{txcreate}$ & 32000 & Paid by all contract-creating transactions after the {\it Homestead transition}.\\
 $G_{txdatazero}$ & 4 & Paid for every zero byte of data or code for a transaction. \\
@@ -1611,7 +1597,7 @@ Here given are the various exceptions to the state transition rules given in sec
 \begin{tabular*}{\columnwidth}[h]{rlrrl}
 \toprule
 \multicolumn{5}{c}{\textbf{0s: Stop and Arithmetic Operations}} \\
-\multicolumn{5}{l}{All arithmetic is modulo $2^{256}$ unless otherwise noted.} \vspace{5pt} \\
+\multicolumn{5}{l}{All arithmetic is modulo $2^{256}$ unless otherwise noted. The zero-th power of zero $0^0$ is defined to be one.} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x00 & {\small STOP} & 0 & 0 & Halts execution. \\
 \midrule
@@ -1758,12 +1744,12 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& This is gas price specified by the originating transaction.\\
 \midrule
 0x3b & {\small EXTCODESIZE} & 1 & 1 & Get size of an account's code. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \lVert \boldsymbol{\sigma}[\boldsymbol{\mu}_s[0] \mod 2^{160}]_c \rVert$ \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \lVert \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}]_c \rVert$ \\
 \midrule
 0x3c & {\small EXTCODECOPY} & 4 & 0 & Copy an account's code to memory. \\
 &&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_\mathbf{s}[3] - 1\} } \boldsymbol{\mu}'_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[1] + i ] \equiv
 \begin{cases} \mathbf{c}[\boldsymbol{\mu}_\mathbf{s}[2] + i] & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] + i < \lVert \mathbf{c} \rVert \\ \text{\small STOP} & \text{otherwise} \end{cases}$\\
-&&&& where $\mathbf{c} \equiv \boldsymbol{\sigma}[\boldsymbol{\mu}_s[0] \mod 2^{160}]_c$ \\
+&&&& where $\mathbf{c} \equiv \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}]_c$ \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[1], \boldsymbol{\mu}_\mathbf{s}[3])$ \\
 &&&& The additions in $\boldsymbol{\mu}_\mathbf{s}[2] + i$ are not subject to the $2^{256}$ modulo. \\
 \bottomrule
@@ -1950,7 +1936,7 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& $\mathbf{i} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[1] \dots (\boldsymbol{\mu}_\mathbf{s}[1] + \boldsymbol{\mu}_\mathbf{s}[2] - 1) ]$ \\
 &&&& $(\boldsymbol{\sigma}', \boldsymbol{\mu}'_g, A^+) \equiv \begin{cases}\Lambda(\boldsymbol{\sigma}^*, I_a, I_o, L(\boldsymbol{\mu}_g), I_p, \boldsymbol{\mu}_\mathbf{s}[0], \mathbf{i}, I_e + 1) & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] \leqslant \boldsymbol{\sigma}[I_a]_b \;\wedge\; I_e < 1024\\ \big(\boldsymbol{\sigma}, \boldsymbol{\mu}_g, \varnothing\big) & \text{otherwise} \end{cases}$ \\
 &&&& $\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except} \quad \boldsymbol{\sigma}^*[I_a]_n = \boldsymbol{\sigma}[I_a]_n + 1$ \\
-&&&& $A' \equiv A \Cup A^+$ which implies: $A'_\mathbf{s} \equiv A_\mathbf{s} \cup A^+_\mathbf{s} \quad \wedge \quad A'_\mathbf{l} \equiv A_\mathbf{l} \cdot A^+_\mathbf{l} \quad \wedge \quad A'_\mathbf{r} \equiv A_\mathbf{r} + A^+_\mathbf{r}$ \\
+&&&& $A' \equiv A \Cup A^+$ which abbreviates: $A'_\mathbf{s} \equiv A_\mathbf{s} \cup A^+_\mathbf{s} \quad \wedge \quad A'_\mathbf{l} \equiv A_\mathbf{l} \cdot A^+_\mathbf{l} \quad \wedge \quad A'_\mathbf{r} \equiv A_\mathbf{r} + A^+_\mathbf{r}$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
 &&&& where $x=0$ if the code execution for this operation failed due to an exceptional halting \\
 &&&& $Z(\boldsymbol{\sigma}^*, \boldsymbol{\mu}, I) = \top$ or $I_e = 1024$ \\
@@ -2033,7 +2019,7 @@ R_{selfdestruct} & \text{if} \quad I_a \notin A_\mathbf{s} \\
 0 & \text{otherwise}
 \end{cases}$ \\
 &&&& $C_{\text{\tiny SELFDESTRUCT}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv G_{selfdestruct} + \begin{cases}
-G_{newaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[1] \mod 2^{160}] = \varnothing \\
+G_{newaccount} & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}] = \varnothing \\
 0 & \text{otherwise}
 \end{cases}$ \\
 \bottomrule
@@ -2092,11 +2078,11 @@ The size of the cache, $c_{size}$, is calculated using
 \begin{equation}
  E_{prime}(x, y) = \begin{cases}
 x & \text{if} \quad x / y \in \mathbb{P} \\
-E_{prime}(x - 1 \cdot y, y) & \text{otherwise}
+E_{prime}((x - 1) \cdot y, y) & \text{otherwise}
 \end{cases}
 \end{equation}
 \subsection{Dataset generation}
-In order the generate the dataset we need the cache $\mathbf{c}$, which is an array of bytes. It depends on the cache size  $c_{size}$ and the seed hash $\mathbf{s} \in \mathbb{B}_{32}$.
+In order to generate the dataset we need the cache $\mathbf{c}$, which is an array of bytes. It depends on the cache size  $c_{size}$ and the seed hash $\mathbf{s} \in \mathbb{B}_{32}$.
 \subsubsection{Seed hash}
 The seed hash is different for every epoch. For the first epoch it is the Keccak-256 hash of a series of 32 bytes of zeros. For every other epoch it is always the Keccak-256 hash of the previous seed hash:
 \begin{equation}
@@ -2174,7 +2160,7 @@ E_\text{\tiny FNV}\big(\mathbf{m}, \mathbf{c}[E_\text{\tiny FNV}(i \oplus p, \ma
 \end{equation}
 
 \subsection{Proof-of-work function}
-Essentially, we maintain a "mix" $J_{mixbytes}$ bytes wide, and repeatedly sequentially fetch $J_{mixbytes}$ bytes from the full dataset and use the $E_\text{\tiny FNV}$ function to combine it with the mix. $J_{mixbytes}$ bytes of sequential access are used so that each round of the algorithm always fetches a full page from RAM, minimizing translation lookaside buffer misses which ASICs would theoretically be able to avoid.
+Essentially, we maintain a ``mix" $J_{mixbytes}$ bytes wide, and repeatedly sequentially fetch $J_{mixbytes}$ bytes from the full dataset and use the $E_\text{\tiny FNV}$ function to combine it with the mix. $J_{mixbytes}$ bytes of sequential access are used so that each round of the algorithm always fetches a full page from RAM, minimizing translation lookaside buffer misses which ASICs would theoretically be able to avoid.
 
 If the output of this algorithm is below the desired target, then the nonce is valid. Note that the extra application of \texttt{KEC} at the end ensures that there exists an intermediate nonce which can be provided to prove that at least a small amount of work was done; this quick outer PoW verification can be used for anti-DDoS purposes. It also serves to provide statistical assurance that the result is an unbiased, 256 bit number.
 
