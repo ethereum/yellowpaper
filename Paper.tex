@@ -63,7 +63,7 @@ Ethereum implements this paradigm in a generalised manner. Furthermore it provid
 
 \section{Introduction}\label{sec:introduction}
 
-With ubiquitous internet connections in most places of the world, global information transmission has become incredibly cheap. Technology-rooted movements like Bitcoin have demonstrated, through the power of the default, consensus mechanisms and voluntary respect of the social contract that it is possible to use the internet to make a decentralised value-transfer system, shared across the world and virtually free to use. This system can be said to be a very specialised version of a cryptographically secure, transaction-based state machine. Follow-up systems such as Namecoin adapted this original ``currency application'' of the technology into other applications albeit rather simplistic ones.
+With ubiquitous internet connections in most places of the world, global information transmission has become incredibly cheap. Technology-rooted movements like Bitcoin have demonstrated through the power of the default, consensus mechanisms, and voluntary respect of the social contract, that it is possible to use the internet to make a decentralised value-transfer system that can be shared across the world and virtually free to use. This system can be said to be a very specialised version of a cryptographically secure, transaction-based state machine. Follow-up systems such as Namecoin adapted this original ``currency application'' of the technology into other applications albeit rather simplistic ones.
 
 Ethereum is a project which attempts to build the generalised technology; technology on which all transaction-based state machine concepts may be built. Moreover it aims to provide to the end-developer a tightly integrated end-to-end system for building software on a hitherto unexplored compute paradigm in the mainstream: a trustful object messaging compute framework.
 
@@ -308,8 +308,8 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[gasUsed] A scalar value equal to the total gas used in transactions in this block; formally $H_g$.
 \item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.
 \item[extraData] An arbitrary byte array containing data relevant to this block. This must be 32 bytes or fewer; formally $H_x$.
-\item[mixHash] A 256-bit hash which proves combined with the nonce that a sufficient amount of computation has been carried out on this block; formally $H_m$.
-\item[nonce] A 64-bit hash which proves combined with the mix-hash that a sufficient amount of computation has been carried out on this block; formally $H_n$.
+\item[mixHash] A 256-bit hash which, combined with the nonce, proves that a sufficient amount of computation has been carried out on this block; formally $H_m$.
+\item[nonce] A 64-bit hash which, combined with the mix-hash, proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.
 \end{description}
 
 The other two components in the block are simply a list of ommer block headers (of the same format as above) and a series of the transactions. Formally, we can refer to a block $B$:
