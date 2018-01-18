@@ -1,5 +1,6 @@
 \documentclass[9pt,oneside]{amsart}
 %\usepackage{tweaklist}
+\usepackage{hyperref}
 \usepackage{url}
 \usepackage{cancel}
 \usepackage{xspace}
@@ -63,7 +64,7 @@ Ethereum implements this paradigm in a generalised manner. Furthermore it provid
 
 \section{Introduction}\label{sec:introduction}
 
-With ubiquitous internet connections in most places of the world, global information transmission has become incredibly cheap. Technology-rooted movements like Bitcoin have demonstrated through the power of the default, consensus mechanisms, and voluntary respect of the social contract, that it is possible to use the internet to make a decentralised value-transfer system that can be shared across the world and virtually free to use. This system can be said to be a very specialised version of a cryptographically secure, transaction-based state machine. Follow-up systems such as Namecoin adapted this original ``currency application'' of the technology into other applications albeit rather simplistic ones.
+With ubiquitous internet connections in most places of the world, global information transmission has become incredibly cheap. Technology-rooted movements like Bitcoin have demonstrated, through the power of the default, consensus mechanisms and voluntary respect of the social contract that it is possible to use the internet to make a decentralised value-transfer system, shared across the world and virtually free to use. This system can be said to be a very specialised version of a cryptographically secure, transaction-based state machine. Follow-up systems such as Namecoin adapted this original ``currency application'' of the technology into other applications albeit rather simplistic ones.
 
 Ethereum is a project which attempts to build the generalised technology; technology on which all transaction-based state machine concepts may be built. Moreover it aims to provide to the end-developer a tightly integrated end-to-end system for building software on a hitherto unexplored compute paradigm in the mainstream: a trustful object messaging compute framework.
 
@@ -153,13 +154,13 @@ I use a number of typographical conventions for the formal notation, some of whi
 
 The two sets of highly structured, `top-level', state values, are denoted with bold lowercase Greek letters. They fall into those of world-state, which are denoted $\boldsymbol{\sigma}$ (or a variant thereupon) and those of machine-state, $\boldsymbol{\mu}$.
 
-Functions operating on highly structured values are denoted with an upper-case Greek letter, \eg $\Upsilon$, the Ethereum state transition function.
+Functions operating on highly structured values are denoted with an upper-case greek letter, \eg $\Upsilon$, the Ethereum state transition function.
 
 For most functions, an uppercase letter is used, e.g. $C$, the general cost function. These may be subscripted to denote specialised variants, \eg $C_\text{\tiny SSTORE}$, the cost function for the {\tiny SSTORE} operation. For specialised and possibly externally defined functions, I may format as typewriter text, \eg the Keccak-256 hash function (as per the winning entry to the SHA-3 contest) is denoted $\texttt{KEC}$ (and generally referred to as plain Keccak). Also $\texttt{KEC512}$ is referring to the Keccak 512 hash function.
 
 Tuples are typically denoted with an upper-case letter, \eg $T$, is used to denote an Ethereum transaction. This symbol may, if accordingly defined, be subscripted to refer to an individual component, \eg $T_n$, denotes the nonce of said transaction. The form of the subscript is used to denote its type; \eg uppercase subscripts refer to tuples with subscriptable components.
 
-Scalars and fixed-size byte sequences (or, synonymously, arrays) are denoted with a normal lower-case letter, \eg $n$ is used in the document to denote a transaction nonce. Those with a particularly special meaning may be Greek, \eg $\delta$, the number of items required on the stack for a given operation.
+Scalars and fixed-size byte sequences (or, synonymously, arrays) are denoted with a normal lower-case letter, \eg $n$ is used in the document to denote a transaction nonce. Those with a particularly special meaning may be greek, \eg $\delta$, the number of items required on the stack for a given operation.
 
 Arbitrary-length sequences are typically denoted as a bold lower-case letter, \eg $\mathbf{o}$ is used to denote the byte sequence given as the output data of a message call. For particularly important values, a bold uppercase letter may be used.
 
@@ -290,7 +291,7 @@ T_\mathbf{t} \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_t \neq \varno
 
 \subsection{The Block} \label{ch:block}
 
-The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$, and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{ommers}\footnote{\textit{ommer} is the most prevalent (not saying much) gender-neutral term to mean ``sibling of parent''; see \url{https://nonbinary.miraheze.org/wiki/Gender_neutral_language#Aunt.2FUncle}}). The block header contains several pieces of information:
+The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$, and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{ommers}\footnote{\textit{ommer} is the most prevalent (not saying much) gender-neutral term to mean ``sibling of parent''; see \url{http://nonbinary.org/wiki/Gender_neutral_language\#Family_Terms}}). The block header contains several pieces of information:
 
 %\textit{TODO: Introduce logs}
 
@@ -308,8 +309,8 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[gasUsed] A scalar value equal to the total gas used in transactions in this block; formally $H_g$.
 \item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.
 \item[extraData] An arbitrary byte array containing data relevant to this block. This must be 32 bytes or fewer; formally $H_x$.
-\item[mixHash] A 256-bit hash which, combined with the nonce, proves that a sufficient amount of computation has been carried out on this block; formally $H_m$.
-\item[nonce] A 64-bit hash which, combined with the mix-hash, proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.
+\item[mixHash] A 256-bit hash which proves combined with the nonce that a sufficient amount of computation has been carried out on this block; formally $H_m$.
+\item[nonce] A 64-bit hash which proves combined with the mix-hash that a sufficient amount of computation has been carried out on this block; formally $H_n$.
 \end{description}
 
 The other two components in the block are simply a list of ommer block headers (of the same format as above) and a series of the transactions. Formally, we can refer to a block $B$:
@@ -463,7 +464,7 @@ The canonical gas limit $H_l$ of a block of header $H$ must fulfil the relation:
 \begin{eqnarray}
 & & H_l < {P(H)_H}_l + \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor \quad \wedge \\
 & & H_l > {P(H)_H}_l - \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor \quad \wedge \\
-& & H_l \geqslant 5000
+& & H_l \geqslant 125000
 \end{eqnarray}
 
 $H_s$ is the timestamp of block $H$ and must fulfil the relation:
@@ -490,7 +491,7 @@ V(H) & \equiv &  n \leqslant \frac{2^{256}}{H_d} \wedge m = H_m \quad \wedge \\
 & & H_g \le H_l  \quad \wedge \\
 & & H_l < {P(H)_H}_l + \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor  \quad \wedge \\
 & & H_l > {P(H)_H}_l - \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor  \quad \wedge \\
-& & H_l \geqslant 5000  \quad \wedge \\
+& & H_l \geqslant 125000  \quad \wedge \\
 & & H_s > {P(H)_H}_s \quad \wedge \\
 & & H_i = {P(H)_H}_i +1 \quad \wedge \\
 & & \lVert H_x \rVert \le 32
@@ -741,7 +742,7 @@ Throughout the present work, it is assumed that if $\boldsymbol{\sigma}_1[r]$ wa
 \end{equation}
 \begin{equation}
 \begin{cases}
-\boldsymbol{\sigma}_1'[r] \equiv (0, v, \mathtt{\tiny TRIE}(\varnothing), \mathtt{\tiny KEC}(())) & \text{if} \quad \boldsymbol{\sigma}[r] = \varnothing \\
+\boldsymbol{\sigma}_1'[r] \equiv (v, 0, \mathtt{\tiny KEC}(()), \mathtt{\tiny TRIE}(\varnothing)) & \text{if} \quad \boldsymbol{\sigma}[r] = \varnothing \\
 \boldsymbol{\sigma}_1'[r]_b \equiv \boldsymbol{\sigma}[r]_b + v & \text{otherwise}
 \end{cases}
 \end{equation}
@@ -817,7 +818,7 @@ In addition to the system state $\boldsymbol{\sigma}$, and the remaining gas for
 \item $I_e$, the depth of the present message-call or contract-creation (i.e. the number of {\small CALL}s or {\small CREATE}s being executed at present).
 \end{itemize}
 
-The execution model defines the function $\Xi$, which can compute the resultant state $\boldsymbol{\sigma}'$, the remaining gas $g'$, the accrued substate $A$ and the resultant output, $\mathbf{o}$, given these definitions. For the present context, we will define it as:
+The execution model defines the function $\Xi$, which can compute the resultant state $\boldsymbol{\sigma}'$, the remaining gas $g'$, the accrued substate $A$ and the resultant output, $\mathbf{o}$, given these definitions. For the present context, we will defined it as:
 \begin{equation}
 (\boldsymbol{\sigma}', g', A, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}, g, I)
 \end{equation}
@@ -835,7 +836,7 @@ We must now define the $\Xi$ function. In most practical implementations this wi
 The empty sequence, denoted $()$, is not equal to the empty set, denoted $\varnothing$; this is important when interpreting the output of $H$, which evaluates to $\varnothing$ when execution is to continue but a series (potentially empty) when execution should halt.
 \begin{eqnarray}
 \Xi(\boldsymbol{\sigma}, g, I) & \equiv & (\boldsymbol{\sigma}'\!, \boldsymbol{\mu}'_g, A, \mathbf{o}) \\
-(\boldsymbol{\sigma}', \boldsymbol{\mu}'\!, A, ..., \mathbf{o}) & \equiv & X\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A^0\!, I)\big) \\
+(\boldsymbol{\sigma}, \boldsymbol{\mu}'\!, A, ..., \mathbf{o}) & \equiv & X\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A^0\!, I)\big) \\
 \boldsymbol{\mu}_g & \equiv & g \\
 \boldsymbol{\mu}_{pc} & \equiv & 0 \\
 \boldsymbol{\mu}_\mathbf{m} & \equiv & (0, 0, ...) \\
@@ -888,7 +889,7 @@ Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv
 \end{array}
 \end{equation}
 
-This states that the execution is in an exceptional halting state if there is insufficient gas, if the instruction is invalid (and therefore its $\delta$ subscript is undefined), if there are insufficient stack items, if a {\small JUMP}/{\small JUMPI} destination is invalid or the new stack size would be larger than 1024. The astute reader will realise that this implies that no instruction can, through its execution, cause an exceptional halt.
+This states that the execution is in an exceptional halting state if there is insufficient gas, if the instruction is invalid (and therefore its $\delta$ subscript is undefined), if there are insufficient stack items, if a {\small JUMP}/{\small JUMPI} destination is invalid or the new stack size would be larger then 1024. The astute reader will realise that this implies that no instruction can, through its execution, cause an exceptional halt.
 
 \subsubsection{Jump Destination Validity}
 
@@ -1397,14 +1398,14 @@ The method of signing transactions is similar to the `Electrum style signatures'
 
 It is assumed that the sender has a valid private key $p_r$, which is a randomly selected positive integer (represented as a byte array of length 32 in big-endian form) in the range \hbox{$[1, \mathtt{\tiny secp256k1n} - 1]$}.
 
-We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARECOVER}$ and $\mathtt{\small ECDSAPUBKEY}$. These are formally defined in the literature.
+We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARESTORE}$ and $\mathtt{\small ECDSAPUBKEY}$. These are formally defined in the literature.
 \begin{eqnarray}
 \mathtt{\small ECDSAPUBKEY}(p_r \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64} \\
 \mathtt{\small ECDSASIGN}(e \in \mathbb{B}_{32}, p_r \in \mathbb{B}_{32}) & \equiv & (v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) \\
 \mathtt{\small ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64}
 \end{eqnarray}
 
-Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer in the aforementioned range). It is assumed that $v$ is the `recovery id', a 1 byte value specifying the parity and finiteness of the coordinates of the curve point for which $r$ is the x-value; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid. The value 27 represents an even $y$ value and 28 represents an odd $y$ value.
+Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer in the aforementioned range). It is assumed that $v$ is the `recovery id', a 1 byte value specifying the sign and finiteness of the curve point; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid.
 
 \newcommand{\slimit}{\ensuremath{\text{s-limit}}}
 
@@ -1936,13 +1937,13 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& $\mathbf{i} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[1] \dots (\boldsymbol{\mu}_\mathbf{s}[1] + \boldsymbol{\mu}_\mathbf{s}[2] - 1) ]$ \\
 &&&& $(\boldsymbol{\sigma}', \boldsymbol{\mu}'_g, A^+) \equiv \begin{cases}\Lambda(\boldsymbol{\sigma}^*, I_a, I_o, L(\boldsymbol{\mu}_g), I_p, \boldsymbol{\mu}_\mathbf{s}[0], \mathbf{i}, I_e + 1) & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] \leqslant \boldsymbol{\sigma}[I_a]_b \;\wedge\; I_e < 1024\\ \big(\boldsymbol{\sigma}, \boldsymbol{\mu}_g, \varnothing\big) & \text{otherwise} \end{cases}$ \\
 &&&& $\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except} \quad \boldsymbol{\sigma}^*[I_a]_n = \boldsymbol{\sigma}[I_a]_n + 1$ \\
-&&&& $A' \equiv A \Cup A^+$ which abbreviates: $A'_\mathbf{s} \equiv A_\mathbf{s} \cup A^+_\mathbf{s} \quad \wedge \quad A'_\mathbf{l} \equiv A_\mathbf{l} \cdot A^+_\mathbf{l} \quad \wedge \quad A'_\mathbf{r} \equiv A_\mathbf{r} + A^+_\mathbf{r}$ \\
+&&&& $A' \equiv A \Cup A^+$ which implies: $A'_\mathbf{s} \equiv A_\mathbf{s} \cup A^+_\mathbf{s} \quad \wedge \quad A'_\mathbf{l} \equiv A_\mathbf{l} \cdot A^+_\mathbf{l} \quad \wedge \quad A'_\mathbf{r} \equiv A_\mathbf{r} + A^+_\mathbf{r}$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
 &&&& where $x=0$ if the code execution for this operation failed due to an exceptional halting \\
 &&&& $Z(\boldsymbol{\sigma}^*, \boldsymbol{\mu}, I) = \top$ or $I_e = 1024$ \\
 &&&& (the maximum call depth limit is reached) or $\boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\sigma}[I_a]_b$ (balance of the caller is too \\
 &&&& low to fulfil the value transfer); and otherwise $x=A(I_a, \boldsymbol{\sigma}[I_a]_n)$, the address of the newly \\
-&&&& created account. \\
+&&&& created account, otherwise. \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[1], \boldsymbol{\mu}_\mathbf{s}[2])$ \\
 &&&& Thus the operand order is: value, input offset, input size. \\
 \midrule
@@ -2078,11 +2079,11 @@ The size of the cache, $c_{size}$, is calculated using
 \begin{equation}
  E_{prime}(x, y) = \begin{cases}
 x & \text{if} \quad x / y \in \mathbb{P} \\
-E_{prime}((x - 1) \cdot y, y) & \text{otherwise}
+E_{prime}(x - 1 \cdot y, y) & \text{otherwise}
 \end{cases}
 \end{equation}
 \subsection{Dataset generation}
-In order to generate the dataset we need the cache $\mathbf{c}$, which is an array of bytes. It depends on the cache size  $c_{size}$ and the seed hash $\mathbf{s} \in \mathbb{B}_{32}$.
+In order the generate the dataset we need the cache $\mathbf{c}$, which is an array of bytes. It depends on the cache size  $c_{size}$ and the seed hash $\mathbf{s} \in \mathbb{B}_{32}$.
 \subsubsection{Seed hash}
 The seed hash is different for every epoch. For the first epoch it is the Keccak-256 hash of a series of 32 bytes of zeros. For every other epoch it is always the Keccak-256 hash of the previous seed hash:
 \begin{equation}
@@ -2160,7 +2161,7 @@ E_\text{\tiny FNV}\big(\mathbf{m}, \mathbf{c}[E_\text{\tiny FNV}(i \oplus p, \ma
 \end{equation}
 
 \subsection{Proof-of-work function}
-Essentially, we maintain a ``mix" $J_{mixbytes}$ bytes wide, and repeatedly sequentially fetch $J_{mixbytes}$ bytes from the full dataset and use the $E_\text{\tiny FNV}$ function to combine it with the mix. $J_{mixbytes}$ bytes of sequential access are used so that each round of the algorithm always fetches a full page from RAM, minimizing translation lookaside buffer misses which ASICs would theoretically be able to avoid.
+Essentially, we maintain a "mix" $J_{mixbytes}$ bytes wide, and repeatedly sequentially fetch $J_{mixbytes}$ bytes from the full dataset and use the $E_\text{\tiny FNV}$ function to combine it with the mix. $J_{mixbytes}$ bytes of sequential access are used so that each round of the algorithm always fetches a full page from RAM, minimizing translation lookaside buffer misses which ASICs would theoretically be able to avoid.
 
 If the output of this algorithm is below the desired target, then the nonce is valid. Note that the extra application of \texttt{KEC} at the end ensures that there exists an intermediate nonce which can be provided to prove that at least a small amount of work was done; this quick outer PoW verification can be used for anti-DDoS purposes. It also serves to provide statistical assurance that the result is an unbiased, 256 bit number.
 
