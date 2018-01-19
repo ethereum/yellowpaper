@@ -477,9 +477,10 @@ x \equiv \begin{cases}
 2 & \text{otherwise}
 \end{cases}
 \end{equation*}
-\begin{equation}
-\expdiffsymb \equiv \left\lfloor 2^{ \left\lfloor H_i \div 100000 \right\rfloor - 2 } \right\rfloor
-\end{equation}
+\begin{align}
+\expdiffsymb &\equiv \left\lfloor 2^{ \left\lfloor H'_i \div 100000 \right\rfloor - 2 } \right\rfloor \\
+H'_i &\equiv \max(H_i - 3000000, 0)
+\end{align}
 
 The canonical gas limit $H_l$ of a block of header $H$ must fulfil the relation:
 \begin{eqnarray}
@@ -1104,9 +1105,9 @@ R & \equiv & (1 + \frac{1}{8} (U_i - {B_H}_i)) R_b
 
 If there are collisions of the beneficiary addresses between ommers and the block (i.e. two ommers with the same beneficiary address or an ommer with the same beneficiary address as the present block), additions are applied cumulatively.
 
-We define the block reward as 5 Ether:
+We define the block reward as 3 Ether:
 \begin{equation}
-\text{Let} \quad R_b = 5 \times 10^{18}
+\text{Let} \quad R_b = 3 \times 10^{18}
 \end{equation}
 
 \subsection{State \& Nonce Validation}\label{sec:statenoncevalidation}
