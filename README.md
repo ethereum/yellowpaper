@@ -9,8 +9,7 @@ It is a free culture work, licensed under Creative Commons Attribution Share-Ali
 
 ## Usage
 
-The latest version is generally available as a PDF at https://ethereum.github.io/yellowpaper/paper.pdf. With the hyperref package, this version of the yellow paper can be used to get links that direct to specific info in the yellow paper, which is useful e.g. for pedagogical and academic purposes. [Here](
-https://github.com/ethereum/yellowpaper/files/1596574/Paper.pdf#blockhash) is an example of such a use.
+The latest version is generally available as a PDF at https://ethereum.github.io/yellowpaper/paper.pdf. With the hyperref package, this version of the yellow paper can be used to get links that direct to specific info in the yellow paper, which is useful e.g. for pedagogical and academic purposes.
 
 How to build
 ---
