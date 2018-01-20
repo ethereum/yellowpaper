@@ -482,6 +482,8 @@ x \equiv \begin{cases}
 H'_i &\equiv \max(H_i - 3000000, 0)
 \end{align}
 
+Note that $\mindifficulty$ is the difficulty of the genesis block. The \textit{Homestead} difficulty parameter, $\homesteadmod$, is used to affect a dynamic homeostasis of time between blocks, as the time between blocks varies, as discussed below, as implemented in EIP-2 \cite{EIP-2}. In the Homestead release, $\expdiffsymb$ results in the difficulty increasing every 10000 blocks, which puts upward pressure on the time between blocks, causing it to slowly accelerate, and putting time pressure on transitioning to proof-of-stake. This effect, known as the "difficulty bomb", or "ice age", was explained in EIP-649 \cite{EIP-649} and delayed and implemented earlier in EIP-2 \cite{EIP-2}. $\homesteadmod$ was also modified in EIP-100 with the use of $x$, the adjustment factor above, and the demoninator 9, in order to target the mean block time including uncle blocks \cite{EIP-100}.
+
 The canonical gas limit $H_l$ of a block of header $H$ must fulfil the relation:
 \begin{eqnarray}
 & & H_l < {P(H)_H}_l + \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor \quad \wedge \\
