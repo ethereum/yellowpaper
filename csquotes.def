@@ -1,0 +1,512 @@
+\ProvidesFile{csquotes.def}
+  [2017/03/11 v5.2b csquotes generic definitions (JAW)]
+
+% Set defaults
+
+\ExecuteQuoteOptions{autostyle=tryonce,autopunct,maxlevel=2,threshold=3,thresholdtype=lines}
+\SetBlockEnvironment{quote}
+\SetCiteCommand{\cite}
+
+% Predefined backend styles
+
+\DeclareQuoteStyle[quotes]{austrian}% verified
+  {\quotedblbase}
+  {\textquotedblleft}
+  [0.05em]
+  {\quotesinglbase}
+  {\fixligatures\textquoteleft}
+\DeclareQuoteStyle[guillemets]{austrian}% verified
+  {\guillemotright}
+  {\guillemotleft}
+  [0.025em]
+  {\guilsinglright}
+  {\guilsinglleft}
+\DeclareQuoteStyle[quotes]{croatian}% verified
+  {\quotedblbase}
+  {\textquotedblright}
+  [0.05em]% unsure
+  {\quotesinglbase}
+  {\textquoteright}
+\DeclareQuoteStyle[guillemets]{croatian}% verified
+  {\guillemotright}
+  {\guillemotleft}
+  [0.025em]
+  {\quotesinglbase}
+  {\textquoteright}
+\DeclareQuoteStyle[guillemets*]{croatian}% verified
+  {\guillemotleft}
+  {\guillemotright}
+  [0.025em]
+  {\quotesinglbase}
+  {\textquoteright}
+\DeclareQuoteStyle{czech} 
+  {\quotedblbase}
+  {\textquotedblleft}
+  [0.025em]
+  {\quotesinglbase}
+  {\fixligatures\textquoteleft}
+\DeclareQuoteStyle[quotes]{danish}
+  {\quotedblbase}
+  {\textquotedblleft}
+  [0.05em]
+  {\textquoteright}
+  {\textquoteright}
+\DeclareQuoteStyle[guillemets]{danish}
+  {\guillemotright}
+  {\guillemotleft}
+  {\textquoteleft}
+  {\textquoteright}
+\DeclareQuoteStyle[topquotes]{danish}
+  {\textquotedblleft}
+  {\textquotedblright}
+  [0.05em]
+  {\textquoteleft}
+  {\textquoteright}
+\DeclareQuoteStyle{dutch}
+  {\quotedblbase}
+  {\textquotedblright}
+  [0.05em]
+  {\quotesinglbase}% unsure
+  {\textquoteright}% unsure
+\DeclareQuoteStyle[american]{english}% verified
+  {\textquotedblleft}
+  {\textquotedblright}
+  [0.05em]
+  {\textquoteleft}
+  {\textquoteright}
+\DeclareQuoteStyle[british]{english}% verified
+  {\textquoteleft}
+  {\textquoteright}
+  [0.05em]
+  {\textquotedblleft}
+  {\textquotedblright}
+\DeclareQuoteStyle{finnish}% verified
+  {\textquotedblright}
+  {\textquotedblright}
+  [0.05em]
+  {\textquoteright}
+  {\textquoteright}
+\DeclareQuoteStyle[quotes]{french}
+  {\mkfrenchopenquote{\guillemotleft}}
+  {\mkfrenchclosequote{\guillemotright}}
+  {\textquotedblleft}
+  {\textquotedblright}
+\DeclareQuoteStyle[quotes*]{french}
+  {\mkfrenchopenquote{\guillemotleft}}
+  {\mkfrenchclosequote{\guillemotright}}
+  {\mkfrenchopenquote{\textquotedblleft}}
+  {\mkfrenchclosequote{\textquotedblright}}
+\DeclareQuoteStyle[guillemets]{french}
+  [\initfrenchquotes]
+  {\mkfrenchopenquote{\guillemotleft}}
+  [\mkfrenchopenquote{\guillemotleft}]
+  {\mkfrenchclosequote{\guillemotright}}
+  {\mkfrenchopenquote{\guillemotleft}}
+  [\mkfrenchopenquote{\guillemotleft}]
+  {\mkfrenchclosequote{\guillemotright}}
+\DeclareQuoteStyle[guillemets*]{french}
+  [\initfrenchquotes]
+  {\mkfrenchopenquote{\guillemotleft}}
+  [\mkfrenchopenquote{\guillemotright}]
+  {\mkfrenchclosequote{\guillemotright}}
+  {\mkfrenchopenquote{\guillemotleft}}
+  [\mkfrenchopenquote{\guillemotright}]
+  {\mkfrenchclosequote{\guillemotright}}
+\DeclareQuoteStyle[quotes]{german}% verified
+  {\quotedblbase}
+  {\textquotedblleft}
+  [0.05em]
+  {\quotesinglbase}
+  {\fixligatures\textquoteleft}
+\DeclareQuoteStyle[guillemets]{german}% verified
+  {\guillemotright}
+  {\guillemotleft}
+  [0.025em]
+  {\guilsinglright}
+  {\guilsinglleft}
+\DeclareQuoteStyle[swiss]{german}% verified
+  {\guillemotleft}
+  {\guillemotright}
+  [0.025em]
+  {\guilsinglleft}
+  {\guilsinglright}
+\DeclareQuoteStyle{greek}% verified
+  {\guillemotleft}
+  {\guillemotright}
+  {\textquotedblleft} 
+  {\textquotedblright}
+\DeclareQuoteStyle{icelandic}
+  {\quotedblbase}
+  {\textquotedblleft}
+  [0.05em]
+  {\quotesinglbase}
+  {\fixligatures\textquoteleft}
+\DeclareQuoteStyle[quotes]{italian}
+  {\textquotedblleft}
+  {\textquotedblright}
+  [0.05em]
+  {\textquoteleft}
+  {\textquoteright}
+\DeclareQuoteStyle[guillemets]{italian}
+  {\guillemotleft}
+  {\guillemotright}
+  [0.025em]
+  {\textquotedblleft}
+  {\textquotedblright}
+\DeclareQuoteStyle[guillemets]{norwegian}
+  {\guillemotleft}
+  {\guillemotright}
+  [0.025em]
+  {\guilsinglleft}
+  {\guilsinglright}
+\DeclareQuoteStyle[quotes]{norwegian}
+  {\quotedblbase}
+  {\textquotedblright}
+  [0.05em]
+  {\quotesinglbase}
+  {\textquoteright}
+\DeclareQuoteStyle[brazilian]{portuguese}% verified
+  {\textquotedblleft}
+  {\textquotedblright}
+  [0.05em]
+  {\textquoteleft}
+  {\textquoteright}
+\DeclareQuoteStyle[portuguese]{portuguese}% unsure
+  {\guillemotleft}
+  {\guillemotright}
+  [0.05em]
+  {\textquotedblleft}
+  {\textquotedblright}
+\DeclareQuoteStyle{russian}% verified
+  {\guillemotleft}
+  {\guillemotright}
+  {\quotedblbase}
+  {\textquotedblleft}
+\DeclareQuoteStyle[mexican]{spanish}
+  {\textquotedblleft}
+  {\textquotedblright}
+  [0.05em]
+  {\textquoteleft}
+  {\textquoteright}
+\DeclareQuoteStyle{slovak} 
+  {\quotedblbase}
+  {\textquotedblleft}
+  [0.025em]
+  {\quotesinglbase}
+  {\fixligatures\textquoteleft}
+\DeclareQuoteStyle[spanish]{spanish}% verified
+  {\guillemotleft}
+  [\guillemotright]
+  {\guillemotright}
+  [0.025em]
+  {\textquotedblleft}
+  [\textquotedblright]
+  {\textquotedblright}
+\DeclareQuoteStyle[quotes]{swedish}% verified
+  {\textquotedblright}
+  {\textquotedblright}
+  [0.05em]
+  {\textquoteright}
+  {\textquoteright}
+\DeclareQuoteStyle[guillemets]{swedish}% verified
+  {\guillemotright}
+  {\guillemotright}
+  [0.025em]
+  {\guilsinglright}
+  {\guilsinglright}
+\DeclareQuoteStyle[guillemets*]{swedish}% verified
+  {\guillemotright}
+  {\guillemotleft}
+  [0.025em]
+  {\guilsinglright}
+  {\guilsinglleft}
+
+% Plain style for PDF strings
+
+\DeclarePlainStyle{"}{"}{'}{'}
+
+% Default style
+
+\DeclareQuoteAlias[american]{english}{default}
+
+% Predefined aliases
+
+\DeclareQuoteAlias[quotes]{austrian}{austrian}
+\DeclareQuoteAlias[quotes]{croatian}{croatian}
+\DeclareQuoteAlias[quotes]{danish}{danish}
+\DeclareQuoteAlias[american]{english}{american}
+\DeclareQuoteAlias[american]{english}{canadian}
+\DeclareQuoteAlias[american]{english}{english}
+\DeclareQuoteAlias[british]{english}{british}
+\DeclareQuoteAlias[british]{english}{australian}% unsure
+\DeclareQuoteAlias[british]{english}{newzealand}% unsure
+\DeclareQuoteAlias[quotes]{french}{french}
+\DeclareQuoteAlias[quotes]{german}{german}
+\DeclareQuoteAlias[swiss]{german}{swiss}
+\DeclareQuoteAlias[swiss]{german}{swissgerman}
+\DeclareQuoteAlias[guillemets]{italian}{italian}
+\DeclareQuoteAlias[guillemets]{norwegian}{norwegian}
+\DeclareQuoteAlias[brazilian]{portuguese}{brazilian}
+\DeclareQuoteAlias[portuguese]{portuguese}{portuguese}
+\DeclareQuoteAlias[mexican]{spanish}{mexican}
+\DeclareQuoteAlias[spanish]{spanish}{spanish}
+\DeclareQuoteAlias[quotes]{swedish}{swedish}
+
+% Babel aliases
+
+\DeclareQuoteAlias{american}{USenglish}
+\DeclareQuoteAlias{american}{usenglish}
+\DeclareQuoteAlias{brazilian}{brazil}
+\DeclareQuoteAlias{british}{UKenglish}
+\DeclareQuoteAlias{british}{ukenglish}
+\DeclareQuoteAlias{german}{ngerman}
+\DeclareQuoteAlias{austrian}{naustrian}
+\DeclareQuoteAlias{swissgerman}{nswissgerman}
+\DeclareQuoteAlias{norwegian}{norsk}
+\DeclareQuoteAlias{norwegian}{nynorsk}
+\DeclareQuoteAlias{portuguese}{portuges}
+
+% Language options
+
+\DeclareQuoteOption{austrian}
+\DeclareQuoteOption{danish}
+\DeclareQuoteOption{english}
+\DeclareQuoteOption{french}
+\DeclareQuoteOption{german}
+\DeclareQuoteOption{icelandic}
+\DeclareQuoteOption{italian}
+\DeclareQuoteOption{norwegian}
+\DeclareQuoteOption{portuguese}
+\DeclareQuoteOption{spanish}
+\DeclareQuoteOption{swedish}
+
+% Register quotation marks (per output encoding)
+
+\DeclareQuoteGlyph{OT1}{34}%  = \textquotedblright
+\DeclareQuoteGlyph{OT1}{39}%  = \textquoteright
+\DeclareQuoteGlyph{OT1}{92}%  = \textquotedblleft
+\DeclareQuoteGlyph{OT1}{96}%  = \textquoteleft
+
+\DeclareQuoteGlyph{OT2}{34}%  = \textquotedbl
+\DeclareQuoteGlyph{OT2}{39}%  = \textquoteright
+\DeclareQuoteGlyph{OT2}{60}%  = \guillemotleft
+\DeclareQuoteGlyph{OT2}{62}%  = \guillemotright
+\DeclareQuoteGlyph{OT2}{96}%  = \textquoteleft
+%\DeclareQuoteGlyph{OT2}{91}% = [[ ligature = \guillemotleft
+%\DeclareQuoteGlyph{OT2}{93}% = ]] ligature = \guillemotright
+
+\DeclareQuoteGlyph{OT4}{34}%  = \textquotedblright
+\DeclareQuoteGlyph{OT4}{39}%  = \textquoteright
+\DeclareQuoteGlyph{OT4}{92}%  = \textquotedblleft
+\DeclareQuoteGlyph{OT4}{96}%  = \textquoteleft
+\DeclareQuoteGlyph{OT4}{174}% = \guillemotleft
+\DeclareQuoteGlyph{OT4}{175}% = \guillemotright
+\DeclareQuoteGlyph{OT4}{255}% = \quotedblbase
+
+\DeclareQuoteGlyph{T1}{13}%   = \quotesinglbase
+\DeclareQuoteGlyph{T1}{14}%   = \guilsinglleft
+\DeclareQuoteGlyph{T1}{15}%   = \guilsinglright
+\DeclareQuoteGlyph{T1}{16}%   = \textquotedblleft
+\DeclareQuoteGlyph{T1}{17}%   = \textquotedblright
+\DeclareQuoteGlyph{T1}{18}%   = \quotedblbase
+\DeclareQuoteGlyph{T1}{19}%   = \guillemotleft
+\DeclareQuoteGlyph{T1}{20}%   = \guillemotright
+\DeclareQuoteGlyph{T1}{34}%   = \textquotedbl
+\DeclareQuoteGlyph{T1}{39}%   = \textquoteright
+\DeclareQuoteGlyph{T1}{96}%   = \textquoteleft
+%\DeclareQuoteGlyph{T1}{60}%  = << ligature = \guillemotleft
+%\DeclareQuoteGlyph{T1}{62}%  = >> ligature = \guillemotright
+
+\DeclareQuoteGlyph{LY1}{34}%  = \textquotedbl
+\DeclareQuoteGlyph{LY1}{39}%  = \textquoteright
+\DeclareQuoteGlyph{LY1}{96}%  = \textquoteleft
+\DeclareQuoteGlyph{LY1}{129}% = \textquotesingle
+\DeclareQuoteGlyph{LY1}{130}% = \quotesinglbase
+\DeclareQuoteGlyph{LY1}{132}% = \quotedblbase
+\DeclareQuoteGlyph{LY1}{139}% = \guilsinglleft
+\DeclareQuoteGlyph{LY1}{147}% = \textquotedblleft
+\DeclareQuoteGlyph{LY1}{148}% = \textquotedblright
+\DeclareQuoteGlyph{LY1}{155}% = \guilsinglright
+\DeclareQuoteGlyph{LY1}{171}% = \guillemotleft
+\DeclareQuoteGlyph{LY1}{187}% = \guillemotright
+
+\DeclareQuoteGlyph{LGR}{28}%  = \textquoteleft
+\DeclareQuoteGlyph{LGR}{29}%  = \textquoteright
+\DeclareQuoteGlyph{LGR}{123}% = \guillemotleft
+\DeclareQuoteGlyph{LGR}{125}% = \guillemotright
+
+\DeclareQuoteGlyph{T2A}{16}%  = \textquotedblleft
+\DeclareQuoteGlyph{T2A}{17}%  = \textquotedblright
+\DeclareQuoteGlyph{T2A}{34}%  = \textquotedbl
+\DeclareQuoteGlyph{T2A}{39}%  = \textquoteright
+\DeclareQuoteGlyph{T2A}{96}%  = \textquoteleft
+\DeclareQuoteGlyph{T2A}{189}% = \quotedblbase
+\DeclareQuoteGlyph{T2A}{190}% = \guillemotleft
+\DeclareQuoteGlyph{T2A}{191}% = \guillemotright
+%\DeclareQuoteGlyph{T2A}{60}% = << ligature = \guillemotleft
+%\DeclareQuoteGlyph{T2A}{62}% = >> ligature = \guillemotright
+
+\DeclareQuoteGlyph{T2B}{16}%  = \textquotedblleft
+\DeclareQuoteGlyph{T2B}{17}%  = \textquotedblright
+\DeclareQuoteGlyph{T2B}{34}%  = \textquotedbl
+\DeclareQuoteGlyph{T2B}{39}%  = \textquoteright
+\DeclareQuoteGlyph{T2B}{96}%  = \textquoteleft
+\DeclareQuoteGlyph{T2B}{189}% = \quotedblbase
+\DeclareQuoteGlyph{T2B}{190}% = \guillemotleft
+\DeclareQuoteGlyph{T2B}{191}% = \guillemotright
+%\DeclareQuoteGlyph{T2B}{60}% = << ligature = \guillemotleft
+%\DeclareQuoteGlyph{T2B}{62}% = >> ligature = \guillemotright
+
+\DeclareQuoteGlyph{T2C}{16}%  = \textquotedblleft
+\DeclareQuoteGlyph{T2C}{17}%  = \textquotedblright
+\DeclareQuoteGlyph{T2C}{34}%  = \textquotedbl
+\DeclareQuoteGlyph{T2C}{39}%  = \textquoteright
+\DeclareQuoteGlyph{T2C}{96}%  = \textquoteleft
+\DeclareQuoteGlyph{T2C}{189}% = \quotedblbase
+\DeclareQuoteGlyph{T2C}{190}% = \guillemotleft
+\DeclareQuoteGlyph{T2C}{191}% = \guillemotright
+%\DeclareQuoteGlyph{T2C}{60}% = << ligature = \guillemotleft
+%\DeclareQuoteGlyph{T2C}{62}% = >> ligature = \guillemotright
+
+\DeclareQuoteGlyph{X2}{16}%   = \textquotedblleft
+\DeclareQuoteGlyph{X2}{17}%   = \textquotedblright
+\DeclareQuoteGlyph{X2}{34}%   = \textquotedbl
+\DeclareQuoteGlyph{X2}{39}%   = \textquoteright
+\DeclareQuoteGlyph{X2}{96}%   = \textquoteleft
+\DeclareQuoteGlyph{X2}{189}%  = \quotedblbase
+\DeclareQuoteGlyph{X2}{190}%  = \guillemotleft
+\DeclareQuoteGlyph{X2}{191}%  = \guillemotright
+%\DeclareQuoteGlyph{X2}{60}%  = << ligature = \guillemotleft
+%\DeclareQuoteGlyph{X2}{62}%  = >> ligature = \guillemotright
+
+\DeclareQuoteGlyph{LCY}{13}%  = \textquotesingle
+\DeclareQuoteGlyph{LCY}{34}%  = \textquotedbl
+\DeclareQuoteGlyph{LCY}{39}%  = \textquoteright
+\DeclareQuoteGlyph{LCY}{96}%  = \textquoteleft
+\DeclareQuoteGlyph{LCY}{253}% = \guillemotleft
+\DeclareQuoteGlyph{LCY}{254}% = \guillemotright
+\DeclareQuoteGlyph{LCY}{255}% = \quotedblbase
+%\DeclareQuoteGlyph{LCY}{60}% = << ligature = \guillemotleft
+%\DeclareQuoteGlyph{LCY}{62}% = >> ligature = \guillemotright
+
+% Unicode (for XeTeX)
+\DeclareQuoteGlyph{EU1}{"0022}% = neutral quot. mark, double              = \textquotedbl
+\DeclareQuoteGlyph{EU1}{"0027}% = neutral quot. mark, single              = \textquotesingle
+\DeclareQuoteGlyph{EU1}{"00AB}% = angle quot. mark, left-pointing double  = \guillemotleft
+\DeclareQuoteGlyph{EU1}{"00BB}% = angle quot. mark, right-pointing double = \guillemotright
+\DeclareQuoteGlyph{EU1}{"2018}% = comma quot. mark, single turned         = \textquoteleft
+\DeclareQuoteGlyph{EU1}{"2019}% = comma quot. mark, single                = \textquoteright
+\DeclareQuoteGlyph{EU1}{"201A}% = comma quot. mark, low single            = \quotesinglbase
+\DeclareQuoteGlyph{EU1}{"201B}% = comma quot. mark, single reversed       = n/a
+\DeclareQuoteGlyph{EU1}{"201C}% = comma quot. mark, double turned         = \textquotedblleft
+\DeclareQuoteGlyph{EU1}{"201D}% = comma quot. mark, double                = \textquotedblright
+\DeclareQuoteGlyph{EU1}{"201E}% = comma quot. mark, low double            = \quotedblbase
+\DeclareQuoteGlyph{EU1}{"201F}% = comma quot. mark, double reversed       = n/a
+\DeclareQuoteGlyph{EU1}{"2039}% = angle quot. mark, left-pointing single  = \guilsinglleft
+\DeclareQuoteGlyph{EU1}{"203A}% = angle quot. mark, right-pointing single = \guilsinglright
+
+% Unicode (for LuaTeX)
+\DeclareQuoteGlyph{EU2}{"0022}% = neutral quot. mark, double              = \textquotedbl
+\DeclareQuoteGlyph{EU2}{"0027}% = neutral quot. mark, single              = \textquotesingle
+\DeclareQuoteGlyph{EU2}{"00AB}% = angle quot. mark, left-pointing double  = \guillemotleft
+\DeclareQuoteGlyph{EU2}{"00BB}% = angle quot. mark, right-pointing double = \guillemotright
+\DeclareQuoteGlyph{EU2}{"2018}% = comma quot. mark, single turned         = \textquoteleft
+\DeclareQuoteGlyph{EU2}{"2019}% = comma quot. mark, single                = \textquoteright
+\DeclareQuoteGlyph{EU2}{"201A}% = comma quot. mark, low single            = \quotesinglbase
+\DeclareQuoteGlyph{EU2}{"201B}% = comma quot. mark, single reversed       = n/a
+\DeclareQuoteGlyph{EU2}{"201C}% = comma quot. mark, double turned         = \textquotedblleft
+\DeclareQuoteGlyph{EU2}{"201D}% = comma quot. mark, double                = \textquotedblright
+\DeclareQuoteGlyph{EU2}{"201E}% = comma quot. mark, low double            = \quotedblbase
+\DeclareQuoteGlyph{EU2}{"201F}% = comma quot. mark, double reversed       = n/a
+\DeclareQuoteGlyph{EU2}{"2039}% = angle quot. mark, left-pointing single  = \guilsinglleft
+\DeclareQuoteGlyph{EU2}{"203A}% = angle quot. mark, right-pointing single = \guilsinglright
+
+% Unicode (2016/02/01 ownards)
+\DeclareQuoteGlyph{TU}{"0022}% = neutral quot. mark, double              = \textquotedbl
+\DeclareQuoteGlyph{TU}{"0027}% = neutral quot. mark, single              = \textquotesingle
+\DeclareQuoteGlyph{TU}{"00AB}% = angle quot. mark, left-pointing double  = \guillemotleft
+\DeclareQuoteGlyph{TU}{"00BB}% = angle quot. mark, right-pointing double = \guillemotright
+\DeclareQuoteGlyph{TU}{"2018}% = comma quot. mark, single turned         = \textquoteleft
+\DeclareQuoteGlyph{TU}{"2019}% = comma quot. mark, single                = \textquoteright
+\DeclareQuoteGlyph{TU}{"201A}% = comma quot. mark, low single            = \quotesinglbase
+\DeclareQuoteGlyph{TU}{"201B}% = comma quot. mark, single reversed       = n/a
+\DeclareQuoteGlyph{TU}{"201C}% = comma quot. mark, double turned         = \textquotedblleft
+\DeclareQuoteGlyph{TU}{"201D}% = comma quot. mark, double                = \textquotedblright
+\DeclareQuoteGlyph{TU}{"201E}% = comma quot. mark, low double            = \quotedblbase
+\DeclareQuoteGlyph{TU}{"201F}% = comma quot. mark, double reversed       = n/a
+\DeclareQuoteGlyph{TU}{"2039}% = angle quot. mark, left-pointing single  = \guilsinglleft
+\DeclareQuoteGlyph{TU}{"203A}% = angle quot. mark, right-pointing single = \guilsinglright
+
+
+\endinput
+
+% Auxiliary commands for some styles
+
+% The \fixligatures command used in the above styles is provided
+% by csquotes.sty. It is used as follows:
+%
+%       \fixligatures\textquoteleft
+%
+% and will suppress the ligatures
+%
+%       ?` -> \textquestiondown
+% and
+%       !` -> \textexclamdown
+%
+% in T1 encoding.
+
+% \initfrenchquotes is also provided by csquotes.sty. This command
+% is intended for use in the 'outer initialization' argument of
+% \DeclareQuoteStyle. It will enable a feature which replaces two
+% adjoining marks at the end of a quotation by a single one. This is
+% required by some styles which use the same quotation marks on both
+% the outer and the inner level. If enabled, you get:
+%
+%        <<outer quote <<inner quote>>
+%
+% instead of
+%
+%        <<outer quote <<inner quote>> >>
+%
+% That is, if two nested quotations end simultaneously, the second
+% closing mark is omitted.
+
+% The commands \mkfrenchopenquote and \mkfrenchclosequote are
+% intended for spaced-out quotation marks as used in French. They
+% are employed as follows:
+%
+%       \mkfrenchopenquote{\guillemotleft}
+%       \mkfrenchclosequote{\guillemotright}
+%
+% and will use a command called \@frenchquotespace to space out the
+% quotation marks. The default spacing is:
+%
+%       \penalty\@M
+%       \hskip 0.8\fontdimen2\font
+%        plus  0.3\fontdimen3\font
+%        minus 0.3\fontdimen4\font
+%
+% This is similar to what the \og and \fg commands of babel's
+% french.ldf use. It yields a stretchable space whose natural size
+% is the interword space of the current font multiplied by 0.8. The
+% stretch component is the interword stretch of the current font
+% multiplied by 0.3, and the shrink component is the interword
+% shrink of the current font multiplied by 0.3.
+%
+% If you prefer a full interword space, redefine \@frenchquotespace
+% as follows:
+%
+%       \renewcommand*{\@frenchquotespace}{%
+%         \penalty\@M
+%         \hskip\fontdimen2\font\relax}
+%
+% or:
+%
+%       \renewcommand*{\@frenchquotespace}{%
+%         \penalty\@M\space}
+%
+% In either case, the difference to the default values is so subtle,
+% you will hardly notice it in most cases.
+%
+% Don't forget to add the penalty if you redefine \@frenchquotespace!
+% You certainly don't want to allow a linebreak at that point.
