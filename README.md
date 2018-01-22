@@ -13,17 +13,7 @@ The paper comes as a single ``latex`` file ``Paper.tex``. The latest version is 
 
 In order to build, use the supplied build script (``build.sh``). Following the first time, you can use the standard `pdflatex` tools like http://latex.informatik.uni-halle.de/latex-online/latex.php for compiling/preview. It can be viewed in ``PDF`` format after building.
 
+The previous protocol versions are listed in [BRANCHES.md](./BRANCHES.md).
+
 ## Other language versions
 - [Chinese](https://github.com/yuange1024/ethereum_yellowpaper) translated by YuanGe and GaoTianlu
-
-## Protocol Versions
-
-Each protocol version is specified in a branch in this repository.  The activation block of each version is specified in the links.
-
-| Branch          | Version                                                                           | Known Significant Issues |
-|-----------------|-----------------------------------------------------------------------------------|--------------------------|
-| master          | [Byzantium](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-609.md)         | Some EIPs not reflected  |
-| spurious-dragon | [Spurious Dragon](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-607.md)   | Some EIPs not reflected  |
-| (to be added)   | [Tangerine Whistle](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-608.md) |                          |
-| (to be added)   | [DAO Fork](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-779.md)          |                          |
-| homestead       | [Homestead](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-606.md)         |                          |
