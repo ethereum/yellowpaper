@@ -9,7 +9,7 @@ It is free culture work, licensed under the Creative Commons Attribution Share-A
 
 ## Usage
 
-The paper comes as a single ``latex`` file ``Paper.tex``. The latest version is generally available as a PDF at https://ethereum.github.io/yellowpaper/paper.pdf or just [yellowpaper.io](http://yellowpaper.io/) .
+The latest version is generally available as a PDF at https://ethereum.github.io/yellowpaper/paper.pdf. With the hyperref package, this version of the yellow paper can be used to get links that direct to specific info in the yellow paper, which is useful e.g. for pedagogical and academic purposes.
 
 In order to build, use the supplied build script (``build.sh``). Following the first time, you can use the standard `pdflatex` tools like http://latex.informatik.uni-halle.de/latex-online/latex.php for compiling/preview. It can be viewed in ``PDF`` format after building.
 
