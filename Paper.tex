@@ -124,7 +124,6 @@ Ethereum, taken as a whole, can be viewed as a transaction-based state machine: 
 \begin{equation}
 \linkdest{Upsilon_state_transition}\linkdest{Upsilon}\boldsymbol{\sigma}_{t+1} \equiv \Upsilon(\boldsymbol{\sigma}_{t}, T)
 \end{equation}
-
 where $\Upsilon$ is the Ethereum state transition function. In Ethereum, $\Upsilon$, together with $\boldsymbol{\sigma}$ are considerably more powerful than any existing comparable system; $\Upsilon$ allows components to carry out arbitrary computation, while $\boldsymbol{\sigma}$ allows components to store arbitrary state between transactions.
 
 Transactions are collated into blocks; blocks are chained together using a cryptographic hash as a means of reference. Blocks function as a journal, recording a series of transactions together with the previous block and an identifier for the final state (though do not store the final state itself---that would be far too big). They also punctuate the transaction series with incentives for nodes to \textit{mine}. This incentivisation takes place as a state-transition function, adding value to a nominated account.
@@ -137,8 +136,7 @@ Formally, we expand to:
 B & \equiv & (..., (T_0, T_1, ...) ) \\
 \Pi(\boldsymbol{\sigma}, B) & \equiv & \hyperlink{Omega}{\Omega}(B, \hyperlink{Upsilon}{\Upsilon}(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...)
 \end{eqnarray}
-
-Where \hyperlink{Omega}{$\Omega$} is the block-finalisation state transition function (a function that rewards a nominated party); \hyperlink{block}{$B$} is this block, which includes a series of transactions amongst some other components; and $\hyperlink{Pi}{\Pi}$ is the block-level state-transition function.
+where \hyperlink{Omega}{$\Omega$} is the block-finalisation state transition function (a function that rewards a nominated party); \hyperlink{block}{$B$} is this block, which includes a series of transactions amongst some other components; and $\hyperlink{Pi}{\Pi}$ is the block-level state-transition function.
 
 This is the basis of the blockchain paradigm, a model that forms the backbone of not only Ethereum, but all decentralised consensus-based transaction systems to date.
 
@@ -230,7 +228,6 @@ The collapse function for the set of key/value pairs in the trie, $L_{I}^*$, is 
 \begin{equation}
 L_{I}\big( (k, v) \big) \equiv \big(\texttt{\small KEC}(k), \texttt{\small RLP}(v)\big)
 \end{equation}
-
 where:
 \begin{equation}
 k \in \mathbb{B}_{32} \quad \wedge \quad v \in \mathbb{N}
@@ -392,7 +389,6 @@ We define the Bloom filter function, $M$, to reduce a log entry into a single 25
 \begin{equation}
 M(O) \equiv \hyperlink{bigvee}{\bigvee}_{t \in \{O_{\mathrm{a}}\} \cup O_{\mathbf{t}}} \big( M_{3:2048}(t) \big)
 \end{equation}
-
 where $M_{3:2048}$ is a specialised Bloom filter that sets three bits out of 2048, given an arbitrary byte sequence. It does this through taking the low-order 11 bits of each of the first three pairs of bytes in a Keccak-256 hash of the byte sequence.\footnote{11 bits $= 2^{2048}$, and the low-order 11 bits is the modulo 2048 of the operand, which is in this case is "each of the first three pairs of bytes in a Keccak-256 hash of the byte sequence."} Formally:
 \begin{eqnarray}
 M_{3:2048}(\mathbf{x}: \mathbf{x} \in \mathbb{B}) & \equiv & \mathbf{y}: \mathbf{y} \in \mathbb{B}_{256} \quad \text{where:}\\
@@ -400,7 +396,6 @@ M_{3:2048}(\mathbf{x}: \mathbf{x} \in \mathbb{B}) & \equiv & \mathbf{y}: \mathbf
 \forall_{i \in \{0, 2, 4\}}&:& \mathcal{B}_{m(\mathbf{x}, i)}(\mathbf{y}) = 1\\
 m(\mathbf{x}, i) &\equiv& \mathtt{\tiny KEC}(\mathbf{x})[i, i + 1] \bmod 2048
 \end{eqnarray}
-
 where $\mathcal{B}$ is the bit reference function such that $\mathcal{B}_{\mathrm{j}}(\mathbf{x})$ equals the bit of index $j$ (indexed from 0) in the byte array $\mathbf{x}$.
 
 \subsubsection{Holistic Validity}
@@ -452,7 +447,6 @@ The component types are defined thus:
 \hyperlink{block_extraData_H__x}{H_{\mathrm{x}}} \in \mathbb{B} & \wedge & H_{\mathrm{m}} \in \mathbb{B}_{32} & \wedge & \hyperlink{block_nonce_H__n}{H_{\mathrm{n}}} \in \mathbb{B}_{8}
 \end{array}
 \end{equation}
-
 where
 \begin{equation}
 \mathbb{B}_{\mathrm{n}} = \{ B: B \in \mathbb{B} \wedge \lVert B \rVert = n \}
@@ -484,7 +478,7 @@ D(H) \equiv \begin{dcases}
 \text{max}\!\left(\mindifficulty, {P(H)_{H}}_{\mathrm{d}} + \diffadjustment\times\homesteadmod + \expdiffsymb \right) & \text{otherwise}\\
 \end{dcases}
 \end{equation}
-where:
+where
 \begin{equation}
 \mindifficulty \equiv 131072
 \end{equation}
@@ -527,7 +521,7 @@ n \leqslant \frac{2^{256}}{H_{\mathrm{d}}} \quad \wedge \quad m = H_{\mathrm{m}}
 \end{equation}
 with $(n, m) = \mathtt{PoW}(H_{\hcancel{n}}, H_{\mathrm{n}}, \mathbf{d})$.
 
-\hypertarget{block_header_without_nonce_and_mixmash_h__cancel_n}{}\linkdest{H_cancel_n}Where $H_{\hcancel{n}}$ is the new block's header $H$, but \textit{without} the nonce and mix-hash components, $\mathbf{d}$ being the current DAG, a large data set needed to compute the mix-hash, and $\mathtt{PoW}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an array with the first item being the mix-hash, to prove that a correct DAG has been used, and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. Given an approximately uniform distribution in the range $[0, 2^{64})$, the expected time to find a solution is proportional to the difficulty, $H_{\mathrm{d}}$.
+\hypertarget{block_header_without_nonce_and_mixmash_h__cancel_n}{}\linkdest{H_cancel_n}Above, $H_{\hcancel{n}}$ is the new block's header $H$, but \textit{without} the nonce and mix-hash components, $\mathbf{d}$ being the current DAG, a large data set needed to compute the mix-hash, and $\mathtt{PoW}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an array with the first item being the mix-hash, to prove that a correct DAG has been used, and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. Given an approximately uniform distribution in the range $[0, 2^{64})$, the expected time to find a solution is proportional to the difficulty, $H_{\mathrm{d}}$.
 
 This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propagate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because its satisfaction depends on the contents of the block and in turn its composed transactions, creating new, valid, blocks is difficult and, over time, requires approximately the total compute power of the trustworthy portion of the mining peers.
 
@@ -596,7 +590,6 @@ g_0 \equiv {} & \sum_{i \in T_{\mathbf{i}}, T_{\mathbf{d}}} \begin{cases} \hyper
 {} & + \begin{cases} \hyperlink{G__txcreate}{G_{\mathrm{txcreate}}} & \text{if} \quad T_{\mathrm{t}} = \varnothing \\ 0 & \text{otherwise} \end{cases} \\
 {} & + \hyperlink{G__transaction}{G_{\mathrm{transaction}}}
 \end{align}
-
 where $T_{\mathbf{i}},T_{\mathbf{d}}$ means the series of bytes of the transaction's associated data and initialisation EVM-code, depending on whether the transaction is for contract-creation or message-call. $G_{\mathrm{txcreate}}$ is added if the transaction is contract-creating, but not if a result of EVM-code. $G$ is fully defined in Appendix \ref{app:fees}.
 
 The up-front cost $v_0$ is calculated as:
@@ -634,7 +627,6 @@ Evaluating $\boldsymbol{\sigma}_{P}$ from $\boldsymbol{\sigma}_0$ depends on the
 \Theta_{4}(\boldsymbol{\sigma}_0, S(T), T_{\mathrm{o}}, T_{\mathrm{t}}, T_{\mathrm{t}}, &\\ \quad\quad g, T_{\mathrm{p}}, T_{\mathrm{v}}, T_{\mathrm{v}}, T_{\mathbf{d}}, 0, \top) & \text{otherwise}
 \end{cases}
 \end{equation}
-
 where $g$ is the amount of gas remaining after deducting the basic amount required to pay for the existence of the transaction:
 \begin{equation}
 g \equiv T_{\mathrm{g}} - g_0
@@ -692,7 +684,6 @@ The address of the new account is defined as being the rightmost 160 bits of the
 \begin{equation}
 a \equiv \mathcal{B}_{96..255}\Big(\mathtt{\tiny KEC}\Big(\mathtt{\tiny RLP}\big(\;(s, \boldsymbol{\sigma}[s]_{\mathrm{n}} - 1)\;\big)\Big)\Big)
 \end{equation}
-
 where $\mathtt{\tiny KEC}$ is the Keccak 256-bit hash function, $\mathtt{\tiny RLP}$ is the RLP encoding function, $\mathcal{B}_{a..b}(X)$ evaluates to a binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$, and $\boldsymbol{\sigma}[x]$ is the address state of $x$, or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
 
 The account's nonce is initially defined as one, the balance as the value passed, the storage as empty and the code hash as the Keccak 256-bit hash of the empty string; the sender's balance is also reduced by the value passed. Thus the mutated state becomes $\boldsymbol{\sigma}^*$:
@@ -707,7 +698,6 @@ The account's nonce is initially defined as one, the balance as the value passed
 \end{cases} \\
 \mathbf{a}^* &\equiv& (\boldsymbol{\sigma}[s]_{\mathrm{n}}, \boldsymbol{\sigma}[s]_{\mathrm{b}} - v, \boldsymbol{\sigma}[s]_{\mathbf{s}}, \boldsymbol{\sigma}[s]_{\mathrm{c}})
 \end{eqnarray}
-
 where $v'$ is the account's pre-existing value, in the event it was previously in existence:
 \begin{equation}
 v' \equiv \begin{cases}
@@ -944,7 +934,6 @@ O(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \cdot \mathbf{o} & \text{if} \qua
 X\big(O(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I)\big) & \text{otherwise} \\
 \end{cases}
 \end{equation}
-
 where
 \begin{eqnarray}
 \mathbf{o} & \equiv & H(\boldsymbol{\mu}, I) \\
@@ -1010,8 +999,7 @@ Formally:
 \begin{equation}
 D(\mathbf{c}) \equiv D_{J}(\mathbf{c}, 0)
 \end{equation}
-
-where:
+where
 \begin{equation}
 D_{J}(\mathbf{c}, i) \equiv \begin{cases}
 \{\} & \text{if} \quad i \geqslant |\mathbf{c}|  \\
@@ -1020,7 +1008,6 @@ D_{J}(\mathbf{c}, i) \equiv \begin{cases}
 D_{J}(\mathbf{c}, N(i, \mathbf{c}[i])) & \text{otherwise} \\
 \end{cases}
 \end{equation}
-
 where $N$ is the next valid instruction position in the code, skipping the data of a {\small PUSH} instruction, if any:
 \begin{equation}
 N(i, w) \equiv \begin{cases}
@@ -1103,7 +1090,6 @@ The validation of \hyperlink{ommer_block_headers_B__U}{ommer headers} means noth
 \begin{equation}
 \lVert B_{\mathbf{U}} \rVert \leqslant 2 \bigwedge_{\mathbf{U} \in B_{\mathbf{U}}} \hyperlink{block_header_validity_function}{V({\mathbf{U}}})\; \wedge \; k({\mathbf{U}}, P(\mathbf{B}_{\mathbf{H}})_{\mathbf{H}}, 6)
 \end{equation}
-
 where $k$ denotes the ``is-kin'' property:
 \begin{equation}
 k(U, H, n) \equiv \begin{cases} false & \text{if} \quad n = 0 \\
@@ -1223,8 +1209,7 @@ More formally, the proof-of-work function takes the form of $\mathtt{PoW}$:
 \begin{equation}
 m = \hyperlink{H__m}{H_{\mathrm{m}}} \quad \wedge \quad n \leqslant \frac{2^{256}}{\hyperlink{H__d}{H_{\mathrm{d}}}} \quad \text{with} \quad (m, n) = \mathtt{PoW}(\hyperlink{H_cancel_n}{H_{\hcancel{n}}}, H_{\mathrm{n}}, \mathbf{d})
 \end{equation}
-
-Where $H_{\hcancel{n}}$ is the new block's header but \textit{without} the nonce and mix-hash components; $H_{\mathrm{n}}$ is the nonce of the header; $\mathbf{d}$ is a large data set needed to compute the mixHash and $H_{\mathrm{d}}$ is the new block's difficulty value (i.e. the block difficulty from section \ref{ch:ghost}). $\mathtt{PoW}$ is the proof-of-work function which evaluates to an array with the first item being the mixHash and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. The underlying algorithm is called Ethash and is described below.
+where $H_{\hcancel{n}}$ is the new block's header but \textit{without} the nonce and mix-hash components; $H_{\mathrm{n}}$ is the nonce of the header; $\mathbf{d}$ is a large data set needed to compute the mixHash and $H_{\mathrm{d}}$ is the new block's difficulty value (i.e. the block difficulty from section \ref{ch:ghost}). $\mathtt{PoW}$ is the proof-of-work function which evaluates to an array with the first item being the mixHash and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. The underlying algorithm is called Ethash and is described below.
 \subsubsection{Ethash}
 Ethash is the PoW algorithm for Ethereum 1.0. It is the latest version of Dagger-Hashimoto, introduced by \cite{dagger} and \cite{hashimoto}, although it can no longer appropriately be called that since many of the original features of both algorithms were drastically changed with R\&D from February 2015 until May 4 2015 (\cite{commitdateforEthash}). The general route that the algorithm takes is as follows:
 
@@ -1329,8 +1314,7 @@ We define the set of possible structures $\mathbb{T}$:
 \mathbb{L} & \equiv & \{ \mathbf{t}: \mathbf{t} = ( \mathbf{t}[0], \mathbf{t}[1], ... ) \; \wedge \; \forall_{n < \lVert \mathbf{t} \rVert} \; \mathbf{t}[n] \in \mathbb{T} \} \\
 \mathbb{B} & \equiv & \{ \mathbf{b}: \mathbf{b} = ( \mathbf{b}[0], \mathbf{b}[1], ... ) \; \wedge \; \forall_{n < \lVert \mathbf{b} \rVert} \; \mathbf{b}[n] \in \mathbb{O} \}
 \end{eqnarray}
-
-Where $\mathbb{O}$ is the set of bytes. Thus $\mathbb{B}$ is the set of all sequences of bytes (otherwise known as byte-arrays, and a leaf if imagined as a tree), $\mathbb{L}$ is the set of all tree-like (sub-)structures that are not a single leaf (a branch node if imagined as a tree) and $\mathbb{T}$ is the set of all byte-arrays and such structural sequences.
+where $\mathbb{O}$ is the set of bytes. Thus $\mathbb{B}$ is the set of all sequences of bytes (otherwise known as byte-arrays, and a leaf if imagined as a tree), $\mathbb{L}$ is the set of all tree-like (sub-)structures that are not a single leaf (a branch node if imagined as a tree) and $\mathbb{T}$ is the set of all byte-arrays and such structural sequences.
 
 We define the RLP function as $\mathtt{\tiny RLP}$ through two sub-functions, the first handling the instance when the value is a byte array, the second when it is a sequence of further values:
 \begin{equation}
@@ -1865,7 +1849,6 @@ w \equiv \begin{cases} I_{\mathbf{b}}[\boldsymbol{\mu}_{\mathrm{pc}}] & \text{if
 \text{\small STOP} & \text{otherwise}
 \end{cases}
 \end{equation}
-
 where:
 \begin{equation}
 C_{mem}(a) \equiv G_{memory} \cdot a + \left\lfloor \dfrac{a^2}{512} \right\rfloor
@@ -2392,8 +2375,7 @@ The genesis block is 15 items, and is specified thus:
 \begin{equation}
 \big( \big( 0_{256}, \mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big), 0_{160}, stateRoot, 0, 0, 0_{2048}, 2^{17}, 0, 0, 3141592, time, 0, 0_{256},  \mathtt{\tiny KEC}\big( (42) \big) \big), (), () \big)
 \end{equation}
-
-Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $0_{160}$ refers to the beneficiary address, a 160-bit hash which is all zeroes; $0_{2048}$ refers to the log bloom, 2048-bit of all zeros; $2^{17}$ refers to the difficulty; the transaction trie root, receipt trie root, gas used, block number and extradata are both $0$, being equivalent to the empty byte array. The sequences of both ommers and transactions are empty and represented by $()$. $\mathtt{\tiny KEC}\big( (42) \big)$ refers to the Keccak hash of a byte array of length one whose first and only byte is of value 42, used for the nonce. $\mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big)$ value refers to the hash of the ommer list in RLP, both empty lists.
+where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $0_{160}$ refers to the beneficiary address, a 160-bit hash which is all zeroes; $0_{2048}$ refers to the log bloom, 2048-bit of all zeros; $2^{17}$ refers to the difficulty; the transaction trie root, receipt trie root, gas used, block number and extradata are both $0$, being equivalent to the empty byte array. The sequences of both ommers and transactions are empty and represented by $()$. $\mathtt{\tiny KEC}\big( (42) \big)$ refers to the Keccak hash of a byte array of length one whose first and only byte is of value 42, used for the nonce. $\mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big)$ value refers to the hash of the ommer list in RLP, both empty lists.
 
 The proof-of-concept series include a development premine, making the state root hash some value $stateRoot$. Also $time$ will be set to the initial timestamp of the genesis block. The latest documentation should be consulted for those values.
 
@@ -2482,7 +2464,7 @@ E_\text{\tiny RMH}(\mathbf{x}) & \text{if} \quad y = 1 \quad  \\
 E_{cacherounds}(E_\text{\tiny RMH}(\mathbf{x}), y -1 ) & \text{otherwise}
 \end{cases}
 \end{equation}
-Where a single round modifies each subset of the cache as follows:
+where a single round modifies each subset of the cache as follows:
 \begin{equation}
  E_\text{\tiny RMH}(\mathbf{x}) = \big( E_{rmh}(\mathbf{x}, 0), E_{rmh}(\mathbf{x}, 1), ... , E_{rmh}(\mathbf{x}, n - 1) \big)\linkdest{E__cacherounds}{}
 \end{equation}
