@@ -11,8 +11,7 @@ It is free culture work, licensed under the Creative Commons Attribution Share-A
 
 The latest version is generally available as a PDF at https://ethereum.github.io/yellowpaper/paper.pdf. With the hyperref package, this version of the yellow paper can be used to get links that direct to specific info in the yellow paper, which is useful e.g. for pedagogical and academic purposes.
 
-How to build
----
+## How to build
 
 The paper also comes as a single ``latex`` file ``Paper.tex``, which is built as a PDF as follows.
 
