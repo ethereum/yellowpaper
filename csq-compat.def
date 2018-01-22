@@ -1,0 +1,103 @@
+\ProvidesFile{csq-compat.def}
+  [2017/03/11 v5.2b csquotes backwards compatibility (JAW)]
+
+\def\csq@getversion#1{%
+  \expandafter\csq@getversion@i
+  \expandafter{\csq@vertonum#1\relax}}
+
+\def\csq@getversion@i#1{%
+  \ifcsdef{csq@version@#1}
+    {\csq@info{Enabling v\csq@numtover#1\relax\space mode}%
+     \csuse{csq@version@#1}}
+    {\ifnumless{#1+1}\csq@version
+       {\expandafter\csq@getversion@i
+        \expandafter{\the\numexpr#1+1}}
+       {\expandafter\csq@getversion@i
+        \expandafter{\csq@version}}}}
+
+\def\csq@vertonum#1.#2\relax{#1#2}
+\def\csq@numtover#1#2\relax{#1.#2}
+
+\csdef{csq@version@\csq@version}{%
+  \DeclareAutoPunct{.,;:!?}%
+  \renewcommand{\mktextquote}[6]{##1##2##4##3##6##5}%
+  \renewcommand{\mkblockquote}[4]{##1##2##4##3}%
+  \renewcommand{\mkbegdispquote}[2]{}%
+  \renewcommand{\mkenddispquote}[2]{##2##1}%
+  \renewcommand{\mkcitation}[1]{\space(##1)}%
+  \ifdef\csq@leg@DeclarePlainStyle
+    {\let\DeclarePlainStyle\csq@leg@DeclarePlainStyle
+     \undef\csq@leg@DeclarePlainStyle}
+    {}}
+
+\csdef{csq@version@44}{%
+  \DeclareAutoPunct{}%
+  \providecommand*{\ifstringblank}{\ifblank}%
+  \providecommand*{\ifquotepunct}{\ifpunct}%
+  \providecommand*{\ifquoteterm}{\ifterm}%
+  \providecommand*{\ifquotecomma}{\ifpunctmark{,}}%
+  \providecommand*{\ifquotesemicolon}{\ifpunctmark{;}}%
+  \providecommand*{\ifquotecolon}{\ifpunctmark{:}}%
+  \providecommand*{\ifquoteperiod}{\ifpunctmark{.}}%
+  \providecommand*{\ifquoteexclam}{\ifpunctmark{!}}%
+  \providecommand*{\ifquotequestion}{\ifpunctmark{?}}%
+  \providecommand*{\setblockthreshold}{\SetBlockThreshold}%
+  \providecommand*{\setblockenvironment}{\SetBlockEnvironment}%
+  \providecommand*{\RestoreQuotes}{\EnableQuotes}%
+  \providecommand*{\@restorequotes}{\@enablequotes}%
+  \providecommand*{\cquote}{\textcquote}%
+  \providecommand*{\foreigncquote}{\foreigntextcquote}%
+  \providecommand*{\hyphencquote}{\hyphentextcquote}%
+  \providecommand*{\mkpretextpunct}[1]{}%
+  \providecommand*{\mkmidtextpunct}[1]{}%
+  \providecommand*{\mkfintextpunct}[1]{##1}%
+  \providecommand*{\mkpreblockpunct}[1]{}%
+  \providecommand*{\mkmidblockpunct}[1]{}%
+  \providecommand*{\mkfinblockpunct}[1]{##1}%
+  \providecommand*{\mkpredisppunct}[1]{}%
+  \providecommand*{\mkmiddisppunct}[1]{}%
+  \providecommand*{\mkfindisppunct}[1]{##1}%
+  \providecommand*{\quotetext}{}%
+  \let\endquotetext\@empty
+  \providecommand*{\quoteblock}{}%
+  \let\endquoteblock\@empty
+  \renewcommand{\mktextquote}[6]{%
+    ##1\quotetext##2\endquotetext\mkpretextpunct{##4}%
+    ##3\mkmidtextpunct{##4}##6\mkfintextpunct{##4}##5}
+  \renewcommand{\mkblockquote}[4]{%
+    \quoteblock##1\endquoteblock\mkpreblockpunct{##2}%
+    \mkmidblockpunct{##2}##4\mkfinblockpunct{##2}##3}
+  \renewcommand{\mkbegdispquote}[2]{\quoteblock}
+  \renewcommand{\mkenddispquote}[2]{%
+    \endquoteblock\mkpredisppunct{##1}%
+    \mkmiddisppunct{##1}##2\mkfindisppunct{##1}}%
+  \renewcommand{\mkcitation}[1]{\space(##1)}%
+  \ifdef\csq@leg@DeclarePlainStyle
+    {\let\DeclarePlainStyle\csq@leg@DeclarePlainStyle
+     \undef\csq@leg@DeclarePlainStyle}
+    {}}
+
+\csdef{csq@version@36}{%
+  \csuse{csq@version@44}%
+  \providecommand{\blockcite}[1]{\space(##1)}%
+  \renewcommand*{\mkcitation}{\blockcite}%
+  \ifdef\csq@leg@DeclarePlainStyle
+    {\let\DeclarePlainStyle\csq@leg@DeclarePlainStyle
+     \undef\csq@leg@DeclarePlainStyle}
+    {}}
+
+\csdef{csq@version@30}{%
+  \csuse{csq@version@36}%
+  \ifdef\csq@leg@DeclarePlainStyle
+    {}
+    {\let\csq@leg@DeclarePlainStyle\DeclarePlainStyle
+     \renewrobustcmd*{\DeclarePlainStyle}[2]{%
+       \csq@leg@DeclarePlainStyle{##1}{##1}{##2}{##2}}}}
+
+\csdef{csq@version@29}{%
+  \csq@error
+    {Incompatible version}
+    {Backwards compatibility with versions
+     prior to 3.0 not supported}}
+
+\endinput
