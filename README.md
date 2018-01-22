@@ -24,5 +24,3 @@ This will create a PDF version of the Yellow Paper. Following building, you can 
 
 ## Other language versions
 - [Chinese](https://github.com/yuange1024/ethereum_yellowpaper) translated by YuanGe and GaoTianlu.
-
-
