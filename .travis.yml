@@ -1,4 +1,6 @@
 sudo: required
+dist: trusty
+group: deprecated-2017Q4
 before_install:
 - sudo apt-get -qq update
 - sudo apt-get install texlive texlive-latex3
