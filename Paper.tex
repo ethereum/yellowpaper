@@ -1020,7 +1020,7 @@ O\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I)\big) & \equiv & (\boldsymbol
 
 The gas is reduced by the instruction's gas cost and for most instructions, the program counter increments on each cycle, for the three exceptions, we assume a function $J$, subscripted by one of two instructions, which evaluates to the according value:
 \begin{eqnarray}
-\quad \boldsymbol{\mu}'_{g} & \equiv & \boldsymbol{\mu}_{g} - C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \\
+\quad \boldsymbol{\mu}'_{g} & \equiv & \boldsymbol{\mu}_{g} - C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \hypertarget{JUMP}{JUMP} \hypertarget{JUMPI}{JUMPI} \label{eq:mu_pc}\\
 \quad \boldsymbol{\mu}'_{pc} & \equiv & \begin{cases}
 J_{\text{JUMP}}(\boldsymbol{\mu}) & \text{if} \quad w = \text{\small JUMP} \\
 J_{\text{JUMPI}}(\boldsymbol{\mu}) & \text{if} \quad w = \text{\small JUMPI} \\
