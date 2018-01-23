@@ -580,8 +580,6 @@ g_0 \equiv {} & \sum_{i \in T_\mathbf{i}, T_\mathbf{d}} \begin{cases} G_{txdataz
 
 where $T_\mathbf{i},T_\mathbf{d}$ means the series of bytes of the transaction's associated data and initialisation EVM-code, depending on whether the transaction is for contract-creation or message-call. $G_\text{txcreate}$ is added if the transaction is contract-creating, but not if a result of EVM-code. $G$ is fully defined in Appendix \ref{app:fees}.
 
-%todo Explain g_d reason?
-
 The up-front cost $v_0$ is calculated as:
 \begin{equation}
 v_0 \equiv T_g T_p + T_v
