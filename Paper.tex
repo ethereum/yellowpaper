@@ -397,7 +397,6 @@ H_e &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{R} \rVert, i \i
 H_b &\equiv& \bigvee_{\mathbf{r} \in B_\mathbf{R}} \big( \mathbf{r}_b \big)
 \end{array}
 \end{equation}
-
 where $p(k, v)$ is simply the pairwise RLP transformation, in this case, the first being the index of the transaction in the block and the second being the transaction receipt:
 \begin{equation}
 p(k, v) \equiv \big( \mathtt{\small RLP}(k), \mathtt{\small RLP}(v) \big)
@@ -418,9 +417,8 @@ The function $L_B$ and $L_H$ are the preparation functions for a block and block
 \begin{eqnarray}
 \quad L_H(H) & \equiv & (\begin{array}[t]{l}H_p, H_o, H_c, H_r, H_t, H_e, H_b, H_d,\\ H_i, H_l, H_g, H_s, H_x, H_m, H_n \; )\end{array} \\
 \quad L_B(B) & \equiv & \big( L_H(B_H), L_T^*(B_\mathbf{T}), L_H^*(B_\mathbf{U}) \big)
-\end{eqnarray}
+\end{eqnarray}\hypertarget{general_element_wise_sequence_transformation_f_pow_asterisk}{general_element_wise_sequence_transformation_f_pow_asterisk}
 
-\hypertarget{f*}{general-element-wise-sequence-transformation}
 With $L_T^*$ and $L_H^*$ being element-wise sequence transformations, thus:
 \begin{equation}
 f^*\big( (x_0, x_1, ...) \big) \equiv \big( f(x_0), f(x_1), ... \big) \quad \text{for any function} \; f
@@ -459,9 +457,8 @@ H_i \equiv {{P(H)_H}_i} + 1
 \newcommand{\mindifficulty}{D_0}
 \newcommand{\homesteadmod}{\ensuremath{\varsigma_2}}
 \newcommand{\expdiffsymb}{\ensuremath{\epsilon}}
-\newcommand{\diffadjustment}{x}
+\newcommand{\diffadjustment}{x}\hypertarget{block_difficulty_H__d}{block_difficulty_H__d}
 
-\hypertarget{H d}{block-difficulty}
 The canonical difficulty of a block of header $H$ is defined as $D(H)$:
 \begin{equation}
 D(H) \equiv \begin{dcases}
@@ -488,9 +485,8 @@ x \equiv \begin{cases}
 \begin{align}
 \expdiffsymb &\equiv \left\lfloor 2^{ \left\lfloor H'_i \div 100000 \right\rfloor - 2 } \right\rfloor \\
 H'_i &\equiv \max(H_i - 3000000, 0)
-\end{align}
+\end{align}\hypertarget{block_gas_limit_H__l}{block_gas_limit_H__l}
 
-\hypertarget{H l}{block-gas-limit}
 The canonical gas limit $H_l$ of a block of header $H$ must fulfil the relation:
 \begin{eqnarray}
 & & H_l < {P(H)_H}_l + \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor \quad \wedge \\
@@ -509,14 +505,12 @@ The nonce, $H_n$, must satisfy the relations:
 \begin{equation}
 n \leqslant \frac{2^{256}}{H_d} \quad \wedge \quad m = H_m
 \end{equation}
-with $(n, m) = \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})$.
+with $(n, m) = \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})$.\hypertarget{block_header_without_nonce_and_mixmash_h__cancel_n}{block_header_without_nonce_and_mixmash_h__cancel_n}
 
-\hypertarget{h cancel n}{}
 Where $H_{\hcancel{n}}$ is the new block's header $H$, but \textit{without} the nonce and mix-hash components, $\mathbf{d}$ being the current DAG, a large data set needed to compute the mix-hash, and $\mathtt{PoW}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an array with the first item being the mix-hash, to proof that a correct DAG has been used, and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. Given an approximately uniform distribution in the range $[0, 2^{64})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
 
-This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propagate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because its satisfaction depends on the contents of the block and in turn its composed transactions, creating new, valid, blocks is difficult and, over time, requires approximately the total compute power of the trustworthy portion of the mining peers.
+This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propagate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because its satisfaction depends on the contents of the block and in turn its composed transactions, creating new, valid, blocks is difficult and, over time, requires approximately the total compute power of the trustworthy portion of the mining peers.\hypertarget{block_header_validity_function}{block_header_validity_function}
 
-\hypertarget{block-header-validity-function}{block-header-validity-function}
 Thus we are able to define the block header validity function $V(H)$:
 \begin{eqnarray}
 V(H) & \equiv &  n \leqslant \frac{2^{256}}{H_d} \wedge m = H_m \quad \wedge \\
@@ -566,8 +560,8 @@ Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define $\Up
 Throughout transaction execution, we accrue certain information that is acted upon immediately following the transaction. We call this \textit{transaction substate}, and represent it as $A$, which is a tuple:
 \begin{equation}
 A \equiv (A_\mathbf{s}, A_\mathbf{l}, A_\mathbf{t}, A_r)
-\end{equation}
-\hypertarget{self_destruct_set_wordy_defn}{self_destruct_set_wordy_defn}
+\end{equation}\hypertarget{self_destruct_set_wordy_defn}{self_destruct_set_wordy_defn}
+
 The tuple contents include $A_\mathbf{s}$, the self-destruct set: a set of accounts that will be discarded following the\hypertarget{tx_log_series_wordy_defn}{tx_log_series_wordy_defn} transaction's completion. $A_\mathbf{l}$ is the log series: this is a series of archived and indexable `checkpoints' in VM code execution that allow for contract-calls to be easily tracked by onlookers external to the Ethereum world (such as\hypertarget{tx_touched_accounts_wordy_defn} decentralised application front-ends). $A_\mathbf{t}$ is the set of touched accounts, of which the empty ones are deleted at the end\hypertarget{refund_balance_defn_words}{refund_balance_defn_words} of a transaction. Finally there is $A_r$, the refund balance, increased through using the {\small SSTORE} instruction in order to reset contract storage to zero from some non-zero value. Though not immediately refunded, it is allowed to partially offset the total execution costs.
 
 We define the empty substate $A^0$ to have no self-destructs, no logs, no touched accounts and a zero refund balance:
