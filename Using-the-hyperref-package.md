@@ -1,4 +1,5 @@
 [Here](https://github.com/ethereum/yellowpaper/files/1596574/Paper.pdf#blockhash) is an example of using a link to refer to a specific line of a PDF. Note that the actual PDF is not the latest, it is just used for demonstration purposes. This use is helpful for pedagogical and academic purposes. 
+<!--update the above link after internal hyperlinks and hypertargets are added-->
 
 To **get a link** you just right click on a link that directs to the target that you want in the PDF (in a browser or program) and copy the link.
 
