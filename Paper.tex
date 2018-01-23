@@ -22,7 +22,15 @@
 \usepackage[bookmarks=true, unicode=true, pdftitle={Ethereum Yellow Paper: a formal specification of Ethereum, a programmable blockchain}, pdfauthor={Gavin Wood and others as per https://github.com/ethereum/yellowpaper/commits/master},pdfkeywords={Ethereum, Yellow Paper, blockchain, virtual machine, cryptography, decentralised, singleton, transaction, generalised},pdfborder={0 0 0.5 [1 3]}]{hyperref}
 %,pagebackref=true
 
-% I will insert other table packages in here after this is merged.
+%\usepackage{longtable}
+%https://stackoverflow.com/questions/1918366/automated-line-breaks-in-latex-tables/1918465#1918465
+%tabularx seems better, but we can include this if we need tables to break across pages automatically, as well as tabu and longtabu
+
+\usepackage{tabularx}
+%https://stackoverflow.com/a/1919447/7438857
+
+% Tabu seems more flexible, and generally better.
+\usepackage{tabu} %requires array.
 
 %This should be the last package before \input{Version.tex}
 \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
