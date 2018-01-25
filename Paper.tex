@@ -868,16 +868,16 @@ See Appendix \ref{app:vm} for a rigorous definition of the EVM gas cost.
 
 In addition to the system state $\boldsymbol{\sigma}$, and the remaining gas for computation $g$, there are several pieces of important information used in the execution environment that the execution agent must provide; these are contained in the tuple $I$:
 
-\begin{itemize}\hypertarget{address_of_account_which_owns_code_I__a_def_words}{address_of_account_which_owns_code_I__a_def_words}
-\item $I_a$, the address of the account which owns the code that is executing.\hypertarget{address_of_sender_of_tx_that_originated_execution_I__o}{address_of_sender_of_tx_that_originated_execution_I__o}
-\item $I_o$, the sender address of the transaction that originated this execution.\hypertarget{gas_price_in_tx_that_originated_execution_I__p}{gas_price_in_tx_that_originated_execution_I__p}
-\item $I_p$, the price of gas in the transaction that originated this execution.\hypertarget{execution_input_data_I__d}{execution_input_data_I__d}
-\item $I_\mathbf{d}$, the byte array that is the input data to this execution; if the execution agent is a transaction, this would be the transaction data.\hypertarget{the_address_of_the_account_which_caused_the_code_to_be_executing_I__s}{the_address_of_the_account_which_caused_the_code_to_be_executing_I__s}
-\item $I_s$, the address of the account which caused the code to be executing; if the execution agent is a transaction, this would be the transaction sender.\hypertarget{Wei_value_exec}{Wei_value_exec_I__v}
-\item $I_v$, the value, in Wei, passed to this account as part of the same procedure as execution; if the execution agent is a transaction, this would be the transaction value.\hypertarget{exec_machine_code_I__b}{exec_machine_code_I__b}
-\item $I_\mathbf{b}$, the byte array that is the machine code to be executed.\hypertarget{exec_block_header_I__H}{exec_block_header_I__H}
+\begin{itemize}\hypertarget{address_of_account_which_owns_code_I__a_def_words}{}
+\item $I_a$, the address of the account which owns the code that is executing.\hypertarget{address_of_sender_of_tx_that_originated_execution_I__o}{}
+\item $I_o$, the sender address of the transaction that originated this execution.\hypertarget{gas_price_in_tx_that_originated_execution_I__p}{}
+\item $I_p$, the price of gas in the transaction that originated this execution.\hypertarget{execution_input_data_I__d}{}
+\item $I_\mathbf{d}$, the byte array that is the input data to this execution; if the execution agent is a transaction, this would be the transaction data.\hypertarget{the_address_of_the_account_which_caused_the_code_to_be_executing_I__s}{}
+\item $I_s$, the address of the account which caused the code to be executing; if the execution agent is a transaction, this would be the transaction sender.\hypertarget{Wei_value_exec}{}
+\item $I_v$, the value, in Wei, passed to this account as part of the same procedure as execution; if the execution agent is a transaction, this would be the transaction value.\hypertarget{exec_machine_code_I__b}{}
+\item $I_\mathbf{b}$, the byte array that is the machine code to be executed.\hypertarget{exec_block_header_I__H}{}
 \item $I_H$, the block header of the present block.\hypertarget{exec_call_or_create_depth_I__e}{exec_call_or_create_depth_I__e}
-\item $I_e$, the depth of the present message-call or contract-creation (i.e. the number of {\small CALL}s or {\small CREATE}s being executed at present).\hypertarget{exec_permission_to_modify_state_I__w}{exec_permission_to_modify_state_I__w}
+\item $I_e$, the depth of the present message-call or contract-creation (i.e. the number of {\small CALL}s or {\small CREATE}s being executed at present).\hypertarget{exec_permission_to_modify_state_I__w}{}
 \item $I_w$, the permission to make modifications to the state.
 \end{itemize}
 
