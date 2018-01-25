@@ -326,7 +326,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.\hypertarget{block_extraData_H__x}{}
 \item[extraData] An arbitrary byte array containing data relevant to this block. This must be 32 bytes or fewer; formally $H_x$.\hypertarget{mixHash_H__m}{}
 \item[mixHash] A 256-bit hash which, combined with the nonce, proves that a sufficient amount of computation has been carried out on this block; formally $H_m$.\hypertarget{block_nonce_H__n}{}
-\item[nonce] A 64-bit hash which, combined with the mix-hash, proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.\hypertarget{}{ommer_block_headers_B__U}\hypertarget{block_B}{}
+\item[nonce] A 64-bit hash which, combined with the mix-hash, proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.\hypertarget{}{ommer_block_headers_B__U}{}\hypertarget{block_B}{}
 \end{description}
 
 The other two components in the block are simply a list of ommer block headers (of the same format as above) and a series of the transactions. Formally, we can refer to a block $B$:
