@@ -9,7 +9,7 @@ It is free culture work, licensed under the Creative Commons Attribution Share-A
 
 ## Usage
 
-The paper comes as a single ``latex`` file ``Paper.tex``. The latest version is generally available as a PDF at https://ethereum.github.io/yellowpaper/paper.pdf or just [yellowpaper.io](http://yellowpaper.io/).
+The paper comes as a single ``latex`` file ``Paper.tex``. The latest version is generally available as a PDF at https://ethereum.github.io/yellowpaper/paper.pdf or just [yellowpaper.io](http://yellowpaper.io/). If you find that the borders for links block too much text when viewing the PDF in the browser, you can instead download it and open and view it with a PDF viewer application such as Adobe Acrobat or Evince, where the borders are less likely to display over text.
 
 ## How to build
 
