@@ -1719,21 +1719,21 @@ $G_{sload}$ & 200 & Paid for a {\small SLOAD} operation. \\
 $G_{jumpdest}$ & 1 & Paid for a {\small JUMPDEST} operation. \\
 $G_{sset}$ & 20000 & Paid for an {\small SSTORE} operation when the storage value is set to non-zero from zero. \\
 $G_{sreset}$ & 5000 & Paid for an {\small SSTORE} operation when the storage value's zeroness remains unchanged or is set to zero. \\
-$R_{sclear}$ & 15000 & Refund given (added into refund counter) when the storage value is set to zero from non-zero. \\
-$R_{selfdestruct}$ & 24000 & Refund given (added into refund counter) for self-destructing an account. \\
+$R_{sclear}$ & 15000 & Refund given (added into refund counter) when the storage value is set to zero from non-zero. \hypertarget{Rselfdestruct}{}\\
+$R_{selfdestruct}$ & 24000 & Refund given (added into refund counter) for self-destructing an account. \hypertarget{Gselfdestruct}{}\\
 $G_{selfdestruct}$ & 5000 & Amount of gas to pay for a {\small SELFDESTRUCT} operation. \\
 $G_{create}$ & 32000 & Paid for a {\small CREATE} operation. \\
-$G_{codedeposit}$ & 200 & Paid per byte for a {\small CREATE} operation to succeed in placing code into state. \\
+$G_{codedeposit}$ & 200 & Paid per byte for a {\small CREATE} operation to succeed in placing code into state. \hypertarget{codedeposit}{}\\
 $G_{call}$ & 700 & Paid for a {\small CALL} operation. \\
 $G_{callvalue}$ & 9000 & Paid for a non-zero value transfer as part of the {\small CALL} operation. \\
-$G_{callstipend}$ & 2300 & A stipend for the called contract subtracted from $G_{callvalue}$ for a non-zero value transfer. \\
+$G_{callstipend}$ & 2300 & A stipend for the called contract subtracted from $G_{callvalue}$ for a non-zero value transfer. \hypertarget{Gnewaccount}{}\\
 $G_{newaccount}$ & 25000 & Paid for a {\small CALL} or {\small SELFDESTRUCT} operation which creates an account. \\
 $G_{exp}$ & 10 & Partial payment for an {\small EXP} operation. \\
 $G_{expbyte}$ & 50 & Partial payment when multiplied by $\lceil\log_{256}(exponent)\rceil$ for the {\small EXP} operation. \\
-$G_{memory}$ & 3 & Paid for every additional word when expanding memory. \\
-$G_\text{txcreate}$ & 32000 & Paid by all contract-creating transactions after the {\textit{Homestead} transition}.\\
-$G_{txdatazero}$ & 4 & Paid for every zero byte of data or code for a transaction. \\
-$G_{txdatanonzero}$ & 68 & Paid for every non-zero byte of data or code for a transaction. \\
+$G_{memory}$ & 3 & Paid for every additional word when expanding memory. \hypertarget{Gtxcreate}{}\\
+$G_\text{txcreate}$ & 32000 & Paid by all contract-creating transactions after the {\textit{Homestead} transition}.\hypertarget{Gtxdatazero}{}\\
+$G_{txdatazero}$ & 4 & Paid for every zero byte of data or code for a transaction. \hypertarget{Gtxdatanonzero}{}\\
+$G_{txdatanonzero}$ & 68 & Paid for every non-zero byte of data or code for a transaction. \hypertarget{Gtransaction}{}\\
 $G_{transaction}$ & 21000 & Paid for every transaction. \\
 $G_{log}$ & 375 & Partial payment for a {\small LOG} operation. \\
 $G_{logdata}$ & 8 & Paid for each byte in a {\small LOG} operation's data. \\
