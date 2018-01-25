@@ -307,37 +307,37 @@ T_\mathbf{t} \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_t \neq \varno
 
 \subsection{The Block} \label{ch:block}
 
-The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding\hypertarget{ommerheaders}{ommerheaders} to the comprised transactions, $\mathbf{T}$, and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{ommers}\footnote{\textit{ommer} is the most prevalent (not saying much) gender-neutral term to mean ``sibling of parent''; see \url{https://nonbinary.miraheze.org/wiki/Gender_neutral_language\#Aunt.2FUncle}}). The block header contains several pieces of information:\hypertarget{parent_Hash_H__p_def_words}{parent Hash H p def words}
+The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding\hypertarget{ommerheaders}{} to the comprised transactions, $\mathbf{T}$, and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{ommers}\footnote{\textit{ommer} is the most prevalent (not saying much) gender-neutral term to mean ``sibling of parent''; see \url{https://nonbinary.miraheze.org/wiki/Gender_neutral_language\#Aunt.2FUncle}}). The block header contains several pieces of information:\hypertarget{parent_Hash_H__p_def_words}{}
 
 %\textit{TODO: Introduce logs}
 
 \begin{description}
 \item[parentHash] The Keccak 256-bit hash of the parent block's header, in its entirety; formally $H_p$.
-\item[ommersHash] The Keccak 256-bit hash of the ommers list portion of this block; formally $H_o$.\hypertarget{beneficiary_H__c}{beneficiary H c}
+\item[ommersHash] The Keccak 256-bit hash of the ommers list portion of this block; formally $H_o$.\hypertarget{beneficiary_H__c}{}
 \item[beneficiary] The 160-bit address to which all fees collected from the successful mining of this block be transferred; formally $H_c$.
 \item[stateRoot] The Keccak 256-bit hash of the root node of the state trie, after all transactions are executed and finalisations applied; formally $H_r$.
-\item[transactionsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with each transaction in the transactions list portion of the block; formally $H_t$.\hypertarget{receipts_Root_def_words}{receipts Root def words}
-\item[receiptsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with the receipts of each transaction in the transactions list portion of the block; formally $H_e$.\hypertarget{logs_Bloom_def_words}{logs Bloom def words}
+\item[transactionsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with each transaction in the transactions list portion of the block; formally $H_t$.\hypertarget{receipts_Root_def_words}{}
+\item[receiptsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with the receipts of each transaction in the transactions list portion of the block; formally $H_e$.\hypertarget{logs_Bloom_def_words}{}
 \item[logsBloom] The Bloom filter composed from indexable information (logger address and log topics) contained in each log entry from the receipt of each transaction in the transactions list; formally $H_b$.
-\item[difficulty] A scalar value corresponding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_d$.\hypertarget{block_number_H_i}{block number H i}
+\item[difficulty] A scalar value corresponding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_d$.\hypertarget{block_number_H_i}{}
 \item[number] A scalar value equal to the number of ancestor blocks. The genesis block has a number of zero; formally $H_i$.
-\item[gasLimit] A scalar value equal to the current limit of gas expenditure per block; formally $H_l$.\hypertarget{block_gas_used_H__g}{block gas used H g}
-\item[gasUsed] A scalar value equal to the total gas used in transactions in this block; formally $H_g$.\hypertarget{block_timestamp_H__s}{block timestamp H s}
-\item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.\hypertarget{block_extraData_H__x}{block extraData H x}
-\item[extraData] An arbitrary byte array containing data relevant to this block. This must be 32 bytes or fewer; formally $H_x$.\hypertarget{mixHash_H__m}{mixHash H m}
-\item[mixHash] A 256-bit hash which, combined with the nonce, proves that a sufficient amount of computation has been carried out on this block; formally $H_m$.\hypertarget{block_nonce_H__n}{block nonce H n}
-\item[nonce] A 64-bit hash which, combined with the mix-hash, proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.\hypertarget{ommer block headers B U}{ommer_block_headers_B__U}\hypertarget{block_B}{block B}
+\item[gasLimit] A scalar value equal to the current limit of gas expenditure per block; formally $H_l$.\hypertarget{block_gas_used_H__g}{}
+\item[gasUsed] A scalar value equal to the total gas used in transactions in this block; formally $H_g$.\hypertarget{block_timestamp_H__s}{}
+\item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.\hypertarget{block_extraData_H__x}{}
+\item[extraData] An arbitrary byte array containing data relevant to this block. This must be 32 bytes or fewer; formally $H_x$.\hypertarget{mixHash_H__m}{}
+\item[mixHash] A 256-bit hash which, combined with the nonce, proves that a sufficient amount of computation has been carried out on this block; formally $H_m$.\hypertarget{block_nonce_H__n}{}
+\item[nonce] A 64-bit hash which, combined with the mix-hash, proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.\hypertarget{}{ommer_block_headers_B__U}\hypertarget{block_B}{}
 \end{description}
 
 The other two components in the block are simply a list of ommer block headers (of the same format as above) and a series of the transactions. Formally, we can refer to a block $B$:
 \begin{equation}
 B \equiv (B_H, B_\mathbf{T}, B_\mathbf{U})
-\end{equation}\hypertarget{Transaction Receipt}{Transaction Receipt}
+\end{equation}\hypertarget{Transaction Receipt}{}
 
 \subsubsection{Transaction Receipt}
 
 In order to encode information about a transaction concerning which it may be useful to form a zero-knowledge proof, or index and search, we encode a receipt of each transaction containing certain information from concerning its execution.
-Each receipt, denoted $B_\mathbf{R}[i]$ for the $i$th transaction, is placed in an index-keyed trie and the root recorded in the header as $H_e$.\hypertarget{transaction_receipt_R}{transaction receipt R}\hypertarget{tx_receipt_gas_used_R__u}{tx receipt gas used R u}
+Each receipt, denoted $B_\mathbf{R}[i]$ for the $i$th transaction, is placed in an index-keyed trie and the root recorded in the header as $H_e$.\hypertarget{transaction_receipt_R}{}\hypertarget{tx_receipt_gas_used_R__u}{}
 
 The transaction receipt is a tuple of four items comprising the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_u$, the set of logs created through execution of the transaction, $R_\mathbf{l}$ and the Bloom filter composed from information in those logs, $R_b$ and the status code of the transaction, $R_{s'}$:
 \begin{equation}
