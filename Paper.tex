@@ -1639,7 +1639,7 @@ It is assumed that the sender has a valid private key $p_r$, which is a randomly
 
 We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARECOVER}$ and $\mathtt{\small ECDSAPUBKEY}$. These are formally defined in the literature.
 \begin{eqnarray}
-\mathtt{\small ECDSAPUBKEY}(p_r \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64} \\
+\mathtt{\small ECDSAPUBKEY}(p_r \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64} \hypertarget{ECDSASIGN}{}\\
 \mathtt{\small ECDSASIGN}(e \in \mathbb{B}_{32}, p_r \in \mathbb{B}_{32}) & \equiv & (v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) \\
 \mathtt{\small ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64}
 \end{eqnarray}
