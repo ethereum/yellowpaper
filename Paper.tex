@@ -179,7 +179,7 @@ Arbitrary-length sequences are typically denoted as a bold lower-case letter, \e
 
 Throughout, we assume scalars are positive integers and thus belong to the set $\mathbb{P}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{32}$ and the set of all positive integers smaller than $2^{256}$ is named $\mathbb{P}_{256}$. This is formally defined in section \ref{ch:block}.
 
-Square brackets are used to index into and reference individual components or subsequences of sequences, \eg $\boldsymbol{\mu}_\mathbf{s}[0]$ denotes the first item on the machine's stack. For subsequences, ellipses are used to specify the intended range, to include elements at both limits, \eg $\boldsymbol{\mu}_\mathbf{m}[0..31]$ denotes the first 32 items of the machine's memory.
+Square brackets are used to index into and reference individual components or subsequences of sequences, \eg $\boldsymbol{\mu}_\mathrm{s}[0]$ denotes the first item on the machine's stack. For subsequences, ellipses are used to specify the intended range, to include elements at both limits, \eg $\boldsymbol{\mu}_\mathrm{m}[0..31]$ denotes the first 32 items of the machine's memory.
 
 In the case of the global state $\boldsymbol{\sigma}$, which is a sequence of accounts, themselves tuples, the square brackets are used to reference an individual account.
 
@@ -212,7 +212,7 @@ The account state comprises the following four fields:
 
 Since I typically wish to refer not to the trie's root hash but to the underlying set of key/value pairs stored within, I define a convenient equivalence:
 \begin{equation}
-\texttt{\small TRIE}\big(L_I^*(\boldsymbol{\sigma}[a]_\mathbf{s})\big) \equiv \boldsymbol{\sigma}[a]_s
+\texttt{\small TRIE}\big(L_I^*(\boldsymbol{\sigma}[a]_\mathrm{s})\big) \equiv \boldsymbol{\sigma}[a]_s
 \end{equation}
 
 The collapse function for the set of key/value pairs in the trie, $L_I^*$, is defined as the element-wise transformation of the base function $L_I$, given as:
@@ -225,7 +225,7 @@ where:
 k \in \mathbb{B}_{32} \quad \wedge \quad v \in \mathbb{P}
 \end{equation}
 
-It shall be understood that $\boldsymbol{\sigma}[a]_\mathbf{s}$ is not a `physical' member of the account and does not contribute to its later serialisation.
+It shall be understood that $\boldsymbol{\sigma}[a]_\mathrm{s}$ is not a `physical' member of the account and does not contribute to its later serialisation.
 
 If the \textbf{codeHash} field is the Keccak-256 hash of the empty string, i.e. $\boldsymbol{\sigma}[a]_c = \texttt{\small KEC}\big(()\big)$, then the node represents a simple account, sometimes referred to as a ``non-contract'' account.
 
@@ -274,7 +274,7 @@ A transaction (formally, $T$) is a single cryptographically-signed instruction c
 Additionally, a contract creation transaction contains:
 
 \begin{description}
-\item[init] An unlimited size byte array specifying the EVM-code for the account initialisation procedure, formally $T_\mathbf{i}$.
+\item[init] An unlimited size byte array specifying the EVM-code for the account initialisation procedure, formally $T_\mathrm{i}$.
 \end{description}
 
 \textbf{init} is an EVM-code fragment; it returns the \textbf{body}, a second fragment of code that executes each time the account receives a message call (either through a transaction or due to the internal execution of code). \textbf{init} is executed only once at account creation and gets discarded immediately thereafter.
@@ -282,24 +282,24 @@ Additionally, a contract creation transaction contains:
 In contrast, a message call transaction contains:
 
 \begin{description}
-\item[data] An unlimited size byte array specifying the input data of the message call, formally $T_\mathbf{d}$.
+\item[data] An unlimited size byte array specifying the input data of the message call, formally $T_\mathrm{d}$.
 \end{description}
 
 Appendix \ref{app:signing} specifies the function, $S$, which maps transactions to the sender, and happens through the ECDSA of the SECP-256k1 curve, using the hash of the transaction (excepting the latter three signature fields) as the datum to sign. For the present we simply assert that the sender of a given transaction $T$ can be represented with $S(T)$.
 
 \begin{equation}
 L_T(T) \equiv \begin{cases}
-(T_n, T_p, T_g, T_t, T_v, T_\mathbf{i}, T_w, T_r, T_s) & \text{if} \; T_t = \varnothing\\
-(T_n, T_p, T_g, T_t, T_v, T_\mathbf{d}, T_w, T_r, T_s) & \text{otherwise}
+(T_n, T_p, T_g, T_t, T_v, T_\mathrm{i}, T_w, T_r, T_s) & \text{if} \; T_t = \varnothing\\
+(T_n, T_p, T_g, T_t, T_v, T_\mathrm{d}, T_w, T_r, T_s) & \text{otherwise}
 \end{cases}
 \end{equation}
 
-Here, we assume all components are interpreted by the RLP as integer values, with the exception of the arbitrary length byte arrays $T_\mathbf{i}$ and $T_\mathbf{d}$.
+Here, we assume all components are interpreted by the RLP as integer values, with the exception of the arbitrary length byte arrays $T_\mathrm{i}$ and $T_\mathrm{d}$.
 \begin{equation}
 \begin{array}[t]{lclclc}
 T_n \in \mathbb{P}_{256} & \wedge & T_v \in \mathbb{P}_{256} & \wedge & T_p \in \mathbb{P}_{256} & \wedge \\
 T_g \in \mathbb{P}_{256} & \wedge & T_w \in \mathbb{P}_5 & \wedge & T_r \in \mathbb{P}_{256} & \wedge \\
-T_s \in \mathbb{P}_{256} & \wedge & T_\mathbf{d} \in \mathbb{B} & \wedge & T_\mathbf{i} \in \mathbb{B}
+T_s \in \mathbb{P}_{256} & \wedge & T_\mathrm{d} \in \mathbb{B} & \wedge & T_\mathrm{i} \in \mathbb{B}
 \end{array}
 \end{equation}
 where
@@ -307,9 +307,9 @@ where
 \mathbb{P}_n = \{ P: P \in \mathbb{P} \wedge P < 2^n \}
 \end{equation}
 
-The address hash $T_\mathbf{t}$ is slightly different: it is either a 20-byte address hash or, in the case of being a contract-creation transaction (and thus formally equal to $\varnothing$), it is the RLP empty byte sequence and thus the member of $\mathbb{B}_0$:
+The address hash $T_\mathrm{t}$ is slightly different: it is either a 20-byte address hash or, in the case of being a contract-creation transaction (and thus formally equal to $\varnothing$), it is the RLP empty byte sequence and thus the member of $\mathbb{B}_0$:
 \begin{equation}
-T_\mathbf{t} \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_t \neq \varnothing \\
+T_\mathrm{t} \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_t \neq \varnothing \\
 \mathbb{B}_{0} & \text{otherwise}\end{cases}
 \end{equation}
 
@@ -339,22 +339,22 @@ The block in Ethereum is the collection of relevant pieces of information (known
 
 The other two components in the block are simply a list of ommer block headers (of the same format as above) and a series of the transactions. Formally, we can refer to a block $B$:
 \begin{equation}
-B \equiv (B_H, B_\mathbf{T}, B_\mathbf{U})
+B \equiv (B_H, B_\mathrm{T}, B_\mathrm{U})
 \end{equation}
 
 \subsubsection{Transaction Receipt}
 
 In order to encode information about a transaction concerning which it may be useful to form a zero-knowledge proof, or index and search, we encode a receipt of each transaction containing certain information from concerning its execution.
-Each receipt, denoted $B_\mathbf{R}[i]$ for the $i$th transaction, is placed in an index-keyed trie and the root recorded in the header as $H_e$.
+Each receipt, denoted $B_\mathrm{R}[i]$ for the $i$th transaction, is placed in an index-keyed trie and the root recorded in the header as $H_e$.
 
-The transaction receipt is a tuple of four items comprising the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_u$, the set of logs created through execution of the transaction, $R_\mathbf{l}$ and the Bloom filter composed from information in those logs, $R_b$ and the status code of the transaction, $R_{s'}$:
+The transaction receipt is a tuple of four items comprising the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_u$, the set of logs created through execution of the transaction, $R_\mathrm{l}$ and the Bloom filter composed from information in those logs, $R_b$ and the status code of the transaction, $R_{s'}$:
 \begin{equation}
-R \equiv (R_u, R_b, R_\mathbf{l}, R_{s'})
+R \equiv (R_u, R_b, R_\mathrm{l}, R_{s'})
 \end{equation}
 
 The function $L_R$ trivially prepares a transaction receipt for being transformed into an RLP-serialised byte array:
 \begin{equation}
-L_R(R) \equiv (0 \in \mathbb{B}_{256}, R_u, R_b, R_\mathbf{l})
+L_R(R) \equiv (0 \in \mathbb{B}_{256}, R_u, R_b, R_\mathrm{l})
 \end{equation}
 where $0 \in \mathbb{B}_{256}$ replaces the pre-transaction state root that existed in previous versions of the protocol.
 
@@ -368,19 +368,19 @@ We assert $R_u$, the cumulative gas used is a positive integer and that the logs
 R_u \in \mathbb{P} \quad \wedge \quad R_b \in \mathbb{B}_{256}
 \end{equation}
 
-%Notably $B_\mathbf{T}$ does not get serialised into the block by the block preparation function $L_B$; it is merely a convenience equivalence.
+%Notably $B_\mathrm{T}$ does not get serialised into the block by the block preparation function $L_B$; it is merely a convenience equivalence.
 
-The log entries, $R_\mathbf{l}$, is a series of log entries, termed, for example, $(O_0, O_1, ...)$. A log entry, $O$, is a tuple of a logger's address, $O_a$, a series of 32-bytes log topics, $O_\mathbf{t}$ and some number of bytes of data, $O_\mathbf{d}$:
+The log entries, $R_\mathrm{l}$, is a series of log entries, termed, for example, $(O_0, O_1, ...)$. A log entry, $O$, is a tuple of a logger's address, $O_a$, a series of 32-bytes log topics, $O_\mathrm{t}$ and some number of bytes of data, $O_\mathrm{d}$:
 \begin{equation}
-O \equiv (O_a, ({O_\mathbf{t}}_0, {O_\mathbf{t}}_1, ...), O_\mathbf{d})
+O \equiv (O_a, ({O_\mathrm{t}}_0, {O_\mathrm{t}}_1, ...), O_\mathrm{d})
 \end{equation}
 \begin{equation}
-O_a \in \mathbb{B}_{20} \quad \wedge \quad \forall_{t \in O_\mathbf{t}}: t \in \mathbb{B}_{32} \quad \wedge \quad O_\mathbf{d} \in \mathbb{B}
+O_a \in \mathbb{B}_{20} \quad \wedge \quad \forall_{t \in O_\mathrm{t}}: t \in \mathbb{B}_{32} \quad \wedge \quad O_\mathrm{d} \in \mathbb{B}
 \end{equation}
 
 We define the Bloom filter function, $M$, to reduce a log entry into a single 256-byte hash:
 \begin{equation}
-M(O) \equiv \bigvee_{t \in \{O_a\} \cup O_\mathbf{t}} \big( M_{3:2048}(t) \big)
+M(O) \equiv \bigvee_{t \in \{O_a\} \cup O_\mathrm{t}} \big( M_{3:2048}(t) \big)
 \end{equation}
 
 where $M_{3:2048}$ is a specialised Bloom filter that sets three bits out of 2048, given an arbitrary byte sequence. It does this through taking the low-order 11 bits of each of the first three pairs of bytes in a Keccak-256 hash of the byte sequence./footnote{11 bits $= 2^2048$, and the low-order 11 bits is the modulo 2048 of the operand, which is in this case is "each of the first three pairs of bytes in a Keccak-256 hash of the byte sequence."} Formally:
@@ -395,14 +395,14 @@ where $\mathcal{B}$ is the bit reference function such that $\mathcal{B}_j(\math
 
 \subsubsection{Holistic Validity}
 
-We can assert a block's validity if and only if it satisfies several conditions: it must be internally consistent with the ommer and transaction block hashes and the given transactions $B_\mathbf{T}$ (as specified in sec \ref{ch:finalisation}), when executed in order on the base state $\boldsymbol{\sigma}$ (derived from the final state of the parent block), result in a new state of the identity $H_r$:
+We can assert a block's validity if and only if it satisfies several conditions: it must be internally consistent with the ommer and transaction block hashes and the given transactions $B_\mathrm{T}$ (as specified in sec \ref{ch:finalisation}), when executed in order on the base state $\boldsymbol{\sigma}$ (derived from the final state of the parent block), result in a new state of the identity $H_r$:
 \begin{equation}
 \begin{array}[t]{lclc}
 H_r &\equiv& \mathtt{\small TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) & \wedge \\
-H_o &\equiv& \mathtt{\small KEC}(\mathtt{\small RLP}(L_H^*(B_\mathbf{U}))) & \wedge \\
-H_t &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert, i \in \mathbb{P}: p(i, L_T(B_\mathbf{T}[i]))\}) & \wedge \\
-H_e &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{R} \rVert, i \in \mathbb{P}: p(i, L_R(B_\mathbf{R}[i]))\}) & \wedge \\
-H_b &\equiv& \bigvee_{\mathbf{r} \in B_\mathbf{R}} \big( \mathbf{r}_b \big)
+H_o &\equiv& \mathtt{\small KEC}(\mathtt{\small RLP}(L_H^*(B_\mathrm{U}))) & \wedge \\
+H_t &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathrm{T} \rVert, i \in \mathbb{P}: p(i, L_T(B_\mathrm{T}[i]))\}) & \wedge \\
+H_e &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathrm{R} \rVert, i \in \mathbb{P}: p(i, L_R(B_\mathrm{R}[i]))\}) & \wedge \\
+H_b &\equiv& \bigvee_{\mathbf{r} \in B_\mathrm{R}} \big( \mathbf{r}_b \big)
 \end{array}
 \end{equation}
 
@@ -418,14 +418,14 @@ Furthermore:
 
 Thus $\texttt{\small TRIE}(L_S(\boldsymbol{\sigma}))$ is the root node hash of the Merkle Patricia tree structure containing the key-value pairs of the state $\boldsymbol{\sigma}$ with values encoded using RLP, and $P(B_H)$ is the parent block of $B$, defined directly.
 
-The values stemming from the computation of transactions, specifically the transaction receipts, $B_\mathbf{R}$, and that defined through the transactions state-accumulation function, $\Pi$, are formalised later in section \ref{sec:statenoncevalidation}.
+The values stemming from the computation of transactions, specifically the transaction receipts, $B_\mathrm{R}$, and that defined through the transactions state-accumulation function, $\Pi$, are formalised later in section \ref{sec:statenoncevalidation}.
 
 \subsubsection{Serialisation}
 
 The function $L_B$ and $L_H$ are the preparation functions for a block and block header respectively. Much like the transaction receipt preparation function $L_R$, we assert the types and order of the structure for when the RLP transformation is required:
 \begin{eqnarray}
 \quad L_H(H) & \equiv & (\begin{array}[t]{l}H_p, H_o, H_c, H_r, H_t, H_e, H_b, H_d,\\ H_i, H_l, H_g, H_s, H_x, H_m, H_n \; )\end{array} \\
-\quad L_B(B) & \equiv & \big( L_H(B_H), L_T^*(B_\mathbf{T}), L_H^*(B_\mathbf{U}) \big)
+\quad L_B(B) & \equiv & \big( L_H(B_H), L_T^*(B_\mathrm{T}), L_H^*(B_\mathrm{U}) \big)
 \end{eqnarray}
 
 With $L_T^*$ and $L_H^*$ being element-wise sequence transformations, thus:
@@ -487,7 +487,7 @@ where:
 \end{equation}
 \begin{equation*}
 x \equiv \begin{cases}
-1 & \text{if} \, \lVert P(H)_\mathbf{U}\rVert = 0 \\
+1 & \text{if} \, \lVert P(H)_\mathrm{U}\rVert = 0 \\
 2 & \text{otherwise}
 \end{cases}
 \end{equation*}
@@ -570,10 +570,10 @@ Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define $\Up
 \subsection{Substate}
 Throughout transaction execution, we accrue certain information that is acted upon immediately following the transaction. We call this \textit{transaction substate}, and represent it as $A$, which is a tuple:
 \begin{equation}
-A \equiv (A_\mathbf{s}, A_\mathbf{l}, A_\mathbf{t}, A_r)
+A \equiv (A_\mathrm{s}, A_\mathrm{l}, A_\mathrm{t}, A_r)
 \end{equation}
 
-The tuple contents include $A_\mathbf{s}$, the self-destruct set: a set of accounts that will be discarded following the transaction's completion. $A_\mathbf{l}$ is the log series: this is a series of archived and indexable `checkpoints' in VM code execution that allow for contract-calls to be easily tracked by onlookers external to the Ethereum world (such as decentralised application front-ends). $A_\mathbf{t}$ is the set of touched accounts, of which the empty ones are deleted at the end of a transaction. Finally there is $A_r$, the refund balance, increased through using the {\small SSTORE} instruction in order to reset contract storage to zero from some non-zero value. Though not immediately refunded, it is allowed to partially offset the total execution costs.
+The tuple contents include $A_\mathrm{s}$, the self-destruct set: a set of accounts that will be discarded following the transaction's completion. $A_\mathrm{l}$ is the log series: this is a series of archived and indexable `checkpoints' in VM code execution that allow for contract-calls to be easily tracked by onlookers external to the Ethereum world (such as decentralised application front-ends). $A_\mathrm{t}$ is the set of touched accounts, of which the empty ones are deleted at the end of a transaction. Finally there is $A_r$, the refund balance, increased through using the {\small SSTORE} instruction in order to reset contract storage to zero from some non-zero value. Though not immediately refunded, it is allowed to partially offset the total execution costs.
 
 We define the empty substate $A^0$ to have no self-destructs, no logs, no touched accounts and a zero refund balance:
 \begin{equation}
@@ -583,12 +583,12 @@ A^0 \equiv (\varnothing, (), \varnothing, 0)
 \subsection{Execution}
 We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
 \begin{align}
-g_0 \equiv {} & \sum_{i \in T_\mathbf{i}, T_\mathbf{d}} \begin{cases} G_{txdatazero} & \text{if} \quad i = 0 \\ G_{txdatanonzero} & \text{otherwise} \end{cases} \\
+g_0 \equiv {} & \sum_{i \in T_\mathrm{i}, T_\mathrm{d}} \begin{cases} G_{txdatazero} & \text{if} \quad i = 0 \\ G_{txdatanonzero} & \text{otherwise} \end{cases} \\
 {} & + \begin{cases} G_\text{txcreate} & \text{if} \quad T_t = \varnothing \\ 0 & \text{otherwise} \end{cases} \\
 {} & + G_{transaction}
 \end{align}
 
-where $T_\mathbf{i},T_\mathbf{d}$ means the series of bytes of the transaction's associated data and initialisation EVM-code, depending on whether the transaction is for contract-creation or message-call. $G_\text{txcreate}$ is added if the transaction is contract-creating, but not if a result of EVM-code. $G$ is fully defined in Appendix \ref{app:fees}.
+where $T_\mathrm{i},T_\mathrm{d}$ means the series of bytes of the transaction's associated data and initialisation EVM-code, depending on whether the transaction is for contract-creation or message-call. $G_\text{txcreate}$ is added if the transaction is contract-creating, but not if a result of EVM-code. $G$ is fully defined in Appendix \ref{app:fees}.
 
 The up-front cost $v_0$ is calculated as:
 \begin{equation}
@@ -603,11 +603,11 @@ S(T) & \neq & \varnothing \quad \wedge \\
 T_n & = & \boldsymbol{\sigma}[S(T)]_n \quad \wedge \\
 g_0 & \leqslant & T_g \quad \wedge \\
 v_0 & \leqslant & \boldsymbol{\sigma}[S(T)]_b \quad \wedge \\
-T_g & \leqslant & {B_H}_l - \ell(B_\mathbf{R})_u
+T_g & \leqslant & {B_H}_l - \ell(B_\mathrm{R})_u
 \end{array}
 \end{equation}
 
-Note the final condition; the sum of the transaction's gas limit, $T_g$, and the gas utilised in this block prior, given by $\ell(B_\mathbf{R})_u$, must be no greater than the block's \textbf{gasLimit}, ${B_H}_l$.
+Note the final condition; the sum of the transaction's gas limit, $T_g$, and the gas utilised in this block prior, given by $\ell(B_\mathrm{R})_u$, must be no greater than the block's \textbf{gasLimit}, ${B_H}_l$.
 
 The execution of a valid transaction begins with an irrevocable change made to the state: the nonce of the account of the sender, $S(T)$, is incremented by one and the balance is reduced by part of the up-front cost, $T_gT_p$. The gas available for the proceeding computation, $g$, is defined as $T_g - g_0$. The computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
 
@@ -621,8 +621,8 @@ We define the checkpoint state $\boldsymbol{\sigma}_0$:
 Evaluating $\boldsymbol{\sigma}_P$ from $\boldsymbol{\sigma}_0$ depends on the transaction type; either contract creation or message call; we define the tuple of post-execution provisional state $\boldsymbol{\sigma}_P$, remaining gas $g'$, substate $A$ and status code $s'$:
 \begin{equation}
 (\boldsymbol{\sigma}_P, g', A, s') \equiv \begin{cases}
-\Lambda_{4}(\boldsymbol{\sigma}_0, S(T), T_o, &\\ \quad\quad g, T_p, T_v, T_\mathbf{i}, 0, \top) & \text{if} \quad T_t = \varnothing \\
-\Theta_{4}(\boldsymbol{\sigma}_0, S(T), T_o, &\\ \quad\quad T_t, T_t, g, T_p, T_v, T_v, T_\mathbf{d}, 0, \top) & \text{otherwise}
+\Lambda_{4}(\boldsymbol{\sigma}_0, S(T), T_o, &\\ \quad\quad g, T_p, T_v, T_\mathrm{i}, 0, \top) & \text{if} \quad T_t = \varnothing \\
+\Theta_{4}(\boldsymbol{\sigma}_0, S(T), T_o, &\\ \quad\quad T_t, T_t, g, T_p, T_v, T_v, T_\mathrm{d}, 0, \top) & \text{otherwise}
 \end{cases}
 \end{equation}
 
@@ -652,14 +652,14 @@ m & \equiv & {B_H}_c
 The final state, $\boldsymbol{\sigma}'$, is reached after deleting all accounts that either appear in the self-destruct list or are touched and empty:
 \begin{eqnarray}
 \boldsymbol{\sigma}' & \equiv & \boldsymbol{\sigma}^* \quad \text{except} \\
-\forall i \in A_\mathbf{s}: \boldsymbol{\sigma}'[i] & = & \varnothing \\
-\forall i \in A_\mathbf{t}: \boldsymbol{\sigma}'[i] & = & \varnothing \quad\text{if}\quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma}^*\kern -2pt, i)
+\forall i \in A_\mathrm{s}: \boldsymbol{\sigma}'[i] & = & \varnothing \\
+\forall i \in A_\mathrm{t}: \boldsymbol{\sigma}'[i] & = & \varnothing \quad\text{if}\quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma}^*\kern -2pt, i)
 \end{eqnarray}
 
 And finally, we specify $\Upsilon^g$, the total gas used in this transaction, $\Upsilon^\mathbf{l}$, the logs created by this transaction and $\Upsilon^{s}$, the status code of this transaction:
 \begin{eqnarray}
 \Upsilon^g(\boldsymbol{\sigma}, T) & \equiv & T_g - g' \\
-\Upsilon^\mathbf{l}(\boldsymbol{\sigma}, T) & \equiv & A_\mathbf{l} \\
+\Upsilon^\mathbf{l}(\boldsymbol{\sigma}, T) & \equiv & A_\mathrm{l} \\
 \Upsilon^s(\boldsymbol{\sigma}, T) & \equiv & s'
 \end{eqnarray}
 
@@ -691,7 +691,7 @@ The account's nonce is initially defined as one, the balance as the value passed
 \varnothing & \text{if}\ \boldsymbol{\sigma}[s] = \varnothing \ \wedge\ v = 0 \\
 \mathbf{a}^* & \text{otherwise}
 \end{cases} \\
-\mathbf{a}^* &\equiv& (\boldsymbol{\sigma}[s]_n, \boldsymbol{\sigma}[s]_b - v, \boldsymbol{\sigma}[s]_\mathbf{s}, \boldsymbol{\sigma}[s]_c)
+\mathbf{a}^* &\equiv& (\boldsymbol{\sigma}[s]_n, \boldsymbol{\sigma}[s]_b - v, \boldsymbol{\sigma}[s]_\mathrm{s}, \boldsymbol{\sigma}[s]_c)
 \end{eqnarray}
 
 where $v'$ is the account's pre-existing value, in the event it was previously in existence:
@@ -714,15 +714,15 @@ where $I$ contains the parameters of the execution environment as defined in sec
 I_a & \equiv & a \\
 I_o & \equiv & o \\
 I_p & \equiv & p \\
-I_\mathbf{d} & \equiv & () \\
+I_\mathrm{d} & \equiv & () \\
 I_s & \equiv & s \\
 I_v & \equiv & v \\
-I_\mathbf{b} & \equiv & \mathbf{i} \\
+I_\mathrm{b} & \equiv & \mathbf{i} \\
 I_e & \equiv & e \\
 I_w & \equiv & w
 \end{eqnarray}
 
-$I_\mathbf{d}$ evaluates to the empty tuple as there is no input data to this call. $I_H$ has no special treatment and is determined from the blockchain.
+$I_\mathrm{d}$ evaluates to the empty tuple as there is no input data to this call. $I_H$ has no special treatment and is determined from the blockchain.
 
 Code execution depletes gas, and gas may not go below zero, thus execution may exit before the code has come to a natural halting state. In this (and several other) exceptional cases we say an out-of-gas (OOG) exception has occurred: The evaluated state is defined as being the empty set, $\varnothing$, and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation.
 
@@ -790,7 +790,7 @@ Throughout the present work, it is assumed that if $\boldsymbol{\sigma}_1[r]$ wa
 \end{cases}
 \end{equation}
 \begin{equation}
-\mathbf{a}_1 \equiv (\boldsymbol{\sigma}_1'[s]_n, \boldsymbol{\sigma}_1'[s]_b - v, \boldsymbol{\sigma}_1'[s]_\mathbf{s}, \boldsymbol{\sigma}_1'[s]_c)
+\mathbf{a}_1 \equiv (\boldsymbol{\sigma}_1'[s]_n, \boldsymbol{\sigma}_1'[s]_b - v, \boldsymbol{\sigma}_1'[s]_\mathrm{s}, \boldsymbol{\sigma}_1'[s]_c)
 \end{equation}
 \begin{equation}
 \text{and}\quad \boldsymbol{\sigma}_1' \equiv \boldsymbol{\sigma} \quad \text{except:} \\
@@ -803,7 +803,7 @@ Throughout the present work, it is assumed that if $\boldsymbol{\sigma}_1[r]$ wa
 \end{cases}
 \end{equation}
 \begin{equation}
-\mathbf{a}_1' \equiv (\boldsymbol{\sigma}[r]_n, \boldsymbol{\sigma}[r]_b + v, \boldsymbol{\sigma}[r]_\mathbf{s}, \boldsymbol{\sigma}[r]_c)
+\mathbf{a}_1' \equiv (\boldsymbol{\sigma}[r]_n, \boldsymbol{\sigma}[r]_b + v, \boldsymbol{\sigma}[r]_\mathrm{s}, \boldsymbol{\sigma}[r]_c)
 \end{equation}
 
 The account's associated code (identified as the fragment whose Keccak hash is $\boldsymbol{\sigma}[c]_c$) is executed according to the execution model (see section \ref{ch:model}). Just as with contract creation, if the execution halts in an exceptional fashion (i.e. due to an exhausted gas supply, stack underflow, invalid jump destination or invalid instruction), then no gas is refunded to the caller and the state is reverted to the point immediately prior to balance transfer (i.e. $\boldsymbol{\sigma}$).
@@ -834,17 +834,17 @@ s' & \equiv & \begin{cases}
 I_a & \equiv & r \\
 I_o & \equiv & o \\
 I_p & \equiv & p \\
-I_\mathbf{d} & \equiv & \mathbf{d} \\
+I_\mathrm{d} & \equiv & \mathbf{d} \\
 I_s & \equiv & s \\
 I_v & \equiv & \tilde{v} \\
 I_e & \equiv & e \\
 I_w & \equiv & w \\
 \mathbf{t} & \equiv & \{s, r\} \\
 \\ \nonumber
-\text{Let} \; \mathtt{\tiny KEC}(I_\mathbf{b}) & = & \boldsymbol{\sigma}[c]_c
+\text{Let} \; \mathtt{\tiny KEC}(I_\mathrm{b}) & = & \boldsymbol{\sigma}[c]_c
 \end{eqnarray}
 
-It is assumed that the client will have stored the pair $(\mathtt{\tiny KEC}(I_\mathbf{b}), I_\mathbf{b})$ at some point prior in order to make the determination of $I_\mathbf{b}$ feasible.
+It is assumed that the client will have stored the pair $(\mathtt{\tiny KEC}(I_\mathrm{b}), I_\mathrm{b})$ at some point prior in order to make the determination of $I_\mathrm{b}$ feasible.
 
 As can be seen, there are eight exceptions to the usage of the general execution framework $\Xi$ for evaluation of the message call: these are eight so-called `precompiled' contracts, meant as a preliminary piece of architecture that may later become \textit{native extensions}. The eight contracts in addresses 1 to 8 execute the elliptic curve public key recovery function, the SHA2 256-bit hash scheme, the RIPEMD 160-bit hash scheme, the identity function, arbitrary precision modular exponentiation, elliptic curve addition, elliptic curve scalar multiplication and an elliptic curve pairing check respectively.
 
@@ -880,10 +880,10 @@ In addition to the system state $\boldsymbol{\sigma}$, and the remaining gas for
 \item $I_a$, the address of the account which owns the code that is executing.
 \item $I_o$, the sender address of the transaction that originated this execution.
 \item $I_p$, the price of gas in the transaction that originated this execution.
-\item $I_\mathbf{d}$, the byte array that is the input data to this execution; if the execution agent is a transaction, this would be the transaction data.
+\item $I_\mathrm{d}$, the byte array that is the input data to this execution; if the execution agent is a transaction, this would be the transaction data.
 \item $I_s$, the address of the account which caused the code to be executing; if the execution agent is a transaction, this would be the transaction sender.
 \item $I_v$, the value, in Wei, passed to this account as part of the same procedure as execution; if the execution agent is a transaction, this would be the transaction value.
-\item $I_\mathbf{b}$, the byte array that is the machine code to be executed.
+\item $I_\mathrm{b}$, the byte array that is the machine code to be executed.
 \item $I_H$, the block header of the present block.
 \item $I_e$, the depth of the present message-call or contract-creation (i.e. the number of {\small CALL}s or {\small CREATE}s being executed at present).
 \item $I_w$, the permission to make modifications to the state.
@@ -910,10 +910,10 @@ The empty sequence, denoted $()$, is not equal to the empty set, denoted $\varno
 (\boldsymbol{\sigma}', \boldsymbol{\mu}'\!, A, ..., \mathbf{o}) & \equiv & X\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A^0\!, I)\big) \\
 \boldsymbol{\mu}_g & \equiv & g \\
 \boldsymbol{\mu}_{pc} & \equiv & 0 \\
-\boldsymbol{\mu}_\mathbf{m} & \equiv & (0, 0, ...) \\
+\boldsymbol{\mu}_\mathrm{m} & \equiv & (0, 0, ...) \\
 \boldsymbol{\mu}_i & \equiv & 0 \\
-\boldsymbol{\mu}_\mathbf{s} & \equiv & () \\
-\boldsymbol{\mu}_\mathbf{o} & \equiv & ()
+\boldsymbol{\mu}_\mathrm{s} & \equiv & () \\
+\boldsymbol{\mu}_\mathrm{o} & \equiv & ()
 \end{eqnarray}
 \begin{equation} \label{eq:X-def}
 X\big( (\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \big) \equiv \begin{cases}
@@ -937,13 +937,13 @@ Note that, when we evaluate $\Xi$, we drop the fourth element $I'$ and extract t
 $X$ is thus cycled (recursively here, but implementations are generally expected to use a simple iterative loop) until either $Z$ becomes true indicating that the present state is exceptional and that the machine must be halted and any changes discarded or until $H$ becomes a series (rather than the empty set) indicating that the machine has reached a controlled halt.
 
 \subsubsection{Machine State}
-The machine state $\boldsymbol{\mu}$ is defined as the tuple $(g, pc, \mathbf{m}, i, \mathbf{s})$ which are the gas available, the program counter $pc \in \mathbb{P}_{256}$ , the memory contents, the active number of words in memory (counting continuously from position 0), and the stack contents. The memory contents $\boldsymbol{\mu}_\mathbf{m}$ are a series of zeroes of size $2^{256}$.
+The machine state $\boldsymbol{\mu}$ is defined as the tuple $(g, pc, \mathbf{m}, i, \mathbf{s})$ which are the gas available, the program counter $pc \in \mathbb{P}_{256}$ , the memory contents, the active number of words in memory (counting continuously from position 0), and the stack contents. The memory contents $\boldsymbol{\mu}_\mathrm{m}$ are a series of zeroes of size $2^{256}$.
 
 For the ease of reading, the instruction mnemonics, written in small-caps (\eg \space {\small ADD}), should be interpreted as their numeric equivalents; the full table of instructions and their specifics is given in Appendix \ref{app:vm}.
 
 For the purposes of defining $Z$, $H$ and $O$, we define $w$ as the current operation to be executed:
 \begin{equation}\label{eq:currentoperation}
-w \equiv \begin{cases} I_\mathbf{b}[\boldsymbol{\mu}_{pc}] & \text{if} \quad \boldsymbol{\mu}_{pc} < \lVert I_\mathbf{b} \rVert \\
+w \equiv \begin{cases} I_\mathrm{b}[\boldsymbol{\mu}_{pc}] & \text{if} \quad \boldsymbol{\mu}_{pc} < \lVert I_\mathrm{b} \rVert \\
 \text{\small STOP} & \text{otherwise}
 \end{cases}
 \end{equation}
@@ -958,10 +958,10 @@ Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv
 \begin{array}[t]{l}
 \boldsymbol{\mu}_g < C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \quad \vee \\
 \mathbf{\delta}_w = \varnothing \quad \vee \\
-\lVert\boldsymbol{\mu}_\mathbf{s}\rVert < \mathbf{\delta}_w \quad \vee \\
-( w \in \{ \text{\small JUMP}, \text{\small JUMPI} \} \quad \wedge \\ \quad \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \\
-( w = \text{\small RETURNDATACOPY} \wedge \\ \quad \boldsymbol{\mu}_\mathbf{s}[1] + \boldsymbol{\mu}_\mathbf{s}[2] > \lVert\boldsymbol{\mu}_\mathbf{o}\rVert) \quad \vee \\
- \lVert\boldsymbol{\mu}_\mathbf{s}\rVert - \mathbf{\delta}_w + \mathbf{\alpha}_w > 1024 \quad \vee \\
+\lVert\boldsymbol{\mu}_\mathrm{s}\rVert < \mathbf{\delta}_w \quad \vee \\
+( w \in \{ \text{\small JUMP}, \text{\small JUMPI} \} \quad \wedge \\ \quad \boldsymbol{\mu}_\mathrm{s}[0] \notin D(I_\mathrm{b}) ) \quad \vee \\
+( w = \text{\small RETURNDATACOPY} \wedge \\ \quad \boldsymbol{\mu}_\mathrm{s}[1] + \boldsymbol{\mu}_\mathrm{s}[2] > \lVert\boldsymbol{\mu}_\mathrm{o}\rVert) \quad \vee \\
+ \lVert\boldsymbol{\mu}_\mathrm{s}\rVert - \mathbf{\delta}_w + \mathbf{\alpha}_w > 1024 \quad \vee \\
  \neg I_w \wedge W(w, \boldsymbol{\mu})
 \end{array}
 \end{equation}
@@ -970,7 +970,7 @@ where
 W(w, \boldsymbol{\mu}) \equiv \begin{array}[t]{l}
 w \in \{\text{\small CREATE}, \text{\small SSTORE}, \text{\small SELFDESTRUCT}\} \quad \vee \\
 \text{\small LOG0} \le w \wedge w \le \text{\small LOG4} \quad \vee \\
-w \in \{\text{\small CALL}, \text{\small CALLCODE}\} \wedge \boldsymbol{\mu}_\mathbf{s}[2] \neq 0
+w \in \{\text{\small CALL}, \text{\small CALLCODE}\} \wedge \boldsymbol{\mu}_\mathrm{s}[2] \neq 0
 \end{array}
 \end{equation}
 
@@ -1022,8 +1022,8 @@ Stack items are added or removed from the left-most, lower-indexed portion of th
 \begin{eqnarray}
 O\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I)\big) & \equiv & (\boldsymbol{\sigma}', \boldsymbol{\mu}', A', I) \\
 \Delta & \equiv & \mathbf{\alpha}_w - \mathbf{\delta}_w \\
-\lVert\boldsymbol{\mu}'_\mathbf{s}\rVert & \equiv & \lVert\boldsymbol{\mu}_\mathbf{s}\rVert + \Delta \\
-\quad \forall x \in [\mathbf{\alpha}_w, \lVert\boldsymbol{\mu}'_\mathbf{s}\rVert): \boldsymbol{\mu}'_\mathbf{s}[x] & \equiv & \boldsymbol{\mu}_\mathbf{s}[x-\Delta]
+\lVert\boldsymbol{\mu}'_\mathrm{s}\rVert & \equiv & \lVert\boldsymbol{\mu}_\mathrm{s}\rVert + \Delta \\
+\quad \forall x \in [\mathbf{\alpha}_w, \lVert\boldsymbol{\mu}'_\mathrm{s}\rVert): \boldsymbol{\mu}'_\mathrm{s}[x] & \equiv & \boldsymbol{\mu}_\mathrm{s}[x-\Delta]
 \end{eqnarray}
 
 The gas is reduced by the instruction's gas cost and for most instructions, the program counter increments on each cycle, for the three exceptions, we assume a function $J$, subscripted by one of two instructions, which evaluates to the according value:
@@ -1038,7 +1038,7 @@ N(\boldsymbol{\mu}_{pc}, w) & \text{otherwise}
 
 In general, we assume the memory, self-destruct set and system state don't change:
 \begin{eqnarray}
-\boldsymbol{\mu}'_\mathbf{m} & \equiv & \boldsymbol{\mu}_\mathbf{m} \\
+\boldsymbol{\mu}'_\mathrm{m} & \equiv & \boldsymbol{\mu}_\mathrm{m} \\
 \boldsymbol{\mu}'_i & \equiv & \boldsymbol{\mu}_i \\
 A' & \equiv & A \\
 \boldsymbol{\sigma}' & \equiv & \boldsymbol{\sigma}
@@ -1075,7 +1075,7 @@ The process of finalising a block involves four stages:
 
 The validation of ommer headers means nothing more than verifying that each ommer header is both a valid header and satisfies the relation of $N$th-generation ommer to the present block where $N \leq 6$. The maximum of ommer headers is two. Formally:
 \begin{equation}
-\lVert B_\mathbf{U} \rVert \leqslant 2 \bigwedge_{U \in B_\mathbf{U}} V(U) \; \wedge \; k(U, P(B_H)_H, 6)
+\lVert B_\mathrm{U} \rVert \leqslant 2 \bigwedge_{U \in B_\mathrm{U}} V(U) \; \wedge \; k(U, P(B_H)_H, 6)
 \end{equation}
 
 where $k$ denotes the ``is-kin'' property:
@@ -1088,13 +1088,13 @@ s(U, H) &\\
 
 and $s$ denotes the ``is-sibling'' property:
 \begin{equation}
-s(U, H) \equiv (P(H) = P(U)\; \wedge \; H \neq U \; \wedge \; U \notin B(H)_\mathbf{U})
+s(U, H) \equiv (P(H) = P(U)\; \wedge \; H \neq U \; \wedge \; U \notin B(H)_\mathrm{U})
 \end{equation}
 where $B(H)$ is the block of the corresponding header $H$.
 
 \subsection{Transaction Validation}
 
-%where $s[i]$ equals the root of the state trie immediately after the execution of the transaction $B_\mathbf{T}[i]$, and $g[i]$ the total gas used immediately after said transaction.
+%where $s[i]$ equals the root of the state trie immediately after the execution of the transaction $B_\mathrm{T}[i]$, and $g[i]$ the total gas used immediately after said transaction.
 
 The given \textbf{gasUsed} must correspond faithfully to the transactions listed: ${B_H}_g$, the total gas used in the block, must be equal to the accumulated gas used according to the final transaction:
 \begin{equation}
@@ -1107,13 +1107,13 @@ The application of rewards to a block involves raising the balance of the accoun
 \begin{eqnarray}
 \\ \nonumber
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
-\qquad\boldsymbol{\sigma}'[{B_H}_c]_b & = & \boldsymbol{\sigma}[{B_H}_c]_b + (1 + \frac{\lVert B_\mathbf{U}\rVert}{32})R_b \\
-\qquad\forall_{U \in B_\mathbf{U}}: \\ \nonumber
+\qquad\boldsymbol{\sigma}'[{B_H}_c]_b & = & \boldsymbol{\sigma}[{B_H}_c]_b + (1 + \frac{\lVert B_\mathrm{U}\rVert}{32})R_b \\
+\qquad\forall_{U \in B_\mathrm{U}}: \\ \nonumber
 \boldsymbol{\sigma}'[U_c] & = & \begin{cases}
 \varnothing &\text{if}\ \boldsymbol{\sigma}[U_c] = \varnothing\ \wedge\ R = 0 \\
 \mathbf{a}' &\text{otherwise}
 \end{cases} \\
-\mathbf{a}' &\equiv& (\boldsymbol{\sigma}[U_c]_n, \boldsymbol{\sigma}[U_c]_b + R, \boldsymbol{\sigma}[U_c]_\mathbf{s}, \boldsymbol{\sigma}[U_c]_c) \\
+\mathbf{a}' &\equiv& (\boldsymbol{\sigma}[U_c]_n, \boldsymbol{\sigma}[U_c]_b + R, \boldsymbol{\sigma}[U_c]_\mathrm{s}, \boldsymbol{\sigma}[U_c]_c) \\
 R & \equiv & (1 + \frac{1}{8} (U_i - {B_H}_i)) R_b
 \end{eqnarray}
 
@@ -1147,30 +1147,30 @@ With $\mathbf{d}$ being a dataset as specified in appendix \ref{app:ethash}.
 
 As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of $\Omega$, the block finalisation function and $\Upsilon$, the transaction-evaluation function, both now well-defined.
 
-As previously detailed, $\mathbf{R}[n]_{s'}$, $\mathbf{R}[n]_\mathbf{l}$ and $\mathbf{R}[n]_u$ are the $n$th corresponding status code, logs and cumulative gas used after each transaction ($\mathbf{R}[n]_b$, the fourth component in the tuple, has already been defined in terms of the logs). We also define the $n$th state $\boldsymbol{\sigma}[n]$, which is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
+As previously detailed, $\mathbf{R}[n]_{s'}$, $\mathbf{R}[n]_\mathrm{l}$ and $\mathbf{R}[n]_u$ are the $n$th corresponding status code, logs and cumulative gas used after each transaction ($\mathbf{R}[n]_b$, the fourth component in the tuple, has already been defined in terms of the logs). We also define the $n$th state $\boldsymbol{\sigma}[n]$, which is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
 \begin{equation}
-\boldsymbol{\sigma}[n] = \begin{cases} \Gamma(B) & \text{if} \quad n < 0 \\ \Upsilon(\boldsymbol{\sigma}[n - 1], B_\mathbf{T}[n]) & \text{otherwise} \end{cases}
+\boldsymbol{\sigma}[n] = \begin{cases} \Gamma(B) & \text{if} \quad n < 0 \\ \Upsilon(\boldsymbol{\sigma}[n - 1], B_\mathrm{T}[n]) & \text{otherwise} \end{cases}
 \end{equation}
 
-In the case of $B_\mathbf{R}[n]_u$, we take a similar approach defining each item as the gas used in evaluating the corresponding transaction summed with the previous item (or zero, if it is the first), giving us a running total:
+In the case of $B_\mathrm{R}[n]_u$, we take a similar approach defining each item as the gas used in evaluating the corresponding transaction summed with the previous item (or zero, if it is the first), giving us a running total:
 \begin{equation}
 \mathbf{R}[n]_u = \begin{cases} 0 & \text{if} \quad n < 0 \\
 \begin{array}[b]{l}
-\Upsilon^g(\boldsymbol{\sigma}[n - 1], B_\mathbf{T}[n])\\ \quad + \mathbf{R}[n-1]_u
+\Upsilon^g(\boldsymbol{\sigma}[n - 1], B_\mathrm{T}[n])\\ \quad + \mathbf{R}[n-1]_u
 \end{array}
  & \text{otherwise} \end{cases}
 \end{equation}
 
-For $\mathbf{R}[n]_\mathbf{l}$, we utilise the $\Upsilon^\mathbf{l}$ function that we conveniently defined in the transaction execution function.
+For $\mathbf{R}[n]_\mathrm{l}$, we utilise the $\Upsilon^\mathbf{l}$ function that we conveniently defined in the transaction execution function.
 \begin{equation}
-\mathbf{R}[n]_\mathbf{l} =
-\Upsilon^\mathbf{l}(\boldsymbol{\sigma}[n - 1], B_\mathbf{T}[n])
+\mathbf{R}[n]_\mathrm{l} =
+\Upsilon^\mathbf{l}(\boldsymbol{\sigma}[n - 1], B_\mathrm{T}[n])
 \end{equation}
 
 We define $\mathbf{R}[n]_{s'}$ in a similar manner.
 \begin{equation}
 \mathbf{R}[n]_{s'} =
-\Upsilon^{s}(\boldsymbol{\sigma}[n - 1], B_\mathbf{T}[n])
+\Upsilon^{s}(\boldsymbol{\sigma}[n - 1], B_\mathrm{T}[n])
 \end{equation}
 
 Finally, we define $\Pi$ as the new state given the block reward function $\Omega$ applied to the final transaction's resultant state, $\ell(\boldsymbol{\sigma})$:
@@ -1456,8 +1456,8 @@ g_r &=& 3000\\
 \text{if} \quad |\mathbf{o}| = 32: &&\\
 \mathbf{o}[0..11] &=& 0 \\
 \mathbf{o}[12..31] &=& \mathtt{\tiny KEC}\big(\mathtt{\tiny ECDSARECOVER}(h, v, r, s)\big)[12..31] \quad \text{where:}\\
-\mathbf{d}[0..(|I_\mathbf{d}|-1)] &=& I_\mathbf{d}\\
-\mathbf{d}[|I_\mathbf{d}|..] &=& (0, 0, ...) \\
+\mathbf{d}[0..(|I_\mathrm{d}|-1)] &=& I_\mathrm{d}\\
+\mathbf{d}[|I_\mathrm{d}|..] &=& (0, 0, ...) \\
 h &=& \mathbf{d}[0..31]\\
 v &=& \mathbf{d}[32..63]\\
 r &=& \mathbf{d}[64..95]\\
@@ -1467,12 +1467,12 @@ s &=& \mathbf{d}[96..127]
 The two hash functions, RIPEMD-160 and SHA2-256 are more trivially defined as an almost pass-through operation. Their gas usage is dependent on the input data size, a factor rounded up to the nearest number of words.
 \begin{eqnarray}
 \Xi_{\mathtt{SHA256}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
-g_r &=& 60 + 12\Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil\\
-\mathbf{o}[0..31] &=& \mathtt{\tiny SHA256}(I_\mathbf{d})\\
+g_r &=& 60 + 12\Big\lceil \dfrac{|I_\mathrm{d}|}{32} \Big\rceil\\
+\mathbf{o}[0..31] &=& \mathtt{\tiny SHA256}(I_\mathrm{d})\\
 \Xi_{\mathtt{RIP160}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
-g_r &=& 600 + 120\Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil\\
+g_r &=& 600 + 120\Big\lceil \dfrac{|I_\mathrm{d}|}{32} \Big\rceil\\
 \mathbf{o}[0..11] &=& 0 \\
-\mathbf{o}[12..31] &=& \mathtt{\tiny RIPEMD160}(I_\mathbf{d})\\
+\mathbf{o}[12..31] &=& \mathtt{\tiny RIPEMD160}(I_\mathrm{d})\\
 \end{eqnarray}
 
 For the purposes here, we assume we have well-defined standard cryptographic functions for RIPEMD-160 and SHA2-256 of the form:
@@ -1484,8 +1484,8 @@ For the purposes here, we assume we have well-defined standard cryptographic fun
 The fourth contract, the identity function $\Xi_{\mathtt{ID}}$ simply defines the output as the input:
 \begin{eqnarray}
 \Xi_{\mathtt{ID}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
-g_r &=& 15 + 3\Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil\\
-\mathbf{o} &=& I_\mathbf{d}
+g_r &=& 15 + 3\Big\lceil \dfrac{|I_\mathrm{d}|}{32} \Big\rceil\\
+\mathbf{o} &=& I_\mathrm{d}
 \end{eqnarray}
 
 The fifth contract performs arbitrary-precision exponentiation under modulo. Here, $0 ^ 0$ is taken to be one, and $x \bmod 0$ is zero for all $x$. The first word in the input specifies the number of bytes that the first non-negative integer $B$ occupies. The second word in the input specifies the number of bytes that the second non-negative integer $E$ occupies. The third word in the input specifies the number of bytes that the third non-negative integer $M$ occupies. These three words are followed by $B$, $E$ and $M$. The rest of the input is discarded. Whenever the input is too short, the missing bytes are considered to be zero. The output is encoded big-endian into the same format as $M$'s.
@@ -1602,8 +1602,8 @@ We define a precompiled contract for zkSNARK verification.
 \begin{eqnarray}
 \Xi_{\mathtt{SNARKV}}&\equiv&\Xi_{\mathtt{PRE}}\quad\text{except:}\\
 \qquad\Xi_{\mathtt{SNARKV}}(\boldsymbol\sigma,g,I)&=&(\varnothing,0,A^0,())\quad\text{if}\ F\\
-F&\equiv&(|I_\mathbf{d}|\bmod 192\neq 0\vee(\exists j.\ a_j=\varnothing\vee b_j=\varnothing))\\
-k &=& \dfrac{|I_\mathbf{d}|}{192} \\
+F&\equiv&(|I_\mathrm{d}|\bmod 192\neq 0\vee(\exists j.\ a_j=\varnothing\vee b_j=\varnothing))\\
+k &=& \dfrac{|I_\mathrm{d}|}{192} \\
 g_r&=& 60000k + 40000 \\
 \mathbf o[0..31]&\equiv&\begin{cases}
 0x0000000000000000000000000000000000000000000000000000000000000001&\text{if}\ v\wedge\neg F\\
@@ -1771,15 +1771,15 @@ The general gas cost function, $C$, is defined as:
 \begin{equation}
 C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv C_{mem}(\boldsymbol{\mu}'_i)-C_{mem}(\boldsymbol{\mu}_i) + \begin{cases}
 C_\text{\tiny SSTORE}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SSTORE} \\
-G_{exp} & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_\mathbf{s}[1] = 0 \\
-G_{exp} + G_{expbyte}\times(1+\lfloor\log_{256}(\boldsymbol{\mu}_\mathbf{s}[1])\rfloor) & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_\mathbf{s}[1] > 0 \\
-G_{verylow} + G_{copy}\times\lceil\boldsymbol{\mu}_\mathbf{s}[2] \div 32\rceil & \text{if} \quad w = \text{\small CALLDATACOPY} \lor \text{\small CODECOPY} \lor \text{\small RETURNDATACOPY} \\
-G_{extcode} + G_{copy}\times\lceil\boldsymbol{\mu}_\mathbf{s}[3] \div 32\rceil & \text{if} \quad w = \text{\small EXTCODECOPY} \\
-G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1] & \text{if} \quad w = \text{\small LOG0} \\
-G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+G_{logtopic} & \text{if} \quad w = \text{\small LOG1} \\
-G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+2G_{logtopic} & \text{if} \quad w = \text{\small LOG2} \\
-G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+3G_{logtopic} & \text{if} \quad w = \text{\small LOG3} \\
-G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathbf{s}[1]+4G_{logtopic} & \text{if} \quad w = \text{\small LOG4} \\
+G_{exp} & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_\mathrm{s}[1] = 0 \\
+G_{exp} + G_{expbyte}\times(1+\lfloor\log_{256}(\boldsymbol{\mu}_\mathrm{s}[1])\rfloor) & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_\mathrm{s}[1] > 0 \\
+G_{verylow} + G_{copy}\times\lceil\boldsymbol{\mu}_\mathrm{s}[2] \div 32\rceil & \text{if} \quad w = \text{\small CALLDATACOPY} \lor \text{\small CODECOPY} \lor \text{\small RETURNDATACOPY} \\
+G_{extcode} + G_{copy}\times\lceil\boldsymbol{\mu}_\mathrm{s}[3] \div 32\rceil & \text{if} \quad w = \text{\small EXTCODECOPY} \\
+G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathrm{s}[1] & \text{if} \quad w = \text{\small LOG0} \\
+G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathrm{s}[1]+G_{logtopic} & \text{if} \quad w = \text{\small LOG1} \\
+G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathrm{s}[1]+2G_{logtopic} & \text{if} \quad w = \text{\small LOG2} \\
+G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathrm{s}[1]+3G_{logtopic} & \text{if} \quad w = \text{\small LOG3} \\
+G_{log}+G_{logdata}\times\boldsymbol{\mu}_\mathrm{s}[1]+4G_{logtopic} & \text{if} \quad w = \text{\small LOG4} \\
 C_\text{\tiny CALL}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small CALL} \lor \text{\small CALLCODE} \lor \text{\small DELEGATECALL} \\
 C_\text{\tiny SELFDESTRUCT}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SELFDESTRUCT} \\
 G_{create} & \text{if} \quad w = \text{\small CREATE}\\
@@ -1798,7 +1798,7 @@ G_{blockhash} & \text{if} \quad w = \text{\small BLOCKHASH}\\
 \end{cases}
 \end{equation}
 \begin{equation}
-w \equiv \begin{cases} I_\mathbf{b}[\boldsymbol{\mu}_{pc}] & \text{if} \quad \boldsymbol{\mu}_{pc} < \lVert I_\mathbf{b} \rVert\\
+w \equiv \begin{cases} I_\mathrm{b}[\boldsymbol{\mu}_{pc}] & \text{if} \quad \boldsymbol{\mu}_{pc} < \lVert I_\mathrm{b} \rVert\\
 \text{\small STOP} & \text{otherwise}
 \end{cases}
 \end{equation}
@@ -1862,43 +1862,43 @@ Here given are the various exceptions to the state transition rules given in sec
 0x00 & {\small STOP} & 0 & 0 & Halts execution. \\
 \midrule
 0x01 & {\small ADD} & 2 & 1 & Addition operation. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1]$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \boldsymbol{\mu}_\mathrm{s}[0] + \boldsymbol{\mu}_\mathrm{s}[1]$ \\
 \midrule
 0x02 & {\small MUL} & 2 & 1 & Multiplication operation. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0] \times \boldsymbol{\mu}_\mathbf{s}[1]$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \boldsymbol{\mu}_\mathrm{s}[0] \times \boldsymbol{\mu}_\mathrm{s}[1]$ \\
 \midrule
 0x03 & {\small SUB} & 2 & 1 & Subtraction operation. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0] - \boldsymbol{\mu}_\mathbf{s}[1]$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \boldsymbol{\mu}_\mathrm{s}[0] - \boldsymbol{\mu}_\mathrm{s}[1]$ \\
 \midrule
 0x04 & {\small DIV} & 2 & 1 & Integer division operation. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0\\ \lfloor\boldsymbol{\mu}_\mathbf{s}[0] \div \boldsymbol{\mu}_\mathbf{s}[1]\rfloor & \text{otherwise}\end{cases}$  \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[1] = 0\\ \lfloor\boldsymbol{\mu}_\mathrm{s}[0] \div \boldsymbol{\mu}_\mathrm{s}[1]\rfloor & \text{otherwise}\end{cases}$  \\
 \midrule
 0x05 & {\small SDIV} & 2 & 1 & Signed integer division operation (truncated). \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0\\ -2^{255} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] = -2^{255} \wedge \quad \boldsymbol{\mu}_\mathbf{s}[1] = -1\\ \mathbf{sgn} (\boldsymbol{\mu}_\mathbf{s}[0] \div \boldsymbol{\mu}_\mathbf{s}[1]) \lfloor |\boldsymbol{\mu}_\mathbf{s}[0] \div \boldsymbol{\mu}_\mathbf{s}[1]| \rfloor & \text{otherwise}\end{cases}$  \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[1] = 0\\ -2^{255} & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[0] = -2^{255} \wedge \quad \boldsymbol{\mu}_\mathrm{s}[1] = -1\\ \mathbf{sgn} (\boldsymbol{\mu}_\mathrm{s}[0] \div \boldsymbol{\mu}_\mathrm{s}[1]) \lfloor |\boldsymbol{\mu}_\mathrm{s}[0] \div \boldsymbol{\mu}_\mathrm{s}[1]| \rfloor & \text{otherwise}\end{cases}$  \\
 &&&& Where all values are treated as two's complement signed 256-bit integers. \\
 &&&& Note the overflow semantic when $-2^{255}$ is negated.\\
 \midrule
 0x06 & {\small MOD} & 2 & 1 & Modulo remainder operation. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0\\ \boldsymbol{\mu}_\mathbf{s}[0] \bmod \boldsymbol{\mu}_\mathbf{s}[1] & \text{otherwise}\end{cases}$  \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[1] = 0\\ \boldsymbol{\mu}_\mathrm{s}[0] \bmod \boldsymbol{\mu}_\mathrm{s}[1] & \text{otherwise}\end{cases}$  \\
 \midrule
 0x07 & {\small SMOD} & 2 & 1 & Signed modulo remainder operation. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0\\ \mathbf{sgn} (\boldsymbol{\mu}_\mathbf{s}[0]) (|\boldsymbol{\mu}_\mathbf{s}[0]| \bmod |\boldsymbol{\mu}_\mathbf{s}[1]|) & \text{otherwise}\end{cases}$  \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[1] = 0\\ \mathbf{sgn} (\boldsymbol{\mu}_\mathrm{s}[0]) (|\boldsymbol{\mu}_\mathrm{s}[0]| \bmod |\boldsymbol{\mu}_\mathrm{s}[1]|) & \text{otherwise}\end{cases}$  \\
 &&&& Where all values are treated as two's complement signed 256-bit integers. \\
 \midrule
 0x08 & {\small ADDMOD} & 3 & 1 & Modulo addition operation. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] = 0\\ (\boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1]) \mod \boldsymbol{\mu}_\mathbf{s}[2] & \text{otherwise}\end{cases}$  \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[2] = 0\\ (\boldsymbol{\mu}_\mathrm{s}[0] + \boldsymbol{\mu}_\mathrm{s}[1]) \mod \boldsymbol{\mu}_\mathrm{s}[2] & \text{otherwise}\end{cases}$  \\
 &&&& All intermediate calculations of this operation are not subject to the $2^{256}$ modulo. \\
 \midrule
 0x09 & {\small MULMOD} & 3 & 1 & Modulo multiplication operation. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] = 0\\ (\boldsymbol{\mu}_\mathbf{s}[0] \times \boldsymbol{\mu}_\mathbf{s}[1]) \mod \boldsymbol{\mu}_\mathbf{s}[2] & \text{otherwise}\end{cases}$  \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[2] = 0\\ (\boldsymbol{\mu}_\mathrm{s}[0] \times \boldsymbol{\mu}_\mathrm{s}[1]) \mod \boldsymbol{\mu}_\mathrm{s}[2] & \text{otherwise}\end{cases}$  \\
 &&&& All intermediate calculations of this operation are not subject to the $2^{256}$ modulo. \\
 \midrule
 0x0a & {\small EXP} & 2 & 1 & Exponential operation. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0] ^ {\boldsymbol{\mu}_\mathbf{s}[1] }$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \boldsymbol{\mu}_\mathrm{s}[0] ^ {\boldsymbol{\mu}_\mathrm{s}[1] }$ \\
 \midrule
 0x0b & {\small SIGNEXTEND} & 2 & 1 & Extend length of two's complement signed integer. \\
-&&&& $ \forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \begin{cases} \boldsymbol{\mu}_\mathbf{s}[1]_t &\text{if} \quad i \leqslant t \quad \text{where} \; t = 256 - 8(\boldsymbol{\mu}_\mathbf{s}[0] + 1) \\ \boldsymbol{\mu}_\mathbf{s}[1]_i &\text{otherwise} \end{cases}$ \\
-\multicolumn{5}{l}{$\boldsymbol{\mu}_\mathbf{s}[x]_i$ gives the $i$th bit (counting from zero) of $\boldsymbol{\mu}_\mathbf{s}[x]$} \vspace{5pt} \\
+&&&& $ \forall i \in [0..255]: \boldsymbol{\mu}'_\mathrm{s}[0]_i \equiv \begin{cases} \boldsymbol{\mu}_\mathrm{s}[1]_t &\text{if} \quad i \leqslant t \quad \text{where} \; t = 256 - 8(\boldsymbol{\mu}_\mathrm{s}[0] + 1) \\ \boldsymbol{\mu}_\mathrm{s}[1]_i &\text{otherwise} \end{cases}$ \\
+\multicolumn{5}{l}{$\boldsymbol{\mu}_\mathrm{s}[x]_i$ gives the $i$th bit (counting from zero) of $\boldsymbol{\mu}_\mathrm{s}[x]$} \vspace{5pt} \\
 \midrule
 \end{tabular*}
 
@@ -1907,39 +1907,39 @@ Here given are the various exceptions to the state transition rules given in sec
 \multicolumn{5}{c}{\textbf{10s: Comparison \& Bitwise Logic Operations}} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x10 & {\small LT} & 2 & 1 & Less-than comparison. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] < \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[0] < \boldsymbol{\mu}_\mathrm{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
 0x11 & {\small GT} & 2 & 1 & Greater-than comparison. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[0] > \boldsymbol{\mu}_\mathrm{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
 0x12 & {\small SLT} & 2 & 1 & Signed less-than comparison. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] < \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[0] < \boldsymbol{\mu}_\mathrm{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 &&&& Where all values are treated as two's complement signed 256-bit integers. \\
 \midrule
 0x13 & {\small SGT} & 2 & 1 & Signed greater-than comparison. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[0] > \boldsymbol{\mu}_\mathrm{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 &&&& Where all values are treated as two's complement signed 256-bit integers. \\
 \midrule
 0x14 & {\small EQ} & 2 & 1 & Equality comparison. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] = \boldsymbol{\mu}_\mathbf{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[0] = \boldsymbol{\mu}_\mathrm{s}[1] \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
 0x15 & {\small ISZERO} & 1 & 1 & Simple not operator. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] = 0 \\ 0 & \text{otherwise} \end{cases}$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[0] = 0 \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
 0x16 & {\small AND} & 2 & 1 & Bitwise AND operation. \\
-&&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \boldsymbol{\mu}_\mathbf{s}[0]_i \wedge \boldsymbol{\mu}_\mathbf{s}[1]_i$ \\
+&&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathrm{s}[0]_i \equiv \boldsymbol{\mu}_\mathrm{s}[0]_i \wedge \boldsymbol{\mu}_\mathrm{s}[1]_i$ \\
 \midrule
 0x17 & {\small OR} & 2 & 1 & Bitwise OR operation. \\
-&&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \boldsymbol{\mu}_\mathbf{s}[0]_i \vee \boldsymbol{\mu}_\mathbf{s}[1]_i$ \\
+&&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathrm{s}[0]_i \equiv \boldsymbol{\mu}_\mathrm{s}[0]_i \vee \boldsymbol{\mu}_\mathrm{s}[1]_i$ \\
 \midrule
 0x18 & {\small XOR} & 2 & 1 & Bitwise XOR operation. \\
-&&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \boldsymbol{\mu}_\mathbf{s}[0]_i \oplus \boldsymbol{\mu}_\mathbf{s}[1]_i$ \\
+&&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathrm{s}[0]_i \equiv \boldsymbol{\mu}_\mathrm{s}[0]_i \oplus \boldsymbol{\mu}_\mathrm{s}[1]_i$ \\
 \midrule
 0x19 & {\small NOT} & 1 & 1 & Bitwise NOT operation. \\
-&&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0]_i = 0 \\ 0 & \text{otherwise} \end{cases}$ \\
+&&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathrm{s}[0]_i \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[0]_i = 0 \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
 0x1a & {\small BYTE} & 2 & 1 & Retrieve single byte from word. \\
-&&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathbf{s}[0]_i \equiv \begin{cases} \boldsymbol{\mu}_\mathbf{s}[1]_{(i + 8\boldsymbol{\mu}_\mathbf{s}[0])} & \text{if} \quad i < 8 \wedge \boldsymbol{\mu}_\mathbf{s}[0] < 32 \\ 0 & \text{otherwise} \end{cases} $\\
+&&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_\mathrm{s}[0]_i \equiv \begin{cases} \boldsymbol{\mu}_\mathrm{s}[1]_{(i + 8\boldsymbol{\mu}_\mathrm{s}[0])} & \text{if} \quad i < 8 \wedge \boldsymbol{\mu}_\mathrm{s}[0] < 32 \\ 0 & \text{otherwise} \end{cases} $\\
 &&&& For Nth byte, we count from the left (i.e. N=0 would be the most significant in big endian). \\
 \bottomrule
 \end{tabular*}
@@ -1949,8 +1949,8 @@ Here given are the various exceptions to the state transition rules given in sec
 \multicolumn{5}{c}{\textbf{20s: SHA3}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x20 & {\small SHA3} & 2 & 1 & Compute Keccak-256 hash. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \mathtt{\tiny Keccak}(\boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[0] \dots (\boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1] - 1) ])$ \\
-&&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[1])$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \mathtt{\tiny Keccak}(\boldsymbol{\mu}_\mathrm{m}[ \boldsymbol{\mu}_\mathrm{s}[0] \dots (\boldsymbol{\mu}_\mathrm{s}[0] + \boldsymbol{\mu}_\mathrm{s}[1] - 1) ])$ \\
+&&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathrm{s}[0], \boldsymbol{\mu}_\mathrm{s}[1])$ \\
 \bottomrule
 \end{tabular*}
 
@@ -1959,69 +1959,69 @@ Here given are the various exceptions to the state transition rules given in sec
 \multicolumn{5}{c}{\textbf{30s: Environmental Information}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x30 & {\small ADDRESS} & 0 & 1 & Get address of currently executing account. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_a$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv I_a$ \\
 \midrule
 0x31 & {\small BALANCE} & 1 & 1 & Get balance of the given account. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \begin{cases}\boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[0]]_b& \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}] \neq \varnothing\\0&\text{otherwise}\end{cases}$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \begin{cases}\boldsymbol{\sigma}[\boldsymbol{\mu}_\mathrm{s}[0]]_b& \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathrm{s}[0] \mod 2^{160}] \neq \varnothing\\0&\text{otherwise}\end{cases}$ \\
 \midrule
 0x32 & {\small ORIGIN} & 0 & 1 & Get execution origination address. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_o$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv I_o$ \\
 &&&& This is the sender of original transaction; it is never an account with non-empty \\
 &&&& associated code. \\
 \midrule
 0x33 & {\small CALLER} & 0 & 1 & Get caller address. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_s$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv I_s$ \\
 &&&& This is the address of the account that is directly responsible for this execution. \\
 \midrule
 0x34 & {\small CALLVALUE} & 0 & 1 & Get deposited value by the instruction/transaction responsible for this execution. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_v$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv I_v$ \\
 \midrule
 0x35 & {\small CALLDATALOAD} & 1 & 1 & Get input data of current environment. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_\mathbf{d}[ \boldsymbol{\mu}_\mathbf{s}[0] \dots (\boldsymbol{\mu}_\mathbf{s}[0] + 31) ] \quad \text{with} \quad I_\mathbf{d}[x] = 0 \quad \text{if} \quad x \geqslant \lVert I_\mathbf{d} \rVert$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv I_\mathrm{d}[ \boldsymbol{\mu}_\mathrm{s}[0] \dots (\boldsymbol{\mu}_\mathrm{s}[0] + 31) ] \quad \text{with} \quad I_\mathrm{d}[x] = 0 \quad \text{if} \quad x \geqslant \lVert I_\mathrm{d} \rVert$ \\
 &&&& This pertains to the input data passed with the message call instruction or transaction. \\
 \midrule
 0x36 & {\small CALLDATASIZE} & 0 & 1 & Get size of input data in current environment. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \lVert I_\mathbf{d} \rVert$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \lVert I_\mathrm{d} \rVert$ \\
 &&&& This pertains to the input data passed with the message call instruction or transaction. \\
 \midrule
 0x37 & {\small CALLDATACOPY} & 3 & 0 & Copy input data in current environment to memory. \\
-&&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_\mathbf{s}[2] - 1\} } \boldsymbol{\mu}'_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[0] + i ] \equiv
-\begin{cases} I_\mathbf{d}[\boldsymbol{\mu}_\mathbf{s}[1] + i] & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] + i < \lVert I_\mathbf{d} \rVert \\ 0 & \text{otherwise} \end{cases}$\\
-&&&& The additions in $\boldsymbol{\mu}_\mathbf{s}[1] + i$ are not subject to the $2^{256}$ modulo. \\
-&&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[2])$ \\
+&&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_\mathrm{s}[2] - 1\} } \boldsymbol{\mu}'_\mathrm{m}[\boldsymbol{\mu}_\mathrm{s}[0] + i ] \equiv
+\begin{cases} I_\mathrm{d}[\boldsymbol{\mu}_\mathrm{s}[1] + i] & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[1] + i < \lVert I_\mathrm{d} \rVert \\ 0 & \text{otherwise} \end{cases}$\\
+&&&& The additions in $\boldsymbol{\mu}_\mathrm{s}[1] + i$ are not subject to the $2^{256}$ modulo. \\
+&&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathrm{s}[0], \boldsymbol{\mu}_\mathrm{s}[2])$ \\
 &&&& This pertains to the input data passed with the message call instruction or transaction. \\
 \midrule
 0x38 & {\small CODESIZE} & 0 & 1 & Get size of code running in current environment. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \lVert I_\mathbf{b} \rVert$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \lVert I_\mathrm{b} \rVert$ \\
 \midrule
 0x39 & {\small CODECOPY} & 3 & 0 & Copy code running in current environment to memory. \\
-&&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_\mathbf{s}[2] - 1\} } \boldsymbol{\mu}'_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[0] + i ] \equiv
-\begin{cases} I_\mathbf{b}[\boldsymbol{\mu}_\mathbf{s}[1] + i] & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] + i < \lVert I_\mathbf{b} \rVert \\ \text{\small STOP} & \text{otherwise} \end{cases}$\\
-&&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[2])$ \\
-&&&& The additions in $\boldsymbol{\mu}_\mathbf{s}[1] + i$ are not subject to the $2^{256}$ modulo. \\
+&&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_\mathrm{s}[2] - 1\} } \boldsymbol{\mu}'_\mathrm{m}[\boldsymbol{\mu}_\mathrm{s}[0] + i ] \equiv
+\begin{cases} I_\mathrm{b}[\boldsymbol{\mu}_\mathrm{s}[1] + i] & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[1] + i < \lVert I_\mathrm{b} \rVert \\ \text{\small STOP} & \text{otherwise} \end{cases}$\\
+&&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathrm{s}[0], \boldsymbol{\mu}_\mathrm{s}[2])$ \\
+&&&& The additions in $\boldsymbol{\mu}_\mathrm{s}[1] + i$ are not subject to the $2^{256}$ modulo. \\
 \midrule
 0x3a & {\small GASPRICE} & 0 & 1 & Get price of gas in current environment. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv I_p$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv I_p$ \\
 &&&& This is gas price specified by the originating transaction.\\
 \midrule
 0x3b & {\small EXTCODESIZE} & 1 & 1 & Get size of an account's code. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \lVert \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}]_c \rVert$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \lVert \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathrm{s}[0] \mod 2^{160}]_c \rVert$ \\
 \midrule
 0x3c & {\small EXTCODECOPY} & 4 & 0 & Copy an account's code to memory. \\
-&&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_\mathbf{s}[3] - 1\} } \boldsymbol{\mu}'_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[1] + i ] \equiv
-\begin{cases} \mathbf{c}[\boldsymbol{\mu}_\mathbf{s}[2] + i] & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] + i < \lVert \mathbf{c} \rVert \\ \text{\small STOP} & \text{otherwise} \end{cases}$\\
-&&&& where $\mathbf{c} \equiv \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}]_c$ \\
-&&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[1], \boldsymbol{\mu}_\mathbf{s}[3])$ \\
-&&&& The additions in $\boldsymbol{\mu}_\mathbf{s}[2] + i$ are not subject to the $2^{256}$ modulo. \\
+&&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_\mathrm{s}[3] - 1\} } \boldsymbol{\mu}'_\mathrm{m}[\boldsymbol{\mu}_\mathrm{s}[1] + i ] \equiv
+\begin{cases} \mathbf{c}[\boldsymbol{\mu}_\mathrm{s}[2] + i] & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[2] + i < \lVert \mathbf{c} \rVert \\ \text{\small STOP} & \text{otherwise} \end{cases}$\\
+&&&& where $\mathbf{c} \equiv \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathrm{s}[0] \mod 2^{160}]_c$ \\
+&&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathrm{s}[1], \boldsymbol{\mu}_\mathrm{s}[3])$ \\
+&&&& The additions in $\boldsymbol{\mu}_\mathrm{s}[2] + i$ are not subject to the $2^{256}$ modulo. \\
 \midrule
 0x3d & {\small RETURNDATASIZE} & 0 & 1 & Get size of output data from the previous call from the current environment. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \lVert \boldsymbol{\mu}_\mathbf{o} \rVert$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \lVert \boldsymbol{\mu}_\mathrm{o} \rVert$ \\
 \midrule
 0x3e & {\small RETURNDATACOPY} & 3 & 0 & Copy output data from the previous call to memory. \\
-&&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_\mathbf{s}[2] - 1\} } \boldsymbol{\mu}'_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[0] + i ] \equiv
-\begin{cases} \boldsymbol{\mu}_\mathbf{o}[\boldsymbol{\mu}_\mathbf{s}[1] + i] & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] + i < \lVert \boldsymbol{\mu}_\mathbf{o} \rVert \\ 0 & \text{otherwise} \end{cases}$\\
-&&&& The additions in $\boldsymbol{\mu}_\mathbf{s}[1] + i$ are not subject to the $2^{256}$ modulo. \\
-&&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[2])$ \\
+&&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_\mathrm{s}[2] - 1\} } \boldsymbol{\mu}'_\mathrm{m}[\boldsymbol{\mu}_\mathrm{s}[0] + i ] \equiv
+\begin{cases} \boldsymbol{\mu}_\mathrm{o}[\boldsymbol{\mu}_\mathrm{s}[1] + i] & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[1] + i < \lVert \boldsymbol{\mu}_\mathrm{o} \rVert \\ 0 & \text{otherwise} \end{cases}$\\
+&&&& The additions in $\boldsymbol{\mu}_\mathrm{s}[1] + i$ are not subject to the $2^{256}$ modulo. \\
+&&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathrm{s}[0], \boldsymbol{\mu}_\mathrm{s}[2])$ \\
 \bottomrule
 \end{tabular*}
 
@@ -2030,7 +2030,7 @@ Here given are the various exceptions to the state transition rules given in sec
 \multicolumn{5}{c}{\textbf{40s: Block Information}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x40 & {\small BLOCKHASH} & 1 & 1 & Get the hash of one of the 256 most recent complete blocks. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv P(I_{H_p}, \boldsymbol{\mu}_\mathbf{s}[0], 0)$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv P(I_{H_p}, \boldsymbol{\mu}_\mathrm{s}[0], 0)$ \\
 &&&& where $P$ is the hash of a block of a particular number, up to a maximum age.\\
 &&&& 0 is left on the stack if the looked for block number is greater than the current block number \\
 &&&& or more than 256 blocks behind the current block. \\
@@ -2039,19 +2039,19 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& in the block following it. \\
 \midrule
 0x41 & {\small COINBASE} & 0 & 1 & Get the block's beneficiary address. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_H}_c$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv {I_H}_c$ \\
 \midrule
 0x42 & {\small TIMESTAMP} & 0 & 1 & Get the block's timestamp. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_H}_s$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv {I_H}_s$ \\
 \midrule
 0x43 & {\small NUMBER} & 0 & 1 & Get the block's number. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_H}_i$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv {I_H}_i$ \\
 \midrule
 0x44 & {\small DIFFICULTY} & 0 & 1 & Get the block's difficulty. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_H}_d$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv {I_H}_d$ \\
 \midrule
 0x45 & {\small GASLIMIT} & 0 & 1 & Get the block's gas limit. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_H}_l$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv {I_H}_l$ \\
 \bottomrule
 \end{tabular*}
 
@@ -2062,52 +2062,52 @@ Here given are the various exceptions to the state transition rules given in sec
 0x50 & {\small POP} & 1 & 0 & Remove item from stack. \\
 \midrule
 0x51 & {\small MLOAD} & 1 & 1 & Load word from memory. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[0] \dots (\boldsymbol{\mu}_\mathbf{s}[0] + 31) ]$ \\
-&&&& $\boldsymbol{\mu}'_i \equiv \max(\boldsymbol{\mu}_i, \ceil{ (\boldsymbol{\mu}_\mathbf{s}[0] + 32) \div 32 })$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \boldsymbol{\mu}_\mathrm{m}[\boldsymbol{\mu}_\mathrm{s}[0] \dots (\boldsymbol{\mu}_\mathrm{s}[0] + 31) ]$ \\
+&&&& $\boldsymbol{\mu}'_i \equiv \max(\boldsymbol{\mu}_i, \ceil{ (\boldsymbol{\mu}_\mathrm{s}[0] + 32) \div 32 })$ \\
 &&&& The addition in the calculation of $\boldsymbol{\mu}'_i$ is not subject to the $2^{256}$ modulo. \\
 \midrule
 0x52 & {\small MSTORE} & 2 & 0 & Save word to memory. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[0] \dots (\boldsymbol{\mu}_\mathbf{s}[0] + 31) ] \equiv \boldsymbol{\mu}_\mathbf{s}[1]$ \\
-&&&& $\boldsymbol{\mu}'_i \equiv \max(\boldsymbol{\mu}_i, \ceil{ (\boldsymbol{\mu}_\mathbf{s}[0] + 32) \div 32 })$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{m}[ \boldsymbol{\mu}_\mathrm{s}[0] \dots (\boldsymbol{\mu}_\mathrm{s}[0] + 31) ] \equiv \boldsymbol{\mu}_\mathrm{s}[1]$ \\
+&&&& $\boldsymbol{\mu}'_i \equiv \max(\boldsymbol{\mu}_i, \ceil{ (\boldsymbol{\mu}_\mathrm{s}[0] + 32) \div 32 })$ \\
 &&&& The addition in the calculation of $\boldsymbol{\mu}'_i$ is not subject to the $2^{256}$ modulo. \\
 \midrule
 0x53 & {\small MSTORE8} & 2 & 0 & Save byte to memory. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[0] ] \equiv (\boldsymbol{\mu}_\mathbf{s}[1] \bmod 256) $ \\
-&&&& $\boldsymbol{\mu}'_i \equiv \max(\boldsymbol{\mu}_i, \ceil{ (\boldsymbol{\mu}_\mathbf{s}[0] + 1) \div 32 })$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{m}[ \boldsymbol{\mu}_\mathrm{s}[0] ] \equiv (\boldsymbol{\mu}_\mathrm{s}[1] \bmod 256) $ \\
+&&&& $\boldsymbol{\mu}'_i \equiv \max(\boldsymbol{\mu}_i, \ceil{ (\boldsymbol{\mu}_\mathrm{s}[0] + 1) \div 32 })$ \\
 &&&& The addition in the calculation of $\boldsymbol{\mu}'_i$ is not subject to the $2^{256}$ modulo. \\
 \midrule
 0x54 & {\small SLOAD} & 1 & 1 & Load word from storage. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\sigma}[I_a]_\mathbf{s}[\boldsymbol{\mu}_\mathbf{s}[0]]$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \boldsymbol{\sigma}[I_a]_\mathrm{s}[\boldsymbol{\mu}_\mathrm{s}[0]]$ \\
 \midrule
 0x55 & {\small SSTORE} & 2 & 0 & Save word to storage. \\
-&&&& $\boldsymbol{\sigma}'[I_a]_\mathbf{s}[ \boldsymbol{\mu}_\mathbf{s}[0] ] \equiv \boldsymbol{\mu}_\mathbf{s}[1] $ \\
+&&&& $\boldsymbol{\sigma}'[I_a]_\mathrm{s}[ \boldsymbol{\mu}_\mathrm{s}[0] ] \equiv \boldsymbol{\mu}_\mathrm{s}[1] $ \\
 &&&& $C_{\text{\tiny SSTORE}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
-G_{sset} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \; \wedge \; \boldsymbol{\sigma}[I_a]_\mathbf{s}[\boldsymbol{\mu}_\mathbf{s}[0]] = 0 \\
+G_{sset} & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[1] \neq 0 \; \wedge \; \boldsymbol{\sigma}[I_a]_\mathrm{s}[\boldsymbol{\mu}_\mathrm{s}[0]] = 0 \\
 G_{sreset} & \text{otherwise}
 \end{cases}$ \\
 &&&& $A'_{r} \equiv A_{r} + \begin{cases}
-R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \boldsymbol{\sigma}[I_a]_\mathbf{s}[\boldsymbol{\mu}_\mathbf{s}[0]] \neq 0 \\
+R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[1] = 0 \; \wedge \; \boldsymbol{\sigma}[I_a]_\mathrm{s}[\boldsymbol{\mu}_\mathrm{s}[0]] \neq 0 \\
 0 & \text{otherwise}
 \end{cases}$ \\
 \midrule
 0x56 & {\small JUMP} & 1 & 0 & Alter the program counter. \\
-&&&& $J_{\text{\tiny JUMP}}(\boldsymbol{\mu}) \equiv \boldsymbol{\mu}_\mathbf{s}[0] $ \\
+&&&& $J_{\text{\tiny JUMP}}(\boldsymbol{\mu}) \equiv \boldsymbol{\mu}_\mathrm{s}[0] $ \\
 &&&& This has the effect of writing said value to $\boldsymbol{\mu}_{pc}$. See section \ref{ch:model}. \\
 \midrule
 0x57 & {\small JUMPI} & 2 & 0 & Conditionally alter the program counter. \\
-&&&& $J_{\text{\tiny JUMPI}}(\boldsymbol{\mu}) \equiv \begin{cases} \boldsymbol{\mu}_\mathbf{s}[0] & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \\ \boldsymbol{\mu}_{pc} + 1 & \text{otherwise} \end{cases} $ \\
+&&&& $J_{\text{\tiny JUMPI}}(\boldsymbol{\mu}) \equiv \begin{cases} \boldsymbol{\mu}_\mathrm{s}[0] & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[1] \neq 0 \\ \boldsymbol{\mu}_{pc} + 1 & \text{otherwise} \end{cases} $ \\
 &&&& This has the effect of writing said value to $\boldsymbol{\mu}_{pc}$. See section \ref{ch:model}. \\
 \midrule
 0x58 & {\small PC} & 0 & 1 & Get the value of the program counter \textit{prior} to the increment \\
 &&&&  corresponding to this instruction. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_{pc}$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \boldsymbol{\mu}_{pc}$ \\
 \midrule
 0x59 & {\small MSIZE} & 0 & 1 & Get the size of active memory in bytes. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv 32\boldsymbol{\mu}_{i}$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv 32\boldsymbol{\mu}_{i}$ \\
 \midrule
 0x5a & {\small GAS} & 0 & 1 & Get the amount of available gas, including the corresponding reduction \\
 &&&& for the cost of this instruction. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_{g}$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \boldsymbol{\mu}_{g}$ \\
 \midrule
 0x5b & {\small JUMPDEST} & 0 & 0 & Mark a valid destination for jumps. \\
 &&&& This operation has no effect on machine state during execution. \\
@@ -2119,21 +2119,21 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 \multicolumn{5}{c}{\textbf{60s \& 70s: Push Operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x60 & {\small PUSH1} & 0 & 1 & Place 1 byte item on stack. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv c(\boldsymbol{\mu}_{pc} + 1)$ \\
-&&&& $\text{where} \quad c(x) \equiv \begin{cases} I_\mathbf{b}[x] & \text{if} \quad x < \lVert I_\mathbf{b} \rVert \\ 0 & \text{otherwise} \end{cases}$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv c(\boldsymbol{\mu}_{pc} + 1)$ \\
+&&&& $\text{where} \quad c(x) \equiv \begin{cases} I_\mathrm{b}[x] & \text{if} \quad x < \lVert I_\mathrm{b} \rVert \\ 0 & \text{otherwise} \end{cases}$ \\
 &&&& The bytes are read in line from the program code's bytes array. \\
 &&&& The function $c$ ensures the bytes default to zero if they extend past the limits.\\
 &&&& The byte is right-aligned (takes the lowest significant place in big endian). \\
 \midrule
 0x61 & {\small PUSH2} & 0 & 1 & Place 2-byte item on stack. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{c}\big( (\boldsymbol{\mu}_{pc} + 1) \dots (\boldsymbol{\mu}_{pc} + 2) \big)$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \boldsymbol{c}\big( (\boldsymbol{\mu}_{pc} + 1) \dots (\boldsymbol{\mu}_{pc} + 2) \big)$ \\
 &&&& with $\boldsymbol{c}(\boldsymbol{x}) \equiv (c(\boldsymbol{x}_0), ..., c(\boldsymbol{x}_{\lVert x \rVert -1})) $ with $c$ as defined as above. \\
 &&&& The bytes are right-aligned (takes the lowest significant place in big endian). \\
 \midrule
 \multicolumn{1}{c}{\vdots} & \multicolumn{1}{c}{\vdots} & \vdots & \vdots & \multicolumn{1}{c}{\vdots} \\
 \midrule
 0x7f & {\small PUSH32} & 0 & 1 & Place 32-byte (full word) item on stack. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{c}\big((\boldsymbol{\mu}_{pc} + 1) \dots (\boldsymbol{\mu}_{pc} + 32) \big)$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \boldsymbol{c}\big((\boldsymbol{\mu}_{pc} + 1) \dots (\boldsymbol{\mu}_{pc} + 32) \big)$ \\
 &&&& where $\boldsymbol{c}$ is defined as above. \\
 &&&& The bytes are right-aligned (takes the lowest significant place in big endian). \\
 \bottomrule
@@ -2144,15 +2144,15 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 \multicolumn{5}{c}{\textbf{80s: Duplication Operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x80 & {\small DUP1} & 1 & 2 & Duplicate 1st stack item. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[0]$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \boldsymbol{\mu}_\mathrm{s}[0]$ \\
 \midrule
 0x81 & {\small DUP2} & 2 & 3 & Duplicate 2nd stack item. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[1]$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \boldsymbol{\mu}_\mathrm{s}[1]$ \\
 \midrule
 \multicolumn{1}{c}{\vdots} & \multicolumn{1}{c}{\vdots} & \vdots & \vdots & \multicolumn{1}{c}{\vdots} \\
 \midrule
 0x8f & {\small DUP16} & 16 & 17 & Duplicate 16th stack item. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[15]$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \boldsymbol{\mu}_\mathrm{s}[15]$ \\
 \bottomrule
 \end{tabular*}
 
@@ -2161,18 +2161,18 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 \multicolumn{5}{c}{\textbf{90s: Exchange Operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x90 & {\small SWAP1} & 2 & 2 & Exchange 1st and 2nd stack items. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[1]$ \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[1] \equiv \boldsymbol{\mu}_\mathbf{s}[0]$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \boldsymbol{\mu}_\mathrm{s}[1]$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[1] \equiv \boldsymbol{\mu}_\mathrm{s}[0]$ \\
 \midrule
 0x91 & {\small SWAP2} & 3 & 3 & Exchange 1st and 3rd stack items. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[2]$ \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[2] \equiv \boldsymbol{\mu}_\mathbf{s}[0]$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \boldsymbol{\mu}_\mathrm{s}[2]$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[2] \equiv \boldsymbol{\mu}_\mathrm{s}[0]$ \\
 \midrule
 \multicolumn{1}{c}{\vdots} & \multicolumn{1}{c}{\vdots} & \vdots & \vdots & \multicolumn{1}{c}{\vdots} \\
 \midrule
 0x9f & {\small SWAP16} & 17 & 17 & Exchange 1st and 17th stack items. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \boldsymbol{\mu}_\mathbf{s}[16]$ \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[16] \equiv \boldsymbol{\mu}_\mathbf{s}[0]$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv \boldsymbol{\mu}_\mathrm{s}[16]$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[16] \equiv \boldsymbol{\mu}_\mathrm{s}[0]$ \\
 \bottomrule
 \end{tabular*}
 
@@ -2180,21 +2180,21 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 \toprule
 \multicolumn{5}{c}{\textbf{a0s: Logging Operations}} \vspace{5pt} \\
 \multicolumn{5}{l}{For all logging operations, the state change is to append an additional log entry on to the substate's log series:}\\
-\multicolumn{5}{l}{$A'_\mathbf{l} \equiv A_\mathbf{l} \cdot (I_a, \mathbf{t}, \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[0] \dots (\boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1] - 1) ])$}\\
+\multicolumn{5}{l}{$A'_\mathrm{l} \equiv A_\mathrm{l} \cdot (I_a, \mathbf{t}, \boldsymbol{\mu}_\mathrm{m}[ \boldsymbol{\mu}_\mathrm{s}[0] \dots (\boldsymbol{\mu}_\mathrm{s}[0] + \boldsymbol{\mu}_\mathrm{s}[1] - 1) ])$}\\
 \multicolumn{5}{l}{and to update the memory consumption counter:}\\
-\multicolumn{5}{l}{$\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[1])$}\\
+\multicolumn{5}{l}{$\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathrm{s}[0], \boldsymbol{\mu}_\mathrm{s}[1])$}\\
 \multicolumn{5}{l}{The entry's topic series, $\mathbf{t}$, differs accordingly:}\vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0xa0 & {\small LOG0} & 2 & 0 & Append log record with no topics. \\
 &&&& $\mathbf{t} \equiv ()$ \\
 \midrule
 0xa1 & {\small LOG1} & 3 & 0 & Append log record with one topic. \\
-&&&& $\mathbf{t} \equiv (\boldsymbol{\mu}_\mathbf{s}[2])$ \\
+&&&& $\mathbf{t} \equiv (\boldsymbol{\mu}_\mathrm{s}[2])$ \\
 \midrule
 \multicolumn{1}{c}{\vdots} & \multicolumn{1}{c}{\vdots} & \vdots & \vdots & \multicolumn{1}{c}{\vdots} \\
 \midrule
 0xa4 & {\small LOG4} & 6 & 0 & Append log record with four topics. \\
-&&&& $\mathbf{t} \equiv (\boldsymbol{\mu}_\mathbf{s}[2], \boldsymbol{\mu}_\mathbf{s}[3], \boldsymbol{\mu}_\mathbf{s}[4], \boldsymbol{\mu}_\mathbf{s}[5])$ \\
+&&&& $\mathbf{t} \equiv (\boldsymbol{\mu}_\mathrm{s}[2], \boldsymbol{\mu}_\mathrm{s}[3], \boldsymbol{\mu}_\mathrm{s}[4], \boldsymbol{\mu}_\mathrm{s}[5])$ \\
 \bottomrule
 \end{tabular*}
 
@@ -2203,40 +2203,40 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 \multicolumn{5}{c}{\textbf{f0s: System operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0xf0 & {\small CREATE} & 3 & 1 & Create a new account with associated code. \\
-&&&& $\mathbf{i} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[1] \dots (\boldsymbol{\mu}_\mathbf{s}[1] + \boldsymbol{\mu}_\mathbf{s}[2] - 1) ]$ \\
-&&&& $(\boldsymbol{\sigma}', \boldsymbol{\mu}'_g, A^+, \mathbf{o}) \equiv \begin{cases}\Lambda(\boldsymbol{\sigma}^*, I_a, I_o, L(\boldsymbol{\mu}_g), I_p, \boldsymbol{\mu}_\mathbf{s}[0], \mathbf{i}, I_e + 1, I_w) & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[0] \leqslant \boldsymbol{\sigma}[I_a]_b \;\wedge\; I_e < 1024\\ \big(\boldsymbol{\sigma}, \boldsymbol{\mu}_g, \varnothing\big) & \text{otherwise} \end{cases}$ \\
+&&&& $\mathbf{i} \equiv \boldsymbol{\mu}_\mathrm{m}[ \boldsymbol{\mu}_\mathrm{s}[1] \dots (\boldsymbol{\mu}_\mathrm{s}[1] + \boldsymbol{\mu}_\mathrm{s}[2] - 1) ]$ \\
+&&&& $(\boldsymbol{\sigma}', \boldsymbol{\mu}'_g, A^+, \mathbf{o}) \equiv \begin{cases}\Lambda(\boldsymbol{\sigma}^*, I_a, I_o, L(\boldsymbol{\mu}_g), I_p, \boldsymbol{\mu}_\mathrm{s}[0], \mathbf{i}, I_e + 1, I_w) & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[0] \leqslant \boldsymbol{\sigma}[I_a]_b \;\wedge\; I_e < 1024\\ \big(\boldsymbol{\sigma}, \boldsymbol{\mu}_g, \varnothing\big) & \text{otherwise} \end{cases}$ \\
 &&&& $\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except} \quad \boldsymbol{\sigma}^*[I_a]_n = \boldsymbol{\sigma}[I_a]_n + 1$ \\
-&&&& $A' \equiv A \Cup A^+$ which abbreviates: $A'_\mathbf{s} \equiv A_\mathbf{s} \cup A^+_\mathbf{s} \quad \wedge \quad A'_\mathbf{l} \equiv A_\mathbf{l} \cdot A^+_\mathbf{l} \quad \wedge \quad A'_\mathbf{t} \equiv A_\mathbf{t} \cup A^+_\mathbf{t}$ \\
-&&&& $ \wedge \quad A'_\mathbf{r} \equiv A_\mathbf{r} + A^+_\mathbf{r}$ \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
+&&&& $A' \equiv A \Cup A^+$ which abbreviates: $A'_\mathrm{s} \equiv A_\mathrm{s} \cup A^+_\mathrm{s} \quad \wedge \quad A'_\mathrm{l} \equiv A_\mathrm{l} \cdot A^+_\mathrm{l} \quad \wedge \quad A'_\mathrm{t} \equiv A_\mathrm{t} \cup A^+_\mathrm{t}$ \\
+&&&& $ \wedge \quad A'_\mathrm{r} \equiv A_\mathrm{r} + A^+_\mathrm{r}$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv x$ \\
 &&&& where $x=0$ if the code execution for this operation failed due to an exceptional halting\\
 &&&& (or for a \text{\small REVERT}) $\boldsymbol{\sigma}' = \varnothing$, or $I_e = 1024$ \\
-&&&& (the maximum call depth limit is reached) or $\boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\sigma}[I_a]_b$ (balance of the caller is too \\
+&&&& (the maximum call depth limit is reached) or $\boldsymbol{\mu}_\mathrm{s}[0] > \boldsymbol{\sigma}[I_a]_b$ (balance of the caller is too \\
 &&&& low to fulfil the value transfer); and otherwise $x=A(I_a, \boldsymbol{\sigma}[I_a]_n)$, the address of the newly \\
 &&&& created account. \\
-&&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[1], \boldsymbol{\mu}_\mathbf{s}[2])$ \\
-&&&& $\boldsymbol{\mu}'_\mathbf{o} \equiv ()$ \\
+&&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathrm{s}[1], \boldsymbol{\mu}_\mathrm{s}[2])$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{o} \equiv ()$ \\
 &&&& Thus the operand order is: value, input offset, input size. \\
 \midrule
 0xf1 & {\small CALL} & 7 & 1 & Message-call into an account. \\
-&&&& $\mathbf{i} \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[3] \dots (\boldsymbol{\mu}_\mathbf{s}[3] + \boldsymbol{\mu}_\mathbf{s}[4] - 1) ]$ \\
-&&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}, I_a, I_o, t, t,\\ \quad C_{\text{\tiny CALLGAS}}(\boldsymbol{\mu}), I_p, \boldsymbol{\mu}_\mathbf{s}[2], \boldsymbol{\mu}_\mathbf{s}[2], \mathbf{i}, I_e + 1, I_w)\end{array} & \begin{array}{l}\text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \leqslant \boldsymbol{\sigma}[I_a]_b \;\wedge \\ \quad\quad I_e < 1024\end{array}\\ (\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
-&&&& $n \equiv \min(\{ \boldsymbol{\mu}_\mathbf{s}[6], |\mathbf{o}|\})$ \\
-&&&& $\boldsymbol{\mu}'_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[5] \dots (\boldsymbol{\mu}_\mathbf{s}[5] + n - 1) ] = \mathbf{o}[0 \dots (n - 1)]$ \\
-&&&& $\boldsymbol{\mu}'_\mathbf{o} = \mathbf{o}$ \\
+&&&& $\mathbf{i} \equiv \boldsymbol{\mu}_\mathrm{m}[ \boldsymbol{\mu}_\mathrm{s}[3] \dots (\boldsymbol{\mu}_\mathrm{s}[3] + \boldsymbol{\mu}_\mathrm{s}[4] - 1) ]$ \\
+&&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}, I_a, I_o, t, t,\\ \quad C_{\text{\tiny CALLGAS}}(\boldsymbol{\mu}), I_p, \boldsymbol{\mu}_\mathrm{s}[2], \boldsymbol{\mu}_\mathrm{s}[2], \mathbf{i}, I_e + 1, I_w)\end{array} & \begin{array}{l}\text{if} \quad \boldsymbol{\mu}_\mathrm{s}[2] \leqslant \boldsymbol{\sigma}[I_a]_b \;\wedge \\ \quad\quad I_e < 1024\end{array}\\ (\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
+&&&& $n \equiv \min(\{ \boldsymbol{\mu}_\mathrm{s}[6], |\mathbf{o}|\})$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{m}[ \boldsymbol{\mu}_\mathrm{s}[5] \dots (\boldsymbol{\mu}_\mathrm{s}[5] + n - 1) ] = \mathbf{o}[0 \dots (n - 1)]$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{o} = \mathbf{o}$ \\
 &&&& $\boldsymbol{\mu}'_g \equiv \boldsymbol{\mu}_g + g'$ \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
+&&&& $\boldsymbol{\mu}'_\mathrm{s}[0] \equiv x$ \\
 &&&& $A' \equiv A \Cup A^+$ \\
-&&&& $t \equiv \boldsymbol{\mu}_\mathbf{s}[1] \mod 2^{160}$ \\
+&&&& $t \equiv \boldsymbol{\mu}_\mathrm{s}[1] \mod 2^{160}$ \\
 &&&& where $x=0$ if the code execution for this operation failed due to an exceptional halting \\
 &&&& (or for a \text{\small REVERT}) $\boldsymbol{\sigma}' = \varnothing$ or if \\
-&&&& $\boldsymbol{\mu}_\mathbf{s}[2] > \boldsymbol{\sigma}[I_a]_b$ (not enough funds) or $I_e = 1024$ (call depth limit reached); $x=1$ \\
+&&&& $\boldsymbol{\mu}_\mathrm{s}[2] > \boldsymbol{\sigma}[I_a]_b$ (not enough funds) or $I_e = 1024$ (call depth limit reached); $x=1$ \\
 &&&& otherwise. \\
-&&&& $\boldsymbol{\mu}'_i \equiv M(M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[3], \boldsymbol{\mu}_\mathbf{s}[4]), \boldsymbol{\mu}_\mathbf{s}[5], \boldsymbol{\mu}_\mathbf{s}[6])$ \\
+&&&& $\boldsymbol{\mu}'_i \equiv M(M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathrm{s}[3], \boldsymbol{\mu}_\mathrm{s}[4]), \boldsymbol{\mu}_\mathrm{s}[5], \boldsymbol{\mu}_\mathrm{s}[6])$ \\
 &&&& Thus the operand order is: gas, to, value, in offset, in size, out offset, out size. \\
 &&&& $C_{\text{\tiny CALL}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) + C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$ \\
 &&&& $C_{\text{\tiny CALLGAS}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv  \begin{cases}
-C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) + G_{callstipend} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \neq 0 \\
+C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) + G_{callstipend} & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[2] \neq 0 \\
 C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{otherwise}
 \end{cases}$ \\
 &&&& $C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
@@ -2245,26 +2245,26 @@ C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{otherwise
 \end{cases}$\\
 &&&& $C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv G_{call} + C_{\text{\tiny XFER}}(\boldsymbol{\mu}) + C_{\text{\tiny NEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$\\
 &&&& $C_{\text{\tiny XFER}}(\boldsymbol{\mu}) \equiv \begin{cases}
-G_{callvalue} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \neq 0 \\
+G_{callvalue} & \text{if} \quad \boldsymbol{\mu}_\mathrm{s}[2] \neq 0 \\
 0 & \text{otherwise}
 \end{cases}$ \\
 &&&& $C_{\text{\tiny NEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
-G_{newaccount} & \text{if} \quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma}, \boldsymbol{\mu}_\mathbf{s}[1] \mod 2^{160}) \wedge \boldsymbol{\mu}_\mathbf{s}[2] \neq 0 \\
+G_{newaccount} & \text{if} \quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma}, \boldsymbol{\mu}_\mathrm{s}[1] \mod 2^{160}) \wedge \boldsymbol{\mu}_\mathrm{s}[2] \neq 0 \\
 0 & \text{otherwise}
 \end{cases}$ \\
 \midrule
 0xf2 & {\small CALLCODE} & 7 & 1 & Message-call into this account with an alternative account's code. \\
 &&&& Exactly equivalent to {\small CALL} except: \\
-&&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}^*, I_a, I_o, I_a, t,\\\quad C_{\text{\tiny CALLGAS}}(\boldsymbol{\mu}), I_p, \boldsymbol{\mu}_\mathbf{s}[2], \boldsymbol{\mu}_\mathbf{s}[2], \mathbf{i}, I_e + 1, I_w)\end{array} & \begin{array}{l}\text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] \leqslant \boldsymbol{\sigma}[I_a]_b \;\wedge\\ \quad\quad{}I_e < 1024\end{array} \\ (\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
-&&&& Note the change in the fourth parameter to the call $\Theta$ from the 2nd stack value $\boldsymbol{\mu}_\mathbf{s}[1]$\\
+&&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}^*, I_a, I_o, I_a, t,\\\quad C_{\text{\tiny CALLGAS}}(\boldsymbol{\mu}), I_p, \boldsymbol{\mu}_\mathrm{s}[2], \boldsymbol{\mu}_\mathrm{s}[2], \mathbf{i}, I_e + 1, I_w)\end{array} & \begin{array}{l}\text{if} \quad \boldsymbol{\mu}_\mathrm{s}[2] \leqslant \boldsymbol{\sigma}[I_a]_b \;\wedge\\ \quad\quad{}I_e < 1024\end{array} \\ (\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
+&&&& Note the change in the fourth parameter to the call $\Theta$ from the 2nd stack value $\boldsymbol{\mu}_\mathrm{s}[1]$\\
 &&&& (as in {\small CALL}) to the present address $I_a$. This means that the recipient is in fact the\\
 &&&& same account as at present, simply that the code is overwritten.\\
 \midrule
 0xf3 & {\small RETURN} & 2 & 0 & Halt execution returning output data. \\
-&&&& $H_{\text{\tiny RETURN}}(\boldsymbol{\mu}) \equiv \boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[0] \dots ( \boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1] - 1 ) ]$ \\
+&&&& $H_{\text{\tiny RETURN}}(\boldsymbol{\mu}) \equiv \boldsymbol{\mu}_\mathrm{m}[ \boldsymbol{\mu}_\mathrm{s}[0] \dots ( \boldsymbol{\mu}_\mathrm{s}[0] + \boldsymbol{\mu}_\mathrm{s}[1] - 1 ) ]$ \\
 &&&& This has the effect of halting the execution at this point with output defined.\\
 &&&& See section \ref{ch:model}. \\
-&&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[1])$ \\
+&&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathrm{s}[0], \boldsymbol{\mu}_\mathrm{s}[1])$ \\
 \end{tabular*}
 
 \begin{tabular*}{\columnwidth}[h]{rlrrl}
@@ -2272,10 +2272,10 @@ G_{newaccount} & \text{if} \quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma}, \bolds
 0xf4 & {\small DELEGATECALL} & 6 & 1 & Message-call into this account with an alternative account's code, but persisting\\
 &&&& the current values for {\it sender} and {\it value}. \\
 &&&& Compared with {\small CALL}, {\small DELEGATECALL} takes one fewer arguments.  The omitted\\
-&&&& argument is $\boldsymbol{\mu}_\mathbf{s}[2]$. As a result, $\boldsymbol{\mu}_\mathbf{s}[3]$, $\boldsymbol{\mu}_\mathbf{s}[4]$, $\boldsymbol{\mu}_\mathbf{s}[5]$ and $\boldsymbol{\mu}_\mathbf{s}[6]$ in the definition of {\small CALL} \\
-&&&& should respectively be replaced with $\boldsymbol{\mu}_\mathbf{s}[2]$, $\boldsymbol{\mu}_\mathbf{s}[3]$, $\boldsymbol{\mu}_\mathbf{s}[4]$ and $\boldsymbol{\mu}_\mathbf{s}[5]$. \\
+&&&& argument is $\boldsymbol{\mu}_\mathrm{s}[2]$. As a result, $\boldsymbol{\mu}_\mathrm{s}[3]$, $\boldsymbol{\mu}_\mathrm{s}[4]$, $\boldsymbol{\mu}_\mathrm{s}[5]$ and $\boldsymbol{\mu}_\mathrm{s}[6]$ in the definition of {\small CALL} \\
+&&&& should respectively be replaced with $\boldsymbol{\mu}_\mathrm{s}[2]$, $\boldsymbol{\mu}_\mathrm{s}[3]$, $\boldsymbol{\mu}_\mathrm{s}[4]$ and $\boldsymbol{\mu}_\mathrm{s}[5]$. \\
 &&&& Otherwise exactly equivalent to {\small CALL} except: \\
-&&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}^*, I_s, I_o, I_a, t,\\\quad \boldsymbol{\mu}_\mathbf{s}[0], I_p, 0, I_v, \mathbf{i}, I_e + 1, I_w)\end{array} & \text{if} \quad I_v \leqslant \boldsymbol{\sigma}[I_a]_b \;\wedge\; I_e < 1024 \\ (\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
+&&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}^*, I_s, I_o, I_a, t,\\\quad \boldsymbol{\mu}_\mathrm{s}[0], I_p, 0, I_v, \mathbf{i}, I_e + 1, I_w)\end{array} & \text{if} \quad I_v \leqslant \boldsymbol{\sigma}[I_a]_b \;\wedge\; I_e < 1024 \\ (\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
 &&&& Note the changes (in addition to that of the fourth parameter) to the second \\
 &&&& and ninth parameters to the call $\Theta$.\\
 &&&& This means that the recipient is in fact the same account as at present, simply\\
@@ -2283,36 +2283,36 @@ G_{newaccount} & \text{if} \quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma}, \bolds
 \midrule
 0xfa & {\small STATICCALL} & 6 & 1 & Static message-call into an account. \\
 &&&& Exactly equivalent to {\small CALL} except: \\
-&&&& The argument $\boldsymbol{\mu}_\mathbf{s}[2]$ is replaced with $0$. \\
-&&&& The deeper argument $\boldsymbol{\mu}_\mathbf{s}[3]$, $\boldsymbol{\mu}_\mathbf{s}[4]$, $\boldsymbol{\mu}_\mathbf{s}[5]$ and $\boldsymbol{\mu}_\mathbf{s}[6]$ are respectively replaced with \\
-&&&& $\boldsymbol{\mu}_\mathbf{s}[2]$, $\boldsymbol{\mu}_\mathbf{s}[3]$, $\boldsymbol{\mu}_\mathbf{s}[4]$ and $\boldsymbol{\mu}_\mathbf{s}[5]$. \\
+&&&& The argument $\boldsymbol{\mu}_\mathrm{s}[2]$ is replaced with $0$. \\
+&&&& The deeper argument $\boldsymbol{\mu}_\mathrm{s}[3]$, $\boldsymbol{\mu}_\mathrm{s}[4]$, $\boldsymbol{\mu}_\mathrm{s}[5]$ and $\boldsymbol{\mu}_\mathrm{s}[6]$ are respectively replaced with \\
+&&&& $\boldsymbol{\mu}_\mathrm{s}[2]$, $\boldsymbol{\mu}_\mathrm{s}[3]$, $\boldsymbol{\mu}_\mathrm{s}[4]$ and $\boldsymbol{\mu}_\mathrm{s}[5]$. \\
 &&&& The last argument of $\Theta$ is $\bot$. \\
 \midrule
 0xfd & {\small REVERT} & 2 & 0 & Halt execution reverting state changes but returning data and remaining gas. \\
 &&&& The effect of this operation is described in (\ref{eq:X-def}). \\
 &&&& For the gas calculation, we use the memory expansion function, \\
-&&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[1])$ \\
+&&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathrm{s}[0], \boldsymbol{\mu}_\mathrm{s}[1])$ \\
 \midrule
 0xfe & {\small INVALID} & $\varnothing$ & $\varnothing$ & Designated invalid instruction. \\
 \midrule
 0xff & {\small SELFDESTRUCT} & 1 & 0 & Halt execution and register account for later deletion. \\
-&&&& $A'_\mathbf{s} \equiv A_\mathbf{s} \cup \{ I_a \}$ \\
+&&&& $A'_\mathrm{s} \equiv A_\mathrm{s} \cup \{ I_a \}$ \\
 &&&& $\boldsymbol{\sigma}'[r] \equiv \begin{cases}
 \varnothing &\text{if}\ \boldsymbol{\sigma}[r] = \varnothing\ \wedge\ \boldsymbol{\sigma}[I_a]_b = 0\\
-(\boldsymbol{\sigma}[r]_n, \boldsymbol{\sigma}[r]_b + \boldsymbol{\sigma}[I_a]_b, \boldsymbol{\sigma}[r]_\mathbf{s}, \boldsymbol{\sigma}[r]_c) & \text{if}\ r \neq I_a \\
-(\boldsymbol{\sigma}[r]_n, 0, \boldsymbol{\sigma}[r]_\mathbf{s}, \boldsymbol{\sigma}[r]_c) & \text{otherwise}
+(\boldsymbol{\sigma}[r]_n, \boldsymbol{\sigma}[r]_b + \boldsymbol{\sigma}[I_a]_b, \boldsymbol{\sigma}[r]_\mathrm{s}, \boldsymbol{\sigma}[r]_c) & \text{if}\ r \neq I_a \\
+(\boldsymbol{\sigma}[r]_n, 0, \boldsymbol{\sigma}[r]_\mathrm{s}, \boldsymbol{\sigma}[r]_c) & \text{otherwise}
 \end{cases}$\\
-&&&& where $r = \boldsymbol{\mu}_\mathbf{s}[0] \bmod 2^{160}$\\
+&&&& where $r = \boldsymbol{\mu}_\mathrm{s}[0] \bmod 2^{160}$\\
 &&&& $\boldsymbol{\sigma}'[I_a]_b = 0$ \\
 &&&& $A'_{r} \equiv A_{r} + \begin{cases}
-R_{selfdestruct} & \text{if} \quad I_a \notin A_\mathbf{s} \\
+R_{selfdestruct} & \text{if} \quad I_a \notin A_\mathrm{s} \\
 0 & \text{otherwise}
 \end{cases}$ \\
 &&&& $C_{\text{\tiny SELFDESTRUCT}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv G_{selfdestruct} + \begin{cases}
 G_{newaccount} & \text{if} \quad n \\
 0 & \text{otherwise}
 \end{cases}$ \\
-&&&& $n \equiv \mathtt{\tiny DEAD}(\boldsymbol{\sigma}, \boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}) \wedge \boldsymbol{\sigma}[I_a]_b \neq 0$ \\
+&&&& $n \equiv \mathtt{\tiny DEAD}(\boldsymbol{\sigma}, \boldsymbol{\mu}_\mathrm{s}[0] \mod 2^{160}) \wedge \boldsymbol{\sigma}[I_a]_b \neq 0$ \\
 \bottomrule
 \end{tabular*}
 
