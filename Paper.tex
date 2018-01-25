@@ -179,7 +179,7 @@ When considering variants of existing values, I follow the rule that within a gi
 
 When considering the use of existing functions, given a function $f$, the function $f^*$ denotes a similar, element-wise version of the function mapping instead between sequences. It is formally defined in section \ref{ch:block}.
 
-I define a number of useful functions throughout. \hypertarget{ell}{ell}One of the more common is $\ell$, which evaluates to the last item in the given sequence:
+I define a number of useful functions throughout. \hypertarget{ell}{}One of the more common is $\ell$, which evaluates to the last item in the given sequence:
 
 \begin{equation}
 \ell(\mathbf{x}) \equiv \mathbf{x}[\lVert \mathbf{x} \rVert - 1]
@@ -193,7 +193,7 @@ Having introduced the basic concepts behind Ethereum, we will discuss the meanin
 
 The world state (\textit{state}), is a mapping between addresses (160-bit identifiers) and account states (a data structure serialised as RLP, see Appendix \ref{app:rlp}). Though not stored on the blockchain, it is assumed that the implementation will maintain this mapping in a modified Merkle Patricia tree (\textit{trie}, see Appendix \ref{app:trie}). The trie requires a simple database backend that maintains a mapping of bytearrays to bytearrays; we name this underlying database the state database. This has a number of benefits; firstly the root node of this structure is cryptographically dependent on all internal data and as such its hash can be used as a secure identity for the entire system state. Secondly, being an immutable data structure, it allows any previous state (whose root hash is known) to be recalled by simply altering the root hash accordingly. Since we store all such root hashes in the blockchain, we are able to trivially revert to old states.
 
-The account state comprises the following four fields:\hypertarget{account_nonce}{account nonce}
+The account state comprises the following four fields:\hypertarget{account_nonce}{}
 
 \begin{description}
 \item[nonce] A scalar value equal to the number of transactions sent from this address or, in the case of accounts with associated code, the number of contract-creations made by this account. For account of address $a$ in state $\boldsymbol{\sigma}$, this would be formally denoted $\boldsymbol{\sigma}[a]_n$.
