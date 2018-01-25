@@ -1664,7 +1664,7 @@ For a given private key, $p_r$, the Ethereum address $A(p_r)$ (a 160-bit value) 
 \begin{equation}
 A(p_r) = \mathcal{B}_{96..255}\big(\mathtt{\tiny KEC}\big( \mathtt{\small ECDSAPUBKEY}(p_r) \big) \big)
 \end{equation}
-
+\hypertarget{h T}{}
 The message hash, $h(T)$, to be signed is the Keccak hash of the transaction. Two different flavors of signing schemes are available. One operates without the latter three signature components, formally described as $T_r$, $T_s$ and $T_w$. The other operates on nine elements:
 \begin{eqnarray}
 L_S(T) & \equiv & \begin{cases}
