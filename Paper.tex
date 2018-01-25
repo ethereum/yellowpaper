@@ -234,7 +234,7 @@ This function, $L_S$, is used alongside the trie function to provide a short ide
 \begin{equation}
 \forall a: \boldsymbol{\sigma}[a] = \varnothing \; \vee \; (a \in \mathbb{B}_{20} \; \wedge \; v(\boldsymbol{\sigma}[a]))
 \end{equation}
-where $v$ is the account validity function:\hypertarget{account_validity_function_v__x}{account validity function v x}
+where $v$ is the account validity function:\hypertarget{account validity function v x}{account validity function v x}
 \begin{equation}
 \quad v(x) \equiv x_n \in \mathbb{P}_{256} \wedge x_b \in \mathbb{P}_{256} \wedge x_s \in \mathbb{B}_{32} \wedge x_c \in \mathbb{B}_{32}
 \end{equation}
@@ -256,7 +256,7 @@ A transaction (formally, $T$) is a single cryptographically-signed instruction c
 
 \begin{description}
 \item[nonce] A scalar value equal to the number of transactions sent by the sender; formally $T_n$.\hypertarget{tx_gas_price_T__p}{tx gas price T p}
-\item[gasPrice] A scalar value equal to the number of Wei to be paid per unit of \textit{gas} for all computation costs incurred as a result of the execution of this transaction; formally $T_p$.\hypertarget{tx_gas_limit_T__g}{tx_gas_limit_T__g}
+\item[gasPrice] A scalar value equal to the number of Wei to be paid per unit of \textit{gas} for all computation costs incurred as a result of the execution of this transaction; formally $T_p$.\hypertarget{tx_gas_limit_T__g}{tx gas limit T g}
 \item[gasLimit] A scalar value equal to the maximum amount of gas that should be used in executing this transaction. This is paid up-front, before any computation is done and may not be increased later; formally $T_g$.\hypertarget{tx_to_address_T__t}{tx to address T t}
 \item[to] The 160-bit address of the message call's recipient or, for a contract creation transaction, $\varnothing$, used here to denote the only member of $\mathbb{B}_0$ ; formally $T_t$.\hypertarget{tx value T v}{tx value T v}
 \item[value] A scalar value equal to the number of Wei to be transferred to the message call's recipient or, in the case of contract creation, as an endowment to the newly created account; formally $T_v$.
