@@ -101,7 +101,7 @@ Early work on smart contracts has been done by \cite{szabo1997formalizing} and \
 
 \section{The Blockchain Paradigm} \label{ch:overview}
 
-Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissible. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg, be things such as reducing an account balance without an equal and opposite increase elsewhere. A valid state transition is one which comes about through a transaction. Formally:
+Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissible. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg, be things such as reducing an account balance without an equal and opposite increase elsewhere. A valid state transition is one which comes about through a transaction. Formally:\hypertarget{Upsilon}{}
 \begin{equation}
 \boldsymbol{\sigma}_{t+1} \equiv \Upsilon(\boldsymbol{\sigma}_t, T)
 \end{equation}
@@ -179,7 +179,7 @@ When considering variants of existing values, I follow the rule that within a gi
 
 When considering the use of existing functions, given a function $f$, the function $f^*$ denotes a similar, element-wise version of the function mapping instead between sequences. It is formally defined in section \ref{ch:block}.
 
-I define a number of useful functions throughout. One of the more common is $\ell$, which evaluates to the last item in the given sequence:
+I define a number of useful functions throughout. \hypertarget{ell}{}One of the more common is $\ell$, which evaluates to the last item in the given sequence:
 
 \begin{equation}
 \ell(\mathbf{x}) \equiv \mathbf{x}[\lVert \mathbf{x} \rVert - 1]
@@ -193,7 +193,7 @@ Having introduced the basic concepts behind Ethereum, we will discuss the meanin
 
 The world state (\textit{state}), is a mapping between addresses (160-bit identifiers) and account states (a data structure serialised as RLP, see Appendix \ref{app:rlp}). Though not stored on the blockchain, it is assumed that the implementation will maintain this mapping in a modified Merkle Patricia tree (\textit{trie}, see Appendix \ref{app:trie}). The trie requires a simple database backend that maintains a mapping of bytearrays to bytearrays; we name this underlying database the state database. This has a number of benefits; firstly the root node of this structure is cryptographically dependent on all internal data and as such its hash can be used as a secure identity for the entire system state. Secondly, being an immutable data structure, it allows any previous state (whose root hash is known) to be recalled by simply altering the root hash accordingly. Since we store all such root hashes in the blockchain, we are able to trivially revert to old states.
 
-The account state comprises the following four fields:
+The account state comprises the following four fields:\hypertarget{account nonce}{}
 
 \begin{description}
 \item[nonce] A scalar value equal to the number of transactions sent from this address or, in the case of accounts with associated code, the number of contract-creations made by this account. For account of address $a$ in state $\boldsymbol{\sigma}$, this would be formally denoted $\boldsymbol{\sigma}[a]_n$.
@@ -234,7 +234,7 @@ This function, $L_S$, is used alongside the trie function to provide a short ide
 \begin{equation}
 \forall a: \boldsymbol{\sigma}[a] = \varnothing \; \vee \; (a \in \mathbb{B}_{20} \; \wedge \; v(\boldsymbol{\sigma}[a]))
 \end{equation}
-where $v$ is the account validity function:
+where $v$ is the account validity function:\hypertarget{v x}{}
 \begin{equation}
 \quad v(x) \equiv x_n \in \mathbb{P}_{256} \wedge x_b \in \mathbb{P}_{256} \wedge x_s \in \mathbb{B}_{32} \wedge x_c \in \mathbb{B}_{32}
 \end{equation}
@@ -252,13 +252,13 @@ An account is \textit{dead} when its account state is non-existent or empty:
 
 \subsection{The Transaction} \label{ch:transaction}
 
-A transaction (formally, $T$) is a single cryptographically-signed instruction constructed by an actor externally to the scope of Ethereum. While it is assumed that the ultimate external actor will be human in nature, software tools will be used in its construction and dissemination\footnote{Notably, such `tools' could ultimately become so causally removed from their human-based initiation---or humans may become so causally-neutral---that there could be a point at which they rightly be considered autonomous agents. \eg contracts may offer bounties to humans for being sent transactions to initiate their execution.}. There are two types of transactions: those which result in message calls and those which result in the creation of new accounts with associated code (known informally as `contract creation'). Both types specify a number of common fields:
+A transaction (formally, $T$) is a single cryptographically-signed instruction constructed by an actor externally to the scope of Ethereum. While it is assumed that the ultimate external actor will be human in nature, software tools will be used in its construction and dissemination\footnote{Notably, such `tools' could ultimately become so causally removed from their human-based initiation---or humans may become so causally-neutral---that there could be a point at which they rightly be considered autonomous agents. \eg contracts may offer bounties to humans for being sent transactions to initiate their execution.}. There are two types of transactions: those which result in message calls and those which result in the creation of new accounts with associated code (known informally as `contract creation'). Both types specify a number of common fields:\hypertarget{T n}{}
 
-\begin{description}
-\item[nonce] A scalar value equal to the number of transactions sent by the sender; formally $T_n$.
-\item[gasPrice] A scalar value equal to the number of Wei to be paid per unit of \textit{gas} for all computation costs incurred as a result of the execution of this transaction; formally $T_p$.
-\item[gasLimit] A scalar value equal to the maximum amount of gas that should be used in executing this transaction. This is paid up-front, before any computation is done and may not be increased later; formally $T_g$.
-\item[to] The 160-bit address of the message call's recipient or, for a contract creation transaction, $\varnothing$, used here to denote the only member of $\mathbb{B}_0$ ; formally $T_t$.
+\begin{description}\hypertarget{T n}{}
+\item[nonce] A scalar value equal to the number of transactions sent by the sender; formally $T_n$.\hypertarget{T p}{}
+\item[gasPrice] A scalar value equal to the number of Wei to be paid per unit of \textit{gas} for all computation costs incurred as a result of the execution of this transaction; formally $T_p$.\hypertarget{T g}{}
+\item[gasLimit] A scalar value equal to the maximum amount of gas that should be used in executing this transaction. This is paid up-front, before any computation is done and may not be increased later; formally $T_g$.\hypertarget{T t}{}
+\item[to] The 160-bit address of the message call's recipient or, for a contract creation transaction, $\varnothing$, used here to denote the only member of $\mathbb{B}_0$ ; formally $T_t$.\hypertarget{T v}{}
 \item[value] A scalar value equal to the number of Wei to be transferred to the message call's recipient or, in the case of contract creation, as an endowment to the newly created account; formally $T_v$.
 \item[v, r, s] Values corresponding to the signature of the transaction and used to determine the sender of the transaction; formally $T_w$, $T_r$ and $T_s$. This is expanded in Appendix \ref{app:signing}.
 \end{description}
@@ -307,23 +307,23 @@ T_\mathbf{t} \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_t \neq \varno
 
 \subsection{The Block} \label{ch:block}
 
-The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$, and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{ommers}\footnote{\textit{ommer} is the most prevalent (not saying much) gender-neutral term to mean ``sibling of parent''; see \url{https://nonbinary.miraheze.org/wiki/Gender_neutral_language\#Aunt.2FUncle}}). The block header contains several pieces of information:
+The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding\hypertarget{ommerheaders}{} to the comprised transactions, $\mathbf{T}$, and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{ommers}\footnote{\textit{ommer} is the most prevalent (not saying much) gender-neutral term to mean ``sibling of parent''; see \url{https://nonbinary.miraheze.org/wiki/Gender_neutral_language\#Aunt.2FUncle}}). The block header contains several pieces of information:
 
 %\textit{TODO: Introduce logs}
 
-\begin{description}
+\begin{description}\hypertarget{H p}{}
 \item[parentHash] The Keccak 256-bit hash of the parent block's header, in its entirety; formally $H_p$.
-\item[ommersHash] The Keccak 256-bit hash of the ommers list portion of this block; formally $H_o$.
+\item[ommersHash] The Keccak 256-bit hash of the ommers list portion of this block; formally $H_o$.\hypertarget{H c}{}
 \item[beneficiary] The 160-bit address to which all fees collected from the successful mining of this block be transferred; formally $H_c$.
 \item[stateRoot] The Keccak 256-bit hash of the root node of the state trie, after all transactions are executed and finalisations applied; formally $H_r$.
 \item[transactionsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with each transaction in the transactions list portion of the block; formally $H_t$.
 \item[receiptsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with the receipts of each transaction in the transactions list portion of the block; formally $H_e$.
 \item[logsBloom] The Bloom filter composed from indexable information (logger address and log topics) contained in each log entry from the receipt of each transaction in the transactions list; formally $H_b$.
-\item[difficulty] A scalar value corresponding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_d$.
+\item[difficulty] A scalar value corresponding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_d$.\hypertarget{H i}{}
 \item[number] A scalar value equal to the number of ancestor blocks. The genesis block has a number of zero; formally $H_i$.
-\item[gasLimit] A scalar value equal to the current limit of gas expenditure per block; formally $H_l$.
-\item[gasUsed] A scalar value equal to the total gas used in transactions in this block; formally $H_g$.
-\item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.
+\item[gasLimit] A scalar value equal to the current limit of gas expenditure per block; formally $H_l$.\hypertarget{H g}{}
+\item[gasUsed] A scalar value equal to the total gas used in transactions in this block; formally $H_g$.\hypertarget{H s}{}
+\item[timestamp] A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_s$.\hypertarget{H x}{
 \item[extraData] An arbitrary byte array containing data relevant to this block. This must be 32 bytes or fewer; formally $H_x$.
 \item[mixHash] A 256-bit hash which, combined with the nonce, proves that a sufficient amount of computation has been carried out on this block; formally $H_m$.
 \item[nonce] A 64-bit hash which, combined with the mix-hash, proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.
@@ -892,7 +892,7 @@ A \equiv (\mathbf{s}, \mathbf{l}, \mathbf{t}, r)
 
 \subsection{Execution Overview}
 
-We must now define the $\Xi$ function. In most practical implementations this will be modelled as an iterative progression of the pair comprising the full system state, $\boldsymbol{\sigma}$ and the machine state, $\boldsymbol{\mu}$. Formally, we define it recursively with a function $X$. This uses an iterator function $O$ (which defines the result of a single cycle of the state machine) together with functions $Z$ which determines if the present state is an exceptional halting state of the machine and $H$, specifying the output data of the instruction if and only if the present state is a normal halting state of the machine.
+We must now define the $\Xi$ function. In most practical implementations this will be modelled as an iterative progression of the pair comprising the full system state, $\boldsymbol{\sigma}$ and the machine state, $\boldsymbol{\mu}$. Formally, we define it recursively with a function $X$. This uses an iterator function $O$ (which defines the result of a single cycle of the state machine) together with functions $Z$ which determines if the present state is an exceptional halting state of the machine and $H$, specifying the output data of the instruction if and only if the present state is a normal halting state of the machine.\hypertarget{empty_sequence_vs_empty_set}{empty_sequence_vs_empty_set}
 
 The empty sequence, denoted $()$, is not equal to the empty set, denoted $\varnothing$; this is important when interpreting the output of $H$, which evaluates to $\varnothing$ when execution is to continue but a series (potentially empty) when execution should halt.
 \begin{eqnarray}
