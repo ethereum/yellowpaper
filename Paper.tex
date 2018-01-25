@@ -1307,7 +1307,7 @@ If the value to be serialised is a byte-array, the RLP serialisation takes one o
 \item If the byte-array contains fewer than 56 bytes, then the output is equal to the input prefixed by the byte equal to the length of the byte array plus 128.
 \item Otherwise, the output is equal to the input prefixed by the minimal-length byte-array which when interpreted as a big-endian integer is equal to the length of the input byte array, which is itself prefixed by the number of bytes required to faithfully encode this length value plus 183.
 \end{itemize}
-
+\hypertarget{R b}{}
 Formally, we define $R_b$:
 \begin{eqnarray}
 R_b(\mathbf{x}) & \equiv & \begin{cases}
