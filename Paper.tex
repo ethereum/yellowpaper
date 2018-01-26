@@ -111,7 +111,7 @@ Early work on smart contracts has been done by \cite{szabo1997formalizing} and \
 
 Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissible. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg, be things such as reducing an account balance without an equal and opposite increase elsewhere. A valid state transition is one which comes about through a transaction. Formally:
 \begin{equation}
-\boldsymbol{\sigma}_{t+1} \equiv \Upsilon(\boldsymbol{\sigma}_t, T)
+\boldsymbol{\sigma}_mathrm{t}+1} \equiv \Upsilon(\boldsymbol{\sigma}_t, T)
 \end{equation}
 
 where $\Upsilon$ is the Ethereum state transition function. In Ethereum, $\Upsilon$, together with $\boldsymbol{\sigma}$ are considerably more powerful then any existing comparable system; $\Upsilon$ allows components to carry out arbitrary computation, while $\boldsymbol{\sigma}$ allows components to store arbitrary state between transactions.
@@ -122,7 +122,7 @@ Mining is the process of dedicating effort (working) to bolster one series of tr
 
 Formally, we expand to:
 \begin{eqnarray}
-\boldsymbol{\sigma}_{t+1} & \equiv & \Pi(\boldsymbol{\sigma}_t, B) \\
+\boldsymbol{\sigma}_mathrm{t}+1} & \equiv & \Pi(\boldsymbol{\sigma}_t, B) \\
 B & \equiv & (..., (T_0, T_1, ...) ) \\
 \Pi(\boldsymbol{\sigma}, B) & \equiv & \Omega(B, \Upsilon(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...)
 \end{eqnarray}
@@ -347,9 +347,9 @@ B \equiv (B_H, B_\mathbf{T}, B_\mathbf{U})
 In order to encode information about a transaction concerning which it may be useful to form a zero-knowledge proof, or index and search, we encode a receipt of each transaction containing certain information from concerning its execution.
 Each receipt, denoted $B_\mathbf{R}[i]$ for the $i$th transaction, is placed in an index-keyed trie and the root recorded in the header as $H_e$.
 
-The transaction receipt is a tuple of four items comprising the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_u$, the set of logs created through execution of the transaction, $R_\mathbf{l}$ and the Bloom filter composed from information in those logs, $R_b$ and the status code of the transaction, $R_{s'}$:
+The transaction receipt is a tuple of four items comprising the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_u$, the set of logs created through execution of the transaction, $R_\mathbf{l}$ and the Bloom filter composed from information in those logs, $R_b$ and the status code of the transaction, $R_mathrm{s}'}$:
 \begin{equation}
-R \equiv (R_u, R_b, R_\mathbf{l}, R_{s'})
+R \equiv (R_u, R_b, R_\mathbf{l}, R_mathrm{s}'})
 \end{equation}
 
 The function $L_R$ trivially prepares a transaction receipt for being transformed into an RLP-serialised byte array:
@@ -358,9 +358,9 @@ L_R(R) \equiv (0 \in \mathbb{B}_{256}, R_u, R_b, R_\mathbf{l})
 \end{equation}
 where $0 \in \mathbb{B}_{256}$ replaces the pre-transaction state root that existed in previous versions of the protocol.
 
-We assert that the status code $R_{s'}$ is an integer.
+We assert that the status code $R_mathrm{s}'}$ is an integer.
 \begin{equation}
-R_{s'} \in \mathbb{P}
+R_mathrm{s}'} \in \mathbb{P}
 \end{equation}
 
 We assert $R_u$, the cumulative gas used is a positive integer and that the logs Bloom, $R_b$, is a hash of size 2048 bits (256 bytes):
@@ -375,19 +375,19 @@ The log entries, $R_\mathbf{l}$, is a series of log entries, termed, for example
 O \equiv (O_a, ({O_\mathbf{t}}_0, {O_\mathbf{t}}_1, ...), O_\mathbf{d})
 \end{equation}
 \begin{equation}
-O_a \in \mathbb{B}_{20} \quad \wedge \quad \forall_{t \in O_\mathbf{t}}: t \in \mathbb{B}_{32} \quad \wedge \quad O_\mathbf{d} \in \mathbb{B}
+O_a \in \mathbb{B}_{20} \quad \wedge \quad \forall_mathrm{t} \in O_\mathbf{t}}: t \in \mathbb{B}_{32} \quad \wedge \quad O_\mathbf{d} \in \mathbb{B}
 \end{equation}
 
 We define the Bloom filter function, $M$, to reduce a log entry into a single 256-byte hash:
 \begin{equation}
-M(O) \equiv \bigvee_{t \in \{O_a\} \cup O_\mathbf{t}} \big( M_{3:2048}(t) \big)
+M(O) \equiv \bigvee_mathrm{t} \in \{O_a\} \cup O_\mathbf{t}} \big( M_{3:2048}(t) \big)
 \end{equation}
 
 where $M_{3:2048}$ is a specialised Bloom filter that sets three bits out of 2048, given an arbitrary byte sequence. It does this through taking the low-order 11 bits of each of the first three pairs of bytes in a Keccak-256 hash of the byte sequence./footnote{11 bits $= 2^2048$, and the low-order 11 bits is the modulo 2048 of the operand, which is in this case is "each of the first three pairs of bytes in a Keccak-256 hash of the byte sequence."} Formally:
 \begin{eqnarray}
 M_{3:2048}(\mathbf{x}: \mathbf{x} \in \mathbb{B}) & \equiv & \mathbf{y}: \mathbf{y} \in \mathbb{B}_{256} \quad \text{where:}\\
 \mathbf{y} & = & (0, 0, ..., 0) \quad \text{except:}\\
-\forall_{i \in \{0, 2, 4\}}&:& \mathcal{B}_{m(\mathbf{x}, i)}(\mathbf{y}) = 1\\
+\forall_mathrm{i} \in \{0, 2, 4\}}&:& \mathcal{B}_mathrm{m}(\mathbf{x}, i)}(\mathbf{y}) = 1\\
 m(\mathbf{x}, i) &\equiv& \mathtt{\tiny KEC}(\mathbf{x})[i, i + 1] \bmod 2048
 \end{eqnarray}
 
@@ -583,7 +583,7 @@ A^0 \equiv (\varnothing, (), \varnothing, 0)
 \subsection{Execution}
 We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
 \begin{align}
-g_0 \equiv {} & \sum_{i \in T_\mathbf{i}, T_\mathbf{d}} \begin{cases} G_{txdatazero} & \text{if} \quad i = 0 \\ G_{txdatanonzero} & \text{otherwise} \end{cases} \\
+g_0 \equiv {} & \sum_mathrm{i} \in T_\mathbf{i}, T_\mathbf{d}} \begin{cases} G_{txdatazero} & \text{if} \quad i = 0 \\ G_{txdatanonzero} & \text{otherwise} \end{cases} \\
 {} & + \begin{cases} G_\text{txcreate} & \text{if} \quad T_t = \varnothing \\ 0 & \text{otherwise} \end{cases} \\
 {} & + G_{transaction}
 \end{align}
@@ -679,7 +679,7 @@ The address of the new account is defined as being the rightmost 160 bits of the
 a \equiv \mathcal{B}_{96..255}\Big(\mathtt{\tiny KEC}\Big(\mathtt{\tiny RLP}\big(\;(s, \boldsymbol{\sigma}[s]_n - 1)\;\big)\Big)\Big)
 \end{equation}
 
-where $\mathtt{\tiny KEC}$ is the Keccak 256-bit hash function, $\mathtt{\tiny RLP}$ is the RLP encoding function, $\mathcal{B}_{a..b}(X)$ evaluates to binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$ and $\boldsymbol{\sigma}[x]$ is the address state of $x$ or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
+where $\mathtt{\tiny KEC}$ is the Keccak 256-bit hash function, $\mathtt{\tiny RLP}$ is the RLP encoding function, $\mathcal{B}_mathrm{a}..b}(X)$ evaluates to binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$ and $\boldsymbol{\sigma}[x]$ is the address state of $x$ or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
 
 The account's nonce is initially defined as one, the balance as the value passed, the storage as empty and the code hash as the Keccak 256-bit hash of the empty string; the sender's balance is also reduced by the value passed. Thus the mutated state becomes $\boldsymbol{\sigma}^*$:
 \begin{equation}
@@ -1147,7 +1147,7 @@ With $\mathbf{d}$ being a dataset as specified in appendix \ref{app:ethash}.
 
 As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of $\Omega$, the block finalisation function and $\Upsilon$, the transaction-evaluation function, both now well-defined.
 
-As previously detailed, $\mathbf{R}[n]_{s'}$, $\mathbf{R}[n]_\mathbf{l}$ and $\mathbf{R}[n]_u$ are the $n$th corresponding status code, logs and cumulative gas used after each transaction ($\mathbf{R}[n]_b$, the fourth component in the tuple, has already been defined in terms of the logs). We also define the $n$th state $\boldsymbol{\sigma}[n]$, which is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
+As previously detailed, $\mathbf{R}[n]_mathrm{s}'}$, $\mathbf{R}[n]_\mathbf{l}$ and $\mathbf{R}[n]_u$ are the $n$th corresponding status code, logs and cumulative gas used after each transaction ($\mathbf{R}[n]_b$, the fourth component in the tuple, has already been defined in terms of the logs). We also define the $n$th state $\boldsymbol{\sigma}[n]$, which is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
 \begin{equation}
 \boldsymbol{\sigma}[n] = \begin{cases} \Gamma(B) & \text{if} \quad n < 0 \\ \Upsilon(\boldsymbol{\sigma}[n - 1], B_\mathbf{T}[n]) & \text{otherwise} \end{cases}
 \end{equation}
@@ -1167,9 +1167,9 @@ For $\mathbf{R}[n]_\mathbf{l}$, we utilise the $\Upsilon^\mathbf{l}$ function th
 \Upsilon^\mathbf{l}(\boldsymbol{\sigma}[n - 1], B_\mathbf{T}[n])
 \end{equation}
 
-We define $\mathbf{R}[n]_{s'}$ in a similar manner.
+We define $\mathbf{R}[n]_mathrm{s}'}$ in a similar manner.
 \begin{equation}
-\mathbf{R}[n]_{s'} =
+\mathbf{R}[n]_mathrm{s}'} =
 \Upsilon^{s}(\boldsymbol{\sigma}[n - 1], B_\mathbf{T}[n])
 \end{equation}
 
@@ -1299,8 +1299,8 @@ This is a serialisation method for encoding arbitrarily structured binary data (
 We define the set of possible structures $\mathbb{T}$:
 \begin{eqnarray}
 \mathbb{T} & \equiv & \mathbb{L} \cup \mathbb{B} \\
-\mathbb{L} & \equiv & \{ \mathbf{t}: \mathbf{t} = ( \mathbf{t}[0], \mathbf{t}[1], ... ) \; \wedge \; \forall_{n < \lVert \mathbf{t} \rVert} \; \mathbf{t}[n] \in \mathbb{T} \} \\
-\mathbb{B} & \equiv & \{ \mathbf{b}: \mathbf{b} = ( \mathbf{b}[0], \mathbf{b}[1], ... ) \; \wedge \; \forall_{n < \lVert \mathbf{b} \rVert} \; \mathbf{b}[n] \in \mathbb{O} \}
+\mathbb{L} & \equiv & \{ \mathbf{t}: \mathbf{t} = ( \mathbf{t}[0], \mathbf{t}[1], ... ) \; \wedge \; \forall_mathrm{n} < \lVert \mathbf{t} \rVert} \; \mathbf{t}[n] \in \mathbb{T} \} \\
+\mathbb{B} & \equiv & \{ \mathbf{b}: \mathbf{b} = ( \mathbf{b}[0], \mathbf{b}[1], ... ) \; \wedge \; \forall_mathrm{n} < \lVert \mathbf{b} \rVert} \; \mathbf{b}[n] \in \mathbb{O} \}
 \end{eqnarray}
 
 Where $\mathbb{O}$ is the set of bytes. Thus $\mathbb{B}$ is the set of all sequences of bytes (otherwise known as byte-arrays, and a leaf if imagined as a tree), $\mathbb{L}$ is the set of all tree-like (sub-)structures that are not a single leaf (a branch node if imagined as a tree) and $\mathbb{T}$ is the set of all byte-arrays and such structural sequences.
@@ -1325,7 +1325,7 @@ R_b(\mathbf{x}) & \equiv & \begin{cases}
 (128 + \lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{else if} \quad \lVert \mathbf{x} \rVert < 56 \\
 \big(183 + \big\lVert \mathtt{\tiny BE}(\lVert \mathbf{x} \rVert) \big\rVert \big) \cdot \mathtt{\tiny BE}(\lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{otherwise}
 \end{cases} \\
-\mathtt{\tiny BE}(x) & \equiv & (b_0, b_1, ...): b_0 \neq 0 \wedge x = \sum_{n = 0}^{n < \lVert \mathbf{b} \rVert} b_n \cdot 256^{\lVert \mathbf{b} \rVert - 1 - n} \\
+\mathtt{\tiny BE}(x) & \equiv & (b_0, b_1, ...): b_0 \neq 0 \wedge x = \sum_mathrm{n} = 0}^{n < \lVert \mathbf{b} \rVert} b_n \cdot 256^{\lVert \mathbf{b} \rVert - 1 - n} \\
 (a) \cdot (b, c) \cdot (d, e) & = & (a, b, c, d, e)
 \end{eqnarray}
 
@@ -1389,7 +1389,7 @@ When considering such a sequence, we use the common numeric subscript notation t
 Any series of bytes may also trivially be viewed as a series of nibbles, given an endian-specific notation; here we assume big-endian. Thus:
 \begin{eqnarray}
 y(\mathfrak{I}) & = & \{ (\mathbf{k}_0' \in \mathbb{Y}, \mathbf{v}_0 \in \mathbb{B}), (\mathbf{k}_1' \in \mathbb{Y}, \mathbf{v}_1 \in \mathbb{B}), ... \} \\
-\forall_n \quad \forall_{i: i < 2\lVert\mathbf{k}_n\rVert} \quad \mathbf{k}_n'[i] & \equiv &
+\forall_n \quad \forall_mathrm{i}: i < 2\lVert\mathbf{k}_n\rVert} \quad \mathbf{k}_n'[i] & \equiv &
 \begin{cases}
 \lfloor \mathbf{k}_n[i \div 2] \div 16 \rfloor & \text{if} \; i \; \text{is even} \\
 \mathbf{k}_n[\lfloor i \div 2 \rfloor] \bmod 16 & \text{otherwise}
@@ -1549,9 +1549,9 @@ for a natural number $n$ and a point $P$ in $C_1$.
 
 We define $P_1$ to be a point $(1,2)$ on $C_1$. Let $G_1$ be the subgroup of $(C_1,+)$ generated by $P_1$. $G_1$ is known to be a cyclic group of order $q$. For a point $P$ in $G_1$, we define $\log_{P_1}(P)$ to be the smallest natural number $n$ satisfying $n\cdot P_1=P$. $\log_{P_1}(P)$ is at most $q-1$.
 
-Let $F_{p^2}$ be a field $F_p[i]/(i+1)$. We define a set $C_2$ with
+Let $F_mathrm{p}^2}$ be a field $F_p[i]/(i+1)$. We define a set $C_2$ with
 \begin{equation}
-C_2\equiv\{(X,Y)\in F_{p^2}\times F_{p^2}\mid Y^2=X^3+3\}\cup\{(0,0)\}
+C_2\equiv\{(X,Y)\in F_mathrm{p}^2}\times F_mathrm{p}^2}\mid Y^2=X^3+3\}\cup\{(0,0)\}
 \end{equation}
 We define a binary operation $+$ and a scalar multiplication $\cdot$ with the same equations (\ref{eq:ec-addition}) and (\ref{eq:ec-scalar-multiplication}). $(C_2,+)$ is also known to be a group. We define $P_2$ in $C_2$ with
 \begin{eqnarray}
@@ -1985,7 +1985,7 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& This pertains to the input data passed with the message call instruction or transaction. \\
 \midrule
 0x37 & {\small CALLDATACOPY} & 3 & 0 & Copy input data in current environment to memory. \\
-&&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_\mathbf{s}[2] - 1\} } \boldsymbol{\mu}'_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[0] + i ] \equiv
+&&&& $\forall_mathrm{i} \in \{ 0 \dots \boldsymbol{\mu}_\mathbf{s}[2] - 1\} } \boldsymbol{\mu}'_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[0] + i ] \equiv
 \begin{cases} I_\mathbf{d}[\boldsymbol{\mu}_\mathbf{s}[1] + i] & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] + i < \lVert I_\mathbf{d} \rVert \\ 0 & \text{otherwise} \end{cases}$\\
 &&&& The additions in $\boldsymbol{\mu}_\mathbf{s}[1] + i$ are not subject to the $2^{256}$ modulo. \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[2])$ \\
@@ -1995,7 +1995,7 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \lVert I_\mathbf{b} \rVert$ \\
 \midrule
 0x39 & {\small CODECOPY} & 3 & 0 & Copy code running in current environment to memory. \\
-&&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_\mathbf{s}[2] - 1\} } \boldsymbol{\mu}'_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[0] + i ] \equiv
+&&&& $\forall_mathrm{i} \in \{ 0 \dots \boldsymbol{\mu}_\mathbf{s}[2] - 1\} } \boldsymbol{\mu}'_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[0] + i ] \equiv
 \begin{cases} I_\mathbf{b}[\boldsymbol{\mu}_\mathbf{s}[1] + i] & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] + i < \lVert I_\mathbf{b} \rVert \\ \text{\small STOP} & \text{otherwise} \end{cases}$\\
 &&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[2])$ \\
 &&&& The additions in $\boldsymbol{\mu}_\mathbf{s}[1] + i$ are not subject to the $2^{256}$ modulo. \\
@@ -2008,7 +2008,7 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \lVert \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}]_c \rVert$ \\
 \midrule
 0x3c & {\small EXTCODECOPY} & 4 & 0 & Copy an account's code to memory. \\
-&&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_\mathbf{s}[3] - 1\} } \boldsymbol{\mu}'_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[1] + i ] \equiv
+&&&& $\forall_mathrm{i} \in \{ 0 \dots \boldsymbol{\mu}_\mathbf{s}[3] - 1\} } \boldsymbol{\mu}'_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[1] + i ] \equiv
 \begin{cases} \mathbf{c}[\boldsymbol{\mu}_\mathbf{s}[2] + i] & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[2] + i < \lVert \mathbf{c} \rVert \\ \text{\small STOP} & \text{otherwise} \end{cases}$\\
 &&&& where $\mathbf{c} \equiv \boldsymbol{\sigma}[\boldsymbol{\mu}_\mathbf{s}[0] \mod 2^{160}]_c$ \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[1], \boldsymbol{\mu}_\mathbf{s}[3])$ \\
@@ -2018,7 +2018,7 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \lVert \boldsymbol{\mu}_\mathbf{o} \rVert$ \\
 \midrule
 0x3e & {\small RETURNDATACOPY} & 3 & 0 & Copy output data from the previous call to memory. \\
-&&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_\mathbf{s}[2] - 1\} } \boldsymbol{\mu}'_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[0] + i ] \equiv
+&&&& $\forall_mathrm{i} \in \{ 0 \dots \boldsymbol{\mu}_\mathbf{s}[2] - 1\} } \boldsymbol{\mu}'_\mathbf{m}[\boldsymbol{\mu}_\mathbf{s}[0] + i ] \equiv
 \begin{cases} \boldsymbol{\mu}_\mathbf{o}[\boldsymbol{\mu}_\mathbf{s}[1] + i] & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] + i < \lVert \boldsymbol{\mu}_\mathbf{o} \rVert \\ 0 & \text{otherwise} \end{cases}$\\
 &&&& The additions in $\boldsymbol{\mu}_\mathbf{s}[1] + i$ are not subject to the $2^{256}$ modulo. \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[2])$ \\
@@ -2392,7 +2392,7 @@ We define the array $\mathbf{c}_{i}$, consisting of 64 single bytes,  as the $i$
 \begin{equation}
  \mathbf{c}_{i} = \begin{cases}
 \texttt{KEC512}(\mathbf{s}) & \text{if} \quad i = 0 \quad  \\
-\texttt{KEC512}(\mathbf{c}_{i-1}) & \text{otherwise}
+\texttt{KEC512}(\mathbf{c}_mathrm{i}-1}) & \text{otherwise}
 \end{cases}
 \end{equation}
 Therefore $ \mathbf{c'}$ can be defined as
@@ -2459,7 +2459,7 @@ The PoW-function returns an array with the compressed mix as its first item and 
 \end{equation}
 With $H_{\hcancel{n}}$ being the hash of the header without the nonce. The compressed mix $\mathbf{m}_c$ is obtained as follows:
 \begin{equation}
- \mathbf{m}_c(\mathbf{h}, \mathbf{n}, \mathbf{d}) = E_{compress}(E_{accesses}(\mathbf{d}, \sum_{i = 0}^{n_{mix}} \mathbf{s}_h(\mathbf{h}, \mathbf{n}), \mathbf{s}_h(\mathbf{h}, \mathbf{n}), -1), -4)
+ \mathbf{m}_c(\mathbf{h}, \mathbf{n}, \mathbf{d}) = E_{compress}(E_{accesses}(\mathbf{d}, \sum_mathrm{i} = 0}^{n_{mix}} \mathbf{s}_h(\mathbf{h}, \mathbf{n}), \mathbf{s}_h(\mathbf{h}, \mathbf{n}), -1), -4)
 \end{equation}
 
 The seed hash being:
