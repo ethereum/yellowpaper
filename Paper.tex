@@ -566,7 +566,7 @@ Formally, we consider the function $\Upsilon$, with $T$ being a transaction and 
 \boldsymbol{\sigma}' = \Upsilon(\boldsymbol{\sigma}, T)
 \end{equation}
 
-Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define $\Upsilon^g$ to evaluate to the amount of gas used in the execution of a transaction and $\Upsilon^\mathbf{l}$ to evaluate to the transaction's accrued log items, both to be formally defined later.
+Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define $\Upsilon^g$ to evaluate to the amount of gas used in the execution of a transaction, $\Upsilon^\mathbf{l}$ to evaluate to the transaction's accrued log items and $\Upsilon^s$ to evaluate to the status code resulting from the transaction. These will be formally defined later.
 
 \subsection{Substate}
 Throughout transaction execution, we accrue certain information that is acted upon immediately following the transaction. We call this \textit{transaction substate}, and represent it as $A$, which is a tuple:
