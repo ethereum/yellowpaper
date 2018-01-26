@@ -37,6 +37,28 @@
 \MakeOuterQuote{"}
 % Put before hyperref
 
+\makeatletter
+\g@addto@macro{\UrlBreaks}{\UrlOrds}
+\makeatother
+
+% info on the above command: <https://tex.stackexchange.com/posts/10419/revisions>. Note that the three preceding lines, as well as \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref} did not fix the error where if a URL breaks over a page, it shows a snippet in the header as shown here: <https://i.stack.imgur.com/tYUe2.png>. The following command did fix this error, however only because it happened to compact the text, preventing a URL from breaking over a page. If you force a URL to break over a page, the error still occurs.
+
+\expandafter\def\expandafter\UrlBreaks\expandafter{\UrlBreaks%  save the current one
+  \do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j%
+  \do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t%
+  \do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D%
+  \do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N%
+  \do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X%
+  \do\Y\do\Z}
+% More info: <https://tex.stackexchange.com/questions/392832/how-to-ensure-that-a-url-break-over-a-page-doesnt-add-a-tiny-url-box-in-the-hea>.
+%\sloppy
+%\setlength{\emergencystretch}{2pt}
+% These don't appear to make a difference with the preceding use of the \hypens package and \expandafter.
+% https://tex.stackexchange.com/a/59131/143781
+% <https://tex.stackexchange.com/questions/241343/what-is-the-meaning-of-fussy-sloppy-emergencystretch-tolerance-hbadness>
+
+\usepackage{glossaries}
+
 \input{Version.tex}
 
 \newcommand{\hcancel}[1]{%
