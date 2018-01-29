@@ -643,22 +643,21 @@ m & \equiv & {B_H}_c
 
 The final state, $\boldsymbol{\sigma}'$, is reached after deleting all accounts that either appear in the self-destruct list or are touched and empty:
 \begin{eqnarray}
-\boldsymbol{\sigma}' & \equiv & \boldsymbol{\sigma}^* \quad \text{except} \hypertarget{self_destruct_list_A__s}{}\\
-\forall i \in A_\mathbf{s}: \boldsymbol{\sigma}'[i] & = & \varnothing \hypertarget{touched_A__t}{}\\
-\forall i \in A_\mathbf{t}: \boldsymbol{\sigma}'[i] & = & \varnothing \quad\text{if}\quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma}^*\kern -2pt, i)
+\boldsymbol{\sigma}' & \equiv & \boldsymbol{\sigma}^* \quad \text{except} \\
+\linkdest{self_destruct_list_A__s}{}\forall i \in A_\mathbf{s}: \boldsymbol{\sigma}'[i] & = & \varnothing \\
+\linkdest{touched_A__t}{}\forall i \in A_\mathbf{t}: \boldsymbol{\sigma}'[i] & = & \varnothing \quad\text{if}\quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma}^*\kern -2pt, i)
 \end{eqnarray}
 
-\hypertarget{tx_total_gas_used_Upsilon_pow_g}{}\hypertarget{tx_logs_Upsilon_pow_l}{}\hypertarget{tx_status_Upsilon_pow_s}{}
-And finally, we specify $\Upsilon^g$, the total gas used in this transaction, $\Upsilon^\mathbf{l}$, the logs created by this transaction and $\Upsilon^{s}$, the status code of this transaction:
+\hypertarget{tx_total_gas_used_Upsilon_pow_g}{}\hypertarget{tx_logs_Upsilon_pow_l}{}\hypertarget{tx_status_Upsilon_pow_s}{}And finally, we specify $\Upsilon^g$, the total gas used in this transaction, $\Upsilon^\mathbf{l}$, the logs created by this transaction and $\Upsilon^{s}$, the status code of this transaction:
 \begin{eqnarray}
 \Upsilon^g(\boldsymbol{\sigma}, T) & \equiv & T_g - g' \\
 \Upsilon^\mathbf{l}(\boldsymbol{\sigma}, T) & \equiv & A_\mathbf{l} \\
 \Upsilon^s(\boldsymbol{\sigma}, T) & \equiv & s'
 \end{eqnarray}
 
-These are used to help define the transaction receipt, discussed later.\hypertarget{endow}{}
+These are used to help define the transaction receipt, discussed later.
 
-\section{Contract Creation} \label{ch:create}
+\section{Contract Creation}\label{ch:create}\hypertarget{endow}{}
 
 There are a number of intrinsic parameters used when creating an account: sender ($s$), original transactor ($o$), available gas ($g$), gas price ($p$), endowment ($v$) together with an arbitrary length byte array, $\mathbf{i}$, the initialisation EVM code and finally the present depth of the message-call/contract-creation stack ($e$).
 
