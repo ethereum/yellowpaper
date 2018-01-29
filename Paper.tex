@@ -506,13 +506,13 @@ The nonce, $H_n$, must satisfy the relations:
 \begin{equation}
 n \leqslant \frac{2^{256}}{H_d} \quad \wedge \quad m = H_m
 \end{equation}
-with $(n, m) = \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})$.\hypertarget{block_header_without_nonce_and_mixmash_h__cancel_n}{}
+with $(n, m) = \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})$.
 
-Where $H_{\hcancel{n}}$ is the new block's header $H$, but \textit{without} the nonce and mix-hash components, $\mathbf{d}$ being the current DAG, a large data set needed to compute the mix-hash, and $\mathtt{PoW}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an array with the first item being the mix-hash, to proof that a correct DAG has been used, and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. Given an approximately uniform distribution in the range $[0, 2^{64})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
+\hypertarget{block_header_without_nonce_and_mixmash_h__cancel_n}{}Where $H_{\hcancel{n}}$ is the new block's header $H$, but \textit{without} the nonce and mix-hash components, $\mathbf{d}$ being the current DAG, a large data set needed to compute the mix-hash, and $\mathtt{PoW}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an array with the first item being the mix-hash, to proof that a correct DAG has been used, and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. Given an approximately uniform distribution in the range $[0, 2^{64})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
 
-This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propagate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because its satisfaction depends on the contents of the block and in turn its composed transactions, creating new, valid, blocks is difficult and, over time, requires approximately the total compute power of the trustworthy portion of the mining peers.\hypertarget{block_header_validity_function}{}
+This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propagate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because its satisfaction depends on the contents of the block and in turn its composed transactions, creating new, valid, blocks is difficult and, over time, requires approximately the total compute power of the trustworthy portion of the mining peers.
 
-Thus we are able to define the block header validity function $V(H)$:
+\hypertarget{block_header_validity_function}{}Thus we are able to define the block header validity function $V(H)$:
 \begin{eqnarray}
 V(H) & \equiv &  n \leqslant \frac{2^{256}}{H_d} \wedge m = H_m \quad \wedge \\
 & & H_d = D(H) \quad \wedge \\
@@ -561,17 +561,17 @@ Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define $\Up
 Throughout transaction execution, we accrue certain information that is acted upon immediately following the transaction. We call this \textit{transaction substate}, and represent it as $A$, which is a tuple:
 \begin{equation}
 A \equiv (A_\mathbf{s}, A_\mathbf{l}, A_\mathbf{t}, A_r)
-\end{equation}\hypertarget{self_destruct_set_wordy_defn}{}
+\end{equation}
 
-The tuple contents include $A_\mathbf{s}$, the self-destruct set: a set of accounts that will be discarded following the\hypertarget{tx_log_series_wordy_defn}{} transaction's completion. $A_\mathbf{l}$ is the log series: this is a series of archived and indexable `checkpoints' in VM code execution that allow for contract-calls to be easily tracked by onlookers external to the Ethereum world (such as\hypertarget{tx_touched_accounts_wordy_defn}{} decentralised application front-ends). $A_\mathbf{t}$ is the set of touched accounts, of which the empty ones are deleted at the end\hypertarget{refund_balance_defn_words}{} of a transaction. Finally there is $A_r$, the refund balance, increased through using the {\small SSTORE} instruction in order to reset contract storage to zero from some non-zero value. Though not immediately refunded, it is allowed to partially offset the total execution costs.
+\hypertarget{self_destruct_set_wordy_defn}{}The tuple contents include $A_\mathbf{s}$, the self-destruct set: a set of accounts that will be discarded following the transaction's completion.\hypertarget{tx_log_series_wordy_defn}{} $A_\mathbf{l}$ is the log series: this is a series of archived and indexable `checkpoints' in VM code execution that allow for contract-calls to be easily tracked by onlookers external to the Ethereum world (such as decentralised application front-ends).\hypertarget{tx_touched_accounts_wordy_defn}{} $A_\mathbf{t}$ is the set of touched accounts, of which the empty ones are deleted at the end of a transaction.\hypertarget{refund_balance_defn_words}{} Finally there is $A_r$, the refund balance, increased through using the {\small SSTORE} instruction in order to reset contract storage to zero from some non-zero value. Though not immediately refunded, it is allowed to partially offset the total execution costs.
 
 We define the empty substate $A^0$ to have no self-destructs, no logs, no touched accounts and a zero refund balance:
 \begin{equation}
 A^0 \equiv (\varnothing, (), \varnothing, 0)
 \end{equation}
 
-\subsection{Execution}\hypertarget{intrinsic_gas_g_0}{}
-We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
+\subsection{Execution}
+\hypertarget{intrinsic_gas_g_0}{}We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
 \begin{align}
 g_0 \equiv {} & \sum_{i \in T_\mathbf{i}, T_\mathbf{d}} \begin{cases} G_{txdatazero} & \text{if} \quad i = 0 \\ G_{txdatanonzero} & \text{otherwise} \end{cases} \\
 {} & + \begin{cases} G_\text{txcreate} & \text{if} \quad T_t = \varnothing \\ 0 & \text{otherwise} \end{cases} \\
@@ -591,8 +591,8 @@ The validity is determined as:
 \begin{equation}
 \begin{array}[t]{rcl}
 S(T) & \neq & \varnothing \quad \wedge \\
-\boldsymbol{\sigma}[S(T)] & \neq & \varnothing \quad \wedge \hypertarget{transaction_nonce}{}\\
-T_n & = & \boldsymbol{\sigma}[S(T)]_n \quad \wedge \\
+\boldsymbol{\sigma}[S(T)] & \neq & \varnothing \quad \wedge \\
+\linkdest{transaction_nonce}{}T_n & = & \boldsymbol{\sigma}[S(T)]_n \quad \wedge \\
 g_0 & \leqslant & T_g \quad \wedge \\
 v_0 & \leqslant & \boldsymbol{\sigma}[S(T)]_b \quad \wedge \\
 T_g & \leqslant & {B_H}_l - \ell(B_\mathbf{R})_u
