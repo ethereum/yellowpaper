@@ -22,12 +22,25 @@
 \usepackage[bookmarks=true, unicode=true, pdftitle={Ethereum Yellow Paper: a formal specification of Ethereum, a programmable blockchain}, pdfauthor={Gavin Wood and others as per https://github.com/ethereum/yellowpaper/commits/master},pdfkeywords={Ethereum, Yellow Paper, blockchain, virtual machine, cryptography, decentralised, singleton, transaction, generalised},pdfborder={0 0 0.5 [1 3]}]{hyperref}
 %,pagebackref=true
 
-% I will insert other table packages in here after this is merged.
+\usepackage{tabu} %requires array.
 
 %This should be the last package before \input{Version.tex}
 \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
 % "hyperref loads the url package internally. Use \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref} to pass the option to the url package when it is loaded by hyperref. This avoids any package option clashes." Source: <https://tex.stackexchange.com/questions/3033/forcing-linebreaks-in-url/3034#comment44478_3034>. 
 % Note also this: "If the \PassOptionsToPackage{hyphens}{url} approach does not work, maybe it's "because you're trying to load the url package with a specific option, but it's being loaded by one of your packages before that with a different set of options. Try loading the url package earlier than the package that requires it. If it's loaded by the document class, try using \RequirePackage[hyphens]{url} before the document class." Source: <https://tex.stackexchange.com/questions/3033/forcing-linebreaks-in-url/3034#comment555944_3034>.
+% For more information on using the hyperref package, refer to e.g. https://en.wikibooks.org/w/index.php?title=LaTeX/Hyperlinks&stable=0#Hyperlink_and_Hypertarget.
+
+\makeatletter
+ \newcommand{\linkdest}[1]{\Hy@raisedlink{\hypertarget{#1}{}}}
+\makeatother
+\usepackage{seqsplit}
+
+% For formatting
+%\usepackage{underscore}
+%\usepackage{lipsum} % to generate filler text for testing of document rendering
+\usepackage[english]{babel}
+\usepackage[autostyle]{csquotes}
+\MakeOuterQuote{"}
 
 \input{Version.tex}
 
@@ -46,11 +59,11 @@
 \newcommand*\ie{i.e.\@\xspace}
 %\renewcommand{\itemhook}{\setlength{\topsep}{0pt}  \setlength{\itemsep}{0pt}\setlength{\leftmargin}{15pt}}
 
-\title{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ {\smaller \textbf{Byzantium revision (\YellowPaperVersionNumber{})}}}
+\title{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ {\smaller \textbf{Byzantium version \YellowPaperVersionNumber{}}}}
 \author{
     Dr. Gavin Wood\\
-    Founder, Ethereum \& Ethcore\\
-    gavin@ethcore.io
+    Founder, Ethereum \& Parity\\
+    gavin@parity.io
 }
 \begin{document}
 
@@ -98,12 +111,13 @@ Additional work has been done in the area with discarding the decentralisation f
 Early work on smart contracts has been done by \cite{szabo1997formalizing} and \cite{miller1997future}. Around the 1990s it became clear that algorithmic enforcement of agreements could become a significant force in human cooperation. Though no specific system was proposed to implement such a system, it was proposed that the future of law would be heavily affected by such systems. In this light, Ethereum may be seen as a general implementation of such a \textit{crypto-law} system.
 
 %E language?
+For a list of terms used in this paper, refer to Appendix \ref{ch:Terminology}.
 
 \section{The Blockchain Paradigm} \label{ch:overview}
 
-Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissible. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg, be things such as reducing an account balance without an equal and opposite increase elsewhere. A valid state transition is one which comes about through a transaction. Formally:
+Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissible. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg, be things such as reducing an account balance without an equal and opposite increase elsewhere. A valid state transition is one which comes about through a transaction. Formally: 
 \begin{equation}
-\boldsymbol{\sigma}_{t+1} \equiv \Upsilon(\boldsymbol{\sigma}_t, T)
+\linkdest{Upsilon_state_transition}\boldsymbol{\sigma}_{t+1} \equiv \Upsilon(\boldsymbol{\sigma}_t, T)
 \end{equation}
 
 where $\Upsilon$ is the Ethereum state transition function. In Ethereum, $\Upsilon$, together with $\boldsymbol{\sigma}$ are considerably more powerful then any existing comparable system; $\Upsilon$ allows components to carry out arbitrary computation, while $\boldsymbol{\sigma}$ allows components to store arbitrary state between transactions.
@@ -179,7 +193,7 @@ When considering variants of existing values, I follow the rule that within a gi
 
 When considering the use of existing functions, given a function $f$, the function $f^*$ denotes a similar, element-wise version of the function mapping instead between sequences. It is formally defined in section \ref{ch:block}.
 
-I define a number of useful functions throughout. One of the more common is $\ell$, which evaluates to the last item in the given sequence:
+I define a number of useful functions throughout. \linkdest{ell}One of the more common is $\ell$, which evaluates to the last item in the given sequence:
 
 \begin{equation}
 \ell(\mathbf{x}) \equiv \mathbf{x}[\lVert \mathbf{x} \rVert - 1]
@@ -196,7 +210,7 @@ The world state (\textit{state}), is a mapping between addresses (160-bit identi
 The account state comprises the following four fields:
 
 \begin{description}
-\item[nonce] A scalar value equal to the number of transactions sent from this address or, in the case of accounts with associated code, the number of contract-creations made by this account. For account of address $a$ in state $\boldsymbol{\sigma}$, this would be formally denoted $\boldsymbol{\sigma}[a]_n$.
+\item[nonce] \linkdest{account_nonce}A scalar value equal to the number of transactions sent from this address or, in the case of accounts with associated code, the number of contract-creations made by this account. For account of address $a$ in state $\boldsymbol{\sigma}$, this would be formally denoted $\boldsymbol{\sigma}[a]_n$.
 \item[balance] A scalar value equal to the number of Wei owned by this address. Formally denoted $\boldsymbol{\sigma}[a]_b$.
 \item[storageRoot] A 256-bit hash of the root node of a Merkle Patricia tree that encodes the storage contents of the account (a mapping between 256-bit integer values), encoded into the trie as a mapping from the Keccak 256-bit hash of the  256-bit integer keys to the RLP-encoded 256-bit integer values. The hash is formally denoted $\boldsymbol{\sigma}[a]_s$.
 \item[codeHash] The hash of the EVM code of this account---this is the code that gets executed should this address receive a message call; it is immutable and thus, unlike all other fields, cannot be changed after construction. All such code fragments are contained in the state database under their corresponding hashes for later retrieval. This hash is formally denoted $\boldsymbol{\sigma}[a]_c$, and thus the code may be denoted as $\mathbf{b}$, given that $\texttt{\small KEC}(\mathbf{b}) = \boldsymbol{\sigma}[a]_c$.
@@ -339,9 +353,9 @@ B \equiv (B_H, B_\mathbf{T}, B_\mathbf{U})
 In order to encode information about a transaction concerning which it may be useful to form a zero-knowledge proof, or index and search, we encode a receipt of each transaction containing certain information from concerning its execution.
 Each receipt, denoted $B_\mathbf{R}[i]$ for the $i$th transaction, is placed in an index-keyed trie and the root recorded in the header as $H_e$.
 
-The transaction receipt is a tuple of four items comprising the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_u$, the set of logs created through execution of the transaction, $R_\mathbf{l}$ and the Bloom filter composed from information in those logs, $R_b$ and the status code of the transaction, $R_{s'}$:
+The transaction receipt is a tuple of four items comprising the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_u$, the set of logs created through execution of the transaction, $R_\mathbf{l}$ and the Bloom filter composed from information in those logs, $R_b$ and the status code of the transaction, $R_z$:
 \begin{equation}
-R \equiv (R_u, R_b, R_\mathbf{l}, R_{s'})
+R \equiv (R_u, R_b, R_\mathbf{l}, R_z)
 \end{equation}
 
 The function $L_R$ trivially prepares a transaction receipt for being transformed into an RLP-serialised byte array:
@@ -350,9 +364,9 @@ L_R(R) \equiv (0 \in \mathbb{B}_{256}, R_u, R_b, R_\mathbf{l})
 \end{equation}
 where $0 \in \mathbb{B}_{256}$ replaces the pre-transaction state root that existed in previous versions of the protocol.
 
-We assert that the status code $R_{s'}$ is an integer.
+We assert that the status code $R_z$ is an integer.
 \begin{equation}
-R_{s'} \in \mathbb{P}
+R_z \in \mathbb{P}
 \end{equation}
 
 We assert $R_u$, the cumulative gas used is a positive integer and that the logs Bloom, $R_b$, is a hash of size 2048 bits (256 bytes):
@@ -488,6 +502,8 @@ x \equiv \begin{cases}
 H'_i &\equiv \max(H_i - 3000000, 0)
 \end{align}
 
+Note that $\mindifficulty$ is the difficulty of the genesis block. The \textit{Homestead} difficulty parameter, $\homesteadmod$, is used to affect a dynamic homeostasis of time between blocks, as the time between blocks varies, as discussed below, as implemented in EIP-2 \cite{EIP-2}. In the Homestead release, the exponential difficulty symbol, $\expdiffsymb$ causes the difficulty to slowly increase (every 100,000 blocks) at an exponential rate, and thus increasing the block time difference, and putting time pressure on transitioning to proof-of-stake. This effect, known as the "difficulty bomb", or "ice age", was explained in EIP-649 \cite{EIP-649} and delayed and implemented earlier in EIP-2 \cite{EIP-2}. $\homesteadmod$ was also modified in EIP-100 with the use of $x$, the adjustment factor above, and the demoninator 9, in order to target the mean block time including uncle blocks \cite{EIP-100}. Finally, in the Byzantium release, with EIP-649, the ice age was delayed by creating a fake block number, $H'_i$, which is obtained by substracting three million from the actual block number, which in other words reduced $\expdiffsymb$ and the time difference between blocks, in order to allow more time to develop proof-of-stake and preventing the network from "freezing" up.
+
 The canonical gas limit $H_l$ of a block of header $H$ must fulfil the relation:
 \begin{eqnarray}
 & & H_l < {P(H)_H}_l + \left\lfloor\frac{{P(H)_H}_l}{1024}\right\rfloor \quad \wedge \\
@@ -508,11 +524,11 @@ n \leqslant \frac{2^{256}}{H_d} \quad \wedge \quad m = H_m
 \end{equation}
 with $(n, m) = \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d})$.
 
-Where $H_{\hcancel{n}}$ is the new block's header $H$, but \textit{without} the nonce and mix-hash components, $\mathbf{d}$ being the current DAG, a large data set needed to compute the mix-hash, and $\mathtt{PoW}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an array with the first item being the mix-hash, to proof that a correct DAG has been used, and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. Given an approximately uniform distribution in the range $[0, 2^{64})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
+\hypertarget{block_header_without_nonce_and_mixmash_h__cancel_n}{}Where $H_{\hcancel{n}}$ is the new block's header $H$, but \textit{without} the nonce and mix-hash components, $\mathbf{d}$ being the current DAG, a large data set needed to compute the mix-hash, and $\mathtt{PoW}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an array with the first item being the mix-hash, to proof that a correct DAG has been used, and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. Given an approximately uniform distribution in the range $[0, 2^{64})$, the expected time to find a solution is proportional to the difficulty, $H_d$.
 
 This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propagate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because its satisfaction depends on the contents of the block and in turn its composed transactions, creating new, valid, blocks is difficult and, over time, requires approximately the total compute power of the trustworthy portion of the mining peers.
 
-Thus we are able to define the block header validity function $V(H)$:
+\hypertarget{block_header_validity_function}{}Thus we are able to define the block header validity function $V(H)$:
 \begin{eqnarray}
 V(H) & \equiv &  n \leqslant \frac{2^{256}}{H_d} \wedge m = H_m \quad \wedge \\
 & & H_d = D(H) \quad \wedge \\
@@ -555,7 +571,7 @@ Formally, we consider the function $\Upsilon$, with $T$ being a transaction and 
 \boldsymbol{\sigma}' = \Upsilon(\boldsymbol{\sigma}, T)
 \end{equation}
 
-Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define $\Upsilon^g$ to evaluate to the amount of gas used in the execution of a transaction and $\Upsilon^\mathbf{l}$ to evaluate to the transaction's accrued log items, both to be formally defined later.
+Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define $\Upsilon^g$ to evaluate to the amount of gas used in the execution of a transaction, $\Upsilon^\mathbf{l}$ to evaluate to the transaction's accrued log items and $\Upsilon^z$ to evaluate to the status code resulting from the transaction. These will be formally defined later.
 
 \subsection{Substate}
 Throughout transaction execution, we accrue certain information that is acted upon immediately following the transaction. We call this \textit{transaction substate}, and represent it as $A$, which is a tuple:
@@ -563,7 +579,7 @@ Throughout transaction execution, we accrue certain information that is acted up
 A \equiv (A_\mathbf{s}, A_\mathbf{l}, A_\mathbf{t}, A_r)
 \end{equation}
 
-The tuple contents include $A_\mathbf{s}$, the self-destruct set: a set of accounts that will be discarded following the transaction's completion. $A_\mathbf{l}$ is the log series: this is a series of archived and indexable `checkpoints' in VM code execution that allow for contract-calls to be easily tracked by onlookers external to the Ethereum world (such as decentralised application front-ends). $A_\mathbf{t}$ is the set of touched accounts, of which the empty ones are deleted at the end of a transaction. Finally there is $A_r$, the refund balance, increased through using the {\small SSTORE} instruction in order to reset contract storage to zero from some non-zero value. Though not immediately refunded, it is allowed to partially offset the total execution costs.
+\hypertarget{self_destruct_set_wordy_defn}{}The tuple contents include $A_\mathbf{s}$, the self-destruct set: a set of accounts that will be discarded following the transaction's completion.\hypertarget{tx_log_series_wordy_defn}{} $A_\mathbf{l}$ is the log series: this is a series of archived and indexable `checkpoints' in VM code execution that allow for contract-calls to be easily tracked by onlookers external to the Ethereum world (such as decentralised application front-ends).\hypertarget{tx_touched_accounts_wordy_defn}{} $A_\mathbf{t}$ is the set of touched accounts, of which the empty ones are deleted at the end of a transaction.\hypertarget{refund_balance_defn_words}{} Finally there is $A_r$, the refund balance, increased through using the {\small SSTORE} instruction in order to reset contract storage to zero from some non-zero value. Though not immediately refunded, it is allowed to partially offset the total execution costs.
 
 We define the empty substate $A^0$ to have no self-destructs, no logs, no touched accounts and a zero refund balance:
 \begin{equation}
@@ -571,7 +587,7 @@ A^0 \equiv (\varnothing, (), \varnothing, 0)
 \end{equation}
 
 \subsection{Execution}
-We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
+\hypertarget{intrinsic_gas_g_0}{}We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
 \begin{align}
 g_0 \equiv {} & \sum_{i \in T_\mathbf{i}, T_\mathbf{d}} \begin{cases} G_{txdatazero} & \text{if} \quad i = 0 \\ G_{txdatanonzero} & \text{otherwise} \end{cases} \\
 {} & + \begin{cases} G_\text{txcreate} & \text{if} \quad T_t = \varnothing \\ 0 & \text{otherwise} \end{cases} \\
@@ -579,8 +595,6 @@ g_0 \equiv {} & \sum_{i \in T_\mathbf{i}, T_\mathbf{d}} \begin{cases} G_{txdataz
 \end{align}
 
 where $T_\mathbf{i},T_\mathbf{d}$ means the series of bytes of the transaction's associated data and initialisation EVM-code, depending on whether the transaction is for contract-creation or message-call. $G_\text{txcreate}$ is added if the transaction is contract-creating, but not if a result of EVM-code. $G$ is fully defined in Appendix \ref{app:fees}.
-
-%todo Explain g_d reason?
 
 The up-front cost $v_0$ is calculated as:
 \begin{equation}
@@ -592,7 +606,7 @@ The validity is determined as:
 \begin{array}[t]{rcl}
 S(T) & \neq & \varnothing \quad \wedge \\
 \boldsymbol{\sigma}[S(T)] & \neq & \varnothing \quad \wedge \\
-T_n & = & \boldsymbol{\sigma}[S(T)]_n \quad \wedge \\
+\linkdest{transaction_nonce}{}T_n & = & \boldsymbol{\sigma}[S(T)]_n \quad \wedge \\
 g_0 & \leqslant & T_g \quad \wedge \\
 v_0 & \leqslant & \boldsymbol{\sigma}[S(T)]_b \quad \wedge \\
 T_g & \leqslant & {B_H}_l - \ell(B_\mathbf{R})_u
@@ -610,9 +624,9 @@ We define the checkpoint state $\boldsymbol{\sigma}_0$:
 \boldsymbol{\sigma}_0[S(T)]_n & \equiv & \boldsymbol{\sigma}[S(T)]_n + 1
 \end{eqnarray}
 
-Evaluating $\boldsymbol{\sigma}_P$ from $\boldsymbol{\sigma}_0$ depends on the transaction type; either contract creation or message call; we define the tuple of post-execution provisional state $\boldsymbol{\sigma}_P$, remaining gas $g'$, substate $A$ and status code $s'$:
+Evaluating $\boldsymbol{\sigma}_P$ from $\boldsymbol{\sigma}_0$ depends on the transaction type; either contract creation or message call; we define the tuple of post-execution provisional state $\boldsymbol{\sigma}_P$, remaining gas $g'$, substate $A$ and status code $z$:
 \begin{equation}
-(\boldsymbol{\sigma}_P, g', A, s') \equiv \begin{cases}
+(\boldsymbol{\sigma}_P, g', A, z) \equiv \begin{cases}
 \Lambda_{4}(\boldsymbol{\sigma}_0, S(T), T_o, &\\ \quad\quad g, T_p, T_v, T_\mathbf{i}, 0, \top) & \text{if} \quad T_t = \varnothing \\
 \Theta_{4}(\boldsymbol{\sigma}_0, S(T), T_o, &\\ \quad\quad T_t, T_t, g, T_p, T_v, T_v, T_\mathbf{d}, 0, \top) & \text{otherwise}
 \end{cases}
@@ -648,11 +662,11 @@ The final state, $\boldsymbol{\sigma}'$, is reached after deleting all accounts 
 \linkdest{touched_A__t}{}\forall i \in A_\mathbf{t}: \boldsymbol{\sigma}'[i] & = & \varnothing \quad\text{if}\quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma}^*\kern -2pt, i)
 \end{eqnarray}
 
-\hypertarget{tx_total_gas_used_Upsilon_pow_g}{}\hypertarget{tx_logs_Upsilon_pow_l}{}\hypertarget{tx_status_Upsilon_pow_s}{}And finally, we specify $\Upsilon^g$, the total gas used in this transaction, $\Upsilon^\mathbf{l}$, the logs created by this transaction and $\Upsilon^{s}$, the status code of this transaction:
+\hypertarget{tx_total_gas_used_Upsilon_pow_g}{}\hypertarget{tx_logs_Upsilon_pow_l}{}\hypertarget{tx_status_Upsilon_pow_s}{}And finally, we specify $\Upsilon^g$, the total gas used in this transaction, $\Upsilon^\mathbf{l}$, the logs created by this transaction and $\Upsilon^z$, the status code of this transaction:
 \begin{eqnarray}
 \Upsilon^g(\boldsymbol{\sigma}, T) & \equiv & T_g - g' \\
 \Upsilon^\mathbf{l}(\boldsymbol{\sigma}, T) & \equiv & A_\mathbf{l} \\
-\Upsilon^s(\boldsymbol{\sigma}, T) & \equiv & s'
+\Upsilon^z(\boldsymbol{\sigma}, T) & \equiv & z
 \end{eqnarray}
 
 These are used to help define the transaction receipt, discussed later.
@@ -663,7 +677,7 @@ There are a number of intrinsic parameters used when creating an account: sender
 
 We define the creation function formally as the function $\Lambda$, which evaluates from these values, together with the state $\boldsymbol{\sigma}$ to the tuple containing the new state, remaining gas, accrued transaction substate and an error message $(\boldsymbol{\sigma}', g', A, \mathbf{o})$, as in section \ref{ch:transactions}:
 \begin{equation}
-(\boldsymbol{\sigma}', g', A, s', \mathbf{o}) \equiv \Lambda(\boldsymbol{\sigma}, s, o, g, p, v, \mathbf{i}, e, w)
+(\boldsymbol{\sigma}', g', A, z, \mathbf{o}) \equiv \Lambda(\boldsymbol{\sigma}, s, o, g, p, v, \mathbf{i}, e, w)
 \end{equation}
 
 The address of the new account is defined as being the rightmost 160 bits of the Keccak hash of the RLP encoding of the structure containing only the sender and the nonce. Thus we define the resultant address for the new account $a$:
@@ -701,7 +715,7 @@ Finally, the account is initialised through the execution of the initialising EV
 \begin{equation}
 (\boldsymbol{\sigma}^{**}, g^{**}, A, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}^*, g, I, \{s, a\}) \\
 \end{equation}
-where $I$ contains the parameters of the execution environment as defined in section \ref{ch:model}, that is:
+\pagebreak[1]where $I$ contains the parameters of the execution environment as defined in section \ref{ch:model}, that is:\pagebreak[1]
 \begin{eqnarray}
 I_a & \equiv & a \\
 I_o & \equiv & o \\
@@ -727,7 +741,7 @@ If there is not enough gas remaining to pay this, \ie $g^{**} < c$, then we also
 
 The gas remaining will be zero in any such exceptional condition, \ie if the creation was conducted as the reception of a transaction, then this doesn't affect payment of the intrinsic cost of contract creation; it is paid regardless. However, the value of the transaction is not transferred to the aborted contract's address when we are out-of-gas.
 
-If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persist. Thus formally, we may specify the resultant state, gas, substate and status code as $(\boldsymbol{\sigma}', g', A, s')$ where:
+If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persist. Thus formally, we may specify the resultant state, gas, substate and status code as $(\boldsymbol{\sigma}', g', A, z)$ where:
 
 \begin{align}
 \quad g' &\equiv \begin{cases}
@@ -741,7 +755,7 @@ g^{**} - c & \text{otherwise} \\
 \boldsymbol{\sigma}^{**} \quad \text{except:} & \\
 \quad\boldsymbol{\sigma}'[a]_c = \texttt{\small KEC}(\mathbf{o}) & \text{otherwise}
 \end{cases} \\
-\quad s' &\equiv \begin{cases}
+\quad z &\equiv \begin{cases}
 0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \lor g^{**} < c \\
 1 & \text{otherwise}
 \end{cases} \\
@@ -761,7 +775,7 @@ In the case of executing a message call, several parameters are required: sender
 
 Aside from evaluating to a new state and transaction substate, message calls also have an extra component---the output data denoted by the byte array $\mathbf{o}$. This is ignored when executing transactions, however message calls can be initiated due to VM-code execution and in this case this information is used.
 \begin{equation}
-(\boldsymbol{\sigma}', g', A, s', \mathbf{o}) \equiv \Theta(\boldsymbol{\sigma}, s, o, r, c, g, p, v, \tilde{v}, \mathbf{d}, e, w)
+(\boldsymbol{\sigma}', g', A, z, \mathbf{o}) \equiv \Theta(\boldsymbol{\sigma}, s, o, r, c, g, p, v, \tilde{v}, \mathbf{d}, e, w)
 \end{equation}
 Note that we need to differentiate between the value that is to be transferred, $v$, from the value apparent in the execution context, $\tilde{v}$, for the {\small DELEGATECALL} instruction.
 
@@ -809,7 +823,7 @@ g' & \equiv & \begin{cases}
 0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \ \wedge \ \mathbf{o} = \varnothing \\
 g^{**} & \text{otherwise}
 \end{cases} \\ \nonumber
-s' & \equiv & \begin{cases}
+z & \equiv & \begin{cases}
 0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
 1 & \text{otherwise}
 \end{cases} \\
@@ -941,7 +955,7 @@ w \equiv \begin{cases} I_\mathbf{b}[\boldsymbol{\mu}_{pc}] & \text{if} \quad \bo
 \end{equation}
 
 We also assume the fixed amounts of $\mathbf{\delta}$ and $\mathbf{\alpha}$, specifying the stack items removed and added, both subscriptable on the instruction and an instruction cost function $C$ evaluating to the full cost, in gas, of executing the given instruction.
-
+\hypertarget{Exceptional_Halting_function_Z}{}
 \subsubsection{Exceptional Halting}
 
 The exceptional halting function $Z$ is defined as:
@@ -1139,7 +1153,7 @@ With $\mathbf{d}$ being a dataset as specified in appendix \ref{app:ethash}.
 
 As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of $\Omega$, the block finalisation function and $\Upsilon$, the transaction-evaluation function, both now well-defined.
 
-As previously detailed, $\mathbf{R}[n]_{s'}$, $\mathbf{R}[n]_\mathbf{l}$ and $\mathbf{R}[n]_u$ are the $n$th corresponding status code, logs and cumulative gas used after each transaction ($\mathbf{R}[n]_b$, the fourth component in the tuple, has already been defined in terms of the logs). We also define the $n$th state $\boldsymbol{\sigma}[n]$, which is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
+As previously detailed, $\mathbf{R}[n]_z$, $\mathbf{R}[n]_\mathbf{l}$ and $\mathbf{R}[n]_u$ are the $n$th corresponding status code, logs and cumulative gas used after each transaction ($\mathbf{R}[n]_b$, the fourth component in the tuple, has already been defined in terms of the logs). We also define the $n$th state $\boldsymbol{\sigma}[n]$, which is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
 \begin{equation}
 \boldsymbol{\sigma}[n] = \begin{cases} \Gamma(B) & \text{if} \quad n < 0 \\ \Upsilon(\boldsymbol{\sigma}[n - 1], B_\mathbf{T}[n]) & \text{otherwise} \end{cases}
 \end{equation}
@@ -1159,10 +1173,10 @@ For $\mathbf{R}[n]_\mathbf{l}$, we utilise the $\Upsilon^\mathbf{l}$ function th
 \Upsilon^\mathbf{l}(\boldsymbol{\sigma}[n - 1], B_\mathbf{T}[n])
 \end{equation}
 
-We define $\mathbf{R}[n]_{s'}$ in a similar manner.
+We define $\mathbf{R}[n]_z$ in a similar manner.
 \begin{equation}
-\mathbf{R}[n]_{s'} =
-\Upsilon^{s}(\boldsymbol{\sigma}[n - 1], B_\mathbf{T}[n])
+\mathbf{R}[n]_z =
+\Upsilon^z(\boldsymbol{\sigma}[n - 1], B_\mathbf{T}[n])
 \end{equation}
 
 Finally, we define $\Pi$ as the new state given the block reward function $\Omega$ applied to the final transaction's resultant state, $\ell(\boldsymbol{\sigma})$:
@@ -1244,7 +1258,7 @@ The source of this paper is maintained at \url{https://github.com/ethereum/yello
 
 \appendix
 
-\section{Terminology}
+\section{Terminology} \label{ch:Terminology}
 
 \begin{description}
 \item[External Actor] A person or other entity able to interface to an Ethereum node, but external to the world of Ethereum. It can interact with Ethereum through depositing signed Transactions and inspecting the blockchain and associated state. Has one (or more) intrinsic Accounts.
@@ -1284,7 +1298,7 @@ The source of this paper is maintained at \url{https://github.com/ethereum/yello
 \item[LLL] The Lisp-like Low-level Language, a human-writable language used for authoring simple contracts and general low-level language toolkit for trans-compiling to.
 
 \end{description}
-
+\hypertarget{rlp}{}
 \section{Recursive Length Prefix}\label{app:rlp}
 This is a serialisation method for encoding arbitrarily structured binary data (byte arrays).
 
@@ -1309,7 +1323,7 @@ If the value to be serialised is a byte-array, the RLP serialisation takes one o
 \item If the byte-array contains fewer than 56 bytes, then the output is equal to the input prefixed by the byte equal to the length of the byte array plus 128.
 \item Otherwise, the output is equal to the input prefixed by the minimal-length byte-array which when interpreted as a big-endian integer is equal to the length of the input byte array, which is itself prefixed by the number of bytes required to faithfully encode this length value plus 183.
 \end{itemize}
-
+\hypertarget{R b}{}
 Formally, we define $R_b$:
 \begin{eqnarray}
 R_b(\mathbf{x}) & \equiv & \begin{cases}
@@ -1364,7 +1378,7 @@ f(t) & \equiv & \begin{cases} 2 & \text{if} \quad t \neq 0 \\ 0 & \text{otherwis
 \end{eqnarray}
 
 Thus the high nibble of the first byte contains two flags; the lowest bit encoding the oddness of the length and the second-lowest encoding the flag $t$. The low nibble of the first byte is zero in the case of an even number of nibbles and the first nibble in the case of an odd number. All remaining nibbles (now an even number) fit properly into the remaining bytes.
-
+\hypertarget{trie}{}
 \section{Modified Merkle Patricia Tree}\label{app:trie}
 The modified Merkle Patricia tree (trie) provides a persistent data structure to map between arbitrary-length binary data (byte arrays). It is defined in terms of a mutable data structure to map between 256-bit binary fragments and arbitrary-length binary data, typically implemented as a database. The core of the trie, and its sole requirement in terms of the protocol specification is to provide a single value that identifies a given set of key-value pairs, which may be either a 32 byte sequence or the empty byte sequence. It is left as an implementation consideration to store and maintain the structure of the trie in a manner that allows effective and efficient realisation of the protocol.
 
@@ -1646,7 +1660,7 @@ We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARECOVE
 \mathtt{\small ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64}
 \end{eqnarray}
 
-Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer in the aforementioned range). It is assumed that $v$ is either the `recovery identifier' or `chain identifier doubled plus 35 or 36'. The recovery identifier is a 1 byte value specifying the parity and finiteness of the coordinates of the curve point for which $r$ is the x-value; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid. The value 27 represents an even $y$ value and 28 represents an odd $y$ value.
+Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer in the \hypertarget{v}{}aforementioned range). It is assumed that $v$ is either the `recovery identifier' or `chain identifier doubled plus 35 or 36'. The recovery identifier is a 1 byte value specifying the parity and finiteness of the coordinates of the curve point for which $r$ is the x-value; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid. The value 27 represents an even $y$ value and 28 represents an odd $y$ value.
 
 \newcommand{\slimit}{\ensuremath{\text{s-limit}}}
 
@@ -2201,7 +2215,7 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& $A' \equiv A \Cup A^+$ which abbreviates: $A'_\mathbf{s} \equiv A_\mathbf{s} \cup A^+_\mathbf{s} \quad \wedge \quad A'_\mathbf{l} \equiv A_\mathbf{l} \cdot A^+_\mathbf{l} \quad \wedge \quad A'_\mathbf{t} \equiv A_\mathbf{t} \cup A^+_\mathbf{t}$ \\
 &&&& $ \wedge \quad A'_\mathbf{r} \equiv A_\mathbf{r} + A^+_\mathbf{r}$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
-&&&& where $x=0$ if the code execution for this operation failed due to an exceptional halting\\
+&&&& where $x=0$ if the code execution for this operation failed due to an \hyperlink{Exceptional_Halting_function_Z}{exceptional halting}\\
 &&&& (or for a \text{\small REVERT}) $\boldsymbol{\sigma}' = \varnothing$, or $I_e = 1024$ \\
 &&&& (the maximum call depth limit is reached) or $\boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\sigma}[I_a]_b$ (balance of the caller is too \\
 &&&& low to fulfil the value transfer); and otherwise $x=A(I_a, \boldsymbol{\sigma}[I_a]_n)$, the address of the newly \\
@@ -2220,7 +2234,7 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
 &&&& $A' \equiv A \Cup A^+$ \\
 &&&& $t \equiv \boldsymbol{\mu}_\mathbf{s}[1] \mod 2^{160}$ \\
-&&&& where $x=0$ if the code execution for this operation failed due to an exceptional halting \\
+&&&& where $x=0$ if the code execution for this operation failed due to an \hyperlink{Exceptional_Halting_function_Z}{exceptional halting} \\
 &&&& (or for a \text{\small REVERT}) $\boldsymbol{\sigma}' = \varnothing$ or if \\
 &&&& $\boldsymbol{\mu}_\mathbf{s}[2] > \boldsymbol{\sigma}[I_a]_b$ (not enough funds) or $I_e = 1024$ (call depth limit reached); $x=1$ \\
 &&&& otherwise. \\
@@ -2279,11 +2293,10 @@ G_{newaccount} & \text{if} \quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma}, \bolds
 &&&& The deeper argument $\boldsymbol{\mu}_\mathbf{s}[3]$, $\boldsymbol{\mu}_\mathbf{s}[4]$, $\boldsymbol{\mu}_\mathbf{s}[5]$ and $\boldsymbol{\mu}_\mathbf{s}[6]$ are respectively replaced with \\
 &&&& $\boldsymbol{\mu}_\mathbf{s}[2]$, $\boldsymbol{\mu}_\mathbf{s}[3]$, $\boldsymbol{\mu}_\mathbf{s}[4]$ and $\boldsymbol{\mu}_\mathbf{s}[5]$. \\
 &&&& The last argument of $\Theta$ is $\bot$. \\
-0xfd & {\small REVERT} & 2 & 0 & Halt execution reverting state changes
-                 but returning data and gas. \\
-0xfd & {\small REVERT} & 2 & 0 & Halt execution reverting state changes but returning data and gas. \\
+\midrule
+0xfd & {\small REVERT} & 2 & 0 & Halt execution reverting state changes but returning data and remaining gas. \\
 &&&& The effect of this operation is described in (\ref{eq:X-def}). \\
-&&&& For the gas calculation, we need to define the memory usage: \\
+&&&& For the gas calculation, we use the memory expansion function, \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[1])$ \\
 \midrule
 0xfe & {\small INVALID} & $\varnothing$ & $\varnothing$ & Designated invalid instruction. \\
@@ -2309,9 +2322,7 @@ G_{newaccount} & \text{if} \quad n \\
 \bottomrule
 \end{tabular*}
 
-%\section{Low-level Lisp-like Language}\label{app:lll}
-%The Low-level Lisp-like Language is a language created in order to efficiently author low-level programs (contracts) without having to resort to EVM-Assembly.
-
+\hypertarget{GenesisBlock}{}
 \section{Genesis Block}\label{app:genesis}
 
 The genesis block is 15 items, and is specified thus:
@@ -2444,7 +2455,7 @@ E_\text{\tiny FNV}\big(\mathbf{m}, \mathbf{c}[E_\text{\tiny FNV}(i \oplus p, \ma
 \end{equation}
 
 \subsection{Proof-of-work function}
-Essentially, we maintain a ``mix" $J_{mixbytes}$ bytes wide, and repeatedly sequentially fetch $J_{mixbytes}$ bytes from the full dataset and use the $E_\text{\tiny FNV}$ function to combine it with the mix. $J_{mixbytes}$ bytes of sequential access are used so that each round of the algorithm always fetches a full page from RAM, minimizing translation lookaside buffer misses which ASICs would theoretically be able to avoid.
+Essentially, we maintain a ``mix'' $J_{mixbytes}$ bytes wide, and repeatedly sequentially fetch $J_{mixbytes}$ bytes from the full dataset and use the $E_\text{\tiny FNV}$ function to combine it with the mix. $J_{mixbytes}$ bytes of sequential access are used so that each round of the algorithm always fetches a full page from RAM, minimizing translation lookaside buffer misses which ASICs would theoretically be able to avoid.
 
 If the output of this algorithm is below the desired target, then the nonce is valid. Note that the extra application of \texttt{KEC} at the end ensures that there exists an intermediate nonce which can be provided to prove that at least a small amount of work was done; this quick outer PoW verification can be used for anti-DDoS purposes. It also serves to provide statistical assurance that the result is an unbiased, 256 bit number.
 
@@ -2497,8 +2508,17 @@ E_{compress}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(\mathbf{m}
 
 \section{Anomalies on the Main Network}
 
-\subsection{Deletion of an Account Dispite Out-of-gas}
+\subsection{Deletion of an Account Despite Out-of-gas}
 
-At block 2675119, in the transaction \texttt{0xcf416c536ec1a19ed1fb89e4ec7ffb3cf73aa413b3aa9b77d60e4fd81a4296ba}, an account at address 0x03 was called and an out-of-gas occurred during the call. Against the equation (\ref{eq:pre}), this added 0x03 in the set of touched addresses, and this transaction turned $\boldsymbol{\sigma}[0x03]$ into $\varnothing$.
+At block 2675119, in the transaction \seqsplit{0xcf416c536ec1a19ed1fb89e\\4ec7ffb3cf73aa413b3aa9b77d60e4fd81a4296ba}, an account at address 0x03 was called and an out-of-gas occurred during the call. Against the equation (\ref{eq:pre}), this added 0x03 in the set of touched addresses, and this transaction turned $\boldsymbol{\sigma}[0x03]$ into $\varnothing$.
+
+\section{List of mathematical symbols}\label{app:symbols}
+\begin{tabu*}{X[l]X[c]X} \savetabu{col3}
+\toprule
+Symbol & Latex Command & Description \hypertarget{bigvee}{}\\
+\midrule
+$\bigvee$ & \verb|\bigvee| & This is the least upper bound, supremum, or join of all elements operated on. Thus it is the greatest element of such elements \cite{Davey2002_zbMATH01748069}.\\
+\bottomrule
+\end{tabu*}
 
 \end{document}
