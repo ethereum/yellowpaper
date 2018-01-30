@@ -217,12 +217,12 @@ The account state comprises the following four fields:
 
 Since I typically wish to refer not to the trie's root hash but to the underlying set of key/value pairs stored within, I define a convenient equivalence:
 \begin{equation}
-\texttt{\small TRIE}\big(L_{\mathrm{I}}^*(\boldsymbol{\sigma}[a]_\mathbf{s})\big) \equiv \boldsymbol{\sigma}[a]_{\mathrm{s}}
+\texttt{\small TRIE}\big(L_{I}^*(\boldsymbol{\sigma}[a]_\mathbf{s})\big) \equiv \boldsymbol{\sigma}[a]_{\mathrm{s}}
 \end{equation}
 
-The collapse function for the set of key/value pairs in the trie, $L_{\mathrm{I}}^*$, is defined as the element-wise transformation of the base function $L_{\mathrm{I}}$, given as:
+The collapse function for the set of key/value pairs in the trie, $L_{I}^*$, is defined as the element-wise transformation of the base function $L_{I}$, given as:
 \begin{equation}
-L_{\mathrm{I}}\big( (k, v) \big) \equiv \big(\texttt{\small KEC}(k), \texttt{\small RLP}(v)\big)
+L_{I}\big( (k, v) \big) \equiv \big(\texttt{\small KEC}(k), \texttt{\small RLP}(v)\big)
 \end{equation}
 
 where:
@@ -234,16 +234,16 @@ It shall be understood that $\boldsymbol{\sigma}[a]_\mathbf{s}$ is not a `physic
 
 If the \textbf{codeHash} field is the Keccak-256 hash of the empty string, i.e. $\boldsymbol{\sigma}[a]_{\mathrm{c}} = \texttt{\small KEC}\big(()\big)$, then the node represents a simple account, sometimes referred to as a ``non-contract'' account.
 
-Thus we may define a world-state collapse function $L_{\mathrm{S}}$:
+Thus we may define a world-state collapse function $L_{S}$:
 \begin{equation}
-L_{\mathrm{S}}(\boldsymbol{\sigma}) \equiv \{ p(a): \boldsymbol{\sigma}[a] \neq \varnothing \}
+L_{S}(\boldsymbol{\sigma}) \equiv \{ p(a): \boldsymbol{\sigma}[a] \neq \varnothing \}
 \end{equation}
 where
 \begin{equation}
 p(a) \equiv  \big(\texttt{\small KEC}(a), \texttt{\small RLP}\big( (\boldsymbol{\sigma}[a]_{\mathrm{n}}, \boldsymbol{\sigma}[a]_{\mathrm{b}}, \boldsymbol{\sigma}[a]_{\mathrm{s}}, \boldsymbol{\sigma}[a]_{\mathrm{c}}) \big) \big)
 \end{equation}
 
-This function, $L_{\mathrm{S}}$, is used alongside the trie function to provide a short identity (hash) of the world state. We assume:
+This function, $L_{S}$, is used alongside the trie function to provide a short identity (hash) of the world state. We assume:
 \begin{equation}
 \forall a: \boldsymbol{\sigma}[a] = \varnothing \; \vee \; (a \in \mathbb{B}_{20} \; \wedge \; v(\boldsymbol{\sigma}[a]))
 \end{equation}
@@ -293,7 +293,7 @@ In contrast, a message call transaction contains:
 Appendix \ref{app:signing} specifies the function, $S$, which maps transactions to the sender, and happens through the ECDSA of the SECP-256k1 curve, using the hash of the transaction (excepting the latter three signature fields) as the datum to sign. For the present we simply assert that the sender of a given transaction $T$ can be represented with $S(T)$.
 
 \begin{equation}
-L_{\mathrm{T}}(T) \equiv \begin{cases}
+L_{T}(T) \equiv \begin{cases}
 (T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, T_\mathbf{i}, T_{\mathrm{w}}, T_{\mathrm{r}}, T_{\mathrm{s}}) & \text{if} \; T_{\mathrm{t}} = \varnothing\\
 (T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, T_\mathbf{d}, T_{\mathrm{w}}, T_{\mathrm{r}}, T_{\mathrm{s}}) & \text{otherwise}
 \end{cases}
@@ -344,7 +344,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 
 The other two components in the block are simply a list of ommer block headers (of the same format as above) and a series of the transactions. Formally, we can refer to a block $B$:
 \begin{equation}
-B \equiv (B_{\mathrm{H}}, B_\mathbf{T}, B_\mathbf{U})
+B \equiv (B_{H}, B_\mathbf{T}, B_\mathbf{U})
 \end{equation}
 
 \subsubsection{Transaction Receipt}
@@ -357,9 +357,9 @@ The transaction receipt is a tuple of four items comprising the cumulative gas u
 R \equiv (R_{\mathrm{u}}, R_{\mathrm{b}}, R_\mathbf{l}, R_{\mathrm{z}})
 \end{equation}
 
-The function $L_{\mathrm{R}}$ trivially prepares a transaction receipt for being transformed into an RLP-serialised byte array:
+The function $L_{R}$ trivially prepares a transaction receipt for being transformed into an RLP-serialised byte array:
 \begin{equation}
-L_{\mathrm{R}}(R) \equiv (0 \in \mathbb{B}_{256}, R_{\mathrm{u}}, R_{\mathrm{b}}, R_\mathbf{l})
+L_{R}(R) \equiv (0 \in \mathbb{B}_{256}, R_{\mathrm{u}}, R_{\mathrm{b}}, R_\mathbf{l})
 \end{equation}
 where $0 \in \mathbb{B}_{256}$ replaces the pre-transaction state root that existed in previous versions of the protocol.
 
@@ -373,7 +373,7 @@ We assert $R_{\mathrm{u}}$, the cumulative gas used is a positive integer and th
 R_{\mathrm{u}} \in \mathbb{P} \quad \wedge \quad R_{\mathrm{b}} \in \mathbb{B}_{256}
 \end{equation}
 
-%Notably $B_\mathbf{T}$ does not get serialised into the block by the block preparation function $L_{\mathrm{B}}$; it is merely a convenience equivalence.
+%Notably $B_\mathbf{T}$ does not get serialised into the block by the block preparation function $L_{B}$; it is merely a convenience equivalence.
 
 The log entries, $R_\mathbf{l}$, is a series of log entries, termed, for example, $(O_0, O_1, ...)$. A log entry, $O$, is a tuple of a logger's address, $O_{\mathrm{a}}$, a series of 32-bytes log topics, $O_\mathbf{t}$ and some number of bytes of data, $O_\mathbf{d}$:
 \begin{equation}
@@ -403,10 +403,10 @@ where $\mathcal{B}$ is the bit reference function such that $\mathcal{B}_{\mathr
 We can assert a block's validity if and only if it satisfies several conditions: it must be internally consistent with the ommer and transaction block hashes and the given transactions $B_\mathbf{T}$ (as specified in sec \ref{ch:finalisation}), when executed in order on the base state $\boldsymbol{\sigma}$ (derived from the final state of the parent block), result in a new state of the identity $H_{\mathrm{r}}$:
 \begin{equation}
 \begin{array}[t]{lclc}
-H_{\mathrm{r}} &\equiv& \mathtt{\small TRIE}(L_{\mathrm{S}}(\Pi(\boldsymbol{\sigma}, B))) & \wedge \\
-H_{\mathrm{o}} &\equiv& \mathtt{\small KEC}(\mathtt{\small RLP}(L_{\mathrm{H}}^*(B_\mathbf{U}))) & \wedge \\
-H_{\mathrm{t}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert, i \in \mathbb{P}: p(i, L_{\mathrm{T}}(B_\mathbf{T}[i]))\}) & \wedge \\
-H_{\mathrm{e}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{R} \rVert, i \in \mathbb{P}: p(i, L_{\mathrm{R}}(B_\mathbf{R}[i]))\}) & \wedge \\
+H_{\mathrm{r}} &\equiv& \mathtt{\small TRIE}(L_{S}(\Pi(\boldsymbol{\sigma}, B))) & \wedge \\
+H_{\mathrm{o}} &\equiv& \mathtt{\small KEC}(\mathtt{\small RLP}(L_{H}^*(B_\mathbf{U}))) & \wedge \\
+H_{\mathrm{t}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert, i \in \mathbb{P}: p(i, L_{T}(B_\mathbf{T}[i]))\}) & \wedge \\
+H_{\mathrm{e}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{R} \rVert, i \in \mathbb{P}: p(i, L_{R}(B_\mathbf{R}[i]))\}) & \wedge \\
 H_{\mathrm{b}} &\equiv& \bigvee_{\mathbf{r} \in B_\mathbf{R}} \big( \mathbf{r}_{\mathrm{b}} \big)
 \end{array}
 \end{equation}
@@ -418,22 +418,22 @@ p(k, v) \equiv \big( \mathtt{\small RLP}(k), \mathtt{\small RLP}(v) \big)
 
 Furthermore:
 \begin{equation}
-\mathtt{\small TRIE}(L_{\mathrm{S}}(\boldsymbol{\sigma})) = {P(B_H)_H}_{\mathrm{r}}
+\mathtt{\small TRIE}(L_{S}(\boldsymbol{\sigma})) = {P(B_H)_H}_{\mathrm{r}}
 \end{equation}
 
-Thus $\texttt{\small TRIE}(L_{\mathrm{S}}(\boldsymbol{\sigma}))$ is the root node hash of the Merkle Patricia tree structure containing the key-value pairs of the state $\boldsymbol{\sigma}$ with values encoded using RLP, and $P(B_{\mathrm{H}})$ is the parent block of $B$, defined directly.
+Thus $\texttt{\small TRIE}(L_{S}(\boldsymbol{\sigma}))$ is the root node hash of the Merkle Patricia tree structure containing the key-value pairs of the state $\boldsymbol{\sigma}$ with values encoded using RLP, and $P(B_{H})$ is the parent block of $B$, defined directly.
 
 The values stemming from the computation of transactions, specifically the transaction receipts, $B_\mathbf{R}$, and that defined through the transactions state-accumulation function, $\Pi$, are formalised later in section \ref{sec:statenoncevalidation}.
 
 \subsubsection{Serialisation}
 
-The function $L_{\mathrm{B}}$ and $L_{\mathrm{H}}$ are the preparation functions for a block and block header respectively. Much like the transaction receipt preparation function $L_{\mathrm{R}}$, we assert the types and order of the structure for when the RLP transformation is required:
+The function $L_{B}$ and $L_{H}$ are the preparation functions for a block and block header respectively. Much like the transaction receipt preparation function $L_{R}$, we assert the types and order of the structure for when the RLP transformation is required:
 \begin{eqnarray}
-\quad L_{\mathrm{H}}(H) & \equiv & (\begin{array}[t]{l}H_{\mathrm{p}}, H_{\mathrm{o}}, H_{\mathrm{c}}, H_{\mathrm{r}}, H_{\mathrm{t}}, H_{\mathrm{e}}, H_{\mathrm{b}}, H_{\mathrm{d}},\\ H_{\mathrm{i}}, H_{\mathrm{l}}, H_{\mathrm{g}}, H_{\mathrm{s}}, H_{\mathrm{x}}, H_{\mathrm{m}}, H_{\mathrm{n}} \; )\end{array} \\
-\quad L_{\mathrm{B}}(B) & \equiv & \big( L_{\mathrm{H}}(B_{\mathrm{H}}), L_{\mathrm{T}}^*(B_\mathbf{T}), L_{\mathrm{H}}^*(B_\mathbf{U}) \big)
+\quad L_{H}(H) & \equiv & (\begin{array}[t]{l}H_{\mathrm{p}}, H_{\mathrm{o}}, H_{\mathrm{c}}, H_{\mathrm{r}}, H_{\mathrm{t}}, H_{\mathrm{e}}, H_{\mathrm{b}}, H_{\mathrm{d}},\\ H_{\mathrm{i}}, H_{\mathrm{l}}, H_{\mathrm{g}}, H_{\mathrm{s}}, H_{\mathrm{x}}, H_{\mathrm{m}}, H_{\mathrm{n}} \; )\end{array} \\
+\quad L_{B}(B) & \equiv & \big( L_{H}(B_{H}), L_{T}^*(B_\mathbf{T}), L_{H}^*(B_\mathbf{U}) \big)
 \end{eqnarray}
 
-With $L_{\mathrm{T}}^*$ and $L_{\mathrm{H}}^*$ being element-wise sequence transformations, thus:
+With $L_{T}^*$ and $L_{H}^*$ being element-wise sequence transformations, thus:
 \begin{equation}
 f^*\big( (x_0, x_1, ...) \big) \equiv \big( f(x_0), f(x_1), ... \big) \quad \text{for any function} \; f
 \end{equation}
@@ -458,14 +458,14 @@ We now have a rigorous specification for the construction of a formal block stru
 
 \subsubsection{Block Header Validity}
 
-We define $P(B_{\mathrm{H}})$ to be the parent block of $B$, formally:
+We define $P(B_{H})$ to be the parent block of $B$, formally:
 \begin{equation}
-P(H) \equiv B': \mathtt{\tiny KEC}(\mathtt{\tiny RLP}(B'_{\mathrm{H}})) = H_{\mathrm{p}}
+P(H) \equiv B': \mathtt{\tiny KEC}(\mathtt{\tiny RLP}(B'_{H})) = H_{\mathrm{p}}
 \end{equation}
 
 The block number is the parent's block number incremented by one:
 \begin{equation}
-H_{\mathrm{i}} \equiv {{P(H)_{\mathrm{H}}}_{\mathrm{i}}} + 1
+H_{\mathrm{i}} \equiv {{P(H)_{H}}_{\mathrm{i}}} + 1
 \end{equation}
 
 \newcommand{\mindifficulty}{D_0}
@@ -477,7 +477,7 @@ The canonical difficulty of a block of header $H$ is defined as $D(H)$:
 \begin{equation}
 D(H) \equiv \begin{dcases}
 \mindifficulty & \text{if} \quad H_{\mathrm{i}} = 0\\
-\text{max}\!\left(\mindifficulty, {P(H)_{\mathrm{H}}}_{\mathrm{d}} + \diffadjustment\times\homesteadmod + \expdiffsymb \right) & \text{otherwise}\\
+\text{max}\!\left(\mindifficulty, {P(H)_{H}}_{\mathrm{d}} + \diffadjustment\times\homesteadmod + \expdiffsymb \right) & \text{otherwise}\\
 \end{dcases}
 \end{equation}
 where:
@@ -485,10 +485,10 @@ where:
 \mindifficulty \equiv 131072
 \end{equation}
 \begin{equation}
-\diffadjustment \equiv \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{d}}}{2048}\right\rfloor
+\diffadjustment \equiv \left\lfloor\frac{{P(H)_{H}}_{\mathrm{d}}}{2048}\right\rfloor
 \end{equation}
 \begin{equation}
-\homesteadmod \equiv \text{max}\left( x - \left\lfloor\frac{H_{\mathrm{s}} - {P(H)_{\mathrm{H}}}_{\mathrm{s}}}{9}\right\rfloor, -99 \right)
+\homesteadmod \equiv \text{max}\left( x - \left\lfloor\frac{H_{\mathrm{s}} - {P(H)_{H}}_{\mathrm{s}}}{9}\right\rfloor, -99 \right)
 \end{equation}
 \begin{equation*}
 x \equiv \begin{cases}
@@ -505,14 +505,14 @@ Note that $\mindifficulty$ is the difficulty of the genesis block. The \textit{H
 
 The canonical gas limit $H_{\mathrm{l}}$ of a block of header $H$ must fulfil the relation:
 \begin{eqnarray}
-& & H_{\mathrm{l}} < {P(H)_{\mathrm{H}}}_{\mathrm{l}} + \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{l}}}{1024}\right\rfloor \quad \wedge \\
-& & H_{\mathrm{l}} > {P(H)_{\mathrm{H}}}_{\mathrm{l}} - \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{l}}}{1024}\right\rfloor \quad \wedge \\
+& & H_{\mathrm{l}} < {P(H)_{H}}_{\mathrm{l}} + \left\lfloor\frac{{P(H)_{H}}_{\mathrm{l}}}{1024}\right\rfloor \quad \wedge \\
+& & H_{\mathrm{l}} > {P(H)_{H}}_{\mathrm{l}} - \left\lfloor\frac{{P(H)_{H}}_{\mathrm{l}}}{1024}\right\rfloor \quad \wedge \\
 & & H_{\mathrm{l}} \geqslant 5000
 \end{eqnarray}
 
 $H_{\mathrm{s}}$ is the timestamp of block $H$ and must fulfil the relation:
 \begin{equation}
-H_{\mathrm{s}} > {P(H)_{\mathrm{H}}}_{\mathrm{s}}
+H_{\mathrm{s}} > {P(H)_{H}}_{\mathrm{s}}
 \end{equation}
 
 This mechanism enforces a homeostasis in terms of the time between blocks; a smaller period between the last two blocks results in an increase in the difficulty level and thus additional computation required, lengthening the likely next period. Conversely, if the period is too large, the difficulty, and expected time to the next block, is reduced.
@@ -532,11 +532,11 @@ Thus we are able to define the block header validity function $V(H)$:
 V(H) & \equiv &  n \leqslant \frac{2^{256}}{H_{\mathrm{d}}} \wedge m = H_{\mathrm{m}} \quad \wedge \\
 & & H_{\mathrm{d}} = D(H) \quad \wedge \\
 & & H_{\mathrm{g}} \le H_{\mathrm{l}}  \quad \wedge \\
-& & H_{\mathrm{l}} < {P(H)_{\mathrm{H}}}_{\mathrm{l}} + \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{l}}}{1024}\right\rfloor  \quad \wedge \\
-& & H_{\mathrm{l}} > {P(H)_{\mathrm{H}}}_{\mathrm{l}} - \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{l}}}{1024}\right\rfloor  \quad \wedge \\
+& & H_{\mathrm{l}} < {P(H)_{H}}_{\mathrm{l}} + \left\lfloor\frac{{P(H)_{H}}_{\mathrm{l}}}{1024}\right\rfloor  \quad \wedge \\
+& & H_{\mathrm{l}} > {P(H)_{H}}_{\mathrm{l}} - \left\lfloor\frac{{P(H)_{H}}_{\mathrm{l}}}{1024}\right\rfloor  \quad \wedge \\
 & & H_{\mathrm{l}} \geqslant 5000  \quad \wedge \\
-& & H_{\mathrm{s}} > {P(H)_{\mathrm{H}}}_{\mathrm{s}} \quad \wedge \\
-& & H_{\mathrm{i}} = {P(H)_{\mathrm{H}}}_{\mathrm{i}} +1 \quad \wedge \\
+& & H_{\mathrm{s}} > {P(H)_{H}}_{\mathrm{s}} \quad \wedge \\
+& & H_{\mathrm{i}} = {P(H)_{H}}_{\mathrm{i}} +1 \quad \wedge \\
 & & \lVert H_{\mathrm{x}} \rVert \le 32
 \end{eqnarray}
 where $(n, m) = \mathtt{PoW}(H_{\hcancel{n}}, H_{\mathrm{n}}, \mathbf{d})$
@@ -608,11 +608,11 @@ S(T) & \neq & \varnothing \quad \wedge \\
 T_{\mathrm{n}} & = & \boldsymbol{\sigma}[S(T)]_{\mathrm{n}} \quad \wedge \\
 g_0 & \leqslant & T_{\mathrm{g}} \quad \wedge \\
 v_0 & \leqslant & \boldsymbol{\sigma}[S(T)]_{\mathrm{b}} \quad \wedge \\
-T_{\mathrm{g}} & \leqslant & {B_{\mathrm{H}}}_{\mathrm{l}} - \ell(B_\mathbf{R})_{\mathrm{u}}
+T_{\mathrm{g}} & \leqslant & {B_{H}}_{\mathrm{l}} - \ell(B_\mathbf{R})_{\mathrm{u}}
 \end{array}
 \end{equation}
 
-Note the final condition; the sum of the transaction's gas limit, $T_{\mathrm{g}}$, and the gas utilised in this block prior, given by $\ell(B_\mathbf{R})_{\mathrm{u}}$, must be no greater than the block's \textbf{gasLimit}, ${B_{\mathrm{H}}}_{\mathrm{l}}$.
+Note the final condition; the sum of the transaction's gas limit, $T_{\mathrm{g}}$, and the gas utilised in this block prior, given by $\ell(B_\mathbf{R})_{\mathrm{u}}$, must be no greater than the block's \textbf{gasLimit}, ${B_{H}}_{\mathrm{l}}$.
 
 The execution of a valid transaction begins with an irrevocable change made to the state: the nonce of the account of the sender, $S(T)$, is incremented by one and the balance is reduced by part of the up-front cost, $T_{\mathrm{gT}}_{\mathrm{p}}$. The gas available for the proceeding computation, $g$, is defined as $T_{\mathrm{g}} - g_0$. The computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
 
@@ -623,9 +623,9 @@ We define the checkpoint state $\boldsymbol{\sigma}_0$:
 \boldsymbol{\sigma}_0[S(T)]_{\mathrm{n}} & \equiv & \boldsymbol{\sigma}[S(T)]_{\mathrm{n}} + 1
 \end{eqnarray}
 
-Evaluating $\boldsymbol{\sigma}_{\mathrm{P}}$ from $\boldsymbol{\sigma}_0$ depends on the transaction type; either contract creation or message call; we define the tuple of post-execution provisional state $\boldsymbol{\sigma}_{\mathrm{P}}$, remaining gas $g'$, substate $A$ and status code $z$:
+Evaluating $\boldsymbol{\sigma}_{P}$ from $\boldsymbol{\sigma}_0$ depends on the transaction type; either contract creation or message call; we define the tuple of post-execution provisional state $\boldsymbol{\sigma}_{P}$, remaining gas $g'$, substate $A$ and status code $z$:
 \begin{equation}
-(\boldsymbol{\sigma}_{\mathrm{P}}, g', A, z) \equiv \begin{cases}
+(\boldsymbol{\sigma}_{P}, g', A, z) \equiv \begin{cases}
 \Lambda_{4}(\boldsymbol{\sigma}_0, S(T), T_{\mathrm{o}}, &\\ \quad\quad g, T_{\mathrm{p}}, T_{\mathrm{v}}, T_\mathbf{i}, 0, \top) & \text{if} \quad T_{\mathrm{t}} = \varnothing \\
 \Theta_{4}(\boldsymbol{\sigma}_0, S(T), T_{\mathrm{o}}, &\\ \quad\quad T_{\mathrm{t}}, T_{\mathrm{t}}, g, T_{\mathrm{p}}, T_{\mathrm{v}}, T_{\mathrm{v}}, T_\mathbf{d}, 0, \top) & \text{otherwise}
 \end{cases}
@@ -646,12 +646,12 @@ g^* \equiv g' + \min \{ \Big\lfloor \dfrac{T_{\mathrm{g}} - g'}{2} \Big\rfloor, 
 
 The total refundable amount is the legitimately remaining gas $g'$, added to $A_{\mathrm{r}}$, with the latter component being capped up to a maximum of half (rounded down) of the total amount used $T_{\mathrm{g}} - g'$.
 
-The Ether for the gas is given to the miner, whose address is specified as the beneficiary of the present block $B$. So we define the pre-final state $\boldsymbol{\sigma}^*$ in terms of the provisional state $\boldsymbol{\sigma}_{\mathrm{P}}$:
+The Ether for the gas is given to the miner, whose address is specified as the beneficiary of the present block $B$. So we define the pre-final state $\boldsymbol{\sigma}^*$ in terms of the provisional state $\boldsymbol{\sigma}_{P}$:
 \begin{eqnarray}
-\boldsymbol{\sigma}^* & \equiv & \boldsymbol{\sigma}_{\mathrm{P}} \quad \text{except} \\
-\boldsymbol{\sigma}^*[S(T)]_{\mathrm{b}} & \equiv & \boldsymbol{\sigma}_{\mathrm{P}}[S(T)]_{\mathrm{b}} + g^* T_{\mathrm{p}} \\
-\boldsymbol{\sigma}^*[m]_{\mathrm{b}} & \equiv & \boldsymbol{\sigma}_{\mathrm{P}}[m]_{\mathrm{b}} + (T_{\mathrm{g}} - g^*) T_{\mathrm{p}} \\
-m & \equiv & {B_{\mathrm{H}}}_{\mathrm{c}}
+\boldsymbol{\sigma}^* & \equiv & \boldsymbol{\sigma}_{P} \quad \text{except} \\
+\boldsymbol{\sigma}^*[S(T)]_{\mathrm{b}} & \equiv & \boldsymbol{\sigma}_{P}[S(T)]_{\mathrm{b}} + g^* T_{\mathrm{p}} \\
+\boldsymbol{\sigma}^*[m]_{\mathrm{b}} & \equiv & \boldsymbol{\sigma}_{P}[m]_{\mathrm{b}} + (T_{\mathrm{g}} - g^*) T_{\mathrm{p}} \\
+m & \equiv & {B_{H}}_{\mathrm{c}}
 \end{eqnarray}
 
 The final state, $\boldsymbol{\sigma}'$, is reached after deleting all accounts that either appear in the self-destruct list or are touched and empty:
@@ -727,7 +727,7 @@ I_{\mathrm{e}} & \equiv & e \\
 I_{\mathrm{w}} & \equiv & w
 \end{eqnarray}
 
-$I_\mathbf{d}$ evaluates to the empty tuple as there is no input data to this call. $I_{\mathrm{H}}$ has no special treatment and is determined from the blockchain.
+$I_\mathbf{d}$ evaluates to the empty tuple as there is no input data to this call. $I_{H}$ has no special treatment and is determined from the blockchain.
 
 Code execution depletes gas, and gas may not go below zero, thus execution may exit before the code has come to a natural halting state. In this (and several other) exceptional cases we say an out-of-gas (OOG) exception has occurred: The evaluated state is defined as being the empty set, $\varnothing$, and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation.
 
@@ -889,7 +889,7 @@ In addition to the system state $\boldsymbol{\sigma}$, and the remaining gas for
 \item $I_{\mathrm{s}}$, the address of the account which caused the code to be executing; if the execution agent is a transaction, this would be the transaction sender.
 \item $I_{\mathrm{v}}$, the value, in Wei, passed to this account as part of the same procedure as execution; if the execution agent is a transaction, this would be the transaction value.
 \item $I_\mathbf{b}$, the byte array that is the machine code to be executed.
-\item $I_{\mathrm{H}}$, the block header of the present block.
+\item $I_{H}$, the block header of the present block.
 \item $I_{\mathrm{e}}$, the depth of the present message-call or contract-creation (i.e. the number of {\small CALL}s or {\small CREATE}s being executed at present).
 \item $I_{\mathrm{w}}$, the permission to make modifications to the state.
 \end{itemize}
@@ -954,7 +954,7 @@ w \equiv \begin{cases} I_\mathbf{b}[\boldsymbol{\mu}_{pc}] & \text{if} \quad \bo
 \end{equation}
 
 We also assume the fixed amounts of $\mathbf{\delta}$ and $\mathbf{\alpha}$, specifying the stack items removed and added, both subscriptable on the instruction and an instruction cost function $C$ evaluating to the full cost, in gas, of executing the given instruction.
-\hypertarget{Exceptional_{\mathrm{Halting}}_{\mathrm{function}}_{\mathrm{Z}}}{}
+\hypertarget{Exceptional_{\mathrm{Halting}}_{\mathrm{function}}_{Z}}{}
 \subsubsection{Exceptional Halting}
 
 The exceptional halting function $Z$ is defined as:
@@ -989,15 +989,15 @@ All such positions must be on valid instruction boundaries, rather than sitting 
 
 Formally:
 \begin{equation}
-D(\mathbf{c}) \equiv D_{\mathrm{J}}(\mathbf{c}, 0)
+D(\mathbf{c}) \equiv D_{J}(\mathbf{c}, 0)
 \end{equation}
 
 where:
 \begin{equation}
-D_{\mathrm{J}}(\mathbf{c}, i) \equiv \begin{cases}
+D_{J}(\mathbf{c}, i) \equiv \begin{cases}
 \{\} & \text{if} \quad i \geqslant |\mathbf{c}|  \\
-\{ i \} \cup D_{\mathrm{J}}(\mathbf{c}, N(i, \mathbf{c}[i])) & \text{if} \quad \mathbf{c}[i] = \text{\small JUMPDEST} \\
-D_{\mathrm{J}}(\mathbf{c}, N(i, \mathbf{c}[i])) & \text{otherwise} \\
+\{ i \} \cup D_{J}(\mathbf{c}, N(i, \mathbf{c}[i])) & \text{if} \quad \mathbf{c}[i] = \text{\small JUMPDEST} \\
+D_{J}(\mathbf{c}, N(i, \mathbf{c}[i])) & \text{otherwise} \\
 \end{cases}
 \end{equation}
 
@@ -1060,7 +1060,7 @@ Since a block header includes the difficulty, the header alone is enough to vali
 Thus we define the total difficulty of block $B$ recursively as:
 \begin{eqnarray}
 B_{\mathrm{t}} & \equiv & B'_{\mathrm{t}} + B_{\mathrm{d}} \\
-B' & \equiv & P(B_{\mathrm{H}})
+B' & \equiv & P(B_{H})
 \end{eqnarray}
 
 As such given a block $B$, $B_{\mathrm{t}}$ is its total difficulty, $B'$ is its parent block and $B_{\mathrm{d}}$ is its difficulty.
@@ -1080,14 +1080,14 @@ The process of finalising a block involves four stages:
 
 The validation of ommer headers means nothing more than verifying that each ommer header is both a valid header and satisfies the relation of $N$th-generation ommer to the present block where $N \leq 6$. The maximum of ommer headers is two. Formally:
 \begin{equation}
-\lVert B_\mathbf{U} \rVert \leqslant 2 \bigwedge_{U \in B_\mathbf{U}} V(U) \; \wedge \; k(U, P(B_{\mathrm{H}})_{\mathrm{H}}, 6)
+\lVert B_\mathbf{U} \rVert \leqslant 2 \bigwedge_{U \in B_\mathbf{U}} V(U) \; \wedge \; k(U, P(B_{H})_{H}, 6)
 \end{equation}
 
 where $k$ denotes the ``is-kin'' property:
 \begin{equation}
 k(U, H, n) \equiv \begin{cases} false & \text{if} \quad n = 0 \\
 s(U, H) &\\
-\quad \vee \; k(U, P(H)_{\mathrm{H}}, n - 1) & \text{otherwise}
+\quad \vee \; k(U, P(H)_{H}, n - 1) & \text{otherwise}
 \end{cases}
 \end{equation}
 
@@ -1101,9 +1101,9 @@ where $B(H)$ is the block of the corresponding header $H$.
 
 %where $s[i]$ equals the root of the state trie immediately after the execution of the transaction $B_\mathbf{T}[i]$, and $g[i]$ the total gas used immediately after said transaction.
 
-The given \textbf{gasUsed} must correspond faithfully to the transactions listed: ${B_{\mathrm{H}}}_{\mathrm{g}}$, the total gas used in the block, must be equal to the accumulated gas used according to the final transaction:
+The given \textbf{gasUsed} must correspond faithfully to the transactions listed: ${B_{H}}_{\mathrm{g}}$, the total gas used in the block, must be equal to the accumulated gas used according to the final transaction:
 \begin{equation}
-{B_{\mathrm{H}}}_{\mathrm{g}} = \ell(\mathbf{R})_{\mathrm{u}}
+{B_{H}}_{\mathrm{g}} = \ell(\mathbf{R})_{\mathrm{u}}
 \end{equation}
 
 \subsection{Reward Application}
@@ -1112,14 +1112,14 @@ The application of rewards to a block involves raising the balance of the accoun
 \begin{eqnarray}
 \\ \nonumber
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
-\qquad\boldsymbol{\sigma}'[{B_{\mathrm{H}}}_{\mathrm{c}}]_{\mathrm{b}} & = & \boldsymbol{\sigma}[{B_{\mathrm{H}}}_{\mathrm{c}}]_{\mathrm{b}} + (1 + \frac{\lVert B_\mathbf{U}\rVert}{32})R_{\mathrm{b}} \\
+\qquad\boldsymbol{\sigma}'[{B_{H}}_{\mathrm{c}}]_{\mathrm{b}} & = & \boldsymbol{\sigma}[{B_{H}}_{\mathrm{c}}]_{\mathrm{b}} + (1 + \frac{\lVert B_\mathbf{U}\rVert}{32})R_{\mathrm{b}} \\
 \qquad\forall_{U \in B_\mathbf{U}}: \\ \nonumber
 \boldsymbol{\sigma}'[U_{\mathrm{c}}] & = & \begin{cases}
 \varnothing &\text{if}\ \boldsymbol{\sigma}[U_{\mathrm{c}}] = \varnothing\ \wedge\ R = 0 \\
 \mathbf{a}' &\text{otherwise}
 \end{cases} \\
 \mathbf{a}' &\equiv& (\boldsymbol{\sigma}[U_{\mathrm{c}}]_{\mathrm{n}}, \boldsymbol{\sigma}[U_{\mathrm{c}}]_{\mathrm{b}} + R, \boldsymbol{\sigma}[U_{\mathrm{c}}]_\mathbf{s}, \boldsymbol{\sigma}[U_{\mathrm{c}}]_{\mathrm{c}}) \\
-R & \equiv & (1 + \frac{1}{8} (U_{\mathrm{i}} - {B_{\mathrm{H}}}_{\mathrm{i}})) R_{\mathrm{b}}
+R & \equiv & (1 + \frac{1}{8} (U_{\mathrm{i}} - {B_{H}}_{\mathrm{i}})) R_{\mathrm{b}}
 \end{eqnarray}
 
 If there are collisions of the beneficiary addresses between ommers and the block (i.e. two ommers with the same beneficiary address or an ommer with the same beneficiary address as the present block), additions are applied cumulatively.
@@ -1134,12 +1134,12 @@ We define the block reward as 3 Ether:
 We may now define the function, $\Gamma$, that maps a block $B$ to its initiation state:
 \begin{equation}
 \Gamma(B) \equiv \begin{cases}
-\boldsymbol{\sigma}_0 & \text{if} \quad P(B_{\mathrm{H}}) = \varnothing \\
-\boldsymbol{\sigma}_{\mathrm{i}}: \mathtt{\small TRIE}(L_{\mathrm{S}}(\boldsymbol{\sigma}_{\mathrm{i}})) = {P(B_{\mathrm{H}})_{\mathrm{H}}}_{\mathrm{r}} & \text{otherwise}
+\boldsymbol{\sigma}_0 & \text{if} \quad P(B_{H}) = \varnothing \\
+\boldsymbol{\sigma}_{\mathrm{i}}: \mathtt{\small TRIE}(L_{S}(\boldsymbol{\sigma}_{\mathrm{i}})) = {P(B_{H})_{H}}_{\mathrm{r}} & \text{otherwise}
 \end{cases}
 \end{equation}
 
-Here, $\mathtt{\small TRIE}(L_{\mathrm{S}}(\boldsymbol{\sigma}_{\mathrm{i}}))$ means the hash of the root node of a trie of state $\boldsymbol{\sigma}_{\mathrm{i}}$; it is assumed that implementations will store this in the state database, trivial and efficient since the trie is by nature an immutable data structure.
+Here, $\mathtt{\small TRIE}(L_{S}(\boldsymbol{\sigma}_{\mathrm{i}}))$ means the hash of the root node of a trie of state $\boldsymbol{\sigma}_{\mathrm{i}}$; it is assumed that implementations will store this in the state database, trivial and efficient since the trie is by nature an immutable data structure.
 
 And finally define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
 \begin{eqnarray}
@@ -1497,25 +1497,25 @@ The fifth contract performs arbitrary-precision exponentiation under modulo. Her
 
 \begin{eqnarray}
 \Xi_{\mathtt{EXPMOD}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:} \\
-g_{\mathrm{r}} &=& \Big\lfloor\frac{f\big(\max(\ell_{\mathrm{M}},\ell_{\mathrm{B}})\big)\max(\ell'_{\mathrm{E}},1)}{G_{quaddivisor}}\Big\rfloor \\
+g_{\mathrm{r}} &=& \Big\lfloor\frac{f\big(\max(\ell_{M},\ell_{B})\big)\max(\ell'_{E},1)}{G_{quaddivisor}}\Big\rfloor \\
 f(x) &\equiv& \begin{cases}
 x^2 & \text{if}\ x \le 64 \\
 \Big\lfloor\dfrac{x^2}{4}\Big\rfloor + 96 x - 3072 & \text{if}\ 64 < x \le 1024 \\
 \Big\lfloor\dfrac{x^2}{16}\Big\rfloor + 480x - 199680 & \text{otherwise}
 \end{cases}\\
-\ell'_{\mathrm{E}} &=& \begin{cases}
-0 & \text{if}\ \ell_{\mathrm{E}}\le 32\wedge E=0 \\
-\lfloor \log_2(E)\rfloor &\text{if}\ \ell_{\mathrm{E}}\le 32 \wedge E \neq 0 \\
-8(\ell_{\mathrm{E}} - 32) + \lfloor \log_2(i[(96+\ell_{\mathrm{B}})..(127+\ell_{\mathrm{B}})]) \rfloor & \text{if}\ 32 < \ell_{\mathrm{E}} \wedge i[(96 + \ell_{\mathrm{B}})..(127 + \ell_{\mathrm{B}})]\neq 0 \\
-8(\ell_{\mathrm{E}} - 32) & \text{otherwise} \\
+\ell'_{E} &=& \begin{cases}
+0 & \text{if}\ \ell_{E}\le 32\wedge E=0 \\
+\lfloor \log_2(E)\rfloor &\text{if}\ \ell_{E}\le 32 \wedge E \neq 0 \\
+8(\ell_{E} - 32) + \lfloor \log_2(i[(96+\ell_{B})..(127+\ell_{B})]) \rfloor & \text{if}\ 32 < \ell_{E} \wedge i[(96 + \ell_{B})..(127 + \ell_{B})]\neq 0 \\
+8(\ell_{E} - 32) & \text{otherwise} \\
 \end{cases} \\
-\mathbf o &=& (B^E\bmod M)\in\mathbb P_{8\ell_{\mathrm{M}}} \\
-\ell_{\mathrm{B}} &\equiv& i[0..31] \\
-\ell_{\mathrm{E}} &\equiv& i[32..63] \\
-\ell_{\mathrm{M}} &\equiv& i[64..95] \\
-B &\equiv& i[96..(95+\ell_{\mathrm{B}})] \\
-E &\equiv& i[(96+\ell_{\mathrm{B}})..(95+\ell_{\mathrm{B}}+\ell_{\mathrm{E}})] \\
-M &\equiv& i[(96+\ell_{\mathrm{B}}+\ell_{\mathrm{E}})..(95+\ell_{\mathrm{B}}+\ell_{\mathrm{E}}+\ell_{\mathrm{M}})] \\
+\mathbf o &=& (B^E\bmod M)\in\mathbb P_{8\ell_{M}} \\
+\ell_{B} &\equiv& i[0..31] \\
+\ell_{E} &\equiv& i[32..63] \\
+\ell_{M} &\equiv& i[64..95] \\
+B &\equiv& i[96..(95+\ell_{B})] \\
+E &\equiv& i[(96+\ell_{B})..(95+\ell_{B}+\ell_{E})] \\
+M &\equiv& i[(96+\ell_{B}+\ell_{E})..(95+\ell_{B}+\ell_{E}+\ell_{M})] \\
 i[x] &\equiv& \begin{cases}
 I_{\mathbf d}[x] &\text{if}\ x < |I_{\mathbf d}| \\
 0 &\text{otherwise}
@@ -1682,7 +1682,7 @@ A(p_{\mathrm{r}}) = \mathcal{B}_{96..255}\big(\mathtt{\tiny KEC}\big( \mathtt{\s
 
 The message hash, $h(T)$, to be signed is the Keccak hash of the transaction. Two different flavors of signing schemes are available. One operates without the latter three signature components, formally described as $T_{\mathrm{r}}$, $T_{\mathrm{s}}$ and $T_{\mathrm{w}}$. The other operates on nine elements:
 \begin{eqnarray}
-L_{\mathrm{S}}(T) & \equiv & \begin{cases}
+L_{S}(T) & \equiv & \begin{cases}
 (T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}) & \text{if} \; v \in \{27, 28\} \\
 (T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, \mathtt{\tiny chain\_{\mathrm{id}}}, (), ()) & \text{otherwise} \\
 \end{cases} \\
@@ -1691,7 +1691,7 @@ L_{\mathrm{S}}(T) & \equiv & \begin{cases}
 T_{\mathbf{i}} & \text{if}\ T_{\mathrm{t}} = 0 \\
 T_{\mathbf{d}} & \text{otherwise}
 \end{cases} \\
-h(T) & \equiv & \mathtt{\small KEC}( L_{\mathrm{S}}(T) )
+h(T) & \equiv & \mathtt{\small KEC}( L_{S}(T) )
 \end{eqnarray}
 
 The signed transaction $G(T, p_{\mathrm{r}})$ is defined as:
@@ -2044,19 +2044,19 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& in the block following it. \\
 \midrule
 0x41 & {\small COINBASE} & 0 & 1 & Get the block's beneficiary address. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_{\mathrm{H}}}_{\mathrm{c}}$ \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_{H}}_{\mathrm{c}}$ \\
 \midrule
 0x42 & {\small TIMESTAMP} & 0 & 1 & Get the block's timestamp. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_{\mathrm{H}}}_{\mathrm{s}}$ \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_{H}}_{\mathrm{s}}$ \\
 \midrule
 0x43 & {\small NUMBER} & 0 & 1 & Get the block's number. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_{\mathrm{H}}}_{\mathrm{i}}$ \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_{H}}_{\mathrm{i}}$ \\
 \midrule
 0x44 & {\small DIFFICULTY} & 0 & 1 & Get the block's difficulty. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_{\mathrm{H}}}_{\mathrm{d}}$ \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_{H}}_{\mathrm{d}}$ \\
 \midrule
 0x45 & {\small GASLIMIT} & 0 & 1 & Get the block's gas limit. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_{\mathrm{H}}}_{\mathrm{l}}$ \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv {I_{H}}_{\mathrm{l}}$ \\
 \bottomrule
 \end{tabular*}
 
@@ -2214,7 +2214,7 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& $A' \equiv A \Cup A^+$ which abbreviates: $A'_\mathbf{s} \equiv A_\mathbf{s} \cup A^+_\mathbf{s} \quad \wedge \quad A'_\mathbf{l} \equiv A_\mathbf{l} \cdot A^+_\mathbf{l} \quad \wedge \quad A'_\mathbf{t} \equiv A_\mathbf{t} \cup A^+_\mathbf{t}$ \\
 &&&& $ \wedge \quad A'_\mathbf{r} \equiv A_\mathbf{r} + A^+_\mathbf{r}$ \\
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
-&&&& where $x=0$ if the code execution for this operation failed due to an \hyperlink{Exceptional_{\mathrm{Halting}}_{\mathrm{function}}_{\mathrm{Z}}}{exceptional halting}\\
+&&&& where $x=0$ if the code execution for this operation failed due to an \hyperlink{Exceptional_{\mathrm{Halting}}_{\mathrm{function}}_{Z}}{exceptional halting}\\
 &&&& (or for a \text{\small REVERT}) $\boldsymbol{\sigma}' = \varnothing$, or $I_{\mathrm{e}} = 1024$ \\
 &&&& (the maximum call depth limit is reached) or $\boldsymbol{\mu}_\mathbf{s}[0] > \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}}$ (balance of the caller is too \\
 &&&& low to fulfil the value transfer); and otherwise $x=A(I_{\mathrm{a}}, \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{n}})$, the address of the newly \\
@@ -2233,7 +2233,7 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \bo
 &&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv x$ \\
 &&&& $A' \equiv A \Cup A^+$ \\
 &&&& $t \equiv \boldsymbol{\mu}_\mathbf{s}[1] \mod 2^{160}$ \\
-&&&& where $x=0$ if the code execution for this operation failed due to an \hyperlink{Exceptional_{\mathrm{Halting}}_{\mathrm{function}}_{\mathrm{Z}}}{exceptional halting} \\
+&&&& where $x=0$ if the code execution for this operation failed due to an \hyperlink{Exceptional_{\mathrm{Halting}}_{\mathrm{function}}_{Z}}{exceptional halting} \\
 &&&& (or for a \text{\small REVERT}) $\boldsymbol{\sigma}' = \varnothing$ or if \\
 &&&& $\boldsymbol{\mu}_\mathbf{s}[2] > \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}}$ (not enough funds) or $I_{\mathrm{e}} = 1024$ (call depth limit reached); $x=1$ \\
 &&&& otherwise. \\
@@ -2460,7 +2460,7 @@ If the output of this algorithm is below the desired target, then the nonce is v
 
 The PoW-function returns an array with the compressed mix as its first item and the Keccak-256 hash of the concatenation of the compressed mix with the seed hash as the second item:
 \begin{equation}
- \mathtt{PoW}(H_{\hcancel{n}}, H_{\mathrm{n}}, \mathbf{d}) = \lbrace \mathbf{m}_{\mathrm{c}}(\mathtt{\small KEC}(\mathtt{\small RLP}(L_{\mathrm{H}}(H_{\hcancel{n}}))), H_{\mathrm{n}}, \mathbf{d}), \texttt{KEC}(\mathbf{s}_{\mathrm{h}}(\mathtt{\small KEC}(\mathtt{\small RLP}(L_{\mathrm{H}}(H_{\hcancel{n}}))), H_{\mathrm{n}}) + \mathbf{m}_{\mathrm{c}}(\mathtt{\small KEC}(\mathtt{\small RLP}(L_{\mathrm{H}}(H_{\hcancel{n}}))), H_{\mathrm{n}}, \mathbf{d})) \rbrace
+ \mathtt{PoW}(H_{\hcancel{n}}, H_{\mathrm{n}}, \mathbf{d}) = \lbrace \mathbf{m}_{\mathrm{c}}(\mathtt{\small KEC}(\mathtt{\small RLP}(L_{H}(H_{\hcancel{n}}))), H_{\mathrm{n}}, \mathbf{d}), \texttt{KEC}(\mathbf{s}_{\mathrm{h}}(\mathtt{\small KEC}(\mathtt{\small RLP}(L_{H}(H_{\hcancel{n}}))), H_{\mathrm{n}}) + \mathbf{m}_{\mathrm{c}}(\mathtt{\small KEC}(\mathtt{\small RLP}(L_{H}(H_{\hcancel{n}}))), H_{\mathrm{n}}, \mathbf{d})) \rbrace
 \end{equation}
 With $H_{\hcancel{n}}$ being the hash of the header without the nonce. The compressed mix $\mathbf{m}_{\mathrm{c}}$ is obtained as follows:
 \begin{equation}
