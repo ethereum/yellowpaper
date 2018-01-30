@@ -1,0 +1,352 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% ocgbase.sty
+%
+% low-level macros for OCG creation, marking optional content and
+% for managment of global (document-wide) OCG related lists;
+%
+% (automatic) OCG configuration in the PDF catalog
+%
+% Copyright 2015--\today, Alexander Grahn
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Support package for ocgx2.sty, media9.sty, animate.sty
+%
+% Supported workflows:
+%
+%   pdflatex, lualatex
+%   latex-->dvips-->ps2pdf or Distiller
+%   latex-->dvipdfmx
+%   xelatex
+%
+%   for `dvipdfmx', set it as document class option
+%
+%
+% Commands defined:
+%
+%   \ocgbase_new_ocg:nnn
+%   \ocgbase@new@ocg (LaTeX2e version)
+%     #1: name (as shown in the Layers Tab of the Reader GUI)
+%     #2: usage dict (may be empty), see PDF reference:
+%         http://wwwimages.adobe.com/content/dam/Adobe/en/devnet/pdf/pdfs/
+%                pdf_reference_1-7.pdf#G9.3858276
+%     #3: initial visibility (1|0|true|false|on|off|visible|invisible)
+%
+%   \ocgbase_last_ocg:
+%   \ocgbase@last@ocg (LaTeX2e version)
+%     inserts ID of PDF object created during most recent call of
+%     \ocgbase_new_ocg:nnn
+%
+%   --------
+%
+%   \ocgbase_tree_node_begin:n
+%   \ocgbase_tree_node_end:
+%   \ocgbase@tree@node@begin (LaTeX2e versions)
+%   \ocgbase@tree@node@end
+%     #1: OCG PDF object
+%     macro pair (begin and end) for inserting OCG object and its children
+%     into Order hierarchy (shown as tree structure in the viewers `Layers' tab
+%
+%   --------
+%
+%   \ocgbase_add_to_off_list:n
+%   \ocgbase@add@to@off@list (LaTeX2e version)
+%     #1: PDF object ID of OCG
+%     macro for setting initial visibility to `off'
+%
+%   --------
+%
+%   \ocgbase_del_from_off_list:n
+%   \ocgbase@del@from@off@list (LaTeX2e version)
+%     #1: PDF object ID of OCG
+%     macro for setting initial visibility to `on'
+%
+%   --------
+%
+%   \ocgbase_add_ocg_to_radiobtn_grp:nnn
+%   \ocgbase@add@ocg@to@radiobtn@grp
+%     add OCG #2 (obj ref) to radio button group `#1' (string),
+%     #3: (0|1|false|true) list OCG as part of group `#1' in the Layers Tab)
+%
+%   --------
+%
+%   \ocgbase_oc_bdc:n
+%   \ocgbase@oc@bdc
+%     #1: OCG obj ref
+%     mark begin of optional content belonging to OCG #1 in the current
+%     content stream
+%
+%   \ocgbase_oc_emc:
+%   \ocgbase@oc@emc
+%     mark end of optional content in the current content stream
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License.
+%
+% The latest version of this license is in
+%   http://mirrors.ctan.org/macros/latex/base/lppl.txt
+%
+% This work has the LPPL maintenance status `maintained'.
+%
+% The Current Maintainer of this work is A. Grahn.
+
+\RequirePackage{expl3}
+\RequirePackage{pdfbase}
+
+\def\g@ocgbase@date@tl{2017/09/29}
+\def\g@ocgbase@version@tl{0.12}
+
+\ProvidesExplPackage{ocgbase}{\g@ocgbase@date@tl}{\g@ocgbase@version@tl}
+{support package for ocgx2.sty}
+
+\msg_set:nnnn{ocgbase}{support~outdated}{
+  Support~package~`#1'~too~old.
+}{
+  Get~an~up~to~date~version~of~`#1'.\\
+  Aborting.
+}
+\@ifpackagelater{pdfbase}{2017/09/29}{}{
+  \msg_error:nnn{ocgbase}{support~outdated}{pdfbase.sty}
+  \tex_endinput:D
+}
+
+\tl_new:N\g_ocgbase_ocgs_tl %takes ocg object refs
+\seq_new:N\g_ocgbase_offocgs_seq
+
+\pbs_at_end_dvi:n{
+  \tl_if_empty:NF\g_ocgbase_ocgs_tl{
+    %global OCG array
+    \pbs_pdfobj:nnn{}{array}{\g_ocgbase_ocgs_tl}
+    \tl_set:Nx\l_ocgbase_ocgarray_tl{\pbs_pdflastobj:}
+    \tl_new:N\l_ocgbase_offocgentry_tl
+    %global OFF list
+    \seq_if_empty:NF\g_ocgbase_offocgs_seq{
+      \pbs_pdfobj:nnn{}{array}{\seq_use:Nn\g_ocgbase_offocgs_seq{~}}
+      \tl_set:Nx\l_ocgbase_offocgentry_tl{/OFF~\pbs_pdflastobj:}
+    }
+    %global Order list
+    \tl_new:N\l_ocgbase_ocgorderentry_tl
+    \tl_new:N\l_ocgbase_ocgorder_tl
+    \tl_if_exist:cT{g_ocgbase_nd_0_chld_tl}{
+      \ocgbase_build_order:Nn\l_ocgbase_ocgorder_tl{
+        \tl_use:c{g_ocgbase_nd_0_chld_tl}
+      }
+    }
+    \tl_if_empty:NF\l_ocgbase_ocgorder_tl{
+      \pbs_pdfobj:nnn{}{array}{\l_ocgbase_ocgorder_tl}
+      \tl_set:Nx\l_ocgbase_ocgorderentry_tl{/Order~\pbs_pdflastobj:}
+    }
+    %generate RBGroups entry (radio button groups)
+    \tl_new:N\l_ocgbase_rbtn_groups_tl
+    \seq_map_inline:Nn\g_ocgbase_rbtn_groups_seq{
+      \int_compare:nT{\seq_count:c{g_ocgbase_rbtn_group_#1_seq}>\c_one}{
+        \tl_put_right:Nx\l_ocgbase_rbtn_groups_tl{
+          ~[\seq_use:cn{g_ocgbase_rbtn_group_#1_seq}{~}]
+        }
+      }
+    }
+    \tl_new:N\l_ocgbase_rbgroupsentry_tl
+    \tl_if_empty:NF\l_ocgbase_rbtn_groups_tl{
+      \pbs_pdfobj:nnn{}{array}{\l_ocgbase_rbtn_groups_tl}
+      \tl_set:Nx\l_ocgbase_rbgroupsentry_tl{/RBGroups~\pbs_pdflastobj:}
+    }
+    \pbs_pdfcatalog:n{
+      /OCProperties~<<
+        /OCGs~\l_ocgbase_ocgarray_tl
+        /D~<<
+          /AS~[
+            <</Event/View  /Category[/View]  /OCGs~\l_ocgbase_ocgarray_tl>>
+            <</Event/Print /Category[/Print] /OCGs~\l_ocgbase_ocgarray_tl>>
+            <</Event/Export/Category[/Export]/OCGs~\l_ocgbase_ocgarray_tl>>
+          ]
+          /BaseState/ON~\l_ocgbase_offocgentry_tl
+          \l_ocgbase_ocgorderentry_tl
+          \l_ocgbase_rbgroupsentry_tl
+          /ListMode/VisiblePages
+        >>
+      >>
+    }
+  }
+}
+
+%macro for inserting new OCG object
+\cs_new_nopar:Nn\ocgbase_new_ocg:nnn{
+  \pbs_pdfobj:nnn{}{dict}{
+    /Type/OCG/Name~(#1)~\str_if_eq_x:nnF{#2}{}{/Usage<<#2>>}
+  }
+  \tl_gput_right:Nx\g_ocgbase_ocgs_tl{~\pbs_pdflastobj:}
+  \bool_if:nT{
+    \str_if_eq_x_p:nn{#3}{0} ||
+    \str_if_eq_x_p:nn{#3}{off} ||
+    \str_if_eq_x_p:nn{#3}{false} ||
+    \str_if_eq_x_p:nn{#3}{invisible}
+  }{
+    \ocgbase_add_to_off_list:n{\pbs_pdflastobj:}
+  }
+  \tl_gset:Nx\g_ocgbase_last_ocg_tl{\pbs_pdflastobj:}
+}
+
+\cs_new_nopar:Nn\ocgbase_last_ocg:{\g_ocgbase_last_ocg_tl}
+
+\int_new:N\g_ocgbase_nd_int    %node id
+\seq_new:N\g_ocgbase_tree_nd_stack_seq    %stack with open ocg node id
+\seq_new:N\g_ocgbase_tree_ocg_stack_seq    %stack with open ocg obj number
+\seq_gpush:Nn\g_ocgbase_tree_nd_stack_seq{0}    %push root node
+\seq_gpush:Nn\g_ocgbase_tree_ocg_stack_seq{null}    %push root node
+
+%macro for starting OCG object (and nested children) insertion into Order
+%hierarchy (shown as tree structure in the viewers `Layers' tab
+\cs_new:Nn\ocgbase_tree_node_begin:n{ % #1: OCG obj
+  %get the parent node from stack
+  \seq_get:NN\g_ocgbase_tree_nd_stack_seq\l__ocgbase_prnt_tl
+  \tl_if_exist:cTF{g_ocgbase_nd_\l__ocgbase_prnt_tl _chld_tl}{
+    %parent has >=1 children (i. e. my older siblings), traverse them
+    \tl_set:Nv\l__ocgbase_prev_sbl_tl{g_ocgbase_nd_\l__ocgbase_prnt_tl _chld_tl}
+    \tl_set:Nx\l__ocgbase_cur_ocg_tl{#1}
+    \ocgbase_traverse_siblings:NN\l__ocgbase_prev_sbl_tl\l__ocgbase_cur_ocg_tl
+    \str_if_empty:NTF\l__ocgbase_cur_ocg_tl{
+      %I am the first child of my parent to refer to OCG #1
+      \int_gincr:N\g_ocgbase_nd_int
+      \tl_set:Nx\l__ocgbase_cur_nd_tl{\int_use:N\g_ocgbase_nd_int}
+      %set myself as my next-older sibling's `next sibling'
+      \tl_gset:cV{
+        g_ocgbase_nd_\l__ocgbase_prev_sbl_tl _sbl_tl}\l__ocgbase_cur_nd_tl
+    }{
+      %there is already a sibling referring to OCG #1; no new node needs be
+      %created
+      \tl_set:NV\l__ocgbase_cur_nd_tl\l__ocgbase_prev_sbl_tl
+    }
+  }{
+    %I am the very first child of my parent
+    \int_gincr:N\g_ocgbase_nd_int
+    \tl_set:Nx\l__ocgbase_cur_nd_tl{\int_use:N\g_ocgbase_nd_int}
+    %set myself as my parent's first child
+    \tl_gset:cV{g_ocgbase_nd_\l__ocgbase_prnt_tl _chld_tl}\l__ocgbase_cur_nd_tl
+  }
+  %set the OCG I am referring to
+  \tl_gset:cx{g_ocgbase_nd_\l__ocgbase_cur_nd_tl _ocg_tl}{#1}
+  %push current node and its associated OCG obj on the stacks
+  \seq_gpush:NV\g_ocgbase_tree_nd_stack_seq\l__ocgbase_cur_nd_tl
+  \seq_gpush:Nx\g_ocgbase_tree_ocg_stack_seq{#1}
+}
+
+%macro that ends insertion of OCG and sub-OCGs into Order tree
+\cs_new:Nn\ocgbase_tree_node_end:{
+  \seq_get:NN\g_ocgbase_tree_nd_stack_seq\l_tempa_tl
+  \seq_get:NN\g_ocgbase_tree_ocg_stack_seq\l_tempb_tl
+  \str_if_eq_x:nnT{
+    \cs_if_exist_use:c{g_ocgbase_nd_\l_tempa_tl _ocg_tl}
+  }{
+    \l_tempb_tl
+  }{
+    \seq_gpop:NN\g_ocgbase_tree_nd_stack_seq\g_trash_tl
+    \seq_gpop:NN\g_ocgbase_tree_ocg_stack_seq\g_trash_tl
+  }
+}
+
+% helper macro; traverses siblings to find either
+% the node which refers to the same OCG (arg #2 remains un-modified), or
+% the last sibling inserted (arg #2 is cleared);
+% the node id of the sibling found is returned in arg #1
+\cs_new:Nn\ocgbase_traverse_siblings:NN{
+  % #1: current node (in/out),  #2: OCG obj (in/out)
+  \str_if_eq_x:nnF{#2}{\tl_use:c{g_ocgbase_nd_#1_ocg_tl}}{
+    \tl_if_exist:cTF{g_ocgbase_nd_#1_sbl_tl}{
+      \tl_set:Nv#1{g_ocgbase_nd_#1_sbl_tl}
+      \ocgbase_traverse_siblings:NN#1#2
+    }{
+      \tl_clear:N#2
+    }
+  }
+}
+
+\cs_new:Nn\ocgbase_build_order:Nn{
+  % #1: tl var to which the OCG order is written (output)
+  % #2: starting node id (input; usually `1')
+  \tl_set:Nx\l__ocgbase_cur_nd_tl{#2}
+  % first, append the OCG obj the current node is referring to
+  \tl_put_right:Nx#1{~\tl_use:c{g_ocgbase_nd_\l__ocgbase_cur_nd_tl _ocg_tl}}
+  % second, traverse the tree starting with the first child node
+  \tl_if_exist:cT{g_ocgbase_nd_\l__ocgbase_cur_nd_tl _chld_tl}{
+    \seq_gpush:NV\g_ocgbase_tree_nd_stack_seq\l__ocgbase_cur_nd_tl
+    \tl_put_right:Nn#1{~[}
+    \ocgbase_build_order:Nn#1{
+      \tl_use:c{g_ocgbase_nd_\l__ocgbase_cur_nd_tl _chld_tl}}
+    \tl_put_right:Nn#1{~]}
+    \seq_gpop:NN\g_ocgbase_tree_nd_stack_seq\l__ocgbase_cur_nd_tl
+  }
+  % third, traverse the tree starting with the next sibling node
+  \tl_if_exist:cT{g_ocgbase_nd_\l__ocgbase_cur_nd_tl _sbl_tl}{
+    \ocgbase_build_order:Nn#1{
+      \tl_use:c{g_ocgbase_nd_\l__ocgbase_cur_nd_tl _sbl_tl}}
+  }
+}
+
+%macro for appending an OCG object to the global `OFF' list
+%(initial non-visibility)
+\cs_new_nopar:Nn\ocgbase_add_to_off_list:n{
+  \seq_if_in:NxF\g_ocgbase_offocgs_seq{#1}{
+    \seq_gput_right:Nx\g_ocgbase_offocgs_seq{#1}
+  }
+}
+
+%macro for removing an OCG object from global `OFF' list
+%(initial non-visibility)
+\cs_new_nopar:Nn\ocgbase_del_from_off_list:n{
+  \seq_if_in:NxT\g_ocgbase_offocgs_seq{#1}{
+    \ocgbase_seq_gremove_all:Nx\g_ocgbase_offocgs_seq{#1}
+  }
+}
+\cs_set_eq:NN\ocgbase_seq_gremove_all:Nn\seq_gremove_all:Nn
+\cs_generate_variant:Nn\ocgbase_seq_gremove_all:Nn{Nx}
+
+\seq_new:N\g_ocgbase_rbtn_groups_seq
+\cs_new_nopar:Nn\ocgbase_add_ocg_to_radiobtn_grp:nn{
+  % #1: rbtn group name,
+  % #2: OCG obj ref
+  \seq_if_exist:cF{g_ocgbase_rbtn_group_#1_seq}{
+    \seq_new:c{g_ocgbase_rbtn_group_#1_seq}
+    \seq_gput_right:Nx\g_ocgbase_rbtn_groups_seq{#1}
+  }
+  \seq_if_in:cxF{g_ocgbase_rbtn_group_#1_seq}{#2}{
+    \seq_gput_right:cx{g_ocgbase_rbtn_group_#1_seq}{#2}
+  }
+}
+
+% OC-marked content
+\cs_new_nopar:Nn\ocgbase_oc_bdc:n{\pbs_pdfbdc:nn{/OC}{#1}}
+\cs_new_nopar:Nn\ocgbase_oc_emc:{\pbs_pdfemc:}
+
+%stack of PDF obj references of currently open OCGs
+\seq_new:N\g_ocgbase_open_stack_seq
+%push OCG to stack
+\cs_new_nopar:Nn\ocgbase_open_stack_push:n{
+  \seq_gpush:Nx\g_ocgbase_open_stack_seq{#1}}
+%pop OCG from stack into tl
+\cs_new_nopar:Nn\ocgbase_open_stack_pop:N{
+    \seq_gpop:NN\g_ocgbase_open_stack_seq#1}
+
+%command that inserts /OC <<OCMD with currently open OCGs>> entry;
+%for use within annotation/xobject dicts
+\cs_new_nopar:Nn\ocgbase_insert_oc:{
+  \seq_if_empty:NF\g_ocgbase_open_stack_seq{
+    /OC~<</Type/OCMD/OCGs~[\seq_use:Nn\g_ocgbase_open_stack_seq{~}]/P/AllOn>>
+  }
+}
+
+%l2e versions
+\cs_gset_eq:NN\ocgbase@new@ocg\ocgbase_new_ocg:nnn
+\cs_gset_eq:NN\ocgbase@last@ocg\ocgbase_last_ocg:
+\cs_gset_eq:NN\ocgbase@tree@node@begin\ocgbase_tree_node_begin:n
+\cs_gset_eq:NN\ocgbase@tree@node@end\ocgbase_tree_node_end:
+\cs_gset_eq:NN\ocgbase@add@to@off@list\ocgbase_add_to_off_list:n
+\cs_gset_eq:NN\ocgbase@del@from@off@list\ocgbase_del_from_off_list:n
+\cs_gset_eq:NN\ocgbase@add@ocg@to@radiobtn@grp\ocgbase_add_ocg_to_radiobtn_grp:nn
+\cs_gset_eq:NN\ocgbase@oc@bdc\ocgbase_oc_bdc:n
+\cs_gset_eq:NN\ocgbase@oc@emc\ocgbase_oc_emc:
+\cs_gset_eq:NN\ocgbase@insert@oc\ocgbase_insert_oc:
+\cs_gset_eq:NN\ocgbase@open@stack@pop\ocgbase_open_stack_pop:N
+\cs_gset_eq:NN\ocgbase@open@stack@push\ocgbase_open_stack_push:n
