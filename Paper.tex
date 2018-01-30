@@ -2343,16 +2343,16 @@ We employ the following definitions:
 Name & Value & Description \\
 \midrule
 \linkdest{Jwordbytes}{}$J_{wordbytes}$ & 4  & Bytes in word. \\
-$J_{datasetinit}$ & $2^{30}$ & Bytes in dataset at genesis. \\
-$J_{datasetgrowth}$ & $2^{23}$ & Dataset growth per epoch. \\
-$J_{cacheinit}$ & $2^{24}$ & Bytes in cache at genesis. \\
-$J_{cachegrowth}$ & $2^{17}$ & Cache growth per epoch. \\
-$J_{epoch}$ & 30000 & Blocks per epoch. \\
-$J_{mixbytes}$ & 128 & mix length in bytes. \\
-$J_{hashbytes}$ & 64 & Hash length in bytes. \\
-$J_{parents}$ & 256 & Number of parents of each dataset element. \\
-$J_{cacherounds}$ & 3 & Number of rounds in cache production. \\
-$J_{accesses}$ & 64 & Number of accesses in hashimoto loop. \\
+\linkdest{J__datasetinit}{}$J_{datasetinit}$ & $2^{30}$ & Bytes in dataset at genesis. \\
+\linkdest{J__datasetgrowth}{}$J_{datasetgrowth}$ & $2^{23}$ & Dataset growth per epoch. \\
+\linkdest{J__cacheinit}{}$J_{cacheinit}$ & $2^{24}$ & Bytes in cache at genesis. \\
+\linkdest{J__cachegrowth}{}$J_{cachegrowth}$ & $2^{17}$ & Cache growth per epoch. \\
+\linkdest{J__epoch}{}$J_{epoch}$ & 30000 & Blocks per epoch. \\
+\linkdest{J__mixbytes}{}$J_{mixbytes}$ & 128 & mix length in bytes. \\
+\linkdest{J__hashbytes}{}$J_{hashbytes}$ & 64 & Hash length in bytes. \\
+\linkdest{J__parents}{}$J_{parents}$ & 256 & Number of parents of each dataset element. \\
+\linkdest{J__cacherounds}{}$J_{cacherounds}$ & 3 & Number of rounds in cache production. \\
+\linkdest{J__accesses}{}$J_{accesses}$ & 64 & Number of accesses in hashimoto loop. \\
 \bottomrule
 \end{tabular*}
 
@@ -2362,7 +2362,7 @@ The size for Ethash's cache $\mathbf{c} \in \mathbb{B}$  and dataset $\mathbf{d}
  E_{epoch}(H_i) = \left\lfloor\frac{H_i}{J_{epoch}}\right\rfloor
 \end{equation}
 The size of the dataset growth by $J_{datasetgrowth}$ bytes, and the size of the cache by $J_{cachegrowth}$ bytes, every epoch. In order to avoid regularity leading to cyclic behavior, the size must be a prime number. Therefore the size is reduced by a multiple of $J_{mixbytes}$, for the dataset, and $J_{hashbytes}$ for the cache.
-Let $d_{size} = \lVert \mathbf{d} \rVert$ be the size of the dataset. Which is calculated using
+\linkdest{d__size}{}Let $d_{size} = \lVert \mathbf{d} \rVert$ be the size of the dataset. Which is calculated using
 \begin{equation}
  d_{size} = E_{prime}(J_{datasetinit} + J_{datasetgrowth} \cdot E_{epoch} - J_{mixbytes}, J_{mixbytes})
 \end{equation}
@@ -2421,7 +2421,7 @@ E_{cacherounds}(E_\text{\tiny RMH}(\mathbf{x}), y -1 ) & \text{otherwise}
 \end{equation}
 Where a single round modifies each subset of the cache as follows:
 \begin{equation}
- E_\text{\tiny RMH}(\mathbf{x}) = \big( E_{rmh}(\mathbf{x}, 0), E_{rmh}(\mathbf{x}, 1), ... , E_{rmh}(\mathbf{x}, n - 1) \big)
+ E_\text{\tiny RMH}(\mathbf{x}) = \big( E_{rmh}(\mathbf{x}, 0), E_{rmh}(\mathbf{x}, 1), ... , E_{rmh}(\mathbf{x}, n - 1) \big)\linkdest{E__cacherounds}{}
 \end{equation}
 \begin{multline}
   E_{rmh}(\mathbf{x}, i) = \texttt{KEC512}(\mathbf{x'}[(i - 1 + n) \mod n] \oplus \mathbf{x'}[\mathbf{x'}[i][0] \mod n]) \\
