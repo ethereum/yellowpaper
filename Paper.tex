@@ -2081,13 +2081,13 @@ G_{sreset} & \text{otherwise}
 &&&& $A'_{r} \equiv A_{r} + \begin{cases}
 R_{sclear} & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] = 0 \; \wedge \; \boldsymbol{\sigma}[I_a]_\mathbf{s}[\boldsymbol{\mu}_\mathbf{s}[0]] \neq 0 \\
 0 & \text{otherwise}
-\end{cases}$ \hypertarget{JUMP}{JUMP} \\
+\end{cases}$ \\
 \midrule
-0x56 & {\small JUMP} & 1 & 0 & Alter the program counter. \\
+\linkdest{JUMP}{JUMP}0x56 & {\small JUMP} & 1 & 0 & Alter the program counter. \\
 &&&& $J_{\text{\tiny JUMP}}(\boldsymbol{\mu}) \equiv \boldsymbol{\mu}_\mathbf{s}[0] $ \\
-&&&& This has the effect of writing said value to $\boldsymbol{\mu}_{pc}$. See section \ref{ch:model}. \hypertarget{JUMPI}{JUMPI}\\
+&&&& This has the effect of writing said value to $\boldsymbol{\mu}_{pc}$. See section \ref{ch:model}. {JUMPI}\\
 \midrule
-0x57 & {\small JUMPI} & 2 & 0 & Conditionally alter the program counter. \\
+\linkdest{JUMPI}0x57 & {\small JUMPI} & 2 & 0 & Conditionally alter the program counter. \\
 &&&& $J_{\text{\tiny JUMPI}}(\boldsymbol{\mu}) \equiv \begin{cases} \boldsymbol{\mu}_\mathbf{s}[0] & \text{if} \quad \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \\ \boldsymbol{\mu}_{pc} + 1 & \text{otherwise} \end{cases} $ \\
 &&&& This has the effect of writing said value to $\boldsymbol{\mu}_{pc}$. See section \ref{ch:model}. \\
 \midrule
