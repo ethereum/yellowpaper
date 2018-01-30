@@ -355,7 +355,7 @@ Each receipt, denoted $B_\mathbf{R}[i]$ for the $i$th transaction, is placed in 
 
 The transaction receipt is a tuple of four items comprising the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_u$, the set of logs created through execution of the transaction, $R_\mathbf{l}$ and the Bloom filter composed from information in those logs, $R_b$ and the status code of the transaction, $R_z$:
 \begin{equation}
-R \equiv (R_u, R_b, R_\mathbf{l}, R_z)
+R \equiv (R_z, R_u, R_b, R_\mathbf{l})
 \end{equation}
 
 The function $L_R$ trivially prepares a transaction receipt for being transformed into an RLP-serialised byte array:
