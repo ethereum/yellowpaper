@@ -883,16 +883,16 @@ See Appendix \ref{app:vm} for a rigorous definition of the EVM gas cost.
 In addition to the system state $\boldsymbol{\sigma}$, and the remaining gas for computation $g$, there are several pieces of important information used in the execution environment that the execution agent must provide; these are contained in the tuple $I$:
 
 \begin{itemize}
-\item $I_a$, the address of the account which owns the code that is executing.
-\item $I_o$, the sender address of the transaction that originated this execution.
-\item $I_p$, the price of gas in the transaction that originated this execution.
-\item $I_\mathbf{d}$, the byte array that is the input data to this execution; if the execution agent is a transaction, this would be the transaction data.
-\item $I_s$, the address of the account which caused the code to be executing; if the execution agent is a transaction, this would be the transaction sender.
-\item $I_v$, the value, in Wei, passed to this account as part of the same procedure as execution; if the execution agent is a transaction, this would be the transaction value.
-\item $I_\mathbf{b}$, the byte array that is the machine code to be executed.
-\item $I_H$, the block header of the present block.
-\item $I_e$, the depth of the present message-call or contract-creation (i.e. the number of {\small CALL}s or {\small CREATE}s being executed at present).
-\item $I_w$, the permission to make modifications to the state.
+\item\linkdest{address_of_account_which_owns_code_I__a_def_words}{} $I_a$, the address of the account which owns the code that is executing.
+\item\linkdest{address_of_sender_of_tx_that_originated_execution_I__o}{} $I_o$, the sender address of the transaction that originated this execution.
+\item\linkdest{gas_price_in_tx_that_originated_execution_I__p}{} $I_p$, the price of gas in the transaction that originated this execution.
+\item\linkdest{execution_input_data_I__d}{} $I_\mathbf{d}$, the byte array that is the input data to this execution; if the execution agent is a transaction, this would be the transaction data.
+\item\linkdest{the_address_of_the_account_which_caused_the_code_to_be_executing_I__s}{} $I_s$, the address of the account which caused the code to be executing; if the execution agent is a transaction, this would be the transaction sender.
+\item\linkdest{Wei_value_exec}{} $I_v$, the value, in Wei, passed to this account as part of the same procedure as execution; if the execution agent is a transaction, this would be the transaction value.
+\item\linkdest{exec_machine_code_I__b}{} $I_\mathbf{b}$, the byte array that is the machine code to be executed.
+\item\linkdest{exec_block_header_I__H}{} $I_H$, the block header of the present block.
+\item\linkdest{exec_call_or_create_depth_I__e}{} $I_e$, the depth of the present message-call or contract-creation (i.e. the number of {\small CALL}s or {\small CREATE}s being executed at present).
+\item\linkdest{exec_permission_to_modify_state_I__w}{} $I_w$, the permission to make modifications to the state.
 \end{itemize}
 
 The execution model defines the function $\Xi$, which can compute the resultant state $\boldsymbol{\sigma}'$, the remaining gas $g'$, the accrued substate $A$ and the resultant output, $\mathbf{o}$, given these definitions. For the present context, we will define it as:
