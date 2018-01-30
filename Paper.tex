@@ -1394,10 +1394,10 @@ When considering such a sequence, we use the common numeric subscript notation t
 Any series of bytes may also trivially be viewed as a series of nibbles, given an endian-specific notation; here we assume big-endian. Thus:
 \begin{eqnarray}
 y(\mathfrak{I}) & = & \{ (\mathbf{k}_0' \in \mathbb{Y}, \mathbf{v}_0 \in \mathbb{B}), (\mathbf{k}_1' \in \mathbb{Y}, \mathbf{v}_1 \in \mathbb{B}), ... \} \\
-\forall_{\mathrm{n}} \quad \forall_{i: i < 2\lVert\mathbf{k}_{\mathrm{n}}\rVert} \quad \mathbf{k}_{\mathrm{n}}'[i] & \equiv &
+\forall_{n} \quad \forall_{i: i < 2\lVert\mathbf{k}_{n}\rVert} \quad \mathbf{k}_{n}'[i] & \equiv &
 \begin{cases}
-\lfloor \mathbf{k}_{\mathrm{n}}[i \div 2] \div 16 \rfloor & \text{if} \; i \; \text{is even} \\
-\mathbf{k}_{\mathrm{n}}[\lfloor i \div 2 \rfloor] \bmod 16 & \text{otherwise}
+\lfloor \mathbf{k}_{n}[i \div 2] \div 16 \rfloor & \text{if} \; i \; \text{is even} \\
+\mathbf{k}_{n}[\lfloor i \div 2 \rfloor] \bmod 16 & \text{otherwise}
 \end{cases}
 \end{eqnarray}
 
@@ -1426,7 +1426,7 @@ A branch is then only used when necessary; no branch nodes may exist that contai
 \begin{equation}
 c(\mathfrak{I}, i) \equiv \begin{cases}
 \texttt{\small RLP}\Big( \big(\texttt{\small HP}(I_0[i .. (\lVert I_0\rVert - 1)], true), I_1 \big) \Big) & \text{if} \quad \lVert \mathfrak{I} \rVert = 1 \quad \text{where} \; \exists I: I \in \mathfrak{I} \\
-\texttt{\small RLP}\Big( \big(\texttt{\small HP}(I_0[i .. (j - 1)], false), n(\mathfrak{I}, j) \big) \Big) & \text{if} \quad i \ne j \quad \text{where} \; j = \arg \max_{\mathrm{x}} : \exists \mathbf{l}: \lVert \mathbf{l} \rVert = x : \forall_{I \in \mathfrak{I}}: I_0[0 .. (x - 1)] = \mathbf{l} \\
+\texttt{\small RLP}\Big( \big(\texttt{\small HP}(I_0[i .. (j - 1)], false), n(\mathfrak{I}, j) \big) \Big) & \text{if} \quad i \ne j \quad \text{where} \; j = \arg \max_{x} : \exists \mathbf{l}: \lVert \mathbf{l} \rVert = x : \forall_{I \in \mathfrak{I}}: I_0[0 .. (x - 1)] = \mathbf{l} \\
 \texttt{\small RLP}\Big( (u(0), u(1), ..., u(15), v) \Big) & \text{otherwise} \quad \text{where} \begin{array}[t]{rcl}
 u(j) & \equiv & n(\{ I : I \in \mathfrak{I} \wedge I_0[i] = j \}, i + 1) \\
 v & = & \begin{cases}
