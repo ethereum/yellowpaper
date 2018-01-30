@@ -1327,8 +1327,8 @@ If instead, the value to be serialised is a sequence of other items then the RLP
 \item If the concatenated serialisations of each contained item is less than 56 bytes in length, then the output is equal to that concatenation prefixed by the byte equal to the length of this byte array plus 192.
 \item Otherwise, the output is equal to the concatenated serialisations prefixed by the minimal-length byte-array which when interpreted as a big-endian integer is equal to the length of the concatenated serialisations byte array, which is itself prefixed by the number of bytes required to faithfully encode this length value plus 247.
 \end{itemize}
-\hypertarget{R l}{}
-Thus we finish by formally defining $R_l$:
+
+\hypertarget{R l}{}Thus we finish by formally defining $R_l$:
 \begin{eqnarray}
 R_l(\mathbf{x}) & \equiv & \begin{cases}
 (192 + \lVert s(\mathbf{x}) \rVert) \cdot s(\mathbf{x}) & \text{if} \quad \lVert s(\mathbf{x}) \rVert < 56 \\
