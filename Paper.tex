@@ -1075,7 +1075,7 @@ The process of finalising a block involves four stages:
 
 The validation of ommer headers means nothing more than verifying that each ommer header is both a valid header and satisfies the relation of $N$th-generation ommer to the present block where $N \leq 6$. The maximum of ommer headers is two. Formally:
 \begin{equation}
-\lVert B_\mathbf{U} \rVert \leqslant 2 \bigwedge_{mathbf{U} \in B_\mathbf{U}} V(U) \; \wedge \; k(U, P(B_H)_H, 6)
+\lVert B_\mathbf{U} \rVert \leqslant 2 \bigwedge_{\mathbf{U} \in B_\mathbf{U}} V(U) \; \wedge \; k(U, P(B_H)_H, 6)
 \end{equation}
 
 where $k$ denotes the ``is-kin'' property:
