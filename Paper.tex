@@ -1107,16 +1107,16 @@ The application of rewards to a block involves raising the balance of the accoun
 R & \equiv & (1 + \frac{1}{8} (U_i - {B_H}_i)) R_b
 \end{eqnarray}
 
-If there are collisions of the beneficiary addresses between ommers and the block (i.e. two ommers with the same beneficiary address or an ommer with the same beneficiary address as the present block), additions are applied cumulatively.\hypertarget{block-reward-R-b}{block-reward-R-b}
+If there are collisions of the beneficiary addresses between ommers and the block (i.e. two ommers with the same beneficiary address or an ommer with the same beneficiary address as the present block), additions are applied cumulatively.
 
-We define the block reward as 3 Ether:
+\hypertarget{block-reward-R-b}{block-reward-R-b}We define the block reward as 3 Ether:
 \begin{equation}
 \text{Let} \quad R_b = 3 \times 10^{18}
 \end{equation}
 
-\subsection{State \& Nonce Validation}\label{sec:statenoncevalidation}\hypertarget{Gamma}{Gamma}
+\subsection{State \& Nonce Validation}\label{sec:statenoncevalidation}
 
-We may now define the function, $\Gamma$, that maps a block $B$ to its initiation state:
+\hypertarget{Gamma}{Gamma}We may now define the function, $\Gamma$, that maps a block $B$ to its initiation state:
 \begin{equation}
 \Gamma(B) \equiv \begin{cases}
 \boldsymbol{\sigma}_0 & \text{if} \quad P(B_H) = \varnothing \\
@@ -1124,9 +1124,9 @@ We may now define the function, $\Gamma$, that maps a block $B$ to its initiatio
 \end{cases}
 \end{equation}
 
-Here, $\mathtt{\small TRIE}(L_S(\boldsymbol{\sigma}_i))$ means the hash of the root node of a trie of state $\boldsymbol{\sigma}_i$; it is assumed that implementations will store this in the state database, trivial and efficient since the trie is by nature an immutable data structure.\hypertarget{Phi}{Phi}
+Here, $\mathtt{\small TRIE}(L_S(\boldsymbol{\sigma}_i))$ means the hash of the root node of a trie of state $\boldsymbol{\sigma}_i$; it is assumed that implementations will store this in the state database, trivial and efficient since the trie is by nature an immutable data structure.
 
-And finally define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
+\hypertarget{Phi}{Phi}And finally define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
 \begin{eqnarray}
 \Phi(B) & \equiv & B': \quad B' = B^* \quad \text{except:} \\
 B'_n & = & n: \quad x \leqslant \frac{2^{256}}{H_d} \\
@@ -1160,10 +1160,10 @@ For $\mathbf{R}[n]_\mathbf{l}$, we utilise the $\Upsilon^\mathbf{l}$ function th
 We define $\mathbf{R}[n]_{s'}$ in a similar manner.
 \begin{equation}
 \mathbf{R}[n]_{s'} =
-\Upsilon^{s}(\boldsymbol{\sigma}[n - 1], B_\mathbf{T}[n])\hypertarget{Pi}{Pi}
+\Upsilon^{s}(\boldsymbol{\sigma}[n - 1], B_\mathbf{T}[n])
 \end{equation}
 
-Finally, we define $\Pi$ as the new state given the block reward function $\Omega$ applied to the final transaction's resultant state, $\ell(\boldsymbol{\sigma})$:
+\hypertarget{Pi}{Pi}Finally, we define $\Pi$ as the new state given the block reward function $\Omega$ applied to the final transaction's resultant state, $\ell(\boldsymbol{\sigma})$:
 \begin{equation}
 \Pi(\boldsymbol{\sigma}, B) \equiv \Omega(B, \ell(\boldsymbol{\sigma}))
 \end{equation}
