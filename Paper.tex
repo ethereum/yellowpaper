@@ -345,9 +345,9 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \linkdest{ommer_block_headers_B__U}{}\linkdest{block_B}{}The other two components in the block are simply a list of ommer block headers (of the same format as above) and a series of the transactions. Formally, we can refer to a block $B$:
 \begin{equation}
 B \equiv (B_H, B_\mathbf{T}, B_\mathbf{U})
-\end{equation}\linkdest{Transaction Receipt}{}
+\end{equation}
 
-\subsubsection{Transaction Receipt}
+\subsubsection{Transaction Receipt}\linkdest{Transaction Receipt}{}
 
 In order to encode information about a transaction concerning which it may be useful to form a zero-knowledge proof, or index and search, we encode a receipt of each transaction containing certain information from concerning its execution.
 Each receipt, denoted $B_\mathbf{R}[i]$ for the $i$th transaction, is placed in an index-keyed trie and the root recorded in the header as $H_e$.
