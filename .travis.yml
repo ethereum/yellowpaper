@@ -1,0 +1,18 @@
+sudo: required
+before_install:
+- sudo apt-get -qq update
+- sudo apt-get install texlive texlive-latex3
+script:
+- ./build.sh
+deploy:
+  provider: script
+  script: ./travis_deploy.sh
+  skip_cleanup: true
+  on:
+    branch: master
+env:
+  global:
+    - ENCRYPTION_LABEL="19a81de38b62"
+    - COMMIT_AUTHOR_EMAIL="chris@ethereum.org"
+    - COMMIT_AUTHOR="Travis CI"
+    - PUSH_REPO="git@github.com:ethereum/yellowpaper.git"
