@@ -1126,7 +1126,7 @@ If there are collisions of the beneficiary addresses between ommers and the bloc
 
 Here, $\mathtt{\small TRIE}(L_S(\boldsymbol{\sigma}_i))$ means the hash of the root node of a trie of state $\boldsymbol{\sigma}_i$; it is assumed that implementations will store this in the state database, trivial and efficient since the trie is by nature an immutable data structure.
 
-\hypertarget{Phi}{Phi}And finally define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
+\hypertarget{Phi}{}And finally define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
 \begin{eqnarray}
 \Phi(B) & \equiv & B': \quad B' = B^* \quad \text{except:} \\
 B'_n & = & n: \quad x \leqslant \frac{2^{256}}{H_d} \\
