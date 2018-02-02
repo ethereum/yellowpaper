@@ -1687,13 +1687,13 @@ G(T, p_r) \equiv T \quad \text{except:} \\
 
 %Uncomment out after merging \hypertargets for v, r, and s.
 %Thus: 
-%\begin{eqnarray}\hypertarget{T w}{}\hypertarget{T r}{}\hypertarget{T s}{}
+%\begin{eqnarray}\hypertarget{T__w}{}\hypertarget{T__r}{}\hypertarget{T__s}{}
 %T_{\mathrm{w}} = \hyperlink{v}{v}\\
 %T_{\mathrm{r}} = \hyperlink{r}{r}\\
 %T_{\mathrm{s}} = \hyperlink{s}{s}
 %\end{eqnarray}
 
-We may then define the sender function $S$ of the transaction as:\hypertarget{T w}{}\hypertarget{T r}{}\hypertarget{T s}{}
+We may then define the sender function $S$ of the transaction as:
 \begin{eqnarray}
 S(T) &\equiv& \mathcal{B}_{96..255}\big(\mathtt{\tiny KEC}\big( \mathtt{\small ECDSARECOVER}(h(T), v_0, T_r, T_s) \big) \big) \\
 v_0 &\equiv& \begin{cases}
