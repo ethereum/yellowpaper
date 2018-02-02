@@ -954,8 +954,8 @@ w \equiv \begin{cases} I_\mathbf{b}[\boldsymbol{\mu}_{pc}] & \text{if} \quad \bo
 \end{equation}
 
 We also assume the fixed amounts of $\mathbf{\delta}$ and $\mathbf{\alpha}$, specifying the stack items removed and added, both subscriptable on the instruction and an instruction cost function $C$ evaluating to the full cost, in gas, of executing the given instruction.
-\hypertarget{Exceptional_Halting_function_Z}{}
-\subsubsection{Exceptional Halting}
+
+\subsubsection{Exceptional Halting}\hypertarget{Exceptional_Halting_function_Z}{}
 
 The exceptional halting function $Z$ is defined as:
 \begin{equation}
@@ -1297,8 +1297,8 @@ The source of this paper is maintained at \url{https://github.com/ethereum/yello
 \item[LLL] The Lisp-like Low-level Language, a human-writable language used for authoring simple contracts and general low-level language toolkit for trans-compiling to.
 
 \end{description}
-\hypertarget{rlp}{}
-\section{Recursive Length Prefix}\label{app:rlp}
+
+\section{Recursive Length Prefix}\label{app:rlp}\hypertarget{rlp}{}
 This is a serialisation method for encoding arbitrarily structured binary data (byte arrays).
 
 We define the set of possible structures $\mathbb{T}$:
@@ -1315,15 +1315,15 @@ We define the RLP function as $\mathtt{\tiny RLP}$ through two sub-functions, th
 \mathtt{\tiny RLP}(\mathbf{x}) \equiv \begin{cases} R_{\mathrm{b}}(\mathbf{x}) & \text{if} \quad \mathbf{x} \in \mathbb{B} \\ R_{\mathrm{l}}(\mathbf{x}) & \text{otherwise} \end{cases}
 \end{equation}
 
-If the value to be serialised is a byte-array, the RLP serialisation takes one of three forms:
+\hypertarget{RLP_serialisation_of_a_byte_array_R__b_word_def}{}If the value to be serialised is a byte-array, the RLP serialisation takes one of three forms:
 
 \begin{itemize}
 \item If the byte-array contains solely a single byte and that single byte is less than 128, then the input is exactly equal to the output.
 \item If the byte-array contains fewer than 56 bytes, then the output is equal to the input prefixed by the byte equal to the length of the byte array plus 128.
 \item Otherwise, the output is equal to the input prefixed by the minimal-length byte-array which when interpreted as a big-endian integer is equal to the length of the input byte array, which is itself prefixed by the number of bytes required to faithfully encode this length value plus 183.
 \end{itemize}
-\hypertarget{R b}{}
-Formally, we define $R_{\mathrm{b}}$:
+
+\hypertarget{RLP_serialisation_of_a_byte_array_R__b_math_def}{}Formally, we define $R_{\mathrm{b}}$:
 \begin{eqnarray}
 R_{\mathrm{b}}(\mathbf{x}) & \equiv & \begin{cases}
 \mathbf{x} & \text{if} \quad \lVert \mathbf{x} \rVert = 1 \wedge \mathbf{x}[0] < 128 \\
@@ -1336,14 +1336,14 @@ R_{\mathrm{b}}(\mathbf{x}) & \equiv & \begin{cases}
 
 Thus $\mathtt{\tiny BE}$ is the function that expands a positive integer value to a big-endian byte array of minimal length and the dot operator performs sequence concatenation.
 
-If instead, the value to be serialised is a sequence of other items then the RLP serialisation takes one of two forms:
+\hypertarget{RLP_serialisation_of_a_sequence_of_other_items_R__l_word_def}{}If instead, the value to be serialised is a sequence of other items then the RLP serialisation takes one of two forms:
 
 \begin{itemize}
 \item If the concatenated serialisations of each contained item is less than 56 bytes in length, then the output is equal to that concatenation prefixed by the byte equal to the length of this byte array plus 192.
 \item Otherwise, the output is equal to the concatenated serialisations prefixed by the minimal-length byte-array which when interpreted as a big-endian integer is equal to the length of the concatenated serialisations byte array, which is itself prefixed by the number of bytes required to faithfully encode this length value plus 247.
 \end{itemize}
 
-\hypertarget{R l}{}Thus we finish by formally defining $R_{\mathrm{l}}$:
+\hypertarget{RLP_serialisation_of_a_sequence_of_other_items_R__l_math_def}{}Thus we finish by formally defining $R_{\mathrm{l}}$:
 \begin{eqnarray}
 R_{\mathrm{l}}(\mathbf{x}) & \equiv & \begin{cases}
 (192 + \lVert s(\mathbf{x}) \rVert) \cdot s(\mathbf{x}) & \text{if} \quad \lVert s(\mathbf{x}) \rVert < 56 \\
@@ -1377,8 +1377,8 @@ f(t) & \equiv & \begin{cases} 2 & \text{if} \quad t \neq 0 \\ 0 & \text{otherwis
 \end{eqnarray}
 
 Thus the high nibble of the first byte contains two flags; the lowest bit encoding the oddness of the length and the second-lowest encoding the flag $t$. The low nibble of the first byte is zero in the case of an even number of nibbles and the first nibble in the case of an odd number. All remaining nibbles (now an even number) fit properly into the remaining bytes.
-\hypertarget{trie}{}
-\section{Modified Merkle Patricia Tree}\label{app:trie}
+
+\section{Modified Merkle Patricia Tree}\label{app:trie}\hypertarget{trie}{}
 The modified Merkle Patricia tree (trie) provides a persistent data structure to map between arbitrary-length binary data (byte arrays). It is defined in terms of a mutable data structure to map between 256-bit binary fragments and arbitrary-length binary data, typically implemented as a database. The core of the trie, and its sole requirement in terms of the protocol specification is to provide a single value that identifies a given set of key-value pairs, which may be either a 32 byte sequence or the empty byte sequence. It is left as an implementation consideration to store and maintain the structure of the trie in a manner that allows effective and efficient realisation of the protocol.
 
 Formally, we assume the input value $\mathfrak{I}$, a set containing pairs of byte sequences:
@@ -2321,8 +2321,7 @@ G_{newaccount} & \text{if} \quad n \\
 \bottomrule
 \end{tabular*}
 
-\hypertarget{GenesisBlock}{}
-\section{Genesis Block}\label{app:genesis}
+\section{Genesis Block}\label{app:genesis}\hypertarget{GenesisBlock}{}
 
 The genesis block is 15 items, and is specified thus:
 \begin{equation}
