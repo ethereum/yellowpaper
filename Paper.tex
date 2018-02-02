@@ -401,14 +401,14 @@ where $\mathcal{B}$ is the bit reference function such that $\mathcal{B}_{\mathr
 
 \subsubsection{Holistic Validity}
 
-We can assert a block's validity if and only if it satisfies several conditions: it must be internally consistent with the ommer and transaction block hashes and the given transactions $B_\mathbf{T}$ (as specified in sec \ref{ch:finalisation}), when executed in order on the base state $\boldsymbol{\sigma}$ (derived from the final state of the parent block), result in a new state of the identity $H_{\mathrm{r}}$:
+\linkdest{block_validity}{}We can assert a block's validity if and only if it satisfies several conditions: it must be internally consistent with the ommer and transaction block hashes and the given transactions $B_\mathbf{T}$ (as specified in sec \ref{ch:finalisation}), when executed in order on the base state $\boldsymbol{\sigma}$ (derived from the final state of the parent block), result in a new state of the identity $H_{\mathrm{r}}$:
 \begin{equation}
 \begin{array}[t]{lclc}
-H_{\mathrm{r}} &\equiv& \mathtt{\small TRIE}(L_{S}(\Pi(\boldsymbol{\sigma}, B))) & \wedge \\
-H_{\mathrm{o}} &\equiv& \mathtt{\small KEC}(\mathtt{\small RLP}(L_{H}^*(B_\mathbf{U}))) & \wedge \\
-H_{\mathrm{t}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert, i \in \mathbb{P}: p(i, L_{T}(B_\mathbf{T}[i]))\}) & \wedge \\
-H_{\mathrm{e}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{R} \rVert, i \in \mathbb{P}: p(i, L_{R}(B_\mathbf{R}[i]))\}) & \wedge \\
-H_{\mathrm{b}} &\equiv& \bigvee_{\mathbf{r} \in B_\mathbf{R}} \big( \mathbf{r}_{\mathrm{b}} \big)
+\linkdest{new_state_H__r}{}H_{\mathrm{r}} &\equiv& \mathtt{\small TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) & \wedge \\
+\linkdest{Ommer_block_hash_H__o}{}H_{\mathrm{o}} &\equiv& \mathtt{\small KEC}(\mathtt{\small RLP}(L_H^*(B_\mathbf{U}))) & \wedge \\
+\linkdest{tx_block_hash_H__t}{}H_{\mathrm{t}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert, i \in \mathbb{P}: p(i, L_{T}(B_\mathbf{T}[i]))\}) & \wedge \\
+\linkdest{Receipts_Root_H__e}{}H_{\mathrm{e}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{R} \rVert, i \in \mathbb{P}: p(i, L_{R}(B_\mathbf{R}[i]))\}) & \wedge \\
+\linkdest{logs_Bloom_filter_H__b}{}H_{\mathrm{b}} &\equiv& \bigvee_{\mathbf{r} \in B_\mathbf{R}} \big( \mathbf{r}_{\mathrm{b}} \big)
 \end{array}
 \end{equation}
 where $p(k, v)$ is simply the pairwise RLP transformation, in this case, the first being the index of the transaction in the block and the second being the transaction receipt:
@@ -1108,7 +1108,7 @@ The given \textbf{gasUsed} must correspond faithfully to the transactions listed
 
 \subsection{Reward Application}
 
-The application of rewards to a block involves raising the balance of the accounts of the beneficiary address of the block and each ommer by a certain amount. We raise the block's beneficiary account by $R_{\mathrm{b}}$; for each ommer, we raise the block's beneficiary by an additional $\frac{1}{32}$ of the block reward and the beneficiary of the ommer gets rewarded depending on the block number. Formally we define the function $\Omega$:
+The application of rewards to a block involves raising the balance of the accounts of the beneficiary address of the block and each ommer by a certain amount. We raise the block's beneficiary account by $R_{\mathrm{b}}$; for each ommer, we raise the block's beneficiary by an additional $\frac{1}{32}$ of the block reward and the beneficiary of the ommer gets rewarded depending on the block number.\hypertarget{Omega}{} Formally we define the function $\Omega$:
 \begin{eqnarray}
 \\ \nonumber
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
@@ -1124,14 +1124,14 @@ R & \equiv & (1 + \frac{1}{8} (U_{\mathrm{i}} - {B_{H}}_{\mathrm{i}})) R_{\mathr
 
 If there are collisions of the beneficiary addresses between ommers and the block (i.e. two ommers with the same beneficiary address or an ommer with the same beneficiary address as the present block), additions are applied cumulatively.
 
-We define the block reward as 3 Ether:
+\hypertarget{block_reward_R__b}{}We define the block reward as 3 Ether:
 \begin{equation}
 \text{Let} \quad R_{\mathrm{b}} = 3 \times 10^{18}
 \end{equation}
 
 \subsection{State \& Nonce Validation}\label{sec:statenoncevalidation}
 
-We may now define the function, $\Gamma$, that maps a block $B$ to its initiation state:
+\hypertarget{Gamma}{}We may now define the function, $\Gamma$, that maps a block $B$ to its initiation state:
 \begin{equation}
 \Gamma(B) \equiv \begin{cases}
 \boldsymbol{\sigma}_0 & \text{if} \quad P(B_{H}) = \varnothing \\
@@ -1141,7 +1141,7 @@ We may now define the function, $\Gamma$, that maps a block $B$ to its initiatio
 
 Here, $\mathtt{\small TRIE}(L_{S}(\boldsymbol{\sigma}_{\mathrm{i}}))$ means the hash of the root node of a trie of state $\boldsymbol{\sigma}_{\mathrm{i}}$; it is assumed that implementations will store this in the state database, trivial and efficient since the trie is by nature an immutable data structure.
 
-And finally define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
+\hypertarget{Phi}{}And finally define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
 \begin{eqnarray}
 \Phi(B) & \equiv & B': \quad B' = B^* \quad \text{except:} \\
 B'_{\mathrm{n}} & = & n: \quad x \leqslant \frac{2^{256}}{H_{\mathrm{d}}} \\
@@ -1178,7 +1178,7 @@ We define $\mathbf{R}[n]_{\mathrm{z}}$ in a similar manner.
 \Upsilon^z(\boldsymbol{\sigma}[n - 1], B_\mathbf{T}[n])
 \end{equation}
 
-Finally, we define $\Pi$ as the new state given the block reward function $\Omega$ applied to the final transaction's resultant state, $\ell(\boldsymbol{\sigma})$:
+\hypertarget{Pi}{}Finally, we define $\Pi$ as the new state given the block reward function $\Omega$ applied to the final transaction's resultant state, $\ell(\boldsymbol{\sigma})$:
 \begin{equation}
 \Pi(\boldsymbol{\sigma}, B) \equiv \Omega(B, \ell(\boldsymbol{\sigma}))
 \end{equation}
@@ -1680,7 +1680,7 @@ For a given private key, $p_{\mathrm{r}}$, the Ethereum address $A(p_{\mathrm{r}
 A(p_{\mathrm{r}}) = \mathcal{B}_{96..255}\big(\mathtt{\tiny KEC}\big( \mathtt{\small ECDSAPUBKEY}(p_{\mathrm{r}}) \big) \big)
 \end{equation}
 
-The message hash, $h(T)$, to be signed is the Keccak hash of the transaction. Two different flavors of signing schemes are available. One operates without the latter three signature components, formally described as $T_{\mathrm{r}}$, $T_{\mathrm{s}}$ and $T_{\mathrm{w}}$. The other operates on nine elements:
+\hypertarget{h T}{}The message hash, $h(T)$, to be signed is the Keccak hash of the transaction. Two different flavors of signing schemes are available. One operates without the latter three signature components, formally described as $T_{\mathrm{r}}$, $T_{\mathrm{s}}$ and $T_{\mathrm{w}}$. The other operates on nine elements:
 \begin{eqnarray}
 L_{S}(T) & \equiv & \begin{cases}
 (T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}) & \text{if} \; v \in \{27, 28\} \\
