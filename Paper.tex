@@ -1316,7 +1316,7 @@ We define the RLP function as $\mathtt{\tiny RLP}$ through two sub-functions, th
 \mathtt{\tiny RLP}(\mathbf{x}) \equiv \begin{cases} R_b(\mathbf{x}) & \text{if} \quad \mathbf{x} \in \mathbb{B} \\ R_l(\mathbf{x}) & \text{otherwise} \end{cases}
 \end{equation}
 
-If the value to be serialised is a byte-array, the RLP serialisation takes one of three forms:
+\hypertarget{RLP_serialisation_of_a_byte_array_R__b_word_def}{}If the value to be serialised is a byte-array, the RLP serialisation takes one of three forms:
 
 \begin{itemize}
 \item If the byte-array contains solely a single byte and that single byte is less than 128, then the input is exactly equal to the output.
@@ -1337,7 +1337,7 @@ R_b(\mathbf{x}) & \equiv & \begin{cases}
 
 Thus $\mathtt{\tiny BE}$ is the function that expands a positive integer value to a big-endian byte array of minimal length and the dot operator performs sequence concatenation.
 
-If instead, the value to be serialised is a sequence of other items then the RLP serialisation takes one of two forms:
+\hypertarget{RLP_serialisation_of_a_sequence_of_other_items_R__l_word_def}{}If instead, the value to be serialised is a sequence of other items then the RLP serialisation takes one of two forms:
 
 \begin{itemize}
 \item If the concatenated serialisations of each contained item is less than 56 bytes in length, then the output is equal to that concatenation prefixed by the byte equal to the length of this byte array plus 192.
