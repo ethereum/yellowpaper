@@ -1298,8 +1298,8 @@ The source of this paper is maintained at \url{https://github.com/ethereum/yello
 \item[LLL] The Lisp-like Low-level Language, a human-writable language used for authoring simple contracts and general low-level language toolkit for trans-compiling to.
 
 \end{description}
-\hypertarget{rlp}{}
-\section{Recursive Length Prefix}\label{app:rlp}
+
+\section{Recursive Length Prefix}\label{app:rlp}\hypertarget{rlp}{}
 This is a serialisation method for encoding arbitrarily structured binary data (byte arrays).
 
 We define the set of possible structures $\mathbb{T}$:
@@ -1323,8 +1323,8 @@ If the value to be serialised is a byte-array, the RLP serialisation takes one o
 \item If the byte-array contains fewer than 56 bytes, then the output is equal to the input prefixed by the byte equal to the length of the byte array plus 128.
 \item Otherwise, the output is equal to the input prefixed by the minimal-length byte-array which when interpreted as a big-endian integer is equal to the length of the input byte array, which is itself prefixed by the number of bytes required to faithfully encode this length value plus 183.
 \end{itemize}
-\hypertarget{R b}{}
-Formally, we define $R_b$:
+
+\hypertarget{RLP_serialisation_of_a_byte_array_R__b_math_def}{}Formally, we define $R_b$:
 \begin{eqnarray}
 R_b(\mathbf{x}) & \equiv & \begin{cases}
 \mathbf{x} & \text{if} \quad \lVert \mathbf{x} \rVert = 1 \wedge \mathbf{x}[0] < 128 \\
@@ -1344,7 +1344,7 @@ If instead, the value to be serialised is a sequence of other items then the RLP
 \item Otherwise, the output is equal to the concatenated serialisations prefixed by the minimal-length byte-array which when interpreted as a big-endian integer is equal to the length of the concatenated serialisations byte array, which is itself prefixed by the number of bytes required to faithfully encode this length value plus 247.
 \end{itemize}
 
-\hypertarget{R l}{}Thus we finish by formally defining $R_l$:
+\hypertarget{RLP_serialisation_of_a_sequence_of_other_items_R__l_math_def}{}Thus we finish by formally defining $R_l$:
 \begin{eqnarray}
 R_l(\mathbf{x}) & \equiv & \begin{cases}
 (192 + \lVert s(\mathbf{x}) \rVert) \cdot s(\mathbf{x}) & \text{if} \quad \lVert s(\mathbf{x}) \rVert < 56 \\
@@ -1378,8 +1378,8 @@ f(t) & \equiv & \begin{cases} 2 & \text{if} \quad t \neq 0 \\ 0 & \text{otherwis
 \end{eqnarray}
 
 Thus the high nibble of the first byte contains two flags; the lowest bit encoding the oddness of the length and the second-lowest encoding the flag $t$. The low nibble of the first byte is zero in the case of an even number of nibbles and the first nibble in the case of an odd number. All remaining nibbles (now an even number) fit properly into the remaining bytes.
-\hypertarget{trie}{}
-\section{Modified Merkle Patricia Tree}\label{app:trie}
+
+\section{Modified Merkle Patricia Tree}\label{app:trie}\hypertarget{trie}{}
 The modified Merkle Patricia tree (trie) provides a persistent data structure to map between arbitrary-length binary data (byte arrays). It is defined in terms of a mutable data structure to map between 256-bit binary fragments and arbitrary-length binary data, typically implemented as a database. The core of the trie, and its sole requirement in terms of the protocol specification is to provide a single value that identifies a given set of key-value pairs, which may be either a 32 byte sequence or the empty byte sequence. It is left as an implementation consideration to store and maintain the structure of the trie in a manner that allows effective and efficient realisation of the protocol.
 
 Formally, we assume the input value $\mathfrak{I}$, a set containing pairs of byte sequences:
@@ -2322,8 +2322,7 @@ G_{newaccount} & \text{if} \quad n \\
 \bottomrule
 \end{tabular*}
 
-\hypertarget{GenesisBlock}{}
-\section{Genesis Block}\label{app:genesis}
+\section{Genesis Block}\label{app:genesis}\hypertarget{GenesisBlock}{}
 
 The genesis block is 15 items, and is specified thus:
 \begin{equation}
