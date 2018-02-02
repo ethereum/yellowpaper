@@ -5,13 +5,24 @@
 
 The Yellow Paper is a formal definition of the Ethereum protocol, originally by Gavin Wood, currently maintained by Nick Savers and with contributions from many people around the world.
 
-It is free culture work, licensed under the Creative Commons Attribution Share-Alike (CC-BY-SA) version 4.0.
+It is a free culture work, licensed under Creative Commons Attribution Share-Alike (CC-BY-SA) version 4.0.
 
 ## Usage
 
-The paper comes as a single ``latex`` file ``Paper.tex``. The latest version is generally available as a PDF at https://ethereum.github.io/yellowpaper/paper.pdf or just [yellowpaper.io](http://yellowpaper.io/) .
+The paper comes as a single ``latex`` file ``Paper.tex``. The latest version is generally available as a PDF at https://ethereum.github.io/yellowpaper/paper.pdf. If you find that the borders for links block too much text when viewing the PDF in the browser, you can instead download it and open and view it with a PDF viewer application such as Adobe Acrobat or Evince, where the borders are less likely to display over text.
 
-In order to build, use the supplied build script (``build.sh``). Following the first time, you can use the standard `pdflatex` tools like http://latex.informatik.uni-halle.de/latex-online/latex.php for compiling/preview. It can be viewed in ``PDF`` format after building.
+## How to build
+
+The paper also comes as a single ``latex`` file ``Paper.tex``, which is built as a PDF as follows.
+
+```
+git clone https://github.com/ethereum/yellowpaper.git
+cd yellowpaper
+./build.sh
+```
+This will create a PDF version of the Yellow Paper. Following building, you can also use standard `pdflatex` tools like http://latex.informatik.uni-halle.de/latex-online/latex.php for compiling/preview.
+
+The previous protocol versions are listed in [BRANCHES.md](./BRANCHES.md).
 
 ## Other language versions
-- [Chinese](https://github.com/yuange1024/ethereum_yellowpaper) translated by YuanGe and GaoTianlu
+- [Chinese](https://github.com/yuange1024/ethereum_yellowpaper) translated by YuanGe and GaoTianlu.
