@@ -501,7 +501,7 @@ x \equiv \begin{cases}
 H'_{\mathrm{i}} &\equiv \max(H_{\mathrm{i}} - 3000000, 0)
 \end{align}
 
-Note that $\mindifficulty$ is the difficulty of the genesis block. The \textit{Homestead} difficulty parameter, $\homesteadmod$, is used to affect a dynamic homeostasis of time between blocks, as the time between blocks varies, as discussed below, as implemented in EIP-2 \cite{EIP-2}. In the Homestead release, the exponential difficulty symbol, $\expdiffsymb$ causes the difficulty to slowly increase (every 100,000 blocks) at an exponential rate, and thus increasing the block time difference, and putting time pressure on transitioning to proof-of-stake. This effect, known as the "difficulty bomb", or "ice age", was explained in EIP-649 \cite{EIP-649} and delayed and implemented earlier in EIP-2 \cite{EIP-2}. $\homesteadmod$ was also modified in EIP-100 with the use of $x$, the adjustment factor above, and the demoninator 9, in order to target the mean block time including uncle blocks \cite{EIP-100}. Finally, in the Byzantium release, with EIP-649, the ice age was delayed by creating a fake block number, $H'_{\mathrm{i}}$, which is obtained by substracting three million from the actual block number, which in other words reduced $\expdiffsymb$ and the time difference between blocks, in order to allow more time to develop proof-of-stake and preventing the network from "freezing" up.
+Note that $\mindifficulty$ is the difficulty of the genesis block. The \textit{Homestead} difficulty parameter, $\homesteadmod$, is used to affect a dynamic homeostasis of time between blocks, as the time between blocks varies, as discussed below, as implemented in EIP-2 by \cite{EIP-2}. In the Homestead release, the exponential difficulty symbol, $\expdiffsymb$ causes the difficulty to slowly increase (every 100,000 blocks) at an exponential rate, and thus increasing the block time difference, and putting time pressure on transitioning to proof-of-stake. This effect, known as the "difficulty bomb", or "ice age", was explained in EIP-649 by \cite{EIP-649} and delayed and implemented earlier in EIP-2. $\homesteadmod$ was also modified in EIP-100 with the use of $x$, the adjustment factor above, and the demoninator 9, in order to target the mean block time including uncle blocks by \cite{EIP-100}. Finally, in the Byzantium release, with EIP-649, the ice age was delayed by creating a fake block number, $H'_{\mathrm{i}}$, which is obtained by substracting three million from the actual block number, which in other words reduced $\expdiffsymb$ and the time difference between blocks, in order to allow more time to develop proof-of-stake and preventing the network from "freezing" up.
 
 \hypertarget{block_gas_limit_H__l}{}The canonical gas limit $H_{\mathrm{l}}$ of a block of header $H$ must fulfil the relation:
 \begin{eqnarray}
@@ -2516,7 +2516,7 @@ At block 2675119, in the transaction \seqsplit{0xcf416c536ec1a19ed1fb89e\\4ec7ff
 \toprule
 Symbol & Latex Command & Description \hypertarget{bigvee}{}\\
 \midrule
-$\bigvee$ & \verb|\bigvee| & This is the least upper bound, supremum, or join of all elements operated on. Thus it is the greatest element of such elements \cite{Davey2002_zbMATH01748069}.\\
+$\bigvee$ & \verb|\bigvee| & This is the least upper bound, supremum, or join of all elements operated on. Thus it is the greatest element of such elements (\cite{Davey2002_zbMATH01748069}).\\
 \bottomrule
 \end{tabu*}
 
