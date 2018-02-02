@@ -5,7 +5,7 @@
 
 The Yellow Paper is a formal definition of the Ethereum protocol, originally by Gavin Wood, currently maintained by Nick Savers and with contributions from many people around the world.
 
-It is free culture work, licensed under the Creative Commons Attribution Share-Alike (CC-BY-SA) version 4.0.
+It is a free culture work, licensed under Creative Commons Attribution Share-Alike (CC-BY-SA) version 4.0.
 
 ## Usage
 
@@ -25,4 +25,4 @@ This will create a PDF version of the Yellow Paper. Following building, you can 
 The previous protocol versions are listed in [BRANCHES.md](./BRANCHES.md).
 
 ## Other language versions
-- [Chinese](https://github.com/yuange1024/ethereum_yellowpaper) translated by YuanGe and GaoTianlu
+- [Chinese](https://github.com/yuange1024/ethereum_yellowpaper) translated by YuanGe and GaoTianlu.
