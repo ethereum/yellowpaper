@@ -1665,8 +1665,8 @@ Where $p_{\mathrm{u}}$ is the public key, assumed to be a byte array of size 64 
 
 We declare that a signature is invalid unless all the following conditions are true:
 \begin{align}
-0 < r &< \mathtt{\tiny secp256k1n} \\
-0 < s &< \mathtt{\tiny secp256k1n} \div 2 + 1 \\
+0 < \linkdest{r}{r} &< \mathtt{\tiny secp256k1n} \\
+0 < \linkdest{s}{s} &< \mathtt{\tiny secp256k1n} \div 2 + 1 \\
 v &\in \{27,28,\mathtt{\tiny chain\_{\mathrm{id}}} \times 2 + 35, \mathtt{\tiny chain\_{\mathrm{id}}} \times 2 + 36\}
 \end{align}
 where:
