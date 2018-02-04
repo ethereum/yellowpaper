@@ -274,7 +274,7 @@ A transaction (formally, $T$) is a single cryptographically-signed instruction c
 \item[gasLimit] A scalar value equal to the maximum amount of gas that should be used in executing this transaction. This is paid up-front, before any computation is done and may not be increased later; formally $T_{\mathrm{g}}$.
 \item[to] The 160-bit address of the message call's recipient or, for a contract creation transaction, $\varnothing$, used here to denote the only member of $\mathbb{B}_0$ ; formally $T_{\mathrm{t}}$.
 \item[value] A scalar value equal to the number of Wei to be transferred to the message call's recipient or, in the case of contract creation, as an endowment to the newly created account; formally $T_{\mathrm{v}}$.
-\item[v, r, s] Values corresponding to the signature of the transaction and used to determine the sender of the transaction; formally \hypertarget{T__w_T__r_T__s}{$T_{\mathrm{w}}$, $T_{\mathrm{r}}$ and $T_{\mathrm{s}}$}. This is expanded in Appendix \ref{app:signing}.
+\item[v, r, s] Values corresponding to the signature of the transaction and used to determine the sender of the transaction; formally \linkdest{T__w_T__r_T__s}{$T_{\mathrm{w}}$, $T_{\mathrm{r}}$ and $T_{\mathrm{s}}$}. This is expanded in Appendix \ref{app:signing}.
 \end{description}
 
 Additionally, a contract creation transaction contains:
