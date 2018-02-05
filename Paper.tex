@@ -626,8 +626,8 @@ We define the checkpoint state $\boldsymbol{\sigma}_0$:
 Evaluating $\boldsymbol{\sigma}_{P}$ from $\boldsymbol{\sigma}_0$ depends on the transaction type; either contract creation or message call; we define the tuple of post-execution provisional state $\boldsymbol{\sigma}_{P}$, remaining gas $g'$, substate $A$ and status code $z$:
 \begin{equation}
 (\boldsymbol{\sigma}_{P}, g', A, z) \equiv \begin{cases}
-\Lambda_{4}(\boldsymbol{\sigma}_0, S(T), T_{\mathrm{o}}, &\\ \quad\quad g, T_{\mathrm{p}}, T_{\mathrm{v}}, T_\mathbf{i}, 0, \top) & \text{if} \quad T_{\mathrm{t}} = \varnothing \\
-\Theta_{4}(\boldsymbol{\sigma}_0, S(T), T_{\mathrm{o}}, &\\ \quad\quad T_{\mathrm{t}}, T_{\mathrm{t}}, g, T_{\mathrm{p}}, T_{\mathrm{v}}, T_{\mathrm{v}}, T_\mathbf{d}, 0, \top) & \text{otherwise}
+\Lambda_{4}(\boldsymbol{\sigma}_0, S(T), T_{\mathrm{o}}, g, T_{\mathrm{p}}, T_{\mathrm{v}}, T_\mathbf{i}, &\\ \quad\quad 0, \top) & \text{if} \quad T_{\mathrm{t}} = \varnothing \\
+\Theta_{4}(\boldsymbol{\sigma}_0, S(T), T_{\mathrm{o}}, T_{\mathrm{t}}, T_{\mathrm{t}}, g, T_{\mathrm{p}}, T_{\mathrm{v}}, T_{\mathrm{v}}, T_\mathbf{d}, &\\ \quad\quad 0, \top) & \text{otherwise}
 \end{cases}
 \end{equation}
 
