@@ -18,7 +18,7 @@ The paper also comes as a single ``latex`` file ``Paper.tex``, which is built as
 ```
 git clone https://github.com/ethereum/yellowpaper.git
 cd yellowpaper
-./build.sh
+./b.sh
 ```
 This will create a PDF version of the Yellow Paper. Following building, you can also use standard `pdflatex` tools like http://latex.informatik.uni-halle.de/latex-online/latex.php for compiling/preview.
 
