@@ -348,12 +348,12 @@ The block in Ethereum is the collection of relevant pieces of information (known
 B \equiv (B_{H}, B_\mathbf{T}, B_\mathbf{U})
 \end{equation}
 
-\subsubsection{Transaction Receipt}\linkdest{Transaction Receipt}{}
+\subsubsection{Transaction Receipt}\linkdest{Transaction_Receipt}{}
 
 In order to encode information about a transaction concerning which it may be useful to form a zero-knowledge proof, or index and search, we encode a receipt of each transaction containing certain information from concerning its execution.
 Each receipt, denoted $B_\mathbf{R}[i]$ for the $i$th transaction, is placed in an index-keyed \hyperlink{trie}{trie} and the root recorded in the header as \hyperlink{Receipts_Root_H__e}{$H_{\mathrm{e}}$}.
 
-\linkdest{transaction_receipt_R}{}\linkdest{tx_receipt_gas_used_R__u}{}The transaction receipt is a tuple of four items comprising the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_{\mathrm{u}}$, the set of logs created through execution of the transaction, $R_\mathbf{l}$ and the Bloom filter composed from information in those logs, $R_{\mathrm{b}}$ and the status code of the transaction, $R_{\mathrm{z}}$:
+\linkdest{transaction_receipt_R}{}\linkdest{tx_receipt_gas_used_R__u}{}The transaction receipt, $R$, is a tuple of four items comprising the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_{\mathrm{u}}$, the set of logs created through execution of the transaction, \hyperlink{RLP_serialisation_of_a_sequence_of_other_items_R__l_math_def}{$R_\mathbf{l}$} and the Bloom filter composed from information in those logs, \hyperlink{RLP_serialisation_of_a_byte_array_R__b_math_def}{$R_{\mathrm{b}}$} and the status code of the transaction, $R_{\mathrm{z}}$:
 \begin{equation}
 R \equiv (R_{\mathrm{u}}, R_{\mathrm{b}}, R_\mathbf{l}, R_{\mathrm{z}})
 \end{equation}
@@ -570,7 +570,7 @@ Formally, we consider the function $\Upsilon$, with $T$ being a transaction and 
 \boldsymbol{\sigma}' = \Upsilon(\boldsymbol{\sigma}, T)
 \end{equation}
 
-Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define $\Upsilon^g$ to evaluate to the amount of gas used in the execution of a transaction, $\Upsilon^\mathbf{l}$ to evaluate to the transaction's accrued log items and $\Upsilon^z$ to evaluate to the status code resulting from the transaction. These will be formally defined later.
+Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define $\Upsilon^{\mathrm{g}}$ to evaluate to the amount of gas used in the execution of a transaction, $\Upsilon^{\mathbf{l}}$ to evaluate to the transaction's accrued log items and $\Upsilon^{\mathrm{z}}$ to evaluate to the status code resulting from the transaction. These will be formally defined later.
 
 \subsection{Substate}
 Throughout transaction execution, we accrue certain information that is acted upon immediately following the transaction. We call this \textit{transaction substate}, and represent it as $A$, which is a tuple:
@@ -661,14 +661,14 @@ The final state, $\boldsymbol{\sigma}'$, is reached after deleting all accounts 
 \linkdest{touched_A__t}{}\forall i \in A_\mathbf{t}: \boldsymbol{\sigma}'[i] & = & \varnothing \quad\text{if}\quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma}^*\kern -2pt, i)
 \end{eqnarray}
 
-\hypertarget{tx_total_gas_used_Upsilon_pow_g}{}\hypertarget{tx_logs_Upsilon_pow_l}{}\hypertarget{tx_status_Upsilon_pow_s}{}And finally, we specify $\Upsilon^g$, the total gas used in this transaction, $\Upsilon^\mathbf{l}$, the logs created by this transaction and $\Upsilon^z$, the status code of this transaction:
+\hypertarget{tx_total_gas_used_Upsilon_pow_g}{}\hypertarget{tx_logs_Upsilon_pow_l}{}\hypertarget{tx_status_Upsilon_pow_z}{}And finally, we specify $\Upsilon^{\mathrm{g}}$, the total gas used in this transaction, $\Upsilon^\mathbf{l}$, the logs created by this transaction and $\Upsilon^{\mathrm{z}}$, the status code of this transaction:
 \begin{eqnarray}
-\Upsilon^g(\boldsymbol{\sigma}, T) & \equiv & T_{\mathrm{g}} - g' \\
+\Upsilon^{\mathrm{g}}(\boldsymbol{\sigma}, T) & \equiv & T_{\mathrm{g}} - g' \\
 \Upsilon^\mathbf{l}(\boldsymbol{\sigma}, T) & \equiv & A_\mathbf{l} \\
-\Upsilon^z(\boldsymbol{\sigma}, T) & \equiv & z
+\Upsilon^{\mathrm{z}}(\boldsymbol{\sigma}, T) & \equiv & z
 \end{eqnarray}
 
-These are used to help define the transaction receipt, discussed later.
+These are used to help define the \hyperlink{Transaction_Receipt}{transaction receipt}.
 
 \section{Contract Creation}\label{ch:create}\hypertarget{endow}{}
 
@@ -1161,7 +1161,7 @@ In the case of $B_\mathbf{R}[n]_{\mathrm{u}}$, we take a similar approach defini
 \begin{equation}
 \mathbf{R}[n]_{\mathrm{u}} = \begin{cases} 0 & \text{if} \quad n < 0 \\
 \begin{array}[b]{l}
-\Upsilon^g(\boldsymbol{\sigma}[n - 1], B_\mathbf{T}[n])\\ \quad + \mathbf{R}[n-1]_{\mathrm{u}}
+\Upsilon^{\mathrm{g}}(\boldsymbol{\sigma}[n - 1], B_\mathbf{T}[n])\\ \quad + \mathbf{R}[n-1]_{\mathrm{u}}
 \end{array}
  & \text{otherwise} \end{cases}
 \end{equation}
@@ -1169,13 +1169,13 @@ In the case of $B_\mathbf{R}[n]_{\mathrm{u}}$, we take a similar approach defini
 For $\mathbf{R}[n]_\mathbf{l}$, we utilise the $\Upsilon^\mathbf{l}$ function that we conveniently defined in the transaction execution function.
 \begin{equation}
 \mathbf{R}[n]_\mathbf{l} =
-\Upsilon^\mathbf{l}(\boldsymbol{\sigma}[n - 1], B_\mathbf{T}[n])
+\Upsilon^{\mathbf{l}}(\boldsymbol{\sigma}[n - 1], B_\mathbf{T}[n])
 \end{equation}
 
 We define $\mathbf{R}[n]_{\mathrm{z}}$ in a similar manner.
 \begin{equation}
 \mathbf{R}[n]_{\mathrm{z}} =
-\Upsilon^z(\boldsymbol{\sigma}[n - 1], B_\mathbf{T}[n])
+\Upsilon^{\mathrm{z}}(\boldsymbol{\sigma}[n - 1], B_\mathbf{T}[n])
 \end{equation}
 
 \hypertarget{Pi}{}Finally, we define $\Pi$ as the new state given the block reward function $\Omega$ applied to the final transaction's resultant state, $\ell(\boldsymbol{\sigma})$:
