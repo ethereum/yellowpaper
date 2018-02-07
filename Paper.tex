@@ -248,7 +248,7 @@ This function, $L_{S}$, is used alongside the trie function to provide a short i
 \begin{equation}
 \forall a: \boldsymbol{\sigma}[a] = \varnothing \; \vee \; (a \in \mathbb{B}_{20} \; \wedge \; v(\boldsymbol{\sigma}[a]))
 \end{equation}
-where $v$ is the account validity function:
+\linkdest{account_validity_function_v__x}{}where $v$ is the account validity function:
 \begin{equation}
 \quad v(x) \equiv x_{\mathrm{n}} \in \mathbb{P}_{256} \wedge x_{\mathrm{b}} \in \mathbb{P}_{256} \wedge x_{\mathrm{s}} \in \mathbb{B}_{32} \wedge x_{\mathrm{c}} \in \mathbb{B}_{32}
 \end{equation}
@@ -269,11 +269,11 @@ An account is \textit{dead} when its account state is non-existent or empty:
 A transaction (formally, $T$) is a single cryptographically-signed instruction constructed by an actor externally to the scope of Ethereum. While it is assumed that the ultimate external actor will be human in nature, software tools will be used in its construction and dissemination\footnote{Notably, such `tools' could ultimately become so causally removed from their human-based initiation---or humans may become so causally-neutral---that there could be a point at which they rightly be considered autonomous agents. \eg contracts may offer bounties to humans for being sent transactions to initiate their execution.}. There are two types of transactions: those which result in message calls and those which result in the creation of new accounts with associated code (known informally as `contract creation'). Both types specify a number of common fields:
 
 \begin{description}
-\item[nonce] A scalar value equal to the number of transactions sent by the sender; formally $T_{\mathrm{n}}$.
-\item[gasPrice] A scalar value equal to the number of Wei to be paid per unit of \textit{gas} for all computation costs incurred as a result of the execution of this transaction; formally $T_{\mathrm{p}}$.
-\item[gasLimit] A scalar value equal to the maximum amount of gas that should be used in executing this transaction. This is paid up-front, before any computation is done and may not be increased later; formally $T_{\mathrm{g}}$.
-\item[to] The 160-bit address of the message call's recipient or, for a contract creation transaction, $\varnothing$, used here to denote the only member of $\mathbb{B}_0$ ; formally $T_{\mathrm{t}}$.
-\item[value] A scalar value equal to the number of Wei to be transferred to the message call's recipient or, in the case of contract creation, as an endowment to the newly created account; formally $T_{\mathrm{v}}$.
+\item[nonce]\linkdest{tx_nonce}{} A scalar value equal to the number of transactions sent by the sender; formally $T_{\mathrm{n}}$.
+\item[gasPrice]\linkdest{tx_gas_price_T__p}{} A scalar value equal to the number of Wei to be paid per unit of \textit{gas} for all computation costs incurred as a result of the execution of this transaction; formally $T_{\mathrm{p}}$.
+\item[gasLimit]\linkdest{tx_gas_limit_T__g}{} A scalar value equal to the maximum amount of gas that should be used in executing this transaction. This is paid up-front, before any computation is done and may not be increased later; formally $T_{\mathrm{g}}$.
+\item[to]\linkdest{tx_to_address_T__t}{} The 160-bit address of the message call's recipient or, for a contract creation transaction, $\varnothing$, used here to denote the only member of $\mathbb{B}_0$ ; formally $T_{\mathrm{t}}$.
+\item[value]\linkdest{tx_value_T__v}{} A scalar value equal to the number of Wei to be transferred to the message call's recipient or, in the case of contract creation, as an endowment to the newly created account; formally $T_{\mathrm{v}}$.
 \item[v, r, s] Values corresponding to the signature of the transaction and used to determine the sender of the transaction; formally $T_{\mathrm{w}}$, $T_{\mathrm{r}}$ and $T_{\mathrm{s}}$. This is expanded in Appendix \ref{app:signing}.
 \end{description}
 
