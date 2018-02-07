@@ -173,7 +173,7 @@ I use a number of typographical conventions for the formal notation, some of whi
 
 The two sets of highly structured, `top-level', state values, are denoted with bold lowercase Greek letters. They fall into those of world-state, which are denoted $\boldsymbol{\sigma}$ (or a variant thereupon) and those of machine-state, $\boldsymbol{\mu}$.
 
-Functions operating on highly structured values are denoted with an upper-case Greek letter, \eg $\Upsilon$, the Ethereum state transition function.
+Functions operating on highly structured values are denoted with an upper-case Greek letter, \eg \hyperlink{Upsilon_state_transition}{$\Upsilon$}, the Ethereum state transition function.
 
 For most functions, an uppercase letter is used, e.g. $C$, the general cost function. These may be subscripted to denote specialised variants, \eg $C_\text{\tiny SSTORE}$, the cost function for the {\tiny SSTORE} operation. For specialised and possibly externally defined functions, I may format as typewriter text, \eg the Keccak-256 hash function (as per the winning entry to the SHA-3 contest) is denoted $\texttt{KEC}$ (and generally referred to as plain Keccak). Also $\texttt{KEC512}$ is referring to the Keccak 512 hash function.
 
@@ -555,7 +555,7 @@ In general, Ether used to purchase gas that is not refunded is delivered to the 
 
 \section{Transaction Execution} \label{ch:transactions}
 
-The execution of a transaction is the most complex part of the Ethereum protocol: it defines the state transition function $\Upsilon$. It is assumed that any transactions executed first pass the initial tests of intrinsic validity. These include:
+The execution of a transaction is the most complex part of the Ethereum protocol: it defines the state transition function \hyperlink{Upsilon_state_transition}{$\Upsilon$}. It is assumed that any transactions executed first pass the initial tests of intrinsic validity. These include:
 
 \begin{enumerate}
 \item The transaction is well-formed RLP, with no additional trailing bytes;
@@ -565,7 +565,7 @@ The execution of a transaction is the most complex part of the Ethereum protocol
 \item the sender account balance contains at least the cost, $v_0$, required in up-front payment.
 \end{enumerate}
 
-Formally, we consider the function $\Upsilon$, with $T$ being a transaction and $\boldsymbol{\sigma}$ the state:
+Formally, we consider the function \hyperlink{Upsilon_state_transition}{$\Upsilon$}, with $T$ being a transaction and $\boldsymbol{\sigma}$ the state:
 \begin{equation}
 \boldsymbol{\sigma}' = \Upsilon(\boldsymbol{\sigma}, T)
 \end{equation}
@@ -1150,7 +1150,7 @@ B^* & \equiv & B \quad \text{except:} \quad B^*_{\mathrm{r}} = r(\Pi(\Gamma(B), 
 \end{eqnarray}
 With $\mathbf{d}$ being a dataset as specified in appendix \ref{app:ethash}.
 
-As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of $\Omega$, the block finalisation function and $\Upsilon$, the transaction-evaluation function, both now well-defined.
+As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of $\Omega$, the block finalisation function and \hyperlink{Upsilon_state_transition}{$\Upsilon$}, the transaction-evaluation function, both now well-defined.
 
 As previously detailed, $\mathbf{R}[n]_{\mathrm{z}}$, $\mathbf{R}[n]_{\mathbf{l}}$ and $\mathbf{R}[n]_{\mathrm{u}}$ are the $n$th corresponding status code, logs and cumulative gas used after each transaction ($\mathbf{R}[n]_{\mathrm{b}}$, the fourth component in the tuple, has already been defined in terms of the logs). We also define the $n$th state $\boldsymbol{\sigma}[n]$, which is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
 \begin{equation}
