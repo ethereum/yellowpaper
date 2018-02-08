@@ -517,7 +517,7 @@ H_{\mathrm{s}} > {P(H)_{H}}_{\mathrm{s}}
 
 This mechanism enforces a homeostasis in terms of the time between blocks; a smaller period between the last two blocks results in an increase in the difficulty level and thus additional computation required, lengthening the likely next period. Conversely, if the period is too large, the difficulty, and expected time to the next block, is reduced.
 
-The nonce, $H_{\mathrm{n}}$, must satisfy the relations:
+The nonce, \hyperlink{block_nonce_H__n}{$H_{\mathrm{n}}$}, must satisfy the relations:
 \begin{equation}
 n \leqslant \frac{2^{256}}{H_{\mathrm{d}}} \quad \wedge \quad m = H_{\mathrm{m}}
 \end{equation}
@@ -560,7 +560,7 @@ The execution of a transaction is the most complex part of the Ethereum protocol
 \begin{enumerate}
 \item The transaction is well-formed RLP, with no additional trailing bytes;
 \item the transaction signature is valid;
-\item the \hyperlink{transaction_nonce}{transaction nonce} is valid (equivalent to the sender account's current nonce);
+\item the \hyperlink{transaction_nonce}{transaction nonce} is valid (equivalent to the \hyperlink{account_nonce}{sender account's current nonce});
 \item the gas limit is no smaller than the intrinsic gas, $g_0$, used by the transaction;
 \item the sender account balance contains at least the cost, $v_0$, required in up-front payment.
 \end{enumerate}
@@ -570,7 +570,7 @@ Formally, we consider the function \hyperlink{Upsilon_state_transition}{$\Upsilo
 \boldsymbol{\sigma}' = \Upsilon(\boldsymbol{\sigma}, T)
 \end{equation}
 
-Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define $\Upsilon^{\mathrm{g}}$ to evaluate to the amount of gas used in the execution of a transaction, $\Upsilon^{\mathbf{l}}$ to evaluate to the transaction's accrued log items and $\Upsilon^{\mathrm{z}}$ to evaluate to the status code resulting from the transaction. These will be formally defined later.
+Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define \hyperlink{tx_total_gas_used_Upsilon_pow_g}{$\Upsilon^{\mathrm{g}}$} to evaluate to the amount of gas used in the execution of a transaction, \hyperlink{tx_logs_Upsilon_pow_l}{$\Upsilon^{\mathbf{l}}$} to evaluate to the transaction's accrued log items and \hyperlink{tx_status_Upsilon_pow_z}{$\Upsilon^{\mathrm{z}}$} to evaluate to the status code resulting from the transaction. These will be formally defined later.
 
 \subsection{Substate}
 Throughout transaction execution, we accrue certain information that is acted upon immediately following the transaction. We call this \textit{transaction substate}, and represent it as $A$, which is a tuple:
