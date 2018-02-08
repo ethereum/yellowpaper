@@ -595,9 +595,9 @@ g_0 \equiv {} & \sum_{i \in T_{\mathbf{i}}, T_{\mathbf{d}}} \begin{cases} G_{txd
 
 where $T_{\mathbf{i}},T_{\mathbf{d}}$ means the series of bytes of the transaction's associated data and initialisation EVM-code, depending on whether the transaction is for contract-creation or message-call. $G_\text{txcreate}$ is added if the transaction is contract-creating, but not if a result of EVM-code. $G$ is fully defined in Appendix \ref{app:fees}.
 
-The up-front cost $v_0$ is calculated as:
+The up-front cost $v_0$ is calculated as the transaction gas limit multiplied by the gas price, plus the transaction value:
 \begin{equation}
-v_0 \equiv T_{\mathrm{g}} T_{\mathrm{p}} + T_{\mathrm{v}}
+v_0 \equiv \hyperlink{tx_gas_limit_T__g}{T_{\mathrm{g}}} \hyperlink{tx_gas_price_T__p}{T_{\mathrm{p}}} + \hyperlink{tx_value_T__v}{T_{\mathrm{v}}}
 \end{equation}
 
 The validity is determined as:
