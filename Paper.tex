@@ -839,10 +839,8 @@ I_{\mathrm{v}} & \equiv & \tilde{v} \\
 I_{\mathrm{e}} & \equiv & e \\
 I_{\mathrm{w}} & \equiv & w \\
 \mathbf{t} & \equiv & \{s, r\} \\
-\\ \nonumber
-\text{Let} \; \mathtt{\tiny KEC}(I_\mathbf{b}) & = & \boldsymbol{\sigma}[c]_{\mathrm{c}}
 \end{eqnarray}
-where
+\nopagebreak[1]where
 \begin{equation}
 \Xi \equiv \begin{cases}
 \Xi_{\mathtt{ECREC}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 1 \\
@@ -854,6 +852,10 @@ where
 \Xi_{\mathtt{BN\_MUL}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 7 \\
 \Xi_{\mathtt{SNARKV}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 8 \\
 \Xi(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{otherwise} \end{cases}
+\end{equation}
+
+\begin{equation}
+\text{Let} \; \mathtt{\tiny KEC}(I_\mathbf{b}) = \boldsymbol{\sigma}[c]_{\mathrm{c}}
 \end{equation}
 
 It is assumed that the client will have stored the pair $(\mathtt{\tiny KEC}(I_\mathbf{b}), I_\mathbf{b})$ at some point prior in order to make the determination of $I_\mathbf{b}$ feasible.
