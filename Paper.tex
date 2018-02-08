@@ -985,7 +985,7 @@ This states that the execution is in an exceptional halting state if there is in
 
 We previously used $D$ as the function to determine the set of valid jump destinations given the code that is being run. We define this as any position in the code occupied by a {\small JUMPDEST} instruction.
 
-All such positions must be on valid instruction boundaries, rather than sitting in the data portion of {\small PUSH} operations and must appear within the explicitly defined portion of the code (rather than in the implicitly defined {\small STOP} operations that trail it).
+All such positions must be on valid instruction boundaries, rather than sitting in the data portion of {\small PUSH} operations and must appear within the explicitly defined portion of the code (rather than in the implicitly defined \hyperlink{stop}{{\small STOP}} operations that trail it).
 
 Formally:
 \begin{equation}
