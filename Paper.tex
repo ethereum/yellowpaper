@@ -386,7 +386,7 @@ O_{\mathrm{a}} \in \mathbb{B}_{20} \quad \wedge \quad \forall_{t \in O_{\mathbf{
 
 We define the Bloom filter function, $M$, to reduce a log entry into a single 256-byte hash:
 \begin{equation}
-M(O) \equiv \bigvee_{t \in \{O_{\mathrm{a}}\} \cup O_{\mathbf{t}}} \big( M_{3:2048}(t) \big)
+M(O) \equiv \hyperlink{bigvee}{\bigvee}_{t \in \{O_{\mathrm{a}}\} \cup O_{\mathbf{t}}} \big( M_{3:2048}(t) \big)
 \end{equation}
 
 where $M_{3:2048}$ is a specialised Bloom filter that sets three bits out of 2048, given an arbitrary byte sequence. It does this through taking the low-order 11 bits of each of the first three pairs of bytes in a Keccak-256 hash of the byte sequence.\footnote{11 bits $= 2^{2048}$, and the low-order 11 bits is the modulo 2048 of the operand, which is in this case is "each of the first three pairs of bytes in a Keccak-256 hash of the byte sequence."} Formally:
