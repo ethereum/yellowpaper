@@ -614,7 +614,7 @@ T_{\mathrm{g}} & \leqslant & {B_{H}}_{\mathrm{l}} - \ell(B_{\mathbf{R}})_{\mathr
 
 Note the final condition; the sum of the transaction's gas limit, $T_{\mathrm{g}}$, and the gas utilised in this block prior, given by $\ell(B_{\mathbf{R}})_{\mathrm{u}}$, must be no greater than the block's \textbf{gasLimit}, ${B_{H}}_{\mathrm{l}}$.
 
-The execution of a valid transaction begins with an irrevocable change made to the state: the nonce of the account of the sender, $S(T)$, is incremented by one and the balance is reduced by part of the up-front cost, $T_{\mathrm{g}}T_{\mathrm{p}}$. The gas available for the proceeding computation, $g$, is defined as $T_{\mathrm{g}} - g_0$. The computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
+The execution of a valid transaction begins with an irrevocable change made to the state: the \hyperlink{account_nonce}{nonce of the account of the sender}, $S(T)$, is incremented by one and the balance is reduced by part of the up-front cost, $T_{\mathrm{g}}T_{\mathrm{p}}$. The gas available for the proceeding computation, $g$, is defined as $T_{\mathrm{g}} - g_0$. The computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
 
 We define the checkpoint state $\boldsymbol{\sigma}_0$:
 \begin{eqnarray}
