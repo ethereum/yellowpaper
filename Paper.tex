@@ -1324,7 +1324,7 @@ We define the RLP function as $\mathtt{\tiny RLP}$ through two sub-functions, th
 \end{itemize}
 
 \hypertarget{RLP_serialisation_of_a_byte_array_R__b_math_def}{}Formally, we define $R_{\mathrm{b}}$:
-\begin{eqnarray}R_\{\\mathrm\{b\}\}
+\begin{eqnarray}
 R_{\mathrm{b}}(\mathbf{x}) & \equiv & \begin{cases}
 \mathbf{x} & \text{if} \quad \lVert \mathbf{x} \rVert = 1 \wedge \mathbf{x}[0] < 128 \\
 (128 + \lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{else if} \quad \lVert \mathbf{x} \rVert < 56 \\
