@@ -334,10 +334,10 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[receiptsRoot]\linkdest{receipts_Root_def_words}{} The Keccak 256-bit hash of the root node of the trie structure populated with the receipts of each transaction in the transactions list portion of the block; formally $H_{\mathrm{e}}$.
 \item[logsBloom]\linkdest{logs_Bloom_def_words}{} The Bloom filter composed from indexable information (logger address and log topics) contained in each log entry from the receipt of each transaction in the transactions list; formally $H_{\mathrm{b}}$.
 \item[difficulty] A scalar value corresponding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_{\mathrm{d}}$.
-\item[number]\linkdest{block_number_H_i}{} A scalar value equal to the number of ancestor blocks. The genesis block has a number of zero; formally $H_{\mathrm{i}}$.
+\item[number]\linkdest{block_number_word_def_H_i}{} A scalar value equal to the number of ancestor blocks. The genesis block has a number of zero; formally \hyperlink{block_number_H__i}{$H_{\mathrm{i}}$}.
 \item[gasLimit] A scalar value equal to the current limit of gas expenditure per block; formally $H_{\mathrm{l}}$.
 \item[gasUsed]\linkdest{block_gas_used_H__g}{} A scalar value equal to the total gas used in transactions in this block; formally $H_{\mathrm{g}}$.
-\item[timestamp]\linkdest{block_timestamp_H__s}{} A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally $H_{\mathrm{s}}$.
+\item[timestamp]\linkdest{block_timestamp_word_def_H__s}{} A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally \hyperlink{block_timestamp_H__s}{$H_{\mathrm{s}}$}.
 \item[extraData]\linkdest{block_extraData_H__x}{} An arbitrary byte array containing data relevant to this block. This must be 32 bytes or fewer; formally $H_{\mathrm{x}}$.
 \item[mixHash]\linkdest{mixHash_H__m}{} A 256-bit hash which, combined with the nonce, proves that a sufficient amount of computation has been carried out on this block; formally $H_{\mathrm{m}}$.
 \item[nonce]\linkdest{block_nonce_H__n}{} A 64-bit hash which, combined with the mix-hash, proves that a sufficient amount of computation has been carried out on this block; formally $H_{\mathrm{n}}$.
@@ -441,11 +441,11 @@ The function $L_{B}$ and $L_{H}$ are the preparation functions for a block and b
 The component types are defined thus:
 \begin{equation}
 \begin{array}[t]{lclclcl}
-H_{\mathrm{p}} \in \mathbb{B}_{32} & \wedge & H_{\mathrm{o}} \in \mathbb{B}_{32} & \wedge & H_{\mathrm{c}} \in \mathbb{B}_{20} & \wedge \\
-H_{\mathrm{r}} \in \mathbb{B}_{32} & \wedge & H_{\mathrm{t}} \in \mathbb{B}_{32} & \wedge & H_{\mathrm{e}} \in \mathbb{B}_{32} & \wedge \\
-H_{\mathrm{b}} \in \mathbb{B}_{256} & \wedge & H_{\mathrm{d}} \in \mathbb{P} & \wedge & H_{\mathrm{i}} \in \mathbb{P} & \wedge \\
-H_{\mathrm{l}} \in \mathbb{P} & \wedge & H_{\mathrm{g}} \in \mathbb{P} & \wedge & H_{\mathrm{s}} \in \mathbb{P}_{256} & \wedge \\
-H_{\mathrm{x}} \in \mathbb{B} & \wedge & H_{\mathrm{m}} \in \mathbb{B}_{32} & \wedge & H_{\mathrm{n}} \in \mathbb{B}_{8}
+\hyperlink{parent_Hash_H__p_def_words}{H_{\mathrm{p}}} \in \mathbb{B}_{32} & \wedge & H_{\mathrm{o}} \in \mathbb{B}_{32} & \wedge & H_{\mathrm{c}} \in \mathbb{B}_{20} & \wedge \\
+\hyperlink{new_state_H__r}{H_{\mathrm{r}}} \in \mathbb{B}_{32} & \wedge & H_{\mathrm{t}} \in \mathbb{B}_{32} & \wedge & \hyperlink{Receipts_Root_H__e}{H_{\mathrm{e}}} \in \mathbb{B}_{32} & \wedge \\
+\hyperlink{logs_Bloom_filter_H__b}{H_{\mathrm{b}}} \in \mathbb{B}_{256} & \wedge & H_{\mathrm{d}} \in \mathbb{P} & \wedge & \hyperlink{block_number_H__i}{H_{\mathrm{i}}} \in \mathbb{P} & \wedge \\
+\hyperlink{block_gas_limit_H__l}{H_{\mathrm{l}}} \in \mathbb{P} & \wedge & H_{\mathrm{g}} \in \mathbb{P} & \wedge & \hyperlink{block_timestamp_H__s}{H_{\mathrm{s}}} \in \mathbb{P}_{256} & \wedge \\
+\hyperlink{block_extraData_H__x}{H_{\mathrm{x}}} \in \mathbb{B} & \wedge & H_{\mathrm{m}} \in \mathbb{B}_{32} & \wedge & \hyperlink{block_nonce_H__n}{H_{\mathrm{n}}} \in \mathbb{B}_{8}
 \end{array}
 \end{equation}
 
@@ -510,7 +510,7 @@ Note that $\mindifficulty$ is the difficulty of the genesis block. The \textit{H
 & & H_{\mathrm{l}} \geqslant 5000
 \end{eqnarray}
 
-$H_{\mathrm{s}}$ is the timestamp (in Unix's time()) of block $H$ and must fulfil the relation:
+\hypertarget{block_timestamp_H__s}{}$H_{\mathrm{s}}$ is the timestamp (in Unix's time()) of block $H$ and must fulfil the relation:
 \begin{equation}
 H_{\mathrm{s}} > {P(H)_{H}}_{\mathrm{s}}
 \end{equation}
