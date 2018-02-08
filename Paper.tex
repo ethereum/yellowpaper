@@ -1108,25 +1108,25 @@ The given \textbf{gasUsed} must correspond faithfully to the transactions listed
 
 \subsection{Reward Application}
 
-The application of rewards to a block involves raising the balance of the accounts of the beneficiary address of the block and each ommer by a certain amount. We raise the block's beneficiary account by $R_{\mathrm{b}}$; for each ommer, we raise the block's beneficiary by an additional $\frac{1}{32}$ of the block reward and the beneficiary of the ommer gets rewarded depending on the block number.\hypertarget{Omega}{} Formally we define the function $\Omega$:
+The application of rewards to a block involves raising the balance of the accounts of the beneficiary address of the block and each ommer by a certain amount. We raise the block's beneficiary account by $R_{\mathrm{block}}$; for each ommer, we raise the block's beneficiary by an additional $\frac{1}{32}$ of the block reward and the beneficiary of the ommer gets rewarded depending on the block number.\hypertarget{Omega}{} Formally we define the function $\Omega$:
 \begin{eqnarray}
 \\ \nonumber
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
-\qquad\boldsymbol{\sigma}'[{\mathbf{B}_{H}}_{\mathrm{c}}]_{\mathrm{b}} & = & \boldsymbol{\sigma}[{\mathbf{B}_{H}}_{\mathrm{c}}]_{\mathrm{b}} + (1 + \frac{\lVert \mathbf{B}_{\mathbf{U}}\rVert}{32})R_{\mathrm{b}} \\
+\qquad\boldsymbol{\sigma}'[{\mathbf{B}_{H}}_{\mathrm{c}}]_{\mathrm{b}} & = & \boldsymbol{\sigma}[{\mathbf{B}_{H}}_{\mathrm{c}}]_{\mathrm{b}} + (1 + \frac{\lVert \mathbf{B}_{\mathbf{U}}\rVert}{32})R_{\mathrm{block}} \\
 \qquad\forall_{\mathbf{U} \in \mathbf{B}_{\mathbf{U}}}: \\ \nonumber
 \boldsymbol{\sigma}'[\mathbf{U}_{\mathrm{c}}] & = & \begin{cases}
 \varnothing &\text{if}\ \boldsymbol{\sigma}[\mathbf{U}_{\mathrm{c}}] = \varnothing\ \wedge\ R = 0 \\
 \mathbf{a}' &\text{otherwise}
 \end{cases} \\
 \mathbf{a}' &\equiv& (\boldsymbol{\sigma}[U_{\mathrm{c}}]_{\mathrm{n}}, \boldsymbol{\sigma}[U_{\mathrm{c}}]_{\mathrm{b}} + R, \boldsymbol{\sigma}[U_{\mathrm{c}}]_{\mathbf{s}}, \boldsymbol{\sigma}[U_{\mathrm{c}}]_{\mathrm{c}}) \\
-R & \equiv & (1 + \frac{1}{8} (U_{\mathrm{i}} - {B_{H}}_{\mathrm{i}})) R_{\mathrm{b}}
+R & \equiv & (1 + \frac{1}{8} (U_{\mathrm{i}} - {B_{H}}_{\mathrm{i}})) R_{\mathrm{block}}
 \end{eqnarray}
 
 If there are collisions of the beneficiary addresses between ommers and the block (i.e. two ommers with the same beneficiary address or an ommer with the same beneficiary address as the present block), additions are applied cumulatively.
 
-\hypertarget{block_reward_R__b}{}We define the block reward as 3 Ether:
+\hypertarget{block_reward_R__block}{}We define the block reward as 3 Ether:
 \begin{equation}
-\text{Let} \quad R_{\mathrm{b}} = 3 \times 10^{18}
+\text{Let} \quad R_{\mathrm{block}} = 3 \times 10^{18}
 \end{equation}
 
 \subsection{State \& Nonce Validation}\label{sec:statenoncevalidation}
@@ -1315,7 +1315,7 @@ We define the RLP function as $\mathtt{\tiny RLP}$ through two sub-functions, th
 \mathtt{\tiny RLP}(\mathbf{x}) \equiv \begin{cases} R_{\mathrm{b}}(\mathbf{x}) & \text{if} \quad \mathbf{x} \in \mathbb{B} \\ R_{\mathrm{l}}(\mathbf{x}) & \text{otherwise} \end{cases}
 \end{equation}
 
-\hypertarget{RLP_serialisation_of_a_byte_array_R__b_word_def}{}If the value to be serialised is a byte-array, the RLP serialisation takes one of three forms:
+\hypertarget{RLP_serialisation_of_a_byte_array_R__b_word_def}{}\linkdest{R__b}If the value to be serialised is a byte-array, the RLP serialisation takes one of three forms:
 
 \begin{itemize}
 \item If the byte-array contains solely a single byte and that single byte is less than 128, then the input is exactly equal to the output.
@@ -1336,7 +1336,7 @@ R_{\mathrm{b}}(\mathbf{x}) & \equiv & \begin{cases}
 
 Thus $\mathtt{\tiny BE}$ is the function that expands a positive integer value to a big-endian byte array of minimal length and the dot operator performs sequence concatenation.
 
-\hypertarget{RLP_serialisation_of_a_sequence_of_other_items_R__l_word_def}{}If instead, the value to be serialised is a sequence of other items then the RLP serialisation takes one of two forms:
+\hypertarget{RLP_serialisation_of_a_sequence_of_other_items_R__l_word_def}{}\linkdest{R__l}If instead, the value to be serialised is a sequence of other items then the RLP serialisation takes one of two forms:
 
 \begin{itemize}
 \item If the concatenated serialisations of each contained item is less than 56 bytes in length, then the output is equal to that concatenation prefixed by the byte equal to the length of this byte array plus 192.
