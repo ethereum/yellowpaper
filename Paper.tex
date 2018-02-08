@@ -427,7 +427,7 @@ The values stemming from the computation of transactions, specifically the trans
 
 \subsubsection{Serialisation}
 
-The function $L_{B}$ and $L_{H}$ are the preparation functions for a block and block header respectively. Much like the transaction receipt preparation function $L_{R}$, we assert the types and order of the structure for when the RLP transformation is required:
+\hypertarget{block_preparation_function_for_RLP_serialization_L__B}{}\hypertarget{block_preparation_function_for_RLP_serialization_L__H}{}The function $L_{B}$ and $L_{H}$ are the preparation functions for a block and block header respectively. Much like the transaction receipt preparation function $L_{R}$, we assert the types and order of the structure for when the RLP transformation is required:
 \begin{eqnarray}
 \quad L_{H}(H) & \equiv & (\begin{array}[t]{l}H_{\mathrm{p}}, H_{\mathrm{o}}, H_{\mathrm{c}}, H_{\mathrm{r}}, H_{\mathrm{t}}, H_{\mathrm{e}}, H_{\mathrm{b}}, H_{\mathrm{d}},\\ H_{\mathrm{i}}, H_{\mathrm{l}}, H_{\mathrm{g}}, H_{\mathrm{s}}, H_{\mathrm{x}}, H_{\mathrm{m}}, H_{\mathrm{n}} \; )\end{array} \\
 \quad L_{B}(B) & \equiv & \big( L_{H}(B_{H}), L_{T}^*(B_{\mathbf{T}}), L_{H}^*(B_{\mathbf{U}}) \big)
