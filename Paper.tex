@@ -1013,13 +1013,13 @@ i + 1 & \text{otherwise} \end{cases}
 The normal halting function $H$ is defined:
 \begin{equation}
 H(\boldsymbol{\mu}, I) \equiv \begin{cases}
-H_{\text{\tiny RETURN}}(\boldsymbol{\mu}) & \text{if} \quad w \in \{\text{\small RETURN}, \text{\small REVERT}\} \\
-() & \text{if} \quad w \in \{ \text{\small STOP}, \text{\small SELFDESTRUCT} \} \\
+H_{\text{\tiny RETURN}}(\boldsymbol{\mu}) & \text{if} \quad w \in \{\text{\small \hyperlink{RETURN}{RETURN}}, \text{\small REVERT}\} \\
+() & \text{if} \quad w \in \{ \text{\small STOP}, \text{\small \hyperlink{selfdestruct}{SELFDESTRUCT}} \} \\
 \varnothing & \text{otherwise}
 \end{cases}
 \end{equation}
 
-The data-returning halt operations, \text{\small RETURN} and \text{\small REVERT}, have a special function $H_{\text{\tiny RETURN}}$, defined in Appendix \ref{app:vm}.
+The data-returning halt operations, \hyperlink{RETURN}{\text{\small RETURN}} and \text{\small REVERT}, have a special function $H_{\text{\tiny RETURN}}$.
 
 \subsection{The Execution Cycle}
 
