@@ -22,7 +22,13 @@ cd yellowpaper
 ```
 This will create a PDF version of the Yellow Paper. Following building, you can also use standard `pdflatex` tools like http://latex.informatik.uni-halle.de/latex-online/latex.php for compiling/preview.
 
+## Tips on editing
+
+You can use [TeX Stack Exchange](https://tex.stackexchange.com/); https://en.wikibooks.org/wiki/LaTeX/ (e.g. [Bibliography Management](https://en.wikibooks.org/wiki/LaTeX/Bibliography_Management) and [Hyperlinks](https://en.wikibooks.org/wiki/LaTeX/Hyperlinks)); and [BibTeX editor](http://truben.no/latex/bibtex/).
+
+## Versions
+
 The previous protocol versions are listed in [BRANCHES.md](./BRANCHES.md).
 
-## Other language versions
+### Other language versions
 - [Chinese](https://github.com/yuange1024/ethereum_yellowpaper) translated by YuanGe and GaoTianlu.
