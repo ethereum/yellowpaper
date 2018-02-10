@@ -4,7 +4,7 @@ before_install:
 - sudo apt-get install texlive texlive-latex3
 - sudo apt install texlive-latex-extra
 script:
-- ./build.sh
+- ./b.sh
 deploy:
   provider: script
   script: ./travis_deploy.sh
