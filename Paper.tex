@@ -26,7 +26,7 @@
 
 %This should be the last package before \input{Version.tex}
 \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
-% "hyperref loads the url package internally. Use \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref} to pass the option to the url package when it is loaded by hyperref. This avoids any package option clashes." Source: <https://tex.stackexchange.com/questions/3033/forcing-linebreaks-in-url/3034#comment44478_3034>. 
+% "hyperref loads the url package internally. Use \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref} to pass the option to the url package when it is loaded by hyperref. This avoids any package option clashes." Source: <https://tex.stackexchange.com/questions/3033/forcing-linebreaks-in-url/3034#comment44478_3034>.
 % Note also this: "If the \PassOptionsToPackage{hyphens}{url} approach does not work, maybe it's "because you're trying to load the url package with a specific option, but it's being loaded by one of your packages before that with a different set of options. Try loading the url package earlier than the package that requires it. If it's loaded by the document class, try using \RequirePackage[hyphens]{url} before the document class." Source: <https://tex.stackexchange.com/questions/3033/forcing-linebreaks-in-url/3034#comment555944_3034>.
 % For more information on using the hyperref package, refer to e.g. https://en.wikibooks.org/w/index.php?title=LaTeX/Hyperlinks&stable=0#Hyperlink_and_Hypertarget.
 
@@ -115,7 +115,7 @@ For a list of terms used in this paper, refer to Appendix \ref{ch:Terminology}.
 
 \section{The Blockchain Paradigm} \label{ch:overview}
 
-Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissible. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg, be things such as reducing an account balance without an equal and opposite increase elsewhere. A valid state transition is one which comes about through a transaction. Formally: 
+Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissible. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg, be things such as reducing an account balance without an equal and opposite increase elsewhere. A valid state transition is one which comes about through a transaction. Formally:
 \begin{equation}
 \linkdest{Upsilon_state_transition}\boldsymbol{\sigma}_{t+1} \equiv \Upsilon(\boldsymbol{\sigma}_{t}, T)
 \end{equation}
@@ -1148,6 +1148,7 @@ B'_{\mathrm{n}} & = & n: \quad x \leqslant \frac{2^{256}}{\hyperlink{H__d}{H_{\m
 B'_{\mathrm{m}} & = & m \quad \text{with } (x, m) = \mathtt{PoW}(B^*_{\hyperlink{H_cancel_n}{\hcancel{n}}}, n, \mathbf{d}) \\
 B^* & \equiv & B \quad \text{except:} \quad B^*_{\mathrm{r}} = r(\Pi(\Gamma(B), B))
 \end{eqnarray}
+
 With $\mathbf{d}$ being a dataset as specified in appendix \ref{app:ethash}.
 
 As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of $\Omega$, the block finalisation function and \hyperlink{Upsilon_state_transition}{$\Upsilon$}, the transaction-evaluation function, both now well-defined.
@@ -1453,7 +1454,8 @@ For each precompiled contract, we make use of a template function, $\Xi_{\mathtt
 
 The precompiled contracts each use these definitions and provide specifications for the $\mathbf{o}$ (the output data) and $g_{\mathrm{r}}$, the gas requirements.
 
-For the elliptic curve DSA recover VM execution function, we also define $\mathbf{d}$ to be the input data, well-defined for an infinite length by appending zeroes as required. Importantly in the case of an invalid signature ($\mathtt{\tiny ECDSARECOVER}(h, v, r, s) = \varnothing$), then we have no output.
+We define $\Xi_{\mathtt{ERCEC}}$ as a precompiled contract for the elliptic curve digital signature algorithm (ECDSA) public key recovery function (ecrecover). See \ref{app:signing} for the definition of the function $\mathtt{\tiny ECDSARECOVER}$. We also define $\mathbf{d}$ to be the input data, well-defined for an infinite length by appending zeroes as required. In the case of an invalid signature ($\mathtt{\tiny ECDSARECOVER}(h, v, r, s) = \varnothing$), we return no output.
+
 \begin{eqnarray}
 \Xi_{\mathtt{ECREC}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
 g_{\mathrm{r}} &=& 3000\\
@@ -1469,7 +1471,8 @@ r &=& \mathbf{d}[64..95]\\
 s &=& \mathbf{d}[96..127]
 \end{eqnarray}
 
-The two hash functions, RIPEMD-160 and SHA2-256 are more trivially defined as an almost pass-through operation. Their gas usage is dependent on the input data size, a factor rounded up to the nearest number of words.
+We define $\Xi_{\mathtt{SHA256}}$ and $\Xi_{\mathtt{RIP160}}$ as precompiled contracts implementing the SHA2-256 and RIPEMD-160 hash functions respectively. Their gas usage is dependent on the input data size, a factor rounded up to the nearest number of words.
+
 \begin{eqnarray}
 \Xi_{\mathtt{SHA256}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
 g_{\mathrm{r}} &=& 60 + 12\Big\lceil \dfrac{|I_{\mathbf{d}}|}{32} \Big\rceil\\
@@ -1477,10 +1480,11 @@ g_{\mathrm{r}} &=& 60 + 12\Big\lceil \dfrac{|I_{\mathbf{d}}|}{32} \Big\rceil\\
 \Xi_{\mathtt{RIP160}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
 g_{\mathrm{r}} &=& 600 + 120\Big\lceil \dfrac{|I_{\mathbf{d}}|}{32} \Big\rceil\\
 \mathbf{o}[0..11] &=& 0 \\
-\mathbf{o}[12..31] &=& \mathtt{\tiny RIPEMD160}(I_{\mathbf{d}})\\
+\mathbf{o}[12..31] &=& \mathtt{\tiny RIPEMD160}(I_{\mathbf{d}})
 \end{eqnarray}
 
 For the purposes here, we assume we have well-defined standard cryptographic functions for RIPEMD-160 and SHA2-256 of the form:
+
 \begin{eqnarray}
 \mathtt{\small SHA256}(\mathbf{i} \in \mathbb{B}) & \equiv & o \in \mathbb{B}_{32} \\
 \mathtt{\small RIPEMD160}(\mathbf{i} \in \mathbb{B}) & \equiv & o \in \mathbb{B}_{20}
@@ -1603,7 +1607,7 @@ x_1&\equiv&\delta_{\mathrm{p}}(\mathbf x[64..95])\\
 y_1&\equiv&\delta_{\mathrm{p}}(\mathbf x[96..127])
 \end{eqnarray}
 
-We define a precompiled contract for zkSNARK verification.
+We define $\Xi_{\mathtt{SNARKV}}$ as a precompiled contract for zkSNARK verification.
 \begin{eqnarray}
 \Xi_{\mathtt{SNARKV}}&\equiv&\Xi_{\mathtt{PRE}}\quad\text{except:}\\
 \qquad\Xi_{\mathtt{SNARKV}}(\boldsymbol\sigma,g,I)&=&(\varnothing,0,A^0,())\quad\text{if}\ F\\
@@ -1623,6 +1627,7 @@ b_{\mathrm{k}}&\equiv&\delta_2(I_{\mathbf d}[(|I_{\mathbf d}|-128)..(|I_{\mathbf
 \end{eqnarray}
 
 We define a precompiled contract for addition on $G_1$.
+
 \begin{eqnarray}
 \Xi_{\mathtt{BN\_ADD}}&\equiv&\Xi_{\mathtt{BN\_PRE}}\quad\text{except:}\\
 \Xi_{\mathtt{BN\_ADD}}(\boldsymbol\sigma,g,I)&=&(\varnothing,0,A^0,())\quad\text{if}\ x=\varnothing\vee y=\varnothing\\
@@ -1652,7 +1657,7 @@ The method of signing transactions is similar to the `Electrum style signatures'
 
 It is assumed that the sender has a valid private key $p_{\mathrm{r}}$, which is a randomly selected positive integer (represented as a byte array of length 32 in big-endian form) in the range \hbox{$[1, \mathtt{\tiny secp256k1n} - 1]$}.
 
-We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARECOVER}$ and $\mathtt{\small ECDSAPUBKEY}$. These are formally defined in the literature.
+We assume the existence of functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARECOVER}$ and $\mathtt{\small ECDSAPUBKEY}$. These are formally defined in the literature.
 \begin{eqnarray}
 \mathtt{\small ECDSAPUBKEY}(p_{\mathrm{r}} \in \mathbb{B}_{32}) & \equiv & p_{\mathrm{u}} \in \mathbb{B}_{64} \\
 \linkdest{ECDSASIGN}{}\mathtt{\small ECDSASIGN}(e \in \mathbb{B}_{32}, p_{\mathrm{r}} \in \mathbb{B}_{32}) & \equiv & (v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) \\
@@ -1734,7 +1739,7 @@ $G_{sload}$ & 200 & Paid for a {\small SLOAD} operation. \\
 $G_{jumpdest}$ & 1 & Paid for a {\small JUMPDEST} operation. \\
 $G_{sset}$ & 20000 & Paid for an {\small SSTORE} operation when the storage value is set to non-zero from zero. \\
 $G_{sreset}$ & 5000 & Paid for an {\small SSTORE} operation when the storage value's zeroness remains unchanged or is set to zero. \\
-$R_{sclear}$ & 15000 & Refund given (added into refund counter) when the storage value is set to zero from non-zero. 
+$R_{sclear}$ & 15000 & Refund given (added into refund counter) when the storage value is set to zero from non-zero.
 \linkdest{R__selfdestruct}{}\\$R_{selfdestruct}$ & 24000 & Refund given (added into refund counter) for self-destructing an account. \\
 \linkdest{G__selfdestruct}{}$G_{selfdestruct}$ & 5000 & Amount of gas to pay for a {\small SELFDESTRUCT} operation. \\
 $G_{create}$ & 32000 & Paid for a {\small CREATE} operation. \\
