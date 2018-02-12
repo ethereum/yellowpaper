@@ -42,7 +42,10 @@
 \usepackage[autostyle]{csquotes}
 \MakeOuterQuote{"}
 
-\input{Version.tex}
+% Default rendering options
+\definecolor{pagecolor}{rgb}{1,0.98,0.9}
+\def\YellowPaperVersionNumber{unknown revision}
+\IfFileExists{Options.tex}{\input{Options.tex}}
 
 \newcommand{\hcancel}[1]{%
     \tikz[baseline=(tocancel.base)]{
@@ -51,7 +54,6 @@
     }%
 }%
 
-\definecolor{lightyellow}{rgb}{1,0.98,0.9}
 
 \DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
 \newcommand*\eg{e.g.\@\xspace}
@@ -59,7 +61,7 @@
 \newcommand*\ie{i.e.\@\xspace}
 %\renewcommand{\itemhook}{\setlength{\topsep}{0pt}  \setlength{\itemsep}{0pt}\setlength{\leftmargin}{15pt}}
 
-\title{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ {\smaller \textbf{Byzantium version \YellowPaperVersionNumber{}}}}
+\title{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ {\smaller \textbf{Byzantium version \YellowPaperVersionNumber}}}
 \author{
     Dr. Gavin Wood\\
     Founder, Ethereum \& Parity\\
@@ -67,7 +69,7 @@
 }
 \begin{document}
 
-\pagecolor{lightyellow}
+\pagecolor{pagecolor}
 
 \begin{abstract}
 The blockchain paradigm when coupled with cryptographically-secured transactions has demonstrated its utility through a number of projects, with Bitcoin being one of the most notable ones. Each such project can be seen as a simple application on a decentralised, but singleton, compute resource. We can call this paradigm a transactional singleton machine with shared-state.
