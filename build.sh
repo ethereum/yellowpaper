@@ -16,8 +16,9 @@ fi
 
 echo "\newcommand{\YellowPaperVersionNumber}{$REV}" > Version.tex
 
-pdflatex -interaction=errorstopmode -halt-on-error Paper.tex && \
-bibtex Paper && \
-pdflatex -interaction=errorstopmode -halt-on-error Paper.tex && \
-pdflatex -interaction=errorstopmode -halt-on-error Paper.tex && \
-pdflatex -interaction=errorstopmode -halt-on-error Paper.tex
+mkdir build
+pdflatex -output-directory=build -interaction=errorstopmode -halt-on-error Paper.tex && \
+bibtex build/Paper && \
+pdflatex -output-directory=build -interaction=errorstopmode -halt-on-error Paper.tex && \
+pdflatex -output-directory=build -interaction=errorstopmode -halt-on-error Paper.tex && \
+pdflatex -output-directory=build -interaction=errorstopmode -halt-on-error Paper.tex
