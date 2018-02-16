@@ -1110,7 +1110,7 @@ The given \textbf{gasUsed} must correspond faithfully to the transactions listed
 
 \subsection{Reward Application}
 
-The application of rewards to a block involves raising the balance of the accounts of the beneficiary address of the block and each ommer by a certain amount. We raise the block's beneficiary account by $R_{\mathrm{block}}$; for each ommer, we raise the block's beneficiary by an additional $\frac{1}{32}$ of the block reward and the beneficiary of the ommer gets rewarded depending on the block number.\hypertarget{Omega}{} Formally we define the function $\Omega$:
+The application of rewards to a block involves raising the balance of the accounts of the beneficiary address of the block and each ommer by a certain amount. We raise the block's beneficiary account by \hyperlink{$R_{\mathrm{block}}$}; for each ommer, we raise the block's beneficiary by an additional $\frac{1}{32}$ of the block reward and the beneficiary of the ommer gets rewarded depending on the block number.\hypertarget{Omega}{} Formally we define the function $\Omega$:
 \begin{eqnarray}
 \\ \nonumber
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
@@ -1126,7 +1126,7 @@ R & \equiv & (1 + \frac{1}{8} (U_{\mathrm{i}} - {B_{H}}_{\mathrm{i}})) R_{\mathr
 
 If there are collisions of the beneficiary addresses between ommers and the block (i.e. two ommers with the same beneficiary address or an ommer with the same beneficiary address as the present block), additions are applied cumulatively.
 
-\hypertarget{block_reward_R__block}{}We define the block reward as 3 Ether:
+\hypertarget{block_reward_R__block}{}\linkdest{R__block}We define the block reward as 3 Ether:
 \begin{equation}
 \text{Let} \quad R_{\mathrm{block}} = 3 \times 10^{18}
 \end{equation}
