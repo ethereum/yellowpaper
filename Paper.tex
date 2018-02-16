@@ -42,7 +42,10 @@
 \usepackage[autostyle]{csquotes}
 \MakeOuterQuote{"}
 
-\input{Version.tex}
+% Default rendering options
+\definecolor{pagecolor}{rgb}{1,0.98,0.9}
+\def\YellowPaperVersionNumber{unknown revision}
+\IfFileExists{Options.tex}{\input{Options.tex}}
 
 \newcommand{\hcancel}[1]{%
     \tikz[baseline=(tocancel.base)]{
@@ -51,7 +54,6 @@
     }%
 }%
 
-\definecolor{lightyellow}{rgb}{1,0.98,0.9}
 
 \DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
 \newcommand*\eg{e.g.\@\xspace}
@@ -59,7 +61,7 @@
 \newcommand*\ie{i.e.\@\xspace}
 %\renewcommand{\itemhook}{\setlength{\topsep}{0pt}  \setlength{\itemsep}{0pt}\setlength{\leftmargin}{15pt}}
 
-\title{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ {\smaller \textbf{Byzantium version \YellowPaperVersionNumber{}}}}
+\title{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ {\smaller \textbf{Byzantium version \YellowPaperVersionNumber}}}
 \author{
     Dr. Gavin Wood\\
     Founder, Ethereum \& Parity\\
@@ -67,7 +69,7 @@
 }
 \begin{document}
 
-\pagecolor{lightyellow}
+\pagecolor{pagecolor}
 
 \begin{abstract}
 The blockchain paradigm when coupled with cryptographically-secured transactions has demonstrated its utility through a number of projects, with Bitcoin being one of the most notable ones. Each such project can be seen as a simple application on a decentralised, but singleton, compute resource. We can call this paradigm a transactional singleton machine with shared-state.
@@ -117,7 +119,7 @@ For a list of terms used in this paper, refer to Appendix \ref{ch:Terminology}.
 
 Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissible. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg, be things such as reducing an account balance without an equal and opposite increase elsewhere. A valid state transition is one which comes about through a transaction. Formally:
 \begin{equation}
-\linkdest{Upsilon_state_transition}\boldsymbol{\sigma}_{t+1} \equiv \Upsilon(\boldsymbol{\sigma}_{t}, T)
+\linkdest{Upsilon_state_transition}\linkdest{Upsilon}\boldsymbol{\sigma}_{t+1} \equiv \Upsilon(\boldsymbol{\sigma}_{t}, T)
 \end{equation}
 
 where $\Upsilon$ is the Ethereum state transition function. In Ethereum, $\Upsilon$, together with $\boldsymbol{\sigma}$ are considerably more powerful then any existing comparable system; $\Upsilon$ allows components to carry out arbitrary computation, while $\boldsymbol{\sigma}$ allows components to store arbitrary state between transactions.
@@ -321,7 +323,7 @@ T_{\mathbf{t}} \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_{\mathrm{t}
 
 \subsection{The Block} \label{ch:block}
 
-The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$,\hypertarget{ommerheaders}{} and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{ommers}\footnote{\textit{ommer} is the most prevalent (not saying much) gender-neutral term to mean ``sibling of parent''; see \url{https://nonbinary.miraheze.org/wiki/Gender_neutral_language\#Aunt.2FUncle}}). The block header contains several pieces of information:
+The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$,\hypertarget{ommerheaders}{} and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{ommers}\footnote{\textit{ommer} is a gender-neutral term to mean ``sibling of parent''; see \url{https://nonbinary.miraheze.org/wiki/Gender_neutral_language\#Aunt.2FUncle}}). The block header contains several pieces of information:
 
 %\textit{TODO: Introduce logs}
 
@@ -342,7 +344,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[mixHash]\linkdest{mixHash_H__m}{} A 256-bit hash which, combined with the nonce, proves that a sufficient amount of computation has been carried out on this block; formally $H_{\mathrm{m}}$.
 \item[nonce]\linkdest{block_nonce_H__n}{} A 64-bit hash which, combined with the mix-hash, proves that a sufficient amount of computation has been carried out on this block; formally $H_{\mathrm{n}}$.
 \end{description}
-\linkdest{ommer_block_headers_B__U}{}\linkdest{block_B}{}The other two components in the block are simply a list of ommer block headers (of the same format as above) and a series of the transactions. Formally, we can refer to a block $B$:
+\linkdest{ommer_block_headers_B__U}{}\linkdest{block_B}{}The other two components in the block are simply a list of ommer block headers (of the same format as above), $B_{\mathbf{U}}$ and a series of the transactions, $B_{\mathbf{T}}$. Formally, we can refer to a block $B$:
 \begin{equation}
 B \equiv (B_{H}, B_{\mathbf{T}}, B_{\mathbf{U}})
 \end{equation}
@@ -577,11 +579,11 @@ Throughout transaction execution, we accrue certain information that is acted up
 A \equiv (A_{\mathbf{s}}, A_{\mathbf{l}}, A_{\mathbf{t}}, A_{\mathrm{r}})
 \end{equation}
 
-\hypertarget{self_destruct_set_wordy_defn}{}The tuple contents include $A_{\mathbf{s}}$, the self-destruct set: a set of accounts that will be discarded following the transaction's completion.\hypertarget{tx_log_series_wordy_defn}{} $A_{\mathbf{l}}$ is the log series: this is a series of archived and indexable `checkpoints' in VM code execution that allow for contract-calls to be easily tracked by onlookers external to the Ethereum world (such as decentralised application front-ends).\hypertarget{tx_touched_accounts_wordy_defn}{} $A_{\mathbf{t}}$ is the set of touched accounts, of which the empty ones are deleted at the end of a transaction.\hypertarget{refund_balance_defn_words}{} Finally there is $A_{\mathrm{r}}$, the refund balance, increased through using the \hyperlink{SSTORE}{{\small SSTORE}} instruction in order to reset contract storage to zero from some non-zero value. Though not immediately refunded, it is allowed to partially offset the total execution costs.
+\hypertarget{self_destruct_set_wordy_defn_A__s}{}The tuple contents include $A_{\mathbf{s}}$, the self-destruct set: a set of accounts that will be discarded following the transaction's completion.\hypertarget{tx_log_series_wordy_defn_A__l}{} $A_{\mathbf{l}}$ is the log series: this is a series of archived and indexable `checkpoints' in VM code execution that allow for contract-calls to be easily tracked by onlookers external to the Ethereum world (such as decentralised application front-ends).\hypertarget{tx_touched_accounts_wordy_defn_A__t}{} $A_{\mathbf{t}}$ is the set of touched accounts, of which the empty ones are deleted at the end of a transaction.\hypertarget{refund_balance_defn_words_A__r}{} Finally there is $A_{\mathrm{r}}$, the refund balance, increased through using the \hyperlink{SSTORE}{{\small SSTORE}} instruction in order to reset contract storage to zero from some non-zero value. Though not immediately refunded, it is allowed to partially offset the total execution costs.
 
 We define the empty substate $A^0$ to have no self-destructs, no logs, no touched accounts and a zero refund balance:
 \begin{equation}
-A^0 \equiv (\varnothing, (), \varnothing, 0)
+A^0 \equiv (\varnothing,(), \varnothing, 0)
 \end{equation}
 
 \subsection{Execution}
@@ -596,7 +598,7 @@ where $T_{\mathbf{i}},T_{\mathbf{d}}$ means the series of bytes of the transacti
 
 The up-front cost $v_0$ is calculated as:
 \begin{equation}
-v_0 \equiv T_{\mathrm{g}} T_{\mathrm{p}} + T_{\mathrm{v}}
+v_0 \equiv \hyperlink{tx_gas_limit_T__g}{T_{\mathrm{g}}} \hyperlink{tx_gas_price_T__p}{T_{\mathrm{p}}} + \hyperlink{tx_value_T__v}{T_{\mathrm{v}}}
 \end{equation}
 
 The validity is determined as:
@@ -640,10 +642,10 @@ Note we use $\Theta_{4}$ and $\Lambda_{4}$ to denote the fact that only the firs
 
 After the message call or contract creation is processed, the state is finalised by determining the amount to be refunded, $g^*$ from the remaining gas, $g'$, plus some allowance from the refund counter, to the sender at the original rate.
 \begin{equation}
-g^* \equiv g' + \min \{ \Big\lfloor \dfrac{T_{\mathrm{g}} - g'}{2} \Big\rfloor, A_{\mathrm{r}} \}
+g^* \equiv g' + \min \{ \Big\lfloor \dfrac{T_{\mathrm{g}} - g'}{2} \Big\rfloor, \hyperlink{refund_balance_defn_words_A__r}{A_{\mathrm{r}}} \}
 \end{equation}
 
-The total refundable amount is the legitimately remaining gas $g'$, added to $A_{\mathrm{r}}$, with the latter component being capped up to a maximum of half (rounded down) of the total amount used $T_{\mathrm{g}} - g'$.
+The total refundable amount is the legitimately remaining gas $g'$, added to \hyperlink{refund_balance_defn_words_A__r}{$A_{\mathrm{r}}$}, with the latter component being capped up to a maximum of half (rounded down) of the total amount used $T_{\mathrm{g}} - g'$.
 
 The Ether for the gas is given to the miner, whose address is specified as the beneficiary of the present block $B$. So we define the pre-final state $\boldsymbol{\sigma}^*$ in terms of the provisional state $\boldsymbol{\sigma}_{P}$:
 \begin{eqnarray}
@@ -660,14 +662,14 @@ The final state, $\boldsymbol{\sigma}'$, is reached after deleting all accounts 
 \linkdest{touched_A__t}{}\forall i \in A_{\mathbf{t}}: \boldsymbol{\sigma}'[i] & = & \varnothing \quad\text{if}\quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma}^*\kern -2pt, i)
 \end{eqnarray}
 
-\hypertarget{tx_total_gas_used_Upsilon_pow_g}{}\hypertarget{tx_logs_Upsilon_pow_l}{}\hypertarget{tx_status_Upsilon_pow_z}{}And finally, we specify $\Upsilon^{\mathrm{g}}$, the total gas used in this transaction, $\Upsilon^\mathbf{l}$, the logs created by this transaction and $\Upsilon^{\mathrm{z}}$, the status code of this transaction:
+\hypertarget{tx_total_gas_used_Upsilon_pow_g}{}\linkdest{Upsilon_pow_g}\hypertarget{tx_logs_Upsilon_pow_l}{}\linkdest{Upsilon_pow_l}\hypertarget{tx_status_Upsilon_pow_z}{}\linkdest{Upsilon_pow_z}And finally, we specify $\Upsilon^{\mathrm{g}}$, the total gas used in this transaction, $\Upsilon^\mathbf{l}$, the logs created by this transaction and $\Upsilon^{\mathrm{z}}$, the status code of this transaction:
 \begin{eqnarray}
 \Upsilon^{\mathrm{g}}(\boldsymbol{\sigma}, T) & \equiv & T_{\mathrm{g}} - g' \\
-\Upsilon^\mathbf{l}(\boldsymbol{\sigma}, T) & \equiv & A_{\mathbf{l}} \\
+\Upsilon^\mathbf{l}(\boldsymbol{\sigma}, T) & \equiv & \hyperlink{tx_log_series_wordy_defn_A__l}{A_{\mathbf{l}}} \\
 \Upsilon^{\mathrm{z}}(\boldsymbol{\sigma}, T) & \equiv & z
 \end{eqnarray}
 
-These are used to help define the \hyperlink{Transaction_Receipt}{transaction receipt}.
+These are used to help define the \hyperlink{Transaction_Receipt}{transaction receipt} and are also used \hyperlink{Upsilon_pow_g2}{later} for state and nonce validation.
 
 \section{Contract Creation}\label{ch:create}\hypertarget{endow}{}
 
@@ -1138,52 +1140,52 @@ If there are collisions of the beneficiary addresses between ommers and the bloc
 \end{cases}
 \end{equation}
 
-Here, $\mathtt{\small TRIE}(L_{S}(\boldsymbol{\sigma}_{\mathrm{i}}))$ means the hash of the root node of a trie of state $\boldsymbol{\sigma}_{\mathrm{i}}$; it is assumed that implementations will store this in the state database, trivial and efficient since the trie is by nature an immutable data structure.
+Here, $\mathtt{\small TRIE}(L_{S}(\boldsymbol{\sigma}_{\mathrm{i}}))$ means the hash of the root node of a trie of state $\boldsymbol{\sigma}_{\mathrm{i}}$; it is assumed that implementations will store this in the state database, which is trivial and efficient since the trie is by nature an immutable data structure.
 
 \hypertarget{Phi}{}And finally we define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
 \begin{eqnarray}
 \Phi(B) & \equiv & B': \quad B' = B^* \quad \text{except:} \\
 B'_{\mathrm{n}} & = & n: \quad x \leqslant \frac{2^{256}}{\hyperlink{H__d}{H_{\mathrm{d}}}} \\
 B'_{\mathrm{m}} & = & m \quad \text{with } (x, m) = \mathtt{PoW}(B^*_{\hyperlink{H_cancel_n}{\hcancel{n}}}, n, \mathbf{d}) \\
-B^* & \equiv & B \quad \text{except:} \quad B^*_{\mathrm{r}} = r(\Pi(\Gamma(B), B))
+B^* & \equiv & B \quad \text{except:} \quad {\hyperlink{Transaction Receipt}{B^*_{\mathrm{r}}}} = \hyperlink{r}{r}(\hyperlink{Pi}{\Pi}(\Gamma(B), B))
 \end{eqnarray}
 
 With $\mathbf{d}$ being a dataset as specified in appendix \ref{app:ethash}.
 
-As specified at the beginning of the present work, $\Pi$ is the state-transition function, which is defined in terms of $\Omega$, the block finalisation function and \hyperlink{Upsilon_state_transition}{$\Upsilon$}, the transaction-evaluation function, both now well-defined.
+As specified at the beginning of the present work, \hyperlink{Pi}{$\Pi$} is the state-transition function, which is defined in terms of \hyperlink{Omega}{$\Omega$}, the block finalisation function and \hyperlink{Upsilon_state_transition}{$\Upsilon$}, the transaction-evaluation function, both now well-defined.
 
-As previously detailed, $\mathbf{R}[n]_{\mathrm{z}}$, $\mathbf{R}[n]_{\mathbf{l}}$ and $\mathbf{R}[n]_{\mathrm{u}}$ are the $n$th corresponding status code, logs and cumulative gas used after each transaction ($\mathbf{R}[n]_{\mathrm{b}}$, the fourth component in the tuple, has already been defined in terms of the logs). We also define the $n$th state $\boldsymbol{\sigma}[n]$, which is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
+\hyperlink{Transaction_Receipt}{As previously detailed}, $\mathbf{R}[n]_{\mathrm{z}}$, $\mathbf{R}[n]_{\mathbf{l}}$ and $\mathbf{R}[n]_{\mathrm{u}}$ are the $n$th corresponding status code, logs and cumulative gas used after each transaction ($\mathbf{R}[n]_{\mathrm{b}}$, the fourth component in the tuple, has already been defined in terms of the logs). We also define the $n$th state $\boldsymbol{\sigma}[n]$, which is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
 \begin{equation}
-\boldsymbol{\sigma}[n] = \begin{cases} \Gamma(B) & \text{if} \quad n < 0 \\ \Upsilon(\boldsymbol{\sigma}[n - 1], B_{\mathbf{T}}[n]) & \text{otherwise} \end{cases}
+\boldsymbol{\sigma}[n] = \begin{cases} \Gamma(B) & \text{if} \quad n < 0 \\ \hyperlink{Upsilon}{\Upsilon}(\boldsymbol{\sigma}[n - 1], B_{\mathbf{T}}[n]) & \text{otherwise} \end{cases}
 \end{equation}
 
-In the case of $B_{\mathbf{R}}[n]_{\mathrm{u}}$, we take a similar approach defining each item as the gas used in evaluating the corresponding transaction summed with the previous item (or zero, if it is the first), giving us a running total:
+In the case of \hyperlink{Transaction_Receipt}{$B_{\mathbf{R}}[n]_{\mathrm{u}}$}, we take a similar approach defining each item as the gas used in evaluating the corresponding transaction summed with the previous item (or zero, if it is the first), giving us a running total:
 \begin{equation}
 \mathbf{R}[n]_{\mathrm{u}} = \begin{cases} 0 & \text{if} \quad n < 0 \\
 \begin{array}[b]{l}
-\Upsilon^{\mathrm{g}}(\boldsymbol{\sigma}[n - 1], B_{\mathbf{T}}[n])\\ \quad + \mathbf{R}[n-1]_{\mathrm{u}}
+\linkdest{Upsilon_pow_g2}\hyperlink{Upsilon_pow_g}{\Upsilon^{\mathrm{g}}}(\boldsymbol{\sigma}[n - 1], B_{\mathbf{T}}[n])\\ \quad + \mathbf{R}[n-1]_{\mathrm{u}}
 \end{array}
  & \text{otherwise} \end{cases}
 \end{equation}
 
-For $\mathbf{R}[n]_{\mathbf{l}}$, we utilise the $\Upsilon^\mathbf{l}$ function that we conveniently defined in the transaction execution function.
+For $\mathbf{R}[n]_{\mathbf{l}}$, we utilise the \hyperlink{Upsilon_pow_l}{$\Upsilon^\mathbf{l}$} function that we conveniently defined in the transaction execution function.
 \begin{equation}
 \mathbf{R}[n]_{\mathbf{l}} =
 \Upsilon^{\mathbf{l}}(\boldsymbol{\sigma}[n - 1], B_{\mathbf{T}}[n])
 \end{equation}
 
-We define $\mathbf{R}[n]_{\mathrm{z}}$ in a similar manner.
+We define \hyperlink{Upsilon_pow_z}{$\mathbf{R}[n]_{\mathrm{z}}$} in a similar manner.
 \begin{equation}
 \mathbf{R}[n]_{\mathrm{z}} =
 \Upsilon^{\mathrm{z}}(\boldsymbol{\sigma}[n - 1], B_{\mathbf{T}}[n])
 \end{equation}
 
-\hypertarget{Pi}{}Finally, we define $\Pi$ as the new state given the block reward function $\Omega$ applied to the final transaction's resultant state, $\ell(\boldsymbol{\sigma})$:
+\hypertarget{Pi}{}Finally, we define $\Pi$ as the new state given the block reward function $\Omega$ applied to the final transaction's resultant state, $\hyperlink{ell}{\ell}(\boldsymbol{\sigma})$:
 \begin{equation}
 \Pi(\boldsymbol{\sigma}, B) \equiv \Omega(B, \ell(\boldsymbol{\sigma}))
 \end{equation}
 
-Thus the complete block-transition mechanism, less $\mathtt{PoW}$, the proof-of-work function is defined.
+Thus the complete block-transition mechanism is defined, except for $\mathtt{PoW}$, the proof-of-work function.
 
 \subsection{Mining Proof-of-Work} \label{ch:pow}
 
@@ -2514,13 +2516,12 @@ E_{compress}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(\mathbf{m}
 
 At block 2675119, in the transaction \seqsplit{0xcf416c536ec1a19ed1fb89e4ec7ffb3cf73aa413b3aa9b77d60e4fd81a4296ba}, an account at address 0x03 was called and an out-of-gas occurred during the call. Against the equation (\ref{eq:pre}), this added 0x03 in the set of touched addresses, and this transaction turned $\boldsymbol{\sigma}[0x03]$ into $\varnothing$.
 
-\section{List of mathematical symbols}\label{app:symbols}
-\begin{tabu*}{X[l]X[c]X} \savetabu{col3}
+\section{List of mathematical symbols} \label{app:symbols}
+\begin{tabu*} spread 0pt {X[l] X[c] X} \savetabu{col3}
 \toprule
 Symbol & Latex Command & Description \hypertarget{bigvee}{}\\
 \midrule
 $\bigvee$ & \verb|\bigvee| & This is the least upper bound, supremum, or join of all elements operated on. Thus it is the greatest element of such elements (\cite{Davey2002_zbMATH01748069}).\\
 \bottomrule
 \end{tabu*}
-
 \end{document}
