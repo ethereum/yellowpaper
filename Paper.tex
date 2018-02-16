@@ -330,7 +330,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \begin{description}
 \item[parentHash]\linkdest{parent_Hash_H__p_def_words}{} The Keccak 256-bit hash of the parent block's header, in its entirety; formally $H_{\mathrm{p}}$.
 \item[ommersHash] The Keccak 256-bit hash of the ommers list portion of this block; formally $H_{\mathrm{o}}$.
-\item[beneficiary]\linkdest{beneficiary_H__c}{}\linkdest{H__c} The 160-bit address to which all fees collected from the successful mining of this block be transferred; formally $H_{\mathrm{c}}$.
+\item[beneficiary]\linkdest{beneficiary_H__c}{} The 160-bit address to which all fees collected from the successful mining of this block be transferred; formally $H_{\mathrm{c}}$.
 \item[stateRoot] The Keccak 256-bit hash of the root node of the state trie, after all transactions are executed and finalisations applied; formally $H_{\mathrm{r}}$.
 \item[transactionsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with each transaction in the transactions list portion of the block; formally $H_{\mathrm{t}}$.
 \item[receiptsRoot]\linkdest{receipts_Root_def_words}{} The Keccak 256-bit hash of the root node of the trie structure populated with the receipts of each transaction in the transactions list portion of the block; formally $H_{\mathrm{e}}$.
@@ -338,12 +338,13 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[difficulty] A scalar value corresponding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_{\mathrm{d}}$.
 \item[number]\linkdest{block_number_word_def_H_i}{} A scalar value equal to the number of ancestor blocks. The genesis block has a number of zero; formally \hyperlink{block_number_H__i}{$H_{\mathrm{i}}$}.
 \item[gasLimit] A scalar value equal to the current limit of gas expenditure per block; formally $H_{\mathrm{l}}$.
-\item[gasUsed]\linkdest{block_gas_used_H__g}{}\linkdest{H__g} A scalar value equal to the total gas used in transactions in this block; formally $H_{\mathrm{g}}$.
+\item[gasUsed]\linkdest{block_gas_used_H__g}{} A scalar value equal to the total gas used in transactions in this block; formally $H_{\mathrm{g}}$.
 \item[timestamp]\linkdest{block_timestamp_word_def_H__s}{} A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally \hyperlink{block_timestamp_H__s}{$H_{\mathrm{s}}$}.
 \item[extraData]\linkdest{block_extraData_H__x}{} An arbitrary byte array containing data relevant to this block. This must be 32 bytes or fewer; formally $H_{\mathrm{x}}$.
 \item[mixHash]\linkdest{mixHash_H__m}{} A 256-bit hash which, combined with the nonce, proves that a sufficient amount of computation has been carried out on this block; formally $H_{\mathrm{m}}$.
 \item[nonce]\linkdest{block_nonce_H__n}{} A 64-bit hash which, combined with the mix-hash, proves that a sufficient amount of computation has been carried out on this block; formally $H_{\mathrm{n}}$.
 \end{description}
+
 \linkdest{ommer_block_headers_B__U}{}\linkdest{block_B}{}The other two components in the block are simply a list of ommer block headers (of the same format as above), $B_{\mathbf{U}}$ and a series of the transactions, $B_{\mathbf{T}}$. Formally, we can refer to a block $B$:
 \begin{equation}
 B \equiv (B_{H}, B_{\mathbf{T}}, B_{\mathbf{U}})
@@ -354,7 +355,7 @@ B \equiv (B_{H}, B_{\mathbf{T}}, B_{\mathbf{U}})
 In order to encode information about a transaction concerning which it may be useful to form a zero-knowledge proof, or index and search, we encode a receipt of each transaction containing certain information from concerning its execution.
 Each receipt, denoted $B_{\mathbf{R}}[i]$ for the $i$th transaction, is placed in an index-keyed \hyperlink{trie}{trie} and the root recorded in the header as \hyperlink{Receipts_Root_H__e}{$H_{\mathrm{e}}$}.
 
-\linkdest{transaction_receipt_R}{}\linkdest{tx_receipt_gas_used_R__u}{}\linkdest{R__u}The transaction receipt, $R$, is a tuple of four items comprising the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_{\mathrm{u}}$, the set of logs created through execution of the transaction, \hyperlink{RLP_serialisation_of_a_sequence_of_other_items_R__l_math_def}{$R_\mathbf{l}$} and the Bloom filter composed from information in those logs, \hyperlink{RLP_serialisation_of_a_byte_array_R__b_math_def}{$R_{\mathrm{b}}$} and the status code of the transaction, $R_{\mathrm{z}}$:
+\linkdest{transaction_receipt_R}{}\linkdest{tx_receipt_gas_used_R__u}{}The transaction receipt, $R$, is a tuple of four items comprising the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_{\mathrm{u}}$, the set of logs created through execution of the transaction, \hyperlink{RLP_serialisation_of_a_sequence_of_other_items_R__l_math_def}{$R_\mathbf{l}$} and the Bloom filter composed from information in those logs, \hyperlink{RLP_serialisation_of_a_byte_array_R__b_math_def}{$R_{\mathrm{b}}$} and the status code of the transaction, $R_{\mathrm{z}}$:
 \begin{equation}
 R \equiv (R_{\mathrm{u}}, R_{\mathrm{b}}, R_{\mathbf{l}}, R_{\mathrm{z}})
 \end{equation}
@@ -1102,9 +1103,9 @@ where $B(H)$ is the block of the corresponding header $H$.
 
 %where $s[i]$ equals the root of the state trie immediately after the execution of the transaction $B_{\mathbf{T}}[i]$, and $g[i]$ the total gas used immediately after said transaction.
 
-The given \textbf{gasUsed} must correspond faithfully to the transactions listed: \hyperlink{H__g}{${B_{H}}_{\mathrm{g}}$}, the total gas used in the block, must be equal to the accumulated gas used according to the final transaction:
+The given \textbf{gasUsed} must correspond faithfully to the transactions listed: ${B_{H}}_{\mathrm{g}}$, the total gas used in the block, must be equal to the accumulated gas used according to the final transaction:
 \begin{equation}
-{B_{H}}_{\mathrm{g}} = \hyperlink{ell}{\ell}(\hyperlink{R__u}{\mathbf{R})_{\mathrm{u}}}
+{B_{H}}_{\mathrm{g}} = \ell(\mathbf{R})_{\mathrm{u}}
 \end{equation}
 
 \subsection{Reward Application}
@@ -1197,7 +1198,7 @@ Secondly, it should not be possible to make super-linear profits, and especially
 
 One plague of the Bitcoin world is ASICs. These are specialised pieces of compute hardware that exist only to do a single task. In Bitcoin's case the task is the SHA256 hash function. While ASICs exist for a proof-of-work function, both goals are placed in jeopardy. Because of this, a proof-of-work function that is ASIC-resistant (i.e. difficult or economically inefficient to implement in specialised compute hardware) has been identified as the proverbial silver bullet.
 
-Two directions exist for ASIC resistance; firstly make it sequential memory-hard, i.e. engineer the function such that the determination of the nonce requires a lot of memory and bandwidth such that the memory cannot be used in parallel to discover multiple nonces simultaneously. The second is to make the type of computation it would need to do general-purpose; the meaning of ``specialised hardware''  for a general-purpose task set is, naturally, general purpose hardware and as such commodity desktop computers are likely to be pretty close to ``specialised hardware'' for the task. For Ethereum 1.0 we have chosen the first path.
+Two directions exist for ASIC resistance; firstly make it sequential memory-hard, i.e. engineer the function such that the determination of the nonce requires a lot of memory and bandwidth such that the memory cannot be used in parallel to discover multiple nonces simultaneously. The second is to make the type of computation it would need to do general-purpose; the meaning of ``specialised hardware''  for a general-purpose task set is, naturally, general purpose hardware and as such commodity desktop computers are likely to be pretty close to ``specialised hardware'' for the task. For Ethereum 1.0 we have chosen the first path.\footnote{Ethereum 1.0 uses proof-of-work, while it is planned that Ethereum 2.0 will include \href{https://github.com/ethereum/wiki/wiki/Proof-of-Stake-FAQ}{proof-of-stake} and \href{https://github.com/ethereum/wiki/wiki/Sharding-FAQ}{sharding}.}
 
 More formally, the proof-of-work function takes the form of $\mathtt{PoW}$:
 \begin{equation}
