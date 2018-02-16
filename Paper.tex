@@ -130,12 +130,12 @@ Mining is the process of dedicating effort (working) to bolster one series of tr
 
 Formally, we expand to:
 \begin{eqnarray}
-\boldsymbol{\sigma}_{t+1} & \equiv & \hyperlink{Pi}{\Pi}(\boldsymbol{\sigma}_{t}, B) \\
+\boldsymbol{\sigma}_{t+1} & \equiv & \Pi(\boldsymbol{\sigma}_{t}, B) \\
 B & \equiv & (..., (T_0, T_1, ...) ) \\
-\Pi(\boldsymbol{\sigma}, B) & \equiv & \hyperlink{Omega}{\Omega}(B, \hyperlink{Upsilon}{\Upsilon}(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...)
+\Pi(\boldsymbol{\sigma}, B) & \equiv & \Omega(B, \Upsilon(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...)
 \end{eqnarray}
 
-Where \hyperlink{Omega}{$\Omega$} is the block-finalisation state transition function (a function that rewards a nominated party); \linkdest{block}{$B$} is this block, which includes a series of transactions amongst some other components; and $\hyperlink{Pi}{\Pi}$ is the block-level state-transition function.
+Where $\Omega$ is the block-finalisation state transition function (a function that rewards a nominated party); $B$ is this block, which includes a series of transactions amongst some other components; and $\Pi$ is the block-level state-transition function.
 
 This is the basis of the blockchain paradigm, a model that forms the backbone of not only Ethereum, but all decentralised consensus-based transaction systems to date.
 
@@ -185,7 +185,7 @@ Scalars and fixed-size byte sequences (or, synonymously, arrays) are denoted wit
 
 Arbitrary-length sequences are typically denoted as a bold lower-case letter, \eg $\mathbf{o}$ is used to denote the byte sequence given as the output data of a message call. For particularly important values, a bold uppercase letter may be used.
 
-Throughout, we assume scalars are positive integers and thus belong to the set $\mathbb{P}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{32}$ and the set of all positive integers smaller than $2^{256}$ is named $\mathbb{P}_{256}$. This is formally defined in section \hyperlink{block}.
+Throughout, we assume scalars are positive integers and thus belong to the set $\mathbb{P}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{32}$ and the set of all positive integers smaller than $2^{256}$ is named $\mathbb{P}_{256}$. This is formally defined in section \ref{ch:block}.
 
 Square brackets are used to index into and reference individual components or subsequences of sequences, \eg $\boldsymbol{\mu}_{\mathbf{s}}[0]$ denotes the first item on the machine's stack. For subsequences, ellipses are used to specify the intended range, to include elements at both limits, \eg $\boldsymbol{\mu}_{\mathbf{m}}[0..31]$ denotes the first 32 items of the machine's memory.
 
@@ -193,7 +193,7 @@ In the case of the global state $\boldsymbol{\sigma}$, which is a sequence of ac
 
 When considering variants of existing values, we follow the rule that within a given scope for definition, if we assume that the unmodified `input' value be denoted by the placeholder $\Box$ then the modified and utilisable value is denoted as $\Box'$, and intermediate values would be $\Box^*$,  $\Box^{**}$ \&c. On very particular occasions, in order to maximise readability and only if unambiguous in meaning, we may use alpha-numeric subscripts to denote intermediate values, especially those of particular note.
 
-When considering the use of existing functions, given a function $f$, the function \hyperlink{general_element_wise_sequence_transformation_f_pow_asterisk}{$f^*$} denotes a similar, element-wise version of the function mapping instead between sequences. It is formally defined in section \hyperlink{block}.
+When considering the use of existing functions, given a function $f$, the function \hyperlink{general_element_wise_sequence_transformation_f_pow_asterisk}{$f^*$} denotes a similar, element-wise version of the function mapping instead between sequences. It is formally defined in section \ref{ch:block}.
 
 We define a number of useful functions throughout. \linkdest{ell}One of the more common is $\ell$, which evaluates to the last item in the given sequence:
 
@@ -321,7 +321,7 @@ T_{\mathbf{t}} \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_{\mathrm{t}
 \mathbb{B}_{0} & \text{otherwise}\end{cases}
 \end{equation}
 
-\subsection{The Block} \linkdest{block}{}
+\subsection{The Block} \label{ch:block}
 
 The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$,\hypertarget{ommerheaders}{} and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{ommers}\footnote{\textit{ommer} is a gender-neutral term to mean ``sibling of parent''; see \url{https://nonbinary.miraheze.org/wiki/Gender_neutral_language\#Aunt.2FUncle}}). The block header contains several pieces of information:
 
@@ -1222,7 +1222,7 @@ A data feed contract is one which provides a single service: it gives access to 
 The general pattern involves a single contract within Ethereum which, when given a message call, replies with some timely information concerning an external phenomenon. An example might be the local temperature of New York City. This would be implemented as a contract that returned that value of some known point in storage. Of course this point in storage must be maintained with the correct such temperature, and thus the second part of the pattern would be for an external server to run an Ethereum node, and immediately on discovery of a new block, creates a new valid transaction, sent to the contract, updating said value in storage. The contract's code would accept such updates only from the identity contained on said server.
 
 \subsection{Random Numbers}
-Providing random numbers within a deterministic system is, naturally, an impossible task. However, we can approximate with pseudo-random numbers by utilising data which is generally unknowable at the time of transacting. Such data might include the block's hash, the block's timestamp and the block's beneficiary address. In order to make it hard for malicious miners to control those values, one should use the {\small BLOCKHASH} operation in order to use hashes of the previous 256 blocks as pseudo-random numbers. For a series of such numbers, a trivial solution would be to add some constant amount and hashing the result.
+Providing random numbers within a deterministic system is, naturally, an impossible task. However, we can approximate with pseudo-random numbers by utilising data which is generally unknowable at the time of transacting. Such data might include the block's hash, the block's timestamp and the block's beneficiary address. In order to make it hard for malicious miners to control those values, one should use the {\small \hyperlink{blockhash}{BLOCKHASH}} operation in order to use hashes of the previous 256 blocks as pseudo-random numbers. For a series of such numbers, a trivial solution would be to add some constant amount and hashing the result.
 
 \section{Future Directions} \label{ch:future}
 
@@ -1706,13 +1706,6 @@ G(T, p_{\mathrm{r}}) \equiv T \quad \text{except:} \\
 (T_{\mathrm{w}}, T_{\mathrm{r}}, T_{\mathrm{s}}) = \mathtt{\small ECDSASIGN}(h(T), p_{\mathrm{r}})
 \end{eqnarray}
 
-\hyperlink{T__w_T__r_T__s}{Reiterating from previously}: 
-\begin{eqnarray}
-\linkdest{T__w}{T_{\mathrm{w}}} = \hyperlink{v}{v}\\
-\linkdest{T__r}{T_{\mathrm{r}}} = \hyperlink{r}{r}\\
-\linkdest{T__s}{T_{\mathrm{s}}} = \hyperlink{s}{s}
-\end{eqnarray}
-
 We may then define the sender function $S$ of the transaction as:
 \begin{eqnarray}
 S(T) &\equiv& \mathcal{B}_{96..255}\big(\mathtt{\tiny KEC}\big( \mathtt{\small ECDSARECOVER}(h(T), v_0, T_{\mathrm{r}}, T_{\mathrm{s}}) \big) \big) \\
@@ -1769,7 +1762,7 @@ $G_{logtopic}$ & 375 & Paid for each topic of a {\small LOG} operation. \\
 $G_{sha3}$ & 30 & Paid for each {\small SHA3} operation. \\
 $G_{sha3word}$ & 6 & Paid for each word (rounded up) for input data to a {\small SHA3} operation. \\
 $G_{copy}$ & 3 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
-$G_{blockhash}$ & 20 & Payment for {\small BLOCKHASH} operation. \\
+$G_{blockhash}$ & 20 & Payment for {\small \hyperlink{blockhash}{BLOCKHASH}} operation. \\
 $G_{quaddivisor}$ & 100 & The quadratic coefficient of the input sizes of the exponation-over-modulo precompiled contract. \\
 
 %extern u256 const c_{\mathrm{copyGas}};			///< Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
@@ -1812,7 +1805,7 @@ G_{mid} & \text{if} \quad w \in W_{mid}\\
 G_{high} & \text{if} \quad w \in W_{high}\\
 G_{extcode} & \text{if} \quad w \in W_{extcode}\\
 G_{balance} & \text{if} \quad w = \text{\small BALANCE}\\
-G_{blockhash} & \text{if} \quad w = \text{\small BLOCKHASH}\\
+G_{blockhash} & \text{if} \quad w = \text{\small \hyperlink{blockhash}{BLOCKHASH}}\\
 \end{cases}
 \end{equation}
 \begin{equation}
@@ -2047,8 +2040,8 @@ Here given are the various exceptions to the state transition rules given in sec
 \toprule
 \multicolumn{5}{c}{\textbf{40s: Block Information}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
-0x40 & {\small BLOCKHASH} & 1 & 1 & Get the hash of one of the 256 most recent complete blocks. \\
-\linkdest{blockhash}{}&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv P(I_{\mathbf{H}_{\mathrm{p}}}, \boldsymbol{\mu}_{\mathbf{s}}[0], 0)$ \\
+\linkdest{blockhash}{}0x40 & {\small BLOCKHASH} & 1 & 1 & Get the hash of one of the 256 most recent complete blocks. \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv P(I_{\mathbf{H}_{\mathrm{p}}}, \boldsymbol{\mu}_{\mathbf{s}}[0], 0)$ \\
 &&&& where $P$ is the hash of a block of a particular number, up to a maximum age.\\
 &&&& 0 is left on the stack if the looked for block number is greater than the current block number \\
 &&&& or more than 256 blocks behind the current block. \\
