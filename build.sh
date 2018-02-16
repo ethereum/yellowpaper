@@ -29,7 +29,7 @@ fi
 
 echo "\newcommand{\YellowPaperVersionNumber}{$REV}" > Version.tex
 
-mkdir build
+mkdir -p build
 pdflatex -output-directory=build -interaction=errorstopmode -halt-on-error Paper.tex && \
 bibtex build/Paper && \
 pdflatex -output-directory=build -interaction=errorstopmode -halt-on-error Paper.tex && \
