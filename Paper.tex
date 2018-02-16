@@ -1157,7 +1157,7 @@ As specified at the beginning of the present work, \hyperlink{Pi}{$\Pi$} is the 
 
 \hyperlink{Transaction_Receipt}{As previously detailed}, $\mathbf{R}[n]_{\mathrm{z}}$, $\mathbf{R}[n]_{\mathbf{l}}$ and $\mathbf{R}[n]_{\mathrm{u}}$ are the $n$th corresponding status code, logs and cumulative gas used after each transaction ($\mathbf{R}[n]_{\mathrm{b}}$, the fourth component in the tuple, has already been defined in terms of the logs). We also define the $n$th state $\boldsymbol{\sigma}[n]$, which is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
 \begin{equation}
-\boldsymbol{\sigma}[n] = \begin{cases} \Gamma(B) & \text{if} \quad n < 0 \\ \hyperlink{Upsilon}{\Upsilon}(\boldsymbol{\sigma}[n - 1], B_{\mathbf{T}}[n]) & \text{otherwise} \end{cases}
+\boldsymbol{\sigma}[n] = \begin{cases} \hyperlink{Gamma}{\Gamma}(B) & \text{if} \quad n < 0 \\ \hyperlink{Upsilon}{\Upsilon}(\boldsymbol{\sigma}[n - 1], B_{\mathbf{T}}[n]) & \text{otherwise} \end{cases}
 \end{equation}
 
 In the case of \hyperlink{Transaction_Receipt}{$B_{\mathbf{R}}[n]_{\mathrm{u}}$}, we take a similar approach defining each item as the gas used in evaluating the corresponding transaction summed with the previous item (or zero, if it is the first), giving us a running total:
