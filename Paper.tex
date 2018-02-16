@@ -119,7 +119,7 @@ For a list of terms used in this paper, refer to Appendix \ref{ch:Terminology}.
 
 Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissible. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg, be things such as reducing an account balance without an equal and opposite increase elsewhere. A valid state transition is one which comes about through a transaction. Formally:
 \begin{equation}
-\linkdest{Upsilon_state_transition}\linkdest{Upsilon}\boldsymbol{\sigma}_{t+1} \equiv \Upsilon(\boldsymbol{\sigma}_{t}, T)
+\linkdest{Upsilon_state_transition}\linkdest{Upsilon}\boldsymbol{\sigma}_{t+1} \equiv \Upsilon(\boldsymbol{\sigma}_{\mathrm{t}}, T)
 \end{equation}
 
 where $\Upsilon$ is the Ethereum state transition function. In Ethereum, $\Upsilon$, together with $\boldsymbol{\sigma}$ are considerably more powerful then any existing comparable system; $\Upsilon$ allows components to carry out arbitrary computation, while $\boldsymbol{\sigma}$ allows components to store arbitrary state between transactions.
@@ -130,7 +130,7 @@ Mining is the process of dedicating effort (working) to bolster one series of tr
 
 Formally, we expand to:
 \begin{eqnarray}
-\boldsymbol{\sigma}_{t+1} & \equiv & \hyperlink{Pi}{\Pi}(\boldsymbol{\sigma}_{t}, B) \\
+\boldsymbol{\sigma}_{t+1} & \equiv & \hyperlink{Pi}{\Pi}(\boldsymbol{\sigma}_{\mathrm{t}}, B) \\
 B & \equiv & (..., (T_0, T_1, ...) ) \\
 \Pi(\boldsymbol{\sigma}, B) & \equiv & \hyperlink{Omega}{\Omega}(B, \hyperlink{Upsilon}{\Upsilon}(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...)
 \end{eqnarray}
@@ -185,7 +185,7 @@ Scalars and fixed-size byte sequences (or, synonymously, arrays) are denoted wit
 
 Arbitrary-length sequences are typically denoted as a bold lower-case letter, \eg $\mathbf{o}$ is used to denote the byte sequence given as the output data of a message call. For particularly important values, a bold uppercase letter may be used.
 
-Throughout, we assume scalars are positive integers and thus belong to the set $\mathbb{P}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{32}$ and the set of all positive integers smaller than $2^{256}$ is named $\mathbb{P}_{256}$. This is formally defined in section \hyperlink{block}.
+Throughout, we assume scalars are positive integers and thus belong to the set $\mathbb{P}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{\mathrm{32}}$ and the set of all positive integers smaller than $2^{256}$ is named $\mathbb{P}_{\mathrm{256}}$. This is formally defined in section \hyperlink{block}.
 
 Square brackets are used to index into and reference individual components or subsequences of sequences, \eg $\boldsymbol{\mu}_{\mathbf{s}}[0]$ denotes the first item on the machine's stack. For subsequences, ellipses are used to specify the intended range, to include elements at both limits, \eg $\boldsymbol{\mu}_{\mathbf{m}}[0..31]$ denotes the first 32 items of the machine's memory.
 
@@ -220,39 +220,39 @@ The account state comprises the following four fields:
 
 Since we typically wish to refer not to the trie's root hash but to the underlying set of key/value pairs stored within, we define a convenient equivalence:
 \begin{equation}
-\texttt{\small TRIE}\big(L_{I}^*(\boldsymbol{\sigma}[a]_{\mathbf{s}})\big) \equiv \boldsymbol{\sigma}[a]_{\mathrm{s}}
+\texttt{\small TRIE}\big(L_{\mathrm{I}}^*(\boldsymbol{\sigma}[a]_{\mathbf{s}})\big) \equiv \boldsymbol{\sigma}[a]_{\mathrm{s}}
 \end{equation}
 
-The collapse function for the set of key/value pairs in the trie, $L_{I}^*$, is defined as the element-wise transformation of the base function $L_{I}$, given as:
+The collapse function for the set of key/value pairs in the trie, $L_{\mathrm{I}}^*$, is defined as the element-wise transformation of the base function $L_{\mathrm{I}}$, given as:
 \begin{equation}
-L_{I}\big( (k, v) \big) \equiv \big(\texttt{\small KEC}(k), \texttt{\small RLP}(v)\big)
+L_{\mathrm{I}}\big( (k, v) \big) \equiv \big(\texttt{\small KEC}(k), \texttt{\small RLP}(v)\big)
 \end{equation}
 
 where:
 \begin{equation}
-k \in \mathbb{B}_{32} \quad \wedge \quad v \in \mathbb{P}
+k \in \mathbb{B}_{\mathrm{32}} \quad \wedge \quad v \in \mathbb{P}
 \end{equation}
 
 It shall be understood that $\boldsymbol{\sigma}[a]_{\mathbf{s}}$ is not a `physical' member of the account and does not contribute to its later serialisation.
 
 If the \textbf{codeHash} field is the Keccak-256 hash of the empty string, i.e. $\boldsymbol{\sigma}[a]_{\mathrm{c}} = \texttt{\small KEC}\big(()\big)$, then the node represents a simple account, sometimes referred to as a ``non-contract'' account.
 
-Thus we may define a world-state collapse function $L_{S}$:
+Thus we may define a world-state collapse function $L_{\mathrm{S}}$:
 \begin{equation}
-L_{S}(\boldsymbol{\sigma}) \equiv \{ p(a): \boldsymbol{\sigma}[a] \neq \varnothing \}
+L_{\mathrm{S}}(\boldsymbol{\sigma}) \equiv \{ p(a): \boldsymbol{\sigma}[a] \neq \varnothing \}
 \end{equation}
 where
 \begin{equation}
 p(a) \equiv  \big(\texttt{\small KEC}(a), \texttt{\small RLP}\big( (\boldsymbol{\sigma}[a]_{\mathrm{n}}, \boldsymbol{\sigma}[a]_{\mathrm{b}}, \boldsymbol{\sigma}[a]_{\mathrm{s}}, \boldsymbol{\sigma}[a]_{\mathrm{c}}) \big) \big)
 \end{equation}
 
-This function, $L_{S}$, is used alongside the trie function to provide a short identity (hash) of the world state. We assume:
+This function, $L_{\mathrm{S}}$, is used alongside the trie function to provide a short identity (hash) of the world state. We assume:
 \begin{equation}
-\forall a: \boldsymbol{\sigma}[a] = \varnothing \; \vee \; (a \in \mathbb{B}_{20} \; \wedge \; v(\boldsymbol{\sigma}[a]))
+\forall a: \boldsymbol{\sigma}[a] = \varnothing \; \vee \; (a \in \mathbb{B}_{\mathrm{20}} \; \wedge \; v(\boldsymbol{\sigma}[a]))
 \end{equation}
 \linkdest{account_validity_function_v__x}{}where $v$ is the account validity function:
 \begin{equation}
-\quad v(x) \equiv x_{\mathrm{n}} \in \mathbb{P}_{256} \wedge x_{\mathrm{b}} \in \mathbb{P}_{256} \wedge x_{\mathrm{s}} \in \mathbb{B}_{32} \wedge x_{\mathrm{c}} \in \mathbb{B}_{32}
+\quad v(x) \equiv x_{\mathrm{n}} \in \mathbb{P}_{\mathrm{256}} \wedge x_{\mathrm{b}} \in \mathbb{P}_{\mathrm{256}} \wedge x_{\mathrm{s}} \in \mathbb{B}_{\mathrm{32}} \wedge x_{\mathrm{c}} \in \mathbb{B}_{\mathrm{32}}
 \end{equation}
 
 An account is \textit{empty} when it has no code, zero nonce and zero balance:
@@ -296,7 +296,7 @@ In contrast, a message call transaction contains:
 Appendix \ref{app:signing} specifies the function, $S$, which maps transactions to the sender, and happens through the ECDSA of the SECP-256k1 curve, using the hash of the transaction (excepting the latter three signature fields) as the datum to sign. For the present we simply assert that the sender of a given transaction $T$ can be represented with $S(T)$.
 
 \begin{equation}
-L_{T}(T) \equiv \begin{cases}
+L_{\mathrm{T}}(T) \equiv \begin{cases}
 (T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, T_{\mathbf{i}}, T_{\mathrm{w}}, T_{\mathrm{r}}, T_{\mathrm{s}}) & \text{if} \; T_{\mathrm{t}} = \varnothing\\
 (T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, T_{\mathbf{d}}, T_{\mathrm{w}}, T_{\mathrm{r}}, T_{\mathrm{s}}) & \text{otherwise}
 \end{cases}
@@ -305,9 +305,9 @@ L_{T}(T) \equiv \begin{cases}
 Here, we assume all components are interpreted by the RLP as integer values, with the exception of the arbitrary length byte arrays $T_{\mathbf{i}}$ and $T_{\mathbf{d}}$.
 \begin{equation}
 \begin{array}[t]{lclclc}
-T_{\mathrm{n}} \in \mathbb{P}_{256} & \wedge & T_{\mathrm{v}} \in \mathbb{P}_{256} & \wedge & T_{\mathrm{p}} \in \mathbb{P}_{256} & \wedge \\
-T_{\mathrm{g}} \in \mathbb{P}_{256} & \wedge & T_{\mathrm{w}} \in \mathbb{P}_5 & \wedge & T_{\mathrm{r}} \in \mathbb{P}_{256} & \wedge \\
-T_{\mathrm{s}} \in \mathbb{P}_{256} & \wedge & T_{\mathbf{d}} \in \mathbb{B} & \wedge & T_{\mathbf{i}} \in \mathbb{B}
+T_{\mathrm{n}} \in \mathbb{P}_{\mathrm{256}} & \wedge & T_{\mathrm{v}} \in \mathbb{P}_{\mathrm{256}} & \wedge & T_{\mathrm{p}} \in \mathbb{P}_{\mathrm{256}} & \wedge \\
+T_{\mathrm{g}} \in \mathbb{P}_{\mathrm{256}} & \wedge & T_{\mathrm{w}} \in \mathbb{P}_5 & \wedge & T_{\mathrm{r}} \in \mathbb{P}_{\mathrm{256}} & \wedge \\
+T_{\mathrm{s}} \in \mathbb{P}_{\mathrm{256}} & \wedge & T_{\mathbf{d}} \in \mathbb{B} & \wedge & T_{\mathbf{i}} \in \mathbb{B}
 \end{array}
 \end{equation}
 where
@@ -317,8 +317,8 @@ where
 
 The address hash $T_{\mathbf{t}}$ is slightly different: it is either a 20-byte address hash or, in the case of being a contract-creation transaction (and thus formally equal to $\varnothing$), it is the RLP empty byte sequence and thus the member of $\mathbb{B}_0$:
 \begin{equation}
-T_{\mathbf{t}} \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_{\mathrm{t}} \neq \varnothing \\
-\mathbb{B}_{0} & \text{otherwise}\end{cases}
+T_{\mathbf{t}} \in \begin{cases} \mathbb{B}_{\mathrm{20}} & \text{if} \quad T_{\mathrm{t}} \neq \varnothing \\
+\mathbb{B}_{\mathrm{0}} & \text{otherwise}\end{cases}
 \end{equation}
 
 \subsection{The Block} \linkdest{block}{}
@@ -346,7 +346,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \end{description}
 \linkdest{ommer_block_headers_B__U}{}\linkdest{block_B}{}The other two components in the block are simply a list of ommer block headers (of the same format as above), $B_{\mathbf{U}}$ and a series of the transactions, $B_{\mathbf{T}}$. Formally, we can refer to a block $B$:
 \begin{equation}
-B \equiv (B_{H}, B_{\mathbf{T}}, B_{\mathbf{U}})
+B \equiv (B_{\mathrm{H}}, B_{\mathbf{T}}, B_{\mathbf{U}})
 \end{equation}
 
 \subsubsection{Transaction Receipt}\linkdest{Transaction_Receipt}{}
@@ -359,11 +359,11 @@ Each receipt, denoted $B_{\mathbf{R}}[i]$ for the $i$th transaction, is placed i
 R \equiv (R_{\mathrm{u}}, R_{\mathrm{b}}, R_{\mathbf{l}}, R_{\mathrm{z}})
 \end{equation}
 
-The function $L_{R}$ trivially prepares a transaction receipt for being transformed into an RLP-serialised byte array:
+The function $L_{\mathrm{R}}$ trivially prepares a transaction receipt for being transformed into an RLP-serialised byte array:
 \begin{equation}
-L_{R}(R) \equiv (0 \in \mathbb{B}_{256}, R_{\mathrm{u}}, R_{\mathrm{b}}, R_{\mathbf{l}})
+L_{\mathrm{R}}(R) \equiv (0 \in \mathbb{B}_{\mathrm{256}}, R_{\mathrm{u}}, R_{\mathrm{b}}, R_{\mathbf{l}})
 \end{equation}
-where $0 \in \mathbb{B}_{256}$ replaces the pre-transaction state root that existed in previous versions of the protocol.
+where $0 \in \mathbb{B}_{\mathrm{256}}$ replaces the pre-transaction state root that existed in previous versions of the protocol.
 
 We assert that the status code $R_{\mathrm{z}}$ is an integer.
 \begin{equation}
@@ -372,17 +372,17 @@ R_{\mathrm{z}} \in \mathbb{P}
 
 We assert $R_{\mathrm{u}}$, the cumulative gas used is a positive integer and that the logs Bloom, $R_{\mathrm{b}}$, is a hash of size 2048 bits (256 bytes):
 \begin{equation}
-R_{\mathrm{u}} \in \mathbb{P} \quad \wedge \quad R_{\mathrm{b}} \in \mathbb{B}_{256}
+R_{\mathrm{u}} \in \mathbb{P} \quad \wedge \quad R_{\mathrm{b}} \in \mathbb{B}_{\mathrm{256}}
 \end{equation}
 
-%Notably $B_{\mathbf{T}}$ does not get serialised into the block by the block preparation function $L_{B}$; it is merely a convenience equivalence.
+%Notably $B_{\mathbf{T}}$ does not get serialised into the block by the block preparation function $L_{\mathrm{B}}$; it is merely a convenience equivalence.
 
 The sequence $R_{\mathbf{l}}$ is a series of log entries, $(O_0, O_1, ...)$. A log entry, $O$, is a tuple of the logger's address, $O_a$, a series of 32-byte log topics, $O_{\mathbf{t}}$ and some number of bytes of data, $O_{\mathbf{d}}$:
 \begin{equation}
 O \equiv (O_{\mathrm{a}}, ({O_{\mathbf{t}}}_0, {O_{\mathbf{t}}}_1, ...), O_{\mathbf{d}})
 \end{equation}
 \begin{equation}
-O_{\mathrm{a}} \in \mathbb{B}_{20} \quad \wedge \quad \forall_{t \in O_{\mathbf{t}}}: t \in \mathbb{B}_{32} \quad \wedge \quad O_{\mathbf{d}} \in \mathbb{B}
+O_{\mathrm{a}} \in \mathbb{B}_{\mathrm{20}} \quad \wedge \quad \forall_{t \in O_{\mathbf{t}}}: t \in \mathbb{B}_{\mathrm{32}} \quad \wedge \quad O_{\mathbf{d}} \in \mathbb{B}
 \end{equation}
 
 We define the Bloom filter function, $M$, to reduce a log entry into a single 256-byte hash:
@@ -392,7 +392,7 @@ M(O) \equiv \hyperlink{bigvee}{\bigvee}_{t \in \{O_{\mathrm{a}}\} \cup O_{\mathb
 
 where $M_{3:2048}$ is a specialised Bloom filter that sets three bits out of 2048, given an arbitrary byte sequence. It does this through taking the low-order 11 bits of each of the first three pairs of bytes in a Keccak-256 hash of the byte sequence.\footnote{11 bits $= 2^{2048}$, and the low-order 11 bits is the modulo 2048 of the operand, which is in this case is "each of the first three pairs of bytes in a Keccak-256 hash of the byte sequence."} Formally:
 \begin{eqnarray}
-M_{3:2048}(\mathbf{x}: \mathbf{x} \in \mathbb{B}) & \equiv & \mathbf{y}: \mathbf{y} \in \mathbb{B}_{256} \quad \text{where:}\\
+M_{3:2048}(\mathbf{x}: \mathbf{x} \in \mathbb{B}) & \equiv & \mathbf{y}: \mathbf{y} \in \mathbb{B}_{\mathrm{256}} \quad \text{where:}\\
 \mathbf{y} & = & (0, 0, ..., 0) \quad \text{except:}\\
 \forall_{i \in \{0, 2, 4\}}&:& \mathcal{B}_{m(\mathbf{x}, i)}(\mathbf{y}) = 1\\
 m(\mathbf{x}, i) &\equiv& \mathtt{\tiny KEC}(\mathbf{x})[i, i + 1] \bmod 2048
@@ -407,8 +407,8 @@ where $\mathcal{B}$ is the bit reference function such that $\mathcal{B}_{\mathr
 \begin{array}[t]{lclc}
 \linkdest{new_state_H__r}{}H_{\mathrm{r}} &\equiv& \mathtt{\small TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) & \wedge \\
 \linkdest{Ommer_block_hash_H__o}{}H_{\mathrm{o}} &\equiv& \mathtt{\small KEC}(\mathtt{\small RLP}(L_H^*(B_{\mathbf{U}}))) & \wedge \\
-\linkdest{tx_block_hash_H__t}{}H_{\mathrm{t}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_{\mathbf{T}} \rVert, i \in \mathbb{P}: p(i, L_{T}(B_{\mathbf{T}}[i]))\}) & \wedge \\
-\linkdest{Receipts_Root_H__e}{}H_{\mathrm{e}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_{\mathbf{R}} \rVert, i \in \mathbb{P}: p(i, L_{R}(B_{\mathbf{R}}[i]))\}) & \wedge \\
+\linkdest{tx_block_hash_H__t}{}H_{\mathrm{t}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_{\mathbf{T}} \rVert, i \in \mathbb{P}: p(i, L_{\mathrm{T}}(B_{\mathbf{T}}[i]))\}) & \wedge \\
+\linkdest{Receipts_Root_H__e}{}H_{\mathrm{e}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_{\mathbf{R}} \rVert, i \in \mathbb{P}: p(i, L_{\mathrm{R}}(B_{\mathbf{R}}[i]))\}) & \wedge \\
 \linkdest{logs_Bloom_filter_H__b}{}H_{\mathrm{b}} &\equiv& \bigvee_{\mathbf{r} \in B_{\mathbf{R}}} \big( \mathbf{r}_{\mathrm{b}} \big)
 \end{array}
 \end{equation}
@@ -419,19 +419,19 @@ p(k, v) \equiv \big( \mathtt{\small RLP}(k), \mathtt{\small RLP}(v) \big)
 
 Furthermore:
 \begin{equation}
-\mathtt{\small TRIE}(L_{S}(\boldsymbol{\sigma})) = {P(B_H)_H}_{\mathrm{r}}
+\mathtt{\small TRIE}(L_{\mathrm{S}}(\boldsymbol{\sigma})) = {P(B_H)_H}_{\mathrm{r}}
 \end{equation}
 
-Thus $\texttt{\small TRIE}(L_{S}(\boldsymbol{\sigma}))$ is the root node hash of the Merkle Patricia tree structure containing the key-value pairs of the state $\boldsymbol{\sigma}$ with values encoded using RLP, and $P(B_{H})$ is the parent block of $B$, defined directly.
+Thus $\texttt{\small TRIE}(L_{\mathrm{S}}(\boldsymbol{\sigma}))$ is the root node hash of the Merkle Patricia tree structure containing the key-value pairs of the state $\boldsymbol{\sigma}$ with values encoded using RLP, and $P(B_{\mathrm{H}})$ is the parent block of $B$, defined directly.
 
 The values stemming from the computation of transactions, specifically the \hyperlink{Transaction_Receipt}{transaction receipts}, $B_{\mathbf{R}}$, and that defined through the transaction's \hyperlink{Pi}{state-accumulation function, $\Pi$}, are formalised later in section \ref{sec:statenoncevalidation}.
 
 \subsubsection{Serialisation}
 
-\hypertarget{block_preparation_function_for_RLP_serialization_L__B}{}\hypertarget{block_preparation_function_for_RLP_serialization_L__H}{}The function $L_{B}$ and $L_{H}$ are the preparation functions for a block and block header respectively. Much like the transaction receipt preparation function $L_{R}$, we assert the types and order of the structure for when the RLP transformation is required:
+\hypertarget{block_preparation_function_for_RLP_serialization_L__B}{}\hypertarget{block_preparation_function_for_RLP_serialization_L__H}{}The function $L_{\mathrm{B}}$ and $L_{\mathrm{H}}$ are the preparation functions for a block and block header respectively. Much like the transaction receipt preparation function $L_{\mathrm{R}}$, we assert the types and order of the structure for when the RLP transformation is required:
 \begin{eqnarray}
-\quad L_{H}(H) & \equiv & (\begin{array}[t]{l}H_{\mathrm{p}}, H_{\mathrm{o}}, H_{\mathrm{c}}, H_{\mathrm{r}}, H_{\mathrm{t}}, H_{\mathrm{e}}, H_{\mathrm{b}}, H_{\mathrm{d}},\\ H_{\mathrm{i}}, H_{\mathrm{l}}, H_{\mathrm{g}}, H_{\mathrm{s}}, H_{\mathrm{x}}, H_{\mathrm{m}}, H_{\mathrm{n}} \; )\end{array} \\
-\quad L_{B}(B) & \equiv & \big( L_{H}(B_{H}), L_{T}^*(B_{\mathbf{T}}), L_{H}^*(\hyperlink{ommer_block_headers_B__U}{B_{\mathbf{U}}}) \big)
+\quad L_{\mathrm{H}}(H) & \equiv & (\begin{array}[t]{l}H_{\mathrm{p}}, H_{\mathrm{o}}, H_{\mathrm{c}}, H_{\mathrm{r}}, H_{\mathrm{t}}, H_{\mathrm{e}}, H_{\mathrm{b}}, H_{\mathrm{d}},\\ H_{\mathrm{i}}, H_{\mathrm{l}}, H_{\mathrm{g}}, H_{\mathrm{s}}, H_{\mathrm{x}}, H_{\mathrm{m}}, H_{\mathrm{n}} \; )\end{array} \\
+\quad L_{\mathrm{B}}(B) & \equiv & \big( L_{\mathrm{H}}(B_{\mathrm{H}}), L_{\mathrm{T}}^*(B_{\mathbf{T}}), L_{\mathrm{H}}^*(\hyperlink{ommer_block_headers_B__U}{B_{\mathbf{U}}}) \big)
 \end{eqnarray}
 
 \hypertarget{general_element_wise_sequence_transformation_f_pow_asterisk}{}With $L_T^*$ and $L_H^*$ being element-wise sequence transformations, thus:
@@ -442,11 +442,11 @@ The values stemming from the computation of transactions, specifically the \hype
 The component types are defined thus:
 \begin{equation}
 \begin{array}[t]{lclclcl}
-\hyperlink{parent_Hash_H__p_def_words}{H_{\mathrm{p}}} \in \mathbb{B}_{32} & \wedge & H_{\mathrm{o}} \in \mathbb{B}_{32} & \wedge & H_{\mathrm{c}} \in \mathbb{B}_{20} & \wedge \\
-\hyperlink{new_state_H__r}{H_{\mathrm{r}}} \in \mathbb{B}_{32} & \wedge & H_{\mathrm{t}} \in \mathbb{B}_{32} & \wedge & \hyperlink{Receipts_Root_H__e}{H_{\mathrm{e}}} \in \mathbb{B}_{32} & \wedge \\
-\hyperlink{logs_Bloom_filter_H__b}{H_{\mathrm{b}}} \in \mathbb{B}_{256} & \wedge & H_{\mathrm{d}} \in \mathbb{P} & \wedge & \hyperlink{block_number_H__i}{H_{\mathrm{i}}} \in \mathbb{P} & \wedge \\
-\hyperlink{block_gas_limit_H__l}{H_{\mathrm{l}}} \in \mathbb{P} & \wedge & H_{\mathrm{g}} \in \mathbb{P} & \wedge & \hyperlink{block_timestamp_H__s}{H_{\mathrm{s}}} \in \mathbb{P}_{256} & \wedge \\
-\hyperlink{block_extraData_H__x}{H_{\mathrm{x}}} \in \mathbb{B} & \wedge & H_{\mathrm{m}} \in \mathbb{B}_{32} & \wedge & \hyperlink{block_nonce_H__n}{H_{\mathrm{n}}} \in \mathbb{B}_{8}
+\hyperlink{parent_Hash_H__p_def_words}{H_{\mathrm{p}}} \in \mathbb{B}_{\mathrm{32}} & \wedge & H_{\mathrm{o}} \in \mathbb{B}_{\mathrm{32}} & \wedge & H_{\mathrm{c}} \in \mathbb{B}_{\mathrm{20}} & \wedge \\
+\hyperlink{new_state_H__r}{H_{\mathrm{r}}} \in \mathbb{B}_{\mathrm{32}} & \wedge & H_{\mathrm{t}} \in \mathbb{B}_{\mathrm{32}} & \wedge & \hyperlink{Receipts_Root_H__e}{H_{\mathrm{e}}} \in \mathbb{B}_{\mathrm{32}} & \wedge \\
+\hyperlink{logs_Bloom_filter_H__b}{H_{\mathrm{b}}} \in \mathbb{B}_{\mathrm{256}} & \wedge & H_{\mathrm{d}} \in \mathbb{P} & \wedge & \hyperlink{block_number_H__i}{H_{\mathrm{i}}} \in \mathbb{P} & \wedge \\
+\hyperlink{block_gas_limit_H__l}{H_{\mathrm{l}}} \in \mathbb{P} & \wedge & H_{\mathrm{g}} \in \mathbb{P} & \wedge & \hyperlink{block_timestamp_H__s}{H_{\mathrm{s}}} \in \mathbb{P}_{\mathrm{256}} & \wedge \\
+\hyperlink{block_extraData_H__x}{H_{\mathrm{x}}} \in \mathbb{B} & \wedge & H_{\mathrm{m}} \in \mathbb{B}_{\mathrm{32}} & \wedge & \hyperlink{block_nonce_H__n}{H_{\mathrm{n}}} \in \mathbb{B}_{\mathrm{8}}
 \end{array}
 \end{equation}
 
@@ -459,14 +459,14 @@ We now have a rigorous specification for the construction of a formal block stru
 
 \subsubsection{Block Header Validity}
 
-We define $P(B_{H})$ to be the parent block of $B$, formally:
+We define $P(B_{\mathrm{H}})$ to be the parent block of $B$, formally:
 \begin{equation}
-P(H) \equiv B': \mathtt{\tiny KEC}(\mathtt{\tiny RLP}(B'_{H})) = \hyperlink{parent_Hash_H__p_def_words}{H_{\mathrm{p}}}
+P(H) \equiv B': \mathtt{\tiny KEC}(\mathtt{\tiny RLP}(B'_{\mathrm{H}})) = \hyperlink{parent_Hash_H__p_def_words}{H_{\mathrm{p}}}
 \end{equation}
 
 \hypertarget{block_number_H__i}{}The block number is the parent's block number incremented by one:
 \begin{equation}
-H_{\mathrm{i}} \equiv {{P(H)_{H}}_{\mathrm{i}}} + 1
+H_{\mathrm{i}} \equiv {{P(H)_{\mathrm{H}}}_{\mathrm{i}}} + 1
 \end{equation}
 
 \newcommand{\mindifficulty}{D_0}
@@ -478,7 +478,7 @@ H_{\mathrm{i}} \equiv {{P(H)_{H}}_{\mathrm{i}}} + 1
 \begin{equation}
 D(H) \equiv \begin{dcases}
 \mindifficulty & \text{if} \quad H_{\mathrm{i}} = 0\\
-\text{max}\!\left(\mindifficulty, {P(H)_{H}}_{\mathrm{d}} + \diffadjustment\times\homesteadmod + \expdiffsymb \right) & \text{otherwise}\\
+\text{max}\!\left(\mindifficulty, {P(H)_{\mathrm{H}}}_{\mathrm{d}} + \diffadjustment\times\homesteadmod + \expdiffsymb \right) & \text{otherwise}\\
 \end{dcases}
 \end{equation}
 where:
@@ -486,10 +486,10 @@ where:
 \mindifficulty \equiv 131072
 \end{equation}
 \begin{equation}
-\diffadjustment \equiv \left\lfloor\frac{{P(H)_{H}}_{\mathrm{d}}}{2048}\right\rfloor
+\diffadjustment \equiv \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{d}}}{2048}\right\rfloor
 \end{equation}
 \begin{equation}
-\homesteadmod \equiv \text{max}\left( x - \left\lfloor\frac{H_{\mathrm{s}} - {P(H)_{H}}_{\mathrm{s}}}{9}\right\rfloor, -99 \right)
+\homesteadmod \equiv \text{max}\left( x - \left\lfloor\frac{H_{\mathrm{s}} - {P(H)_{\mathrm{H}}}_{\mathrm{s}}}{9}\right\rfloor, -99 \right)
 \end{equation}
 \begin{equation*}
 x \equiv \begin{cases}
@@ -506,14 +506,14 @@ Note that $\mindifficulty$ is the difficulty of the genesis block. The \textit{H
 
 \hypertarget{block_gas_limit_H__l}{}The canonical gas limit $H_{\mathrm{l}}$ of a block of header $H$ must fulfil the relation:
 \begin{eqnarray}
-& & H_{\mathrm{l}} < {P(H)_{H}}_{\mathrm{l}} + \left\lfloor\frac{{P(H)_{H}}_{\mathrm{l}}}{1024}\right\rfloor \quad \wedge \\
-& & H_{\mathrm{l}} > {P(H)_{H}}_{\mathrm{l}} - \left\lfloor\frac{{P(H)_{H}}_{\mathrm{l}}}{1024}\right\rfloor \quad \wedge \\
+& & H_{\mathrm{l}} < {P(H)_{\mathrm{H}}}_{\mathrm{l}} + \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{l}}}{1024}\right\rfloor \quad \wedge \\
+& & H_{\mathrm{l}} > {P(H)_{\mathrm{H}}}_{\mathrm{l}} - \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{l}}}{1024}\right\rfloor \quad \wedge \\
 & & H_{\mathrm{l}} \geqslant 5000
 \end{eqnarray}
 
 \hypertarget{block_timestamp_H__s}{}$H_{\mathrm{s}}$ is the timestamp (in Unix's time()) of block $H$ and must fulfil the relation:
 \begin{equation}
-H_{\mathrm{s}} > {P(H)_{H}}_{\mathrm{s}}
+H_{\mathrm{s}} > {P(H)_{\mathrm{H}}}_{\mathrm{s}}
 \end{equation}
 
 This mechanism enforces a homeostasis in terms of the time between blocks; a smaller period between the last two blocks results in an increase in the difficulty level and thus additional computation required, lengthening the likely next period. Conversely, if the period is too large, the difficulty, and expected time to the next block, is reduced.
@@ -533,11 +533,11 @@ This is the foundation of the security of the blockchain and is the fundamental 
 V(H) & \equiv &  n \leqslant \frac{2^{256}}{H_{\mathrm{d}}} \wedge m = H_{\mathrm{m}} \quad \wedge \\
 & & H_{\mathrm{d}} = D(H) \quad \wedge \\
 & & H_{\mathrm{g}} \le H_{\mathrm{l}}  \quad \wedge \\
-& & H_{\mathrm{l}} < {P(H)_{H}}_{\mathrm{l}} + \left\lfloor\frac{{P(H)_{H}}_{\mathrm{l}}}{1024}\right\rfloor  \quad \wedge \\
-& & H_{\mathrm{l}} > {P(H)_{H}}_{\mathrm{l}} - \left\lfloor\frac{{P(H)_{H}}_{\mathrm{l}}}{1024}\right\rfloor  \quad \wedge \\
+& & H_{\mathrm{l}} < {P(H)_{\mathrm{H}}}_{\mathrm{l}} + \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{l}}}{1024}\right\rfloor  \quad \wedge \\
+& & H_{\mathrm{l}} > {P(H)_{\mathrm{H}}}_{\mathrm{l}} - \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{l}}}{1024}\right\rfloor  \quad \wedge \\
 & & H_{\mathrm{l}} \geqslant 5000  \quad \wedge \\
-& & H_{\mathrm{s}} > {P(H)_{H}}_{\mathrm{s}} \quad \wedge \\
-& & H_{\mathrm{i}} = {P(H)_{H}}_{\mathrm{i}} +1 \quad \wedge \\
+& & H_{\mathrm{s}} > {P(H)_{\mathrm{H}}}_{\mathrm{s}} \quad \wedge \\
+& & H_{\mathrm{i}} = {P(H)_{\mathrm{H}}}_{\mathrm{i}} +1 \quad \wedge \\
 & & \lVert H_{\mathrm{x}} \rVert \le 32
 \end{eqnarray}
 where $(n, m) = \mathtt{PoW}(H_{\hcancel{n}}, H_{\mathrm{n}}, \mathbf{d})$
@@ -609,11 +609,11 @@ S(T) & \neq & \varnothing \quad \wedge \\
 \linkdest{transaction_nonce}{}T_{\mathrm{n}} & = & \boldsymbol{\sigma}[S(T)]_{\mathrm{n}} \quad \wedge \\
 g_0 & \leqslant & T_{\mathrm{g}} \quad \wedge \\
 v_0 & \leqslant & \boldsymbol{\sigma}[S(T)]_{\mathrm{b}} \quad \wedge \\
-T_{\mathrm{g}} & \leqslant & {B_{H}}_{\mathrm{l}} - \hyperlink{ell}{\ell}(B_{\mathbf{R}})_{\mathrm{u}}
+T_{\mathrm{g}} & \leqslant & {B_{\mathrm{H}}}_{\mathrm{l}} - \hyperlink{ell}{\ell}(B_{\mathbf{R}})_{\mathrm{u}}
 \end{array}
 \end{equation}
 
-Note the final condition; the sum of the transaction's gas limit, $T_{\mathrm{g}}$, and the gas utilised in this block prior, given by $\hyperlink{ell}{\ell}(B_{\mathbf{R}})_{\mathrm{u}}$, must be no greater than the block's \textbf{gasLimit}, ${B_{H}}_{\mathrm{l}}$.
+Note the final condition; the sum of the transaction's gas limit, $T_{\mathrm{g}}$, and the gas utilised in this block prior, given by $\hyperlink{ell}{\ell}(B_{\mathbf{R}})_{\mathrm{u}}$, must be no greater than the block's \textbf{gasLimit}, ${B_{\mathrm{H}}}_{\mathrm{l}}$.
 
 The execution of a valid transaction begins with an irrevocable change made to the state: the \hyperlink{account_nonce}{nonce of the account of the sender}, $S(T)$, is incremented by one and the balance is reduced by part of the up-front cost, $T_{\mathrm{g}}T_{\mathrm{p}}$. The gas available for the proceeding computation, $g$, is defined as $T_{\mathrm{g}} - g_0$. The computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
 
@@ -624,11 +624,11 @@ We define the checkpoint state $\boldsymbol{\sigma}_0$:
 \boldsymbol{\sigma}_0[S(T)]_{\mathrm{n}} & \equiv & \boldsymbol{\sigma}[S(T)]_{\mathrm{n}} + 1
 \end{eqnarray}
 
-Evaluating $\boldsymbol{\sigma}_{P}$ from $\boldsymbol{\sigma}_0$ depends on the transaction type; either contract creation or message call; we define the tuple of post-execution provisional state $\boldsymbol{\sigma}_{P}$, remaining gas $g'$, substate $A$ and status code $z$:
+Evaluating $\boldsymbol{\sigma}_{\mathrm{P}}$ from $\boldsymbol{\sigma}_0$ depends on the transaction type; either contract creation or message call; we define the tuple of post-execution provisional state $\boldsymbol{\sigma}_{\mathrm{P}}$, remaining gas $g'$, substate $A$ and status code $z$:
 \begin{equation}
-(\boldsymbol{\sigma}_{P}, g', A, z) \equiv \begin{cases}
-\Lambda_{4}(\boldsymbol{\sigma}_0, S(T), T_{\mathrm{o}}, &\\ \quad\quad g, T_{\mathrm{p}}, T_{\mathrm{v}}, T_{\mathbf{i}}, 0, \top) & \text{if} \quad T_{\mathrm{t}} = \varnothing \\
-\Theta_{4}(\boldsymbol{\sigma}_0, S(T), T_{\mathrm{o}}, &\\ \quad\quad T_{\mathrm{t}}, T_{\mathrm{t}}, g, T_{\mathrm{p}}, T_{\mathrm{v}}, T_{\mathrm{v}}, T_{\mathbf{d}}, 0, \top) & \text{otherwise}
+(\boldsymbol{\sigma}_{\mathrm{P}}, g', A, z) \equiv \begin{cases}
+\Lambda_{\mathrm{4}}(\boldsymbol{\sigma}_0, S(T), T_{\mathrm{o}}, &\\ \quad\quad g, T_{\mathrm{p}}, T_{\mathrm{v}}, T_{\mathbf{i}}, 0, \top) & \text{if} \quad T_{\mathrm{t}} = \varnothing \\
+\Theta_{\mathrm{4}}(\boldsymbol{\sigma}_0, S(T), T_{\mathrm{o}}, &\\ \quad\quad T_{\mathrm{t}}, T_{\mathrm{t}}, g, T_{\mathrm{p}}, T_{\mathrm{v}}, T_{\mathrm{v}}, T_{\mathbf{d}}, 0, \top) & \text{otherwise}
 \end{cases}
 \end{equation}
 
@@ -638,7 +638,7 @@ g \equiv T_{\mathrm{g}} - g_0
 \end{equation}
 and $T_{\mathrm{o}}$ is the original transactor, which can differ from the sender in the case of a message call or contract creation not directly triggered by a transaction but coming from the execution of EVM-code.
 
-Note we use $\Theta_{4}$ and $\Lambda_{4}$ to denote the fact that only the first four components of the functions' values are taken; the final represents the message-call's output value (a byte array) and is unused in the context of transaction evaluation.
+Note we use $\Theta_{\mathrm{4}}$ and $\Lambda_{\mathrm{4}}$ to denote the fact that only the first four components of the functions' values are taken; the final represents the message-call's output value (a byte array) and is unused in the context of transaction evaluation.
 
 After the message call or contract creation is processed, the state is finalised by determining the amount to be refunded, $g^*$ from the remaining gas, $g'$, plus some allowance from the refund counter, to the sender at the original rate.
 \begin{equation}
@@ -647,12 +647,12 @@ g^* \equiv g' + \min \{ \Big\lfloor \dfrac{T_{\mathrm{g}} - g'}{2} \Big\rfloor, 
 
 The total refundable amount is the legitimately remaining gas $g'$, added to \hyperlink{refund_balance_defn_words_A__r}{$A_{\mathrm{r}}$}, with the latter component being capped up to a maximum of half (rounded down) of the total amount used $T_{\mathrm{g}} - g'$.
 
-The Ether for the gas is given to the miner, whose address is specified as the beneficiary of the present block $B$. So we define the pre-final state $\boldsymbol{\sigma}^*$ in terms of the provisional state $\boldsymbol{\sigma}_{P}$:
+The Ether for the gas is given to the miner, whose address is specified as the beneficiary of the present block $B$. So we define the pre-final state $\boldsymbol{\sigma}^*$ in terms of the provisional state $\boldsymbol{\sigma}_{\mathrm{P}}$:
 \begin{eqnarray}
-\boldsymbol{\sigma}^* & \equiv & \boldsymbol{\sigma}_{P} \quad \text{except} \\
-\boldsymbol{\sigma}^*[S(T)]_{\mathrm{b}} & \equiv & \boldsymbol{\sigma}_{P}[S(T)]_{\mathrm{b}} + g^* T_{\mathrm{p}} \\
-\boldsymbol{\sigma}^*[m]_{\mathrm{b}} & \equiv & \boldsymbol{\sigma}_{P}[m]_{\mathrm{b}} + (T_{\mathrm{g}} - g^*) T_{\mathrm{p}} \\
-m & \equiv & {B_{H}}_{\mathrm{c}}
+\boldsymbol{\sigma}^* & \equiv & \boldsymbol{\sigma}_{\mathrm{P}} \quad \text{except} \\
+\boldsymbol{\sigma}^*[S(T)]_{\mathrm{b}} & \equiv & \boldsymbol{\sigma}_{\mathrm{P}}[S(T)]_{\mathrm{b}} + g^* T_{\mathrm{p}} \\
+\boldsymbol{\sigma}^*[m]_{\mathrm{b}} & \equiv & \boldsymbol{\sigma}_{\mathrm{P}}[m]_{\mathrm{b}} + (T_{\mathrm{g}} - g^*) T_{\mathrm{p}} \\
+m & \equiv & {B_{\mathrm{H}}}_{\mathrm{c}}
 \end{eqnarray}
 
 The final state, $\boldsymbol{\sigma}'$, is reached after deleting all accounts that either appear in the self-destruct list or are touched and empty:
@@ -728,13 +728,13 @@ I_{\mathrm{e}} & \equiv & e \\
 I_{\mathrm{w}} & \equiv & w
 \end{eqnarray}
 
-$I_{\mathbf{d}}$ evaluates to the empty tuple as there is no input data to this call. $I_{H}$ has no special treatment and is determined from the blockchain.
+$I_{\mathbf{d}}$ evaluates to the empty tuple as there is no input data to this call. $I_{\mathrm{H}}$ has no special treatment and is determined from the blockchain.
 
 Code execution depletes gas, and gas may not go below zero, thus execution may exit before the code has come to a natural halting state. In this (and several other) exceptional cases we say an out-of-gas (OOG) exception has occurred: The evaluated state is defined as being the empty set, $\varnothing$, and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation.
 
 If the initialization code completes successfully, a final contract-creation cost is paid, the code-deposit cost, $c$, proportional to the size of the created contract's code:
 \begin{equation}
-c \equiv G_{codedeposit} \times |\mathbf{o}|
+c \equiv G_{\mathrm{codedeposit}} \times |\mathbf{o}|
 \end{equation}
 
 If there is not enough gas remaining to pay this, \ie $g^{**} < c$, then we also declare an out-of-gas exception.
@@ -915,7 +915,7 @@ We must now define the $\Xi$ function. In most practical implementations this wi
 \Xi(\boldsymbol{\sigma}, g, I, T) & \equiv & (\boldsymbol{\sigma}'\!, \boldsymbol{\mu}'_{\mathrm{g}}, A, \mathbf{o}) \\
 (\boldsymbol{\sigma}', \boldsymbol{\mu}'\!, A, ..., \mathbf{o}) & \equiv & X\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A^0\!, I)\big) \\
 \boldsymbol{\mu}_{\mathrm{g}} & \equiv & g \\
-\boldsymbol{\mu}_{pc} & \equiv & 0 \\
+\boldsymbol{\mu}_{\mathrm{pc}} & \equiv & 0 \\
 \boldsymbol{\mu}_{\mathbf{m}} & \equiv & (0, 0, ...) \\
 \boldsymbol{\mu}_{\mathrm{i}} & \equiv & 0 \\
 \boldsymbol{\mu}_{\mathbf{s}} & \equiv & () \\
@@ -943,13 +943,13 @@ Note that, when we evaluate $\Xi$, we drop the fourth element $I'$ and extract t
 $X$ is thus cycled (recursively here, but implementations are generally expected to use a simple iterative loop) until either $Z$ becomes true indicating that the present state is exceptional and that the machine must be halted and any changes discarded or until $H$ becomes a series (rather than the empty set) indicating that the machine has reached a controlled halt.
 
 \subsubsection{Machine State}
-The machine state $\boldsymbol{\mu}$ is defined as the tuple $(g, pc, \mathbf{m}, i, \mathbf{s})$ which are the gas available, the program counter $pc \in \mathbb{P}_{256}$ , the memory contents, the active number of words in memory (counting continuously from position 0), and the stack contents. The memory contents $\boldsymbol{\mu}_{\mathbf{m}}$ are a series of zeroes of size $2^{256}$.
+The machine state $\boldsymbol{\mu}$ is defined as the tuple $(g, pc, \mathbf{m}, i, \mathbf{s})$ which are the gas available, the program counter $pc \in \mathbb{P}_{\mathrm{256}}$ , the memory contents, the active number of words in memory (counting continuously from position 0), and the stack contents. The memory contents $\boldsymbol{\mu}_{\mathbf{m}}$ are a series of zeroes of size $2^{256}$.
 
 For the ease of reading, the instruction mnemonics, written in small-caps (\eg \space {\small ADD}), should be interpreted as their numeric equivalents; the full table of instructions and their specifics is given in Appendix \ref{app:vm}.
 
 For the purposes of defining $Z$, $H$ and $O$, we define $w$ as the current operation to be executed:
 \begin{equation}\label{eq:currentoperation}
-w \equiv \begin{cases} I_{\mathbf{b}}[\boldsymbol{\mu}_{pc}] & \text{if} \quad \boldsymbol{\mu}_{pc} < \lVert I_{\mathbf{b}} \rVert \\
+w \equiv \begin{cases} I_{\mathbf{b}}[\boldsymbol{\mu}_{\mathrm{pc}}] & \text{if} \quad \boldsymbol{\mu}_{\mathrm{pc}} < \lVert I_{\mathbf{b}} \rVert \\
 \text{\hyperlink{stop}{\small STOP}} & \text{otherwise}
 \end{cases}
 \end{equation}
@@ -990,15 +990,15 @@ All such positions must be on valid instruction boundaries, rather than sitting 
 
 Formally:
 \begin{equation}
-D(\mathbf{c}) \equiv D_{J}(\mathbf{c}, 0)
+D(\mathbf{c}) \equiv D_{\mathrm{J}}(\mathbf{c}, 0)
 \end{equation}
 
 where:
 \begin{equation}
-D_{J}(\mathbf{c}, i) \equiv \begin{cases}
+D_{\mathrm{J}}(\mathbf{c}, i) \equiv \begin{cases}
 \{\} & \text{if} \quad i \geqslant |\mathbf{c}|  \\
-\{ i \} \cup D_{J}(\mathbf{c}, N(i, \mathbf{c}[i])) & \text{if} \quad \mathbf{c}[i] = \text{\small JUMPDEST} \\
-D_{J}(\mathbf{c}, N(i, \mathbf{c}[i])) & \text{otherwise} \\
+\{ i \} \cup D_{\mathrm{J}}(\mathbf{c}, N(i, \mathbf{c}[i])) & \text{if} \quad \mathbf{c}[i] = \text{\small JUMPDEST} \\
+D_{\mathrm{J}}(\mathbf{c}, N(i, \mathbf{c}[i])) & \text{otherwise} \\
 \end{cases}
 \end{equation}
 
@@ -1034,11 +1034,11 @@ O\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I)\big) & \equiv & (\boldsymbol
 
 The gas is reduced by the instruction's gas cost and for most instructions, the program counter increments on each cycle, for the three exceptions, we assume a function $J$, subscripted by one of two instructions, which evaluates to the according value:
 \begin{eqnarray}
-\quad \boldsymbol{\mu}'_{g} & \equiv & \boldsymbol{\mu}_{g} - C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \label{eq:mu_pc}\\
-\quad \boldsymbol{\mu}'_{pc} & \equiv & \begin{cases}
+\quad \boldsymbol{\mu}'_{\mathrm{g}} & \equiv & \boldsymbol{\mu}_{\mathrm{g}} - C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \label{eq:mu_pc}\\
+\quad \boldsymbol{\mu}'_{\mathrm{pc}} & \equiv & \begin{cases}
 \hyperlink{JUMP}{J_{\text{JUMP}}}(\boldsymbol{\mu}) & \text{if} \quad w = \text{\small JUMP} \\
 \hyperlink{JUMPI}{J_{\text{JUMPI}}}(\boldsymbol{\mu}) & \text{if} \quad w = \text{\small JUMPI} \\
-N(\boldsymbol{\mu}_{pc}, w) & \text{otherwise}
+N(\boldsymbol{\mu}_{\mathrm{pc}}, w) & \text{otherwise}
 \end{cases}
 \end{eqnarray}
 
@@ -1061,7 +1061,7 @@ Since a block header includes the difficulty, the header alone is enough to vali
 Thus we define the total difficulty of block $B$ recursively as:
 \begin{eqnarray}
 B_{\mathrm{t}} & \equiv & B'_{\mathrm{t}} + B_{\mathrm{d}} \\
-B' & \equiv & P(B_{H})
+B' & \equiv & P(B_{\mathrm{H}})
 \end{eqnarray}
 
 As such given a block $B$, $B_{\mathrm{t}}$ is its total difficulty, $B'$ is its parent block and $B_{\mathrm{d}}$ is its difficulty.
@@ -1088,7 +1088,7 @@ where $k$ denotes the ``is-kin'' property:
 \begin{equation}
 k(U, H, n) \equiv \begin{cases} false & \text{if} \quad n = 0 \\
 s(U, H) &\\
-\quad \vee \; k(U, P(H)_{H}, n - 1) & \text{otherwise}
+\quad \vee \; k(U, P(H)_{\mathrm{H}}, n - 1) & \text{otherwise}
 \end{cases}
 \end{equation}
 
@@ -1102,9 +1102,9 @@ where $B(H)$ is the block of the corresponding header $H$.
 
 %where $s[i]$ equals the root of the state trie immediately after the execution of the transaction $B_{\mathbf{T}}[i]$, and $g[i]$ the total gas used immediately after said transaction.
 
-The given \textbf{gasUsed} must correspond faithfully to the transactions listed: \hyperlink{H__g}{${B_{H}}_{\mathrm{g}}$}, the total gas used in the block, must be equal to the accumulated gas used according to the final transaction:
+The given \textbf{gasUsed} must correspond faithfully to the transactions listed: \hyperlink{H__g}{${B_{\mathrm{H}}}_{\mathrm{g}}$}, the total gas used in the block, must be equal to the accumulated gas used according to the final transaction:
 \begin{equation}
-{B_{H}}_{\mathrm{g}} = \hyperlink{ell}{\ell}(\hyperlink{R__u}{\mathbf{R})_{\mathrm{u}}}
+{B_{\mathrm{H}}}_{\mathrm{g}} = \hyperlink{ell}{\ell}(\hyperlink{R__u}{\mathbf{R})_{\mathrm{u}}}
 \end{equation}
 
 \subsection{Reward Application}
@@ -1113,14 +1113,14 @@ The application of rewards to a block involves raising the balance of the accoun
 \begin{eqnarray}
 \\ \nonumber
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
-\qquad\boldsymbol{\sigma}'[{\mathbf{B}_{H}}_{\mathrm{c}}]_{\mathrm{b}} & = & \boldsymbol{\sigma}[{\mathbf{B}_{H}}_{\mathrm{c}}]_{\mathrm{b}} + (1 + \frac{\lVert \mathbf{B}_{\mathbf{U}}\rVert}{32})R_{\mathrm{block}} \\
+\qquad\boldsymbol{\sigma}'[{\mathbf{B}_{\mathrm{H}}}_{\mathrm{c}}]_{\mathrm{b}} & = & \boldsymbol{\sigma}[{\mathbf{B}_{\mathrm{H}}}_{\mathrm{c}}]_{\mathrm{b}} + (1 + \frac{\lVert \mathbf{B}_{\mathbf{U}}\rVert}{32})R_{\mathrm{block}} \\
 \qquad\forall_{\mathbf{U} \in \mathbf{B}_{\mathbf{U}}}: \\ \nonumber
 \boldsymbol{\sigma}'[\mathbf{U}_{\mathrm{c}}] & = & \begin{cases}
 \varnothing &\text{if}\ \boldsymbol{\sigma}[\mathbf{U}_{\mathrm{c}}] = \varnothing\ \wedge\ R = 0 \\
 \mathbf{a}' &\text{otherwise}
 \end{cases} \\
 \mathbf{a}' &\equiv& (\boldsymbol{\sigma}[U_{\mathrm{c}}]_{\mathrm{n}}, \boldsymbol{\sigma}[U_{\mathrm{c}}]_{\mathrm{b}} + R, \boldsymbol{\sigma}[U_{\mathrm{c}}]_{\mathbf{s}}, \boldsymbol{\sigma}[U_{\mathrm{c}}]_{\mathrm{c}}) \\
-R & \equiv & (1 + \frac{1}{8} (U_{\mathrm{i}} - {B_{H}}_{\mathrm{i}})) R_{\mathrm{block}}
+R & \equiv & (1 + \frac{1}{8} (U_{\mathrm{i}} - {B_{\mathrm{H}}}_{\mathrm{i}})) R_{\mathrm{block}}
 \end{eqnarray}
 
 If there are collisions of the beneficiary addresses between ommers and the block (i.e. two ommers with the same beneficiary address or an ommer with the same beneficiary address as the present block), additions are applied cumulatively.
@@ -1135,12 +1135,12 @@ If there are collisions of the beneficiary addresses between ommers and the bloc
 \hypertarget{Gamma}{}We may now define the function, $\Gamma$, that maps a block $B$ to its initiation state:
 \begin{equation}
 \Gamma(B) \equiv \begin{cases}
-\boldsymbol{\sigma}_0 & \text{if} \quad P(B_{H}) = \varnothing \\
-\boldsymbol{\sigma}_{\mathrm{i}}: \mathtt{\small \hyperlink{trie}{TRIE}}(L_{S}(\boldsymbol{\sigma}_{\mathrm{i}})) = {P(B_{H})_{H}}_{\mathrm{r}} & \text{otherwise}
+\boldsymbol{\sigma}_0 & \text{if} \quad P(B_{\mathrm{H}}) = \varnothing \\
+\boldsymbol{\sigma}_{\mathrm{i}}: \mathtt{\small \hyperlink{trie}{TRIE}}(L_{\mathrm{S}}(\boldsymbol{\sigma}_{\mathrm{i}})) = {P(B_{\mathrm{H}})_{\mathrm{H}}}_{\mathrm{r}} & \text{otherwise}
 \end{cases}
 \end{equation}
 
-Here, $\mathtt{\small TRIE}(L_{S}(\boldsymbol{\sigma}_{\mathrm{i}}))$ means the hash of the root node of a trie of state $\boldsymbol{\sigma}_{\mathrm{i}}$; it is assumed that implementations will store this in the state database, which is trivial and efficient since the trie is by nature an immutable data structure.
+Here, $\mathtt{\small TRIE}(L_{\mathrm{S}}(\boldsymbol{\sigma}_{\mathrm{i}}))$ means the hash of the root node of a trie of state $\boldsymbol{\sigma}_{\mathrm{i}}$; it is assumed that implementations will store this in the state database, which is trivial and efficient since the trie is by nature an immutable data structure.
 
 \hypertarget{Phi}{}And finally we define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
 \begin{eqnarray}
@@ -1208,9 +1208,9 @@ Where $H_{\hcancel{n}}$ is the new block's header but \textit{without} the nonce
 \subsubsection{Ethash}
 Ethash is the PoW algorithm for Ethereum 1.0. It is the latest version of Dagger-Hashimoto, introduced by \cite{dagger} and \cite{hashimoto}, although it can no longer appropriately be called that since many of the original features of both algorithms have been drastically changed in the last month of research and development. The general route that the algorithm takes is as follows:
 
-There exists a seed which can be computed for each block by scanning through the block headers up until that point. From the seed, one can compute a pseudorandom cache, $J_{cacheinit}$ bytes in initial size. Light clients store the cache. From the cache, we can generate a dataset, $J_{datasetinit}$ bytes in initial size, with the property that each item in the dataset depends on only a small number of items from the cache. Full clients and miners store the dataset. The dataset grows linearly with time.
+There exists a seed which can be computed for each block by scanning through the block headers up until that point. From the seed, one can compute a pseudorandom cache, $J_{\mathrm{cacheinit}}$ bytes in initial size. Light clients store the cache. From the cache, we can generate a dataset, $J_{\mathrm{datasetinit}}$ bytes in initial size, with the property that each item in the dataset depends on only a small number of items from the cache. Full clients and miners store the dataset. The dataset grows linearly with time.
 
-Mining involves grabbing random slices of the dataset and hashing them together. Verification can be done with low memory by using the cache to regenerate the specific pieces of the dataset that you need, so you only need to store the cache. The large dataset is updated once every $J_{epoch}$ blocks, so the vast majority of a miner's effort will be reading the dataset, not making changes to it. The mentioned parameters as well as the algorithm is explained in detail in appendix \ref{app:ethash}.
+Mining involves grabbing random slices of the dataset and hashing them together. Verification can be done with low memory by using the cache to regenerate the specific pieces of the dataset that you need, so you only need to store the cache. The large dataset is updated once every $J_{\mathrm{epoch}}$ blocks, so the vast majority of a miner's effort will be reading the dataset, not making changes to it. The mentioned parameters as well as the algorithm is explained in detail in appendix \ref{app:ethash}.
 
 \section{Implementing Contracts}
 
@@ -1396,10 +1396,10 @@ When considering such a sequence, we use the common numeric subscript notation t
 Any series of bytes may also trivially be viewed as a series of nibbles, given an endian-specific notation; here we assume big-endian. Thus:
 \begin{eqnarray}
 y(\mathfrak{I}) & = & \{ (\mathbf{k}_0' \in \mathbb{Y}, \mathbf{v}_0 \in \mathbb{B}), (\mathbf{k}_1' \in \mathbb{Y}, \mathbf{v}_1 \in \mathbb{B}), ... \} \\
-\forall_{n} \quad \forall_{i: i < 2\lVert\mathbf{k}_{n}\rVert} \quad \mathbf{k}_{n}'[i] & \equiv &
+\forall_{\mathrm{n}} \quad \forall_{i: i < 2\lVert\mathbf{k}_{\mathrm{n}}\rVert} \quad \mathbf{k}_{\mathrm{n}}'[i] & \equiv &
 \begin{cases}
-\lfloor \mathbf{k}_{n}[i \div 2] \div 16 \rfloor & \text{if} \; i \; \text{is even} \\
-\mathbf{k}_{n}[\lfloor i \div 2 \rfloor] \bmod 16 & \text{otherwise}
+\lfloor \mathbf{k}_{\mathrm{n}}[i \div 2] \div 16 \rfloor & \text{if} \; i \; \text{is even} \\
+\mathbf{k}_{\mathrm{n}}[\lfloor i \div 2 \rfloor] \bmod 16 & \text{otherwise}
 \end{cases}
 \end{eqnarray}
 
@@ -1428,7 +1428,7 @@ A branch is then only used when necessary; no branch nodes may exist that contai
 \begin{equation}
 c(\mathfrak{I}, i) \equiv \begin{cases}
 \texttt{\small RLP}\Big( \big(\texttt{\small HP}(I_0[i .. (\lVert I_0\rVert - 1)], true), I_1 \big) \Big) & \text{if} \quad \lVert \mathfrak{I} \rVert = 1 \quad \text{where} \; \exists I: I \in \mathfrak{I} \\
-\texttt{\small RLP}\Big( \big(\texttt{\small HP}(I_0[i .. (j - 1)], false), n(\mathfrak{I}, j) \big) \Big) & \text{if} \quad i \ne j \quad \text{where} \; j = \arg \max_{x} : \exists \mathbf{l}: \lVert \mathbf{l} \rVert = x : \forall_{I \in \mathfrak{I}}: I_0[0 .. (x - 1)] = \mathbf{l} \\
+\texttt{\small RLP}\Big( \big(\texttt{\small HP}(I_0[i .. (j - 1)], false), n(\mathfrak{I}, j) \big) \Big) & \text{if} \quad i \ne j \quad \text{where} \; j = \arg \max_{\mathrm{x}} : \exists \mathbf{l}: \lVert \mathbf{l} \rVert = x : \forall_{I \in \mathfrak{I}}: I_0[0 .. (x - 1)] = \mathbf{l} \\
 \texttt{\small RLP}\Big( (u(0), u(1), ..., u(15), v) \Big) & \text{otherwise} \quad \text{where} \begin{array}[t]{rcl}
 u(j) & \equiv & n(\{ I : I \in \mathfrak{I} \wedge I_0[i] = j \}, i + 1) \\
 v & = & \begin{cases}
@@ -1487,8 +1487,8 @@ g_{\mathrm{r}} &=& 600 + 120\Big\lceil \dfrac{|I_{\mathbf{d}}|}{32} \Big\rceil\\
 For the purposes here, we assume we have well-defined standard cryptographic functions for RIPEMD-160 and SHA2-256 of the form:
 
 \begin{eqnarray}
-\mathtt{\small SHA256}(\mathbf{i} \in \mathbb{B}) & \equiv & o \in \mathbb{B}_{32} \\
-\mathtt{\small RIPEMD160}(\mathbf{i} \in \mathbb{B}) & \equiv & o \in \mathbb{B}_{20}
+\mathtt{\small SHA256}(\mathbf{i} \in \mathbb{B}) & \equiv & o \in \mathbb{B}_{\mathrm{32}} \\
+\mathtt{\small RIPEMD160}(\mathbf{i} \in \mathbb{B}) & \equiv & o \in \mathbb{B}_{\mathrm{20}}
 \end{eqnarray}
 
 The fourth contract, the identity function $\Xi_{\mathtt{ID}}$ simply defines the output as the input:
@@ -1502,25 +1502,25 @@ The fifth contract performs arbitrary-precision exponentiation under modulo. Her
 
 \begin{eqnarray}
 \Xi_{\mathtt{EXPMOD}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:} \\
-g_{\mathrm{r}} &=& \Big\lfloor\frac{f\big(\max(\ell_{M},\ell_{B})\big)\max(\ell'_{E},1)}{G_{quaddivisor}}\Big\rfloor \\
+g_{\mathrm{r}} &=& \Big\lfloor\frac{f\big(\max(\ell_{\mathrm{M}},\ell_{\mathrm{B}})\big)\max(\ell'_{\mathrm{E}},1)}{G_{\mathrm{quaddivisor}}}\Big\rfloor \\
 f(x) &\equiv& \begin{cases}
 x^2 & \text{if}\ x \le 64 \\
 \Big\lfloor\dfrac{x^2}{4}\Big\rfloor + 96 x - 3072 & \text{if}\ 64 < x \le 1024 \\
 \Big\lfloor\dfrac{x^2}{16}\Big\rfloor + 480x - 199680 & \text{otherwise}
 \end{cases}\\
-\ell'_{E} &=& \begin{cases}
-0 & \text{if}\ \ell_{E}\le 32\wedge E=0 \\
-\lfloor \log_2(E)\rfloor &\text{if}\ \ell_{E}\le 32 \wedge E \neq 0 \\
-8(\ell_{E} - 32) + \lfloor \log_2(i[(96+\ell_{B})..(127+\ell_{B})]) \rfloor & \text{if}\ 32 < \ell_{E} \wedge i[(96 + \ell_{B})..(127 + \ell_{B})]\neq 0 \\
-8(\ell_{E} - 32) & \text{otherwise} \\
+\ell'_{\mathrm{E}} &=& \begin{cases}
+0 & \text{if}\ \ell_{\mathrm{E}}\le 32\wedge E=0 \\
+\lfloor \log_2(E)\rfloor &\text{if}\ \ell_{\mathrm{E}}\le 32 \wedge E \neq 0 \\
+8(\ell_{\mathrm{E}} - 32) + \lfloor \log_2(i[(96+\ell_{\mathrm{B}})..(127+\ell_{\mathrm{B}})]) \rfloor & \text{if}\ 32 < \ell_{\mathrm{E}} \wedge i[(96 + \ell_{\mathrm{B}})..(127 + \ell_{\mathrm{B}})]\neq 0 \\
+8(\ell_{\mathrm{E}} - 32) & \text{otherwise} \\
 \end{cases} \\
-\mathbf o &=& (B^E\bmod M)\in\mathbb P_{8\ell_{M}} \\
-\ell_{B} &\equiv& i[0..31] \\
-\ell_{E} &\equiv& i[32..63] \\
-\ell_{M} &\equiv& i[64..95] \\
-B &\equiv& i[96..(95+\ell_{B})] \\
-E &\equiv& i[(96+\ell_{B})..(95+\ell_{B}+\ell_{E})] \\
-M &\equiv& i[(96+\ell_{B}+\ell_{E})..(95+\ell_{B}+\ell_{E}+\ell_{M})] \\
+\mathbf o &=& (B^E\bmod M)\in\mathbb P_{8\ell_{\mathrm{M}}} \\
+\ell_{\mathrm{B}} &\equiv& i[0..31] \\
+\ell_{\mathrm{E}} &\equiv& i[32..63] \\
+\ell_{\mathrm{M}} &\equiv& i[64..95] \\
+B &\equiv& i[96..(95+\ell_{\mathrm{B}})] \\
+E &\equiv& i[(96+\ell_{\mathrm{B}})..(95+\ell_{\mathrm{B}}+\ell_{\mathrm{E}})] \\
+M &\equiv& i[(96+\ell_{\mathrm{B}}+\ell_{\mathrm{E}})..(95+\ell_{\mathrm{B}}+\ell_{\mathrm{E}}+\ell_{\mathrm{M}})] \\
 i[x] &\equiv& \begin{cases}
 I_{\mathbf d}[x] &\text{if}\ x < |I_{\mathbf d}| \\
 0 &\text{otherwise}
@@ -1553,7 +1553,7 @@ Y&\equiv&\lambda(X_1-X)-Y_1\\
 
 $(C_1,+)$ is known to form a group. We define the scalar multiplication $\cdot$ with
 \begin{equation}\label{eq:ec-scalar-multiplication}
-n\cdot P\equiv(0,0)+\underbrace{P+\cdots+P}_{n}
+n\cdot P\equiv(0,0)+\underbrace{P+\cdots+P}_{\mathrm{n}}
 \end{equation}
 for a natural number $n$ and a point $P$ in $C_1$.
 
@@ -1570,7 +1570,7 @@ P_2&\equiv&
 \end{eqnarray}
 We define $G_2$ to be the subgroup of $(C_2,+)$ generated by $P_2$. $G_2$ is known to be a cyclic group of order $q$. For a point $P$ in $G_2$, we define $\log_{P_2}(P)$ be the smallest natural number $n$ satisfying $n\cdot P_2=P$. With this definition, $\log_{P_2}(P)$ is at most $q-1$.
 
-A 32 byte number $\mathbf{x}\in\mathbf{P}_{256}$ might and might not represent an element of $F_{\mathrm{p}}$.
+A 32 byte number $\mathbf{x}\in\mathbf{P}_{\mathrm{256}}$ might and might not represent an element of $F_{\mathrm{p}}$.
 \begin{equation}
 \delta_{\mathrm{p}}(\mathbf x)\equiv\begin{cases}
 \mathbf x&\text{if}\ \mathbf x<p\\
@@ -1578,7 +1578,7 @@ A 32 byte number $\mathbf{x}\in\mathbf{P}_{256}$ might and might not represent a
 \end{cases}
 \end{equation}
 
-A 64 byte data $\mathbf x\in\mathbf B_{512}$ might and might not represent an element of $G_1$.
+A 64 byte data $\mathbf x\in\mathbf B_{\mathrm{512}}$ might and might not represent an element of $G_1$.
 \begin{eqnarray}
 \delta_1(\mathbf x)&\equiv&\begin{cases}
 g_1&\text{if}\ g_1\in G_1\\
@@ -1592,7 +1592,7 @@ x&\equiv&\delta_{\mathrm{p}}(\mathbf x[0..31])\\
 y&\equiv&\delta_{\mathrm{p}}(\mathbf x[32..63])
 \end{eqnarray}
 
-A 128 byte data $\mathbf x\in\mathbf B_{1024}$ might and might not represent an element of $G_2$.
+A 128 byte data $\mathbf x\in\mathbf B_{\mathrm{1024}}$ might and might not represent an element of $G_2$.
 \begin{eqnarray}
 \delta_2(\mathbf x)&\equiv&\begin{cases}
 g_2&\text{if}\ g_2\in G_2\\
@@ -1660,9 +1660,9 @@ It is assumed that the sender has a valid private key $p_{\mathrm{r}}$, which is
 
 We assume the existence of functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARECOVER}$ and $\mathtt{\small ECDSAPUBKEY}$. These are formally defined in the literature.
 \begin{eqnarray}
-\mathtt{\small ECDSAPUBKEY}(p_{\mathrm{r}} \in \mathbb{B}_{32}) & \equiv & p_{\mathrm{u}} \in \mathbb{B}_{64} \\
-\linkdest{ECDSASIGN}{}\mathtt{\small ECDSASIGN}(e \in \mathbb{B}_{32}, p_{\mathrm{r}} \in \mathbb{B}_{32}) & \equiv & (v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) \\
-\mathtt{\small ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_{\mathrm{u}} \in \mathbb{B}_{64}
+\mathtt{\small ECDSAPUBKEY}(p_{\mathrm{r}} \in \mathbb{B}_{\mathrm{32}}) & \equiv & p_{\mathrm{u}} \in \mathbb{B}_{\mathrm{64}} \\
+\linkdest{ECDSASIGN}{}\mathtt{\small ECDSASIGN}(e \in \mathbb{B}_{\mathrm{32}}, p_{\mathrm{r}} \in \mathbb{B}_{\mathrm{32}}) & \equiv & (v \in \mathbb{B}_{\mathrm{1}}, r \in \mathbb{B}_{\mathrm{32}}, s \in \mathbb{B}_{\mathrm{32}}) \\
+\mathtt{\small ECDSARECOVER}(e \in \mathbb{B}_{\mathrm{32}}, v \in \mathbb{B}_{\mathrm{1}}, r \in \mathbb{B}_{\mathrm{32}}, s \in \mathbb{B}_{\mathrm{32}}) & \equiv & p_{\mathrm{u}} \in \mathbb{B}_{\mathrm{64}}
 \end{eqnarray}
 
 Where $p_{\mathrm{u}}$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_{\mathrm{r}}$ is the private key, a byte array of size 32 (or a single positive integer in the \hypertarget{v}{}aforementioned range). It is assumed that $v$ is either the `recovery identifier' or `chain identifier doubled plus 35 or 36'. The recovery identifier is a 1 byte value specifying the parity and finiteness of the coordinates of the curve point for which $r$ is the x-value; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid. The value 27 represents an even $y$ value and 28 represents an odd $y$ value.
@@ -1688,7 +1688,7 @@ A(p_{\mathrm{r}}) = \mathcal{B}_{96..255}\big(\mathtt{\tiny KEC}\big( \mathtt{\s
 
 \hypertarget{h T}{}The message hash, $h(T)$, to be signed is the Keccak hash of the transaction. Two different flavors of signing schemes are available. One operates without the latter three signature components, formally described as $T_{\mathrm{r}}$, $T_{\mathrm{s}}$ and $T_{\mathrm{w}}$. The other operates on nine elements:
 \begin{eqnarray}
-L_{S}(T) & \equiv & \begin{cases}
+L_{\mathrm{S}}(T) & \equiv & \begin{cases}
 (T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}) & \text{if} \; v \in \{27, 28\} \\
 (T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, \mathtt{\tiny chain\_{\mathrm{id}}}, (), ()) & \text{otherwise} \\
 \end{cases} \\
@@ -1697,7 +1697,7 @@ L_{S}(T) & \equiv & \begin{cases}
 T_{\mathbf{i}} & \text{if}\ T_{\mathrm{t}} = 0 \\
 T_{\mathbf{d}} & \text{otherwise}
 \end{cases} \\
-h(T) & \equiv & \mathtt{\small KEC}( L_{S}(T) )
+h(T) & \equiv & \mathtt{\small KEC}( L_{\mathrm{S}}(T) )
 \end{eqnarray}
 
 The signed transaction $G(T, p_{\mathrm{r}})$ is defined as:
@@ -1735,42 +1735,42 @@ The fee schedule $G$ is a tuple of 31 scalar values corresponding to the relativ
 \toprule
 Name & Value & Description* \\
 \midrule
-$G_{zero}$ & 0 & Nothing paid for operations of the set {\small $W_{zero}$}. \\
-$G_{base}$ & 2 & Amount of gas to pay for operations of the set {\small $W_{base}$}. \\
-$G_{verylow}$ & 3 & Amount of gas to pay for operations of the set {\small $W_{verylow}$}. \\
-$G_{low}$ & 5 & Amount of gas to pay for operations of the set {\small $W_{low}$}. \\
-$G_{mid}$ & 8 & Amount of gas to pay for operations of the set {\small $W_{mid}$}. \\
-$G_{high}$ & 10 & Amount of gas to pay for operations of the set {\small $W_{high}$}. \\
-$G_{extcode}$ & 700 & Amount of gas to pay for operations of the set {\small $W_{extcode}$}. \\
-$G_{balance}$ & 400 & Amount of gas to pay for a {\small BALANCE} operation. \\
-$G_{sload}$ & 200 & Paid for a {\small SLOAD} operation. \\
-$G_{jumpdest}$ & 1 & Paid for a {\small JUMPDEST} operation. \\
-$G_{sset}$ & 20000 & Paid for an {\small SSTORE} operation when the storage value is set to non-zero from zero. \\
-$G_{sreset}$ & 5000 & Paid for an {\small SSTORE} operation when the storage value's zeroness remains unchanged or is set to zero. \\
-$R_{sclear}$ & 15000 & Refund given (added into refund counter) when the storage value is set to zero from non-zero.
-\linkdest{R__selfdestruct}{}\\$R_{selfdestruct}$ & 24000 & Refund given (added into refund counter) for self-destructing an account. \\
-\linkdest{G__selfdestruct}{}$G_{selfdestruct}$ & 5000 & Amount of gas to pay for a {\small SELFDESTRUCT} operation. \\
-$G_{create}$ & 32000 & Paid for a {\small CREATE} operation. \\
-\linkdest{G__codedeposit}{}$G_{codedeposit}$ & 200 & Paid per byte for a {\small CREATE} operation to succeed in placing code into state. \\
-$G_{call}$ & 700 & Paid for a {\small CALL} operation. \\
-$G_{callvalue}$ & 9000 & Paid for a non-zero value transfer as part of the {\small CALL} operation. \\
-$G_{callstipend}$ & 2300 & A stipend for the called contract subtracted from $G_{callvalue}$ for a non-zero value transfer. \\
-\linkdest{G__newaccount}{}$G_{newaccount}$ & 25000 & Paid for a {\small CALL} or {\small SELFDESTRUCT} operation which creates an account. \\
-$G_{exp}$ & 10 & Partial payment for an {\small EXP} operation. \\
-$G_{expbyte}$ & 50 & Partial payment when multiplied by $\lceil\log_{256}(exponent)\rceil$ for the {\small EXP} operation. \\
-$G_{memory}$ & 3 & Paid for every additional word when expanding memory. \\
+$G_{\mathrm{zero}}$ & 0 & Nothing paid for operations of the set {\small $W_{\mathrm{zero}}$}. \\
+$G_{\mathrm{base}}$ & 2 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{base}}$}. \\
+$G_{\mathrm{verylow}}$ & 3 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{verylow}}$}. \\
+$G_{\mathrm{low}}$ & 5 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{low}}$}. \\
+$G_{\mathrm{mid}}$ & 8 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{mid}}$}. \\
+$G_{\mathrm{high}}$ & 10 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{high}}$}. \\
+$G_{\mathrm{extcode}}$ & 700 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{extcode}}$}. \\
+$G_{\mathrm{balance}}$ & 400 & Amount of gas to pay for a {\small BALANCE} operation. \\
+$G_{\mathrm{sload}}$ & 200 & Paid for a {\small SLOAD} operation. \\
+$G_{\mathrm{jumpdest}}$ & 1 & Paid for a {\small JUMPDEST} operation. \\
+$G_{\mathrm{sset}}$ & 20000 & Paid for an {\small SSTORE} operation when the storage value is set to non-zero from zero. \\
+$G_{\mathrm{sreset}}$ & 5000 & Paid for an {\small SSTORE} operation when the storage value's zeroness remains unchanged or is set to zero. \\
+$R_{\mathrm{sclear}}$ & 15000 & Refund given (added into refund counter) when the storage value is set to zero from non-zero.
+\linkdest{R__selfdestruct}{}\\$R_{\mathrm{selfdestruct}}$ & 24000 & Refund given (added into refund counter) for self-destructing an account. \\
+\linkdest{G__selfdestruct}{}$G_{\mathrm{selfdestruct}}$ & 5000 & Amount of gas to pay for a {\small SELFDESTRUCT} operation. \\
+$G_{\mathrm{create}}$ & 32000 & Paid for a {\small CREATE} operation. \\
+\linkdest{G__codedeposit}{}$G_{\mathrm{codedeposit}}$ & 200 & Paid per byte for a {\small CREATE} operation to succeed in placing code into state. \\
+$G_{\mathrm{call}}$ & 700 & Paid for a {\small CALL} operation. \\
+$G_{\mathrm{callvalue}}$ & 9000 & Paid for a non-zero value transfer as part of the {\small CALL} operation. \\
+$G_{\mathrm{callstipend}}$ & 2300 & A stipend for the called contract subtracted from $G_{\mathrm{callvalue}}$ for a non-zero value transfer. \\
+\linkdest{G__newaccount}{}$G_{\mathrm{newaccount}}$ & 25000 & Paid for a {\small CALL} or {\small SELFDESTRUCT} operation which creates an account. \\
+$G_{\mathrm{exp}}$ & 10 & Partial payment for an {\small EXP} operation. \\
+$G_{\mathrm{expbyte}}$ & 50 & Partial payment when multiplied by $\lceil\log_{\mathrm{256}}(exponent)\rceil$ for the {\small EXP} operation. \\
+$G_{\mathrm{memory}}$ & 3 & Paid for every additional word when expanding memory. \\
 \linkdest{G__txcreate}{}$G_\text{txcreate}$ & 32000 & Paid by all contract-creating transactions after the {\textit{Homestead} transition}.\\
-\linkdest{G__txdatazero}{}$G_{txdatazero}$ & 4 & Paid for every zero byte of data or code for a transaction. \\
-\linkdest{G__txdatanonzero}{}$G_{txdatanonzero}$ & 68 & Paid for every non-zero byte of data or code for a transaction. \\
-\linkdest{G__transaction}{}$G_{transaction}$ & 21000 & Paid for every transaction. \\
-$G_{log}$ & 375 & Partial payment for a {\small LOG} operation. \\
-$G_{logdata}$ & 8 & Paid for each byte in a {\small LOG} operation's data. \\
-$G_{logtopic}$ & 375 & Paid for each topic of a {\small LOG} operation. \\
-$G_{sha3}$ & 30 & Paid for each {\small SHA3} operation. \\
-$G_{sha3word}$ & 6 & Paid for each word (rounded up) for input data to a {\small SHA3} operation. \\
-$G_{copy}$ & 3 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
-$G_{blockhash}$ & 20 & Payment for {\small BLOCKHASH} operation. \\
-$G_{quaddivisor}$ & 100 & The quadratic coefficient of the input sizes of the exponation-over-modulo precompiled contract. \\
+\linkdest{G__txdatazero}{}$G_{\mathrm{txdatazero}}$ & 4 & Paid for every zero byte of data or code for a transaction. \\
+\linkdest{G__txdatanonzero}{}$G_{\mathrm{txdatanonzero}}$ & 68 & Paid for every non-zero byte of data or code for a transaction. \\
+\linkdest{G__transaction}{}$G_{\mathrm{transaction}}$ & 21000 & Paid for every transaction. \\
+$G_{\mathrm{log}}$ & 375 & Partial payment for a {\small LOG} operation. \\
+$G_{\mathrm{logdata}}$ & 8 & Paid for each byte in a {\small LOG} operation's data. \\
+$G_{\mathrm{logtopic}}$ & 375 & Paid for each topic of a {\small LOG} operation. \\
+$G_{\mathrm{sha3}}$ & 30 & Paid for each {\small SHA3} operation. \\
+$G_{\mathrm{sha3word}}$ & 6 & Paid for each word (rounded up) for input data to a {\small SHA3} operation. \\
+$G_{\mathrm{copy}}$ & 3 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
+$G_{\mathrm{blockhash}}$ & 20 & Payment for {\small BLOCKHASH} operation. \\
+$G_{\mathrm{quaddivisor}}$ & 100 & The quadratic coefficient of the input sizes of the exponation-over-modulo precompiled contract. \\
 
 %extern u256 const c_{\mathrm{copyGas}};			///< Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
 \bottomrule
@@ -1787,66 +1787,66 @@ When a 256-bit machine datum is converted to and from a 160-bit address or hash,
 The general gas cost function, $C$, is defined as:
 
 \begin{equation}
-C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv C_{mem}(\boldsymbol{\mu}'_{\mathrm{i}})-C_{mem}(\boldsymbol{\mu}_{\mathrm{i}}) + \begin{cases}
+C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv C_{\mathrm{mem}}(\boldsymbol{\mu}'_{\mathrm{i}})-C_{\mathrm{mem}}(\boldsymbol{\mu}_{\mathrm{i}}) + \begin{cases}
 C_\text{\tiny SSTORE}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SSTORE} \\
-G_{exp} & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_{\mathbf{s}}[1] = 0 \\
-G_{exp} + G_{expbyte}\times(1+\lfloor\log_{256}(\boldsymbol{\mu}_{\mathbf{s}}[1])\rfloor) & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_{\mathbf{s}}[1] > 0 \\
-G_{verylow} + G_{copy}\times\lceil\boldsymbol{\mu}_{\mathbf{s}}[2] \div 32\rceil & \text{if} \quad w = \text{\small CALLDATACOPY} \lor \text{\small CODECOPY} \lor \text{\small RETURNDATACOPY} \\
-G_{extcode} + G_{copy}\times\lceil\boldsymbol{\mu}_{\mathbf{s}}[3] \div 32\rceil & \text{if} \quad w = \text{\small EXTCODECOPY} \\
-G_{log}+G_{logdata}\times\boldsymbol{\mu}_{\mathbf{s}}[1] & \text{if} \quad w = \text{\small LOG0} \\
-G_{log}+G_{logdata}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+G_{logtopic} & \text{if} \quad w = \text{\small LOG1} \\
-G_{log}+G_{logdata}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+2G_{logtopic} & \text{if} \quad w = \text{\small LOG2} \\
-G_{log}+G_{logdata}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+3G_{logtopic} & \text{if} \quad w = \text{\small LOG3} \\
-G_{log}+G_{logdata}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+4G_{logtopic} & \text{if} \quad w = \text{\small LOG4} \\
+G_{\mathrm{exp}} & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_{\mathbf{s}}[1] = 0 \\
+G_{\mathrm{exp}} + G_{\mathrm{expbyte}}\times(1+\lfloor\log_{\mathrm{256}}(\boldsymbol{\mu}_{\mathbf{s}}[1])\rfloor) & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_{\mathbf{s}}[1] > 0 \\
+G_{\mathrm{verylow}} + G_{\mathrm{copy}}\times\lceil\boldsymbol{\mu}_{\mathbf{s}}[2] \div 32\rceil & \text{if} \quad w = \text{\small CALLDATACOPY} \lor \text{\small CODECOPY} \lor \text{\small RETURNDATACOPY} \\
+G_{\mathrm{extcode}} + G_{\mathrm{copy}}\times\lceil\boldsymbol{\mu}_{\mathbf{s}}[3] \div 32\rceil & \text{if} \quad w = \text{\small EXTCODECOPY} \\
+G_{\mathrm{log}}+G_{\mathrm{logdata}}\times\boldsymbol{\mu}_{\mathbf{s}}[1] & \text{if} \quad w = \text{\small LOG0} \\
+G_{\mathrm{log}}+G_{\mathrm{logdata}}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+G_{\mathrm{logtopic}} & \text{if} \quad w = \text{\small LOG1} \\
+G_{\mathrm{log}}+G_{\mathrm{logdata}}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+2G_{\mathrm{logtopic}} & \text{if} \quad w = \text{\small LOG2} \\
+G_{\mathrm{log}}+G_{\mathrm{logdata}}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+3G_{\mathrm{logtopic}} & \text{if} \quad w = \text{\small LOG3} \\
+G_{\mathrm{log}}+G_{\mathrm{logdata}}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+4G_{\mathrm{logtopic}} & \text{if} \quad w = \text{\small LOG4} \\
 C_\text{\tiny CALL}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small CALL} \lor \text{\small CALLCODE} \lor \text{\small DELEGATECALL} \\
 C_\text{\tiny SELFDESTRUCT}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SELFDESTRUCT} \\
-G_{create} & \text{if} \quad w = \text{\small CREATE}\\
-G_{sha3}+G_{sha3word} \lceil \mathbf{s}[1] \div 32 \rceil & \text{if} \quad w = \text{\small SHA3}\\
-G_{jumpdest} & \text{if} \quad w = \text{\small JUMPDEST}\\
-G_{sload} & \text{if} \quad w = \text{\small SLOAD}\\
-G_{zero} & \text{if} \quad w \in W_{zero}\\
-G_{base} & \text{if} \quad w \in W_{base}\\
-G_{verylow} & \text{if} \quad w \in W_{verylow}\\
-G_{low} & \text{if} \quad w \in W_{low}\\
-G_{mid} & \text{if} \quad w \in W_{mid}\\
-G_{high} & \text{if} \quad w \in W_{high}\\
-G_{extcode} & \text{if} \quad w \in W_{extcode}\\
-G_{balance} & \text{if} \quad w = \text{\small BALANCE}\\
-G_{blockhash} & \text{if} \quad w = \text{\small BLOCKHASH}\\
+G_{\mathrm{create}} & \text{if} \quad w = \text{\small CREATE}\\
+G_{\mathrm{sha3}}+G_{\mathrm{sha3word}} \lceil \mathbf{s}[1] \div 32 \rceil & \text{if} \quad w = \text{\small SHA3}\\
+G_{\mathrm{jumpdest}} & \text{if} \quad w = \text{\small JUMPDEST}\\
+G_{\mathrm{sload}} & \text{if} \quad w = \text{\small SLOAD}\\
+G_{\mathrm{zero}} & \text{if} \quad w \in W_{\mathrm{zero}}\\
+G_{\mathrm{base}} & \text{if} \quad w \in W_{\mathrm{base}}\\
+G_{\mathrm{verylow}} & \text{if} \quad w \in W_{\mathrm{verylow}}\\
+G_{\mathrm{low}} & \text{if} \quad w \in W_{\mathrm{low}}\\
+G_{\mathrm{mid}} & \text{if} \quad w \in W_{\mathrm{mid}}\\
+G_{\mathrm{high}} & \text{if} \quad w \in W_{\mathrm{high}}\\
+G_{\mathrm{extcode}} & \text{if} \quad w \in W_{\mathrm{extcode}}\\
+G_{\mathrm{balance}} & \text{if} \quad w = \text{\small BALANCE}\\
+G_{\mathrm{blockhash}} & \text{if} \quad w = \text{\small BLOCKHASH}\\
 \end{cases}
 \end{equation}
 \begin{equation}
-w \equiv \begin{cases} I_{\mathbf{b}}[\boldsymbol{\mu}_{pc}] & \text{if} \quad \boldsymbol{\mu}_{pc} < \lVert I_{\mathbf{b}} \rVert\\
+w \equiv \begin{cases} I_{\mathbf{b}}[\boldsymbol{\mu}_{\mathrm{pc}}] & \text{if} \quad \boldsymbol{\mu}_{\mathrm{pc}} < \lVert I_{\mathbf{b}} \rVert\\
 \text{\small STOP} & \text{otherwise}
 \end{cases}
 \end{equation}
 
 where:
 \begin{equation}
-C_{mem}(a) \equiv G_{memory} \cdot a + \Big\lfloor \dfrac{a^2}{512} \Big\rfloor
+C_{\mathrm{mem}}(a) \equiv G_{\mathrm{memory}} \cdot a + \Big\lfloor \dfrac{a^2}{512} \Big\rfloor
 \end{equation}
 
 with $C_\text{\tiny CALL}$, $C_\text{\tiny SELFDESTRUCT}$ and $C_\text{\tiny SSTORE}$ as specified in the appropriate section below. We define the following subsets of instructions:
 
-$W_{zero}$ = \{{\small STOP}, {\small RETURN}, {\small REVERT}\}
+$W_{\mathrm{zero}}$ = \{{\small STOP}, {\small RETURN}, {\small REVERT}\}
 
-$W_{base}$ = \{{\small ADDRESS}, {\small ORIGIN}, {\small CALLER}, {\small CALLVALUE}, {\small CALLDATASIZE}, {\small CODESIZE}, {\small GASPRICE}, {\small COINBASE},\newline \noindent\hspace*{1cm} {\small TIMESTAMP}, {\small NUMBER}, {\small DIFFICULTY}, {\small GASLIMIT}, {\small RETURNDATASIZE}, {\small POP}, {\small PC}, {\small MSIZE}, {\small GAS}\}
+$W_{\mathrm{base}}$ = \{{\small ADDRESS}, {\small ORIGIN}, {\small CALLER}, {\small CALLVALUE}, {\small CALLDATASIZE}, {\small CODESIZE}, {\small GASPRICE}, {\small COINBASE},\newline \noindent\hspace*{1cm} {\small TIMESTAMP}, {\small NUMBER}, {\small DIFFICULTY}, {\small GASLIMIT}, {\small RETURNDATASIZE}, {\small POP}, {\small PC}, {\small MSIZE}, {\small GAS}\}
 
-$W_{verylow}$ = \{{\small ADD}, {\small SUB}, {\small NOT}, {\small LT}, {\small GT}, {\small SLT}, {\small SGT}, {\small EQ}, {\small ISZERO}, {\small AND}, {\small OR}, {\small XOR}, {\small BYTE}, {\small CALLDATALOAD}, \newline \noindent\hspace*{1cm} {\small MLOAD}, {\small MSTORE}, {\small MSTORE8}, {\small PUSH*}, {\small DUP*}, {\small SWAP*}\}
+$W_{\mathrm{verylow}}$ = \{{\small ADD}, {\small SUB}, {\small NOT}, {\small LT}, {\small GT}, {\small SLT}, {\small SGT}, {\small EQ}, {\small ISZERO}, {\small AND}, {\small OR}, {\small XOR}, {\small BYTE}, {\small CALLDATALOAD}, \newline \noindent\hspace*{1cm} {\small MLOAD}, {\small MSTORE}, {\small MSTORE8}, {\small PUSH*}, {\small DUP*}, {\small SWAP*}\}
 
-$W_{low}$ = \{{\small MUL}, {\small DIV}, {\small SDIV}, {\small MOD}, {\small SMOD}, {\small SIGNEXTEND}\}
+$W_{\mathrm{low}}$ = \{{\small MUL}, {\small DIV}, {\small SDIV}, {\small MOD}, {\small SMOD}, {\small SIGNEXTEND}\}
 
-$W_{mid}$ = \{{\small ADDMOD}, {\small MULMOD}, {\small JUMP}\}
+$W_{\mathrm{mid}}$ = \{{\small ADDMOD}, {\small MULMOD}, {\small JUMP}\}
 
-$W_{high}$ = \{{\small JUMPI}\}
+$W_{\mathrm{high}}$ = \{{\small JUMPI}\}
 
-$W_{extcode}$ = \{{\small EXTCODESIZE}\}
+$W_{\mathrm{extcode}}$ = \{{\small EXTCODESIZE}\}
 
-Note the memory cost component, given as the product of $G_{memory}$ and the maximum of 0 \& the ceiling of the number of words in size that the memory must be over the current number of words, $\boldsymbol{\mu}_{\mathrm{i}}$ in order that all accesses reference valid memory whether for read or write. Such accesses must be for non-zero number of bytes.
+Note the memory cost component, given as the product of $G_{\mathrm{memory}}$ and the maximum of 0 \& the ceiling of the number of words in size that the memory must be over the current number of words, $\boldsymbol{\mu}_{\mathrm{i}}$ in order that all accesses reference valid memory whether for read or write. Such accesses must be for non-zero number of bytes.
 
 Referencing a zero length range (e.g. by attempting to pass it as the input range to a CALL) does not require memory to be extended to the beginning of the range. $\boldsymbol{\mu}'_{\mathrm{i}}$ is defined as this new maximum number of words of active memory; special-cases are given where these two are not equal.
 
-Note also that $C_{mem}$ is the memory cost function (the expansion function being the difference between the cost before and after). It is a polynomial, with the higher-order coefficient divided and floored, and thus linear up to 724B of memory used, after which it costs substantially more.
+Note also that $C_{\mathrm{mem}}$ is the memory cost function (the expansion function being the difference between the cost before and after). It is a polynomial, with the higher-order coefficient divided and floored, and thus linear up to 724B of memory used, after which it costs substantially more.
 
 While defining the instruction set, we defined the memory-expansion for range function, $M$, thus:
 
@@ -2057,19 +2057,19 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& in the block following it. \\
 \midrule
 0x41 & {\small COINBASE} & 0 & 1 & Get the block's beneficiary address. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{H}}_{\mathrm{c}}$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{\mathrm{H}}}_{\mathrm{c}}$ \\
 \midrule
 0x42 & {\small TIMESTAMP} & 0 & 1 & Get the block's timestamp. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{H}}_{\mathrm{s}}$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{\mathrm{H}}}_{\mathrm{s}}$ \\
 \midrule
 0x43 & {\small NUMBER} & 0 & 1 & Get the block's number. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{H}}_{\mathrm{i}}$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{\mathrm{H}}}_{\mathrm{i}}$ \\
 \midrule
 0x44 & {\small DIFFICULTY} & 0 & 1 & Get the block's difficulty. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{H}}_{\mathrm{d}}$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{\mathrm{H}}}_{\mathrm{d}}$ \\
 \midrule
 0x45 & {\small GASLIMIT} & 0 & 1 & Get the block's gas limit. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{H}}_{\mathrm{l}}$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{\mathrm{H}}}_{\mathrm{l}}$ \\
 \bottomrule
 \end{tabular*}
 
@@ -2100,32 +2100,32 @@ Here given are the various exceptions to the state transition rules given in sec
 \linkdest{SSTORE}{}0x55 & {\small SSTORE} & 2 & 0 & Save word to storage. \\
 &&&& $\boldsymbol{\sigma}'[I_{\mathrm{a}}]_{\mathbf{s}}[ \boldsymbol{\mu}_{\mathbf{s}}[0] ] \equiv \boldsymbol{\mu}_{\mathbf{s}}[1] $ \\
 &&&&\linkdest{C__SSTORE}{} $C_{\text{\tiny SSTORE}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
-G_{sset} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] \neq 0 \; \wedge \; \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathbf{s}}[\boldsymbol{\mu}_{\mathbf{s}}[0]] = 0 \\
-G_{sreset} & \text{otherwise}
+G_{\mathrm{sset}} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] \neq 0 \; \wedge \; \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathbf{s}}[\boldsymbol{\mu}_{\mathbf{s}}[0]] = 0 \\
+G_{\mathrm{sreset}} & \text{otherwise}
 \end{cases}$ \\
-&&&&\linkdest{A r}{} $A'_{r} \equiv A_{r} + \begin{cases}
-R_{sclear} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] = 0 \; \wedge \; \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathbf{s}}[\boldsymbol{\mu}_{\mathbf{s}}[0]] \neq 0 \\
+&&&&\linkdest{A r}{} $A'_{\mathrm{r}} \equiv A_{\mathrm{r}} + \begin{cases}
+R_{\mathrm{sclear}} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] = 0 \; \wedge \; \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathbf{s}}[\boldsymbol{\mu}_{\mathbf{s}}[0]] \neq 0 \\
 0 & \text{otherwise}
 \end{cases}$ \\
 \midrule
 \linkdest{JUMP}{}0x56 & {\small JUMP} & 1 & 0 & Alter the program counter. \\
 &&&& $J_{\text{\tiny JUMP}}(\boldsymbol{\mu}) \equiv \boldsymbol{\mu}_{\mathbf{s}}[0] $ \\
-&&&& This has the effect of writing said value to $\boldsymbol{\mu}_{pc}$. See section \ref{ch:model}.\\
+&&&& This has the effect of writing said value to $\boldsymbol{\mu}_{\mathrm{pc}}$. See section \ref{ch:model}.\\
 \midrule
 \linkdest{JUMPI}{}0x57 & {\small JUMPI} & 2 & 0 & Conditionally alter the program counter. \\
-&&&& $J_{\text{\tiny JUMPI}}(\boldsymbol{\mu}) \equiv \begin{cases} \boldsymbol{\mu}_{\mathbf{s}}[0] & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] \neq 0 \\ \boldsymbol{\mu}_{pc} + 1 & \text{otherwise} \end{cases} $ \\
-&&&& This has the effect of writing said value to $\boldsymbol{\mu}_{pc}$. See section \ref{ch:model}. \\
+&&&& $J_{\text{\tiny JUMPI}}(\boldsymbol{\mu}) \equiv \begin{cases} \boldsymbol{\mu}_{\mathbf{s}}[0] & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] \neq 0 \\ \boldsymbol{\mu}_{\mathrm{pc}} + 1 & \text{otherwise} \end{cases} $ \\
+&&&& This has the effect of writing said value to $\boldsymbol{\mu}_{\mathrm{pc}}$. See section \ref{ch:model}. \\
 \midrule
 0x58 & {\small PC} & 0 & 1 & Get the value of the program counter \textit{prior} to the increment \\
 &&&&  corresponding to this instruction. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{\mu}_{pc}$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{\mu}_{\mathrm{pc}}$ \\
 \midrule
 0x59 & {\small MSIZE} & 0 & 1 & Get the size of active memory in bytes. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv 32\boldsymbol{\mu}_{i}$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv 32\boldsymbol{\mu}_{\mathrm{i}}$ \\
 \midrule
 0x5a & {\small GAS} & 0 & 1 & Get the amount of available gas, including the corresponding reduction \\
 &&&& for the cost of this instruction. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{\mu}_{g}$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{\mu}_{\mathrm{g}}$ \\
 \midrule
 0x5b & {\small JUMPDEST} & 0 & 0 & Mark a valid destination for jumps. \\
 &&&& This operation has no effect on machine state during execution. \\
@@ -2137,21 +2137,21 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] = 0 \; \wedge \; \
 \multicolumn{5}{c}{\textbf{60s \& 70s: Push Operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x60 & {\small PUSH1} & 0 & 1 & Place 1 byte item on stack. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv c(\boldsymbol{\mu}_{pc} + 1)$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv c(\boldsymbol{\mu}_{\mathrm{pc}} + 1)$ \\
 &&&& $\text{where} \quad c(x) \equiv \begin{cases} I_{\mathbf{b}}[x] & \text{if} \quad x < \lVert I_{\mathbf{b}} \rVert \\ 0 & \text{otherwise} \end{cases}$ \\
 &&&& The bytes are read in line from the program code's bytes array. \\
 &&&& The function $c$ ensures the bytes default to zero if they extend past the limits.\\
 &&&& The byte is right-aligned (takes the lowest significant place in big endian). \\
 \midrule
 0x61 & {\small PUSH2} & 0 & 1 & Place 2-byte item on stack. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{c}\big( (\boldsymbol{\mu}_{pc} + 1) \dots (\boldsymbol{\mu}_{pc} + 2) \big)$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{c}\big( (\boldsymbol{\mu}_{\mathrm{pc}} + 1) \dots (\boldsymbol{\mu}_{\mathrm{pc}} + 2) \big)$ \\
 &&&& with $\boldsymbol{c}(\boldsymbol{x}) \equiv (c(\boldsymbol{x}_0), ..., c(\boldsymbol{x}_{\lVert x \rVert -1})) $ with $c$ as defined as above. \\
 &&&& The bytes are right-aligned (takes the lowest significant place in big endian). \\
 \midrule
 \multicolumn{1}{c}{\vdots} & \multicolumn{1}{c}{\vdots} & \vdots & \vdots & \multicolumn{1}{c}{\vdots} \\
 \midrule
 0x7f & {\small PUSH32} & 0 & 1 & Place 32-byte (full word) item on stack. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{c}\big((\boldsymbol{\mu}_{pc} + 1) \dots (\boldsymbol{\mu}_{pc} + 32) \big)$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{c}\big((\boldsymbol{\mu}_{\mathrm{pc}} + 1) \dots (\boldsymbol{\mu}_{\mathrm{pc}} + 32) \big)$ \\
 &&&& where $\boldsymbol{c}$ is defined as above. \\
 &&&& The bytes are right-aligned (takes the lowest significant place in big endian). \\
 \bottomrule
@@ -2254,20 +2254,20 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] = 0 \; \wedge \; \
 &&&& Thus the operand order is: gas, to, value, in offset, in size, out offset, out size. \\
 &&&&\linkdest{tiny CALL}{} $C_{\text{\tiny CALL}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) + C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$ \\
 &&&& $C_{\text{\tiny CALLGAS}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv  \begin{cases}
-C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) + G_{callstipend} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0 \\
+C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) + G_{\mathrm{callstipend}} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0 \\
 C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{otherwise}
 \end{cases}$ \\
 &&&& $C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
 \min\{ L(\boldsymbol{\mu}_{\mathrm{g}} - C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})), \boldsymbol{\mu}_{\mathbf{s}}[0] \} & \text{if} \quad \boldsymbol{\mu}_{\mathrm{g}} \ge C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})\\
 \boldsymbol{\mu}_{\mathbf{s}}[0] & \text{otherwise}
 \end{cases}$\\
-&&&& $C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv G_{call} + C_{\text{\tiny XFER}}(\boldsymbol{\mu}) + C_{\text{\tiny NEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$\\
+&&&& $C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv G_{\mathrm{call}} + C_{\text{\tiny XFER}}(\boldsymbol{\mu}) + C_{\text{\tiny NEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$\\
 &&&& $C_{\text{\tiny XFER}}(\boldsymbol{\mu}) \equiv \begin{cases}
-G_{callvalue} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0 \\
+G_{\mathrm{callvalue}} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0 \\
 0 & \text{otherwise}
 \end{cases}$ \\
 &&&& $C_{\text{\tiny NEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
-G_{newaccount} & \text{if} \quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma}, \boldsymbol{\mu}_{\mathbf{s}}[1] \mod 2^{160}) \wedge \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0 \\
+G_{\mathrm{newaccount}} & \text{if} \quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma}, \boldsymbol{\mu}_{\mathbf{s}}[1] \mod 2^{160}) \wedge \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0 \\
 0 & \text{otherwise}
 \end{cases}$ \\
 \midrule
@@ -2322,12 +2322,12 @@ G_{newaccount} & \text{if} \quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma}, \bolds
 \end{cases}$\\
 &&&& where $r = \boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160}$\\
 &&&& $\boldsymbol{\sigma}'[I_{\mathrm{a}}]_{\mathrm{b}} = 0$ \\
-&&&& $A'_{r} \equiv A_{r} + \begin{cases}
-R_{selfdestruct} & \text{if} \quad I_{\mathrm{a}} \notin A_{\mathbf{s}} \\
+&&&& $A'_{\mathrm{r}} \equiv A_{\mathrm{r}} + \begin{cases}
+R_{\mathrm{selfdestruct}} & \text{if} \quad I_{\mathrm{a}} \notin A_{\mathbf{s}} \\
 0 & \text{otherwise}
 \end{cases}$ \\
-&&&&\linkdest{C tiny SELFDESTRUCT}{} $C_{\text{\tiny SELFDESTRUCT}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv G_{selfdestruct} + \begin{cases}
-G_{newaccount} & \text{if} \quad n \\
+&&&&\linkdest{C tiny SELFDESTRUCT}{} $C_{\text{\tiny SELFDESTRUCT}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv G_{\mathrm{selfdestruct}} + \begin{cases}
+G_{\mathrm{newaccount}} & \text{if} \quad n \\
 0 & \text{otherwise}
 \end{cases}$ \\
 &&&& $n \equiv \mathtt{\tiny DEAD}(\boldsymbol{\sigma}, \boldsymbol{\mu}_{\mathbf{s}}[0] \mod 2^{160}) \wedge \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \neq 0$ \\
@@ -2338,10 +2338,10 @@ G_{newaccount} & \text{if} \quad n \\
 
 The genesis block is 15 items, and is specified thus:
 \begin{equation}
-\big( \big( 0_{256}, \mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big), 0_{160}, stateRoot, 0, 0, 0_{2048}, 2^{17}, 0, 0, 3141592, time, 0, 0_{256},  \mathtt{\tiny KEC}\big( (42) \big) \big), (), () \big)
+\big( \big( 0_{\mathrm{256}}, \mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big), 0_{\mathrm{160}}, stateRoot, 0, 0, 0_{\mathrm{2048}}, 2^{17}, 0, 0, 3141592, time, 0, 0_{\mathrm{256}},  \mathtt{\tiny KEC}\big( (42) \big) \big), (), () \big)
 \end{equation}
 
-Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $0_{160}$ refers to the beneficiary address, a 160-bit hash which is all zeroes; $0_{2048}$ refers to the log bloom, 2048-bit of all zeros; $2^{17}$ refers to the difficulty; the transaction trie root, receipt trie root, gas used, block number and extradata are both $0$, being equivalent to the empty byte array. The sequences of both ommers and transactions are empty and represented by $()$. $\mathtt{\tiny KEC}\big( (42) \big)$ refers to the Keccak hash of a byte array of length one whose first and only byte is of value 42, used for the nonce. $\mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big)$ value refers to the hash of the ommer list in RLP, both empty lists.
+Where $0_{\mathrm{256}}$ refers to the parent hash, a 256-bit hash which is all zeroes; $0_{\mathrm{160}}$ refers to the beneficiary address, a 160-bit hash which is all zeroes; $0_{\mathrm{2048}}$ refers to the log bloom, 2048-bit of all zeros; $2^{17}$ refers to the difficulty; the transaction trie root, receipt trie root, gas used, block number and extradata are both $0$, being equivalent to the empty byte array. The sequences of both ommers and transactions are empty and represented by $()$. $\mathtt{\tiny KEC}\big( (42) \big)$ refers to the Keccak hash of a byte array of length one whose first and only byte is of value 42, used for the nonce. $\mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big)$ value refers to the hash of the ommer list in RLP, both empty lists.
 
 The proof-of-concept series include a development premine, making the state root hash some value $stateRoot$. Also $time$ will be set to the initial timestamp of the genesis block. The latest documentation should be consulted for those values.
 
@@ -2353,96 +2353,96 @@ We employ the following definitions:
 \toprule
 Name & Value & Description \\
 \midrule
-\linkdest{Jwordbytes}{}$J_{wordbytes}$ & 4  & Bytes in word. \\
-\linkdest{J__datasetinit}{}$J_{datasetinit}$ & $2^{30}$ & Bytes in dataset at genesis. \\
-\linkdest{J__datasetgrowth}{}$J_{datasetgrowth}$ & $2^{23}$ & Dataset growth per epoch. \\
-\linkdest{J__cacheinit}{}$J_{cacheinit}$ & $2^{24}$ & Bytes in cache at genesis. \\
-\linkdest{J__cachegrowth}{}$J_{cachegrowth}$ & $2^{17}$ & Cache growth per epoch. \\
-\linkdest{J__epoch}{}$J_{epoch}$ & 30000 & Blocks per epoch. \\
-\linkdest{J__mixbytes}{}$J_{mixbytes}$ & 128 & mix length in bytes. \\
-\linkdest{J__hashbytes}{}$J_{hashbytes}$ & 64 & Hash length in bytes. \\
-\linkdest{J__parents}{}$J_{parents}$ & 256 & Number of parents of each dataset element. \\
-\linkdest{J__cacherounds}{}$J_{cacherounds}$ & 3 & Number of rounds in cache production. \\
-\linkdest{J__accesses}{}$J_{accesses}$ & 64 & Number of accesses in hashimoto loop. \\
+\linkdest{Jwordbytes}{}$J_{\mathrm{wordbytes}}$ & 4  & Bytes in word. \\
+\linkdest{J__datasetinit}{}$J_{\mathrm{datasetinit}}$ & $2^{30}$ & Bytes in dataset at genesis. \\
+\linkdest{J__datasetgrowth}{}$J_{\mathrm{datasetgrowth}}$ & $2^{23}$ & Dataset growth per epoch. \\
+\linkdest{J__cacheinit}{}$J_{\mathrm{cacheinit}}$ & $2^{24}$ & Bytes in cache at genesis. \\
+\linkdest{J__cachegrowth}{}$J_{\mathrm{cachegrowth}}$ & $2^{17}$ & Cache growth per epoch. \\
+\linkdest{J__epoch}{}$J_{\mathrm{epoch}}$ & 30000 & Blocks per epoch. \\
+\linkdest{J__mixbytes}{}$J_{\mathrm{mixbytes}}$ & 128 & mix length in bytes. \\
+\linkdest{J__hashbytes}{}$J_{\mathrm{hashbytes}}$ & 64 & Hash length in bytes. \\
+\linkdest{J__parents}{}$J_{\mathrm{parents}}$ & 256 & Number of parents of each dataset element. \\
+\linkdest{J__cacherounds}{}$J_{\mathrm{cacherounds}}$ & 3 & Number of rounds in cache production. \\
+\linkdest{J__accesses}{}$J_{\mathrm{accesses}}$ & 64 & Number of accesses in hashimoto loop. \\
 \bottomrule
 \end{tabular*}
 
 \subsection{Size of dataset and cache}
 The size for Ethash's cache $\mathbf{c} \in \mathbb{B}$  and dataset $\mathbf{d} \in \mathbb{B}$ depend on the epoch, which in turn depends on the block number.
 \begin{equation}
- E_{epoch}(H_{\mathrm{i}}) = \left\lfloor\frac{H_{\mathrm{i}}}{J_{epoch}}\right\rfloor
+ E_{\mathrm{epoch}}(H_{\mathrm{i}}) = \left\lfloor\frac{H_{\mathrm{i}}}{J_{\mathrm{epoch}}}\right\rfloor
 \end{equation}
-The size of the dataset growth by $J_{datasetgrowth}$ bytes, and the size of the cache by $J_{cachegrowth}$ bytes, every epoch. In order to avoid regularity leading to cyclic behavior, the size must be a prime number. Therefore the size is reduced by a multiple of $J_{mixbytes}$, for the dataset, and $J_{hashbytes}$ for the cache.
-\linkdest{d__size}{}Let $d_{size} = \lVert \mathbf{d} \rVert$ be the size of the dataset. Which is calculated using
+The size of the dataset growth by $J_{\mathrm{datasetgrowth}}$ bytes, and the size of the cache by $J_{\mathrm{cachegrowth}}$ bytes, every epoch. In order to avoid regularity leading to cyclic behavior, the size must be a prime number. Therefore the size is reduced by a multiple of $J_{\mathrm{mixbytes}}$, for the dataset, and $J_{\mathrm{hashbytes}}$ for the cache.
+\linkdest{d__size}{}Let $d_{\mathrm{size}} = \lVert \mathbf{d} \rVert$ be the size of the dataset. Which is calculated using
 \begin{equation}
- d_{size} = E_{prime}(J_{datasetinit} + J_{datasetgrowth} \cdot E_{epoch} - J_{mixbytes}, J_{mixbytes})
+ d_{\mathrm{size}} = E_{\mathrm{prime}}(J_{\mathrm{datasetinit}} + J_{\mathrm{datasetgrowth}} \cdot E_{\mathrm{epoch}} - J_{\mathrm{mixbytes}}, J_{\mathrm{mixbytes}})
 \end{equation}
-The size of the cache, $c_{size}$, is calculated using
+The size of the cache, $c_{\mathrm{size}}$, is calculated using
 \begin{equation}
- c_{size} = E_{prime}(J_{cacheinit} + J_{cachegrowth} \cdot E_{epoch} - J_{hashbytes}, J_{hashbytes})
+ c_{\mathrm{size}} = E_{\mathrm{prime}}(J_{\mathrm{cacheinit}} + J_{\mathrm{cachegrowth}} \cdot E_{\mathrm{epoch}} - J_{\mathrm{hashbytes}}, J_{\mathrm{hashbytes}})
 \end{equation}
 \begin{equation}
- E_{prime}(x, y) = \begin{cases}
+ E_{\mathrm{prime}}(x, y) = \begin{cases}
 x & \text{if} \quad x / y \in \mathbb{P} \\
-E_{prime}(x - 2 \cdot y, y) & \text{otherwise}
+E_{\mathrm{prime}}(x - 2 \cdot y, y) & \text{otherwise}
 \end{cases}
 \end{equation}
 \subsection{Dataset generation}
-In order to generate the dataset we need the cache $\mathbf{c}$, which is an array of bytes. It depends on the cache size  $c_{size}$ and the seed hash $\mathbf{s} \in \mathbb{B}_{32}$.
+In order to generate the dataset we need the cache $\mathbf{c}$, which is an array of bytes. It depends on the cache size  $c_{\mathrm{size}}$ and the seed hash $\mathbf{s} \in \mathbb{B}_{\mathrm{32}}$.
 \subsubsection{Seed hash}
 The seed hash is different for every epoch. For the first epoch it is the Keccak-256 hash of a series of 32 bytes of zeros. For every other epoch it is always the Keccak-256 hash of the previous seed hash:
 \begin{equation}
- \mathbf{s} = C_{seedhash}(H_{\mathrm{i}})
+ \mathbf{s} = C_{\mathrm{seedhash}}(H_{\mathrm{i}})
 \end{equation}
 \begin{equation}
- C_{seedhash}(H_{\mathrm{i}}) = \begin{cases}
-\texttt{KEC}(\mathbf{0}_{32}) & \text{if} \quad E_{epoch}(H_{\mathrm{i}}) = 0 \quad  \\
-\texttt{KEC}(C_{seedhash}(H_{\mathrm{i}} - J_{epoch})) & \text{otherwise}
+ C_{\mathrm{seedhash}}(H_{\mathrm{i}}) = \begin{cases}
+\texttt{KEC}(\mathbf{0}_{\mathrm{32}}) & \text{if} \quad E_{\mathrm{epoch}}(H_{\mathrm{i}}) = 0 \quad  \\
+\texttt{KEC}(C_{\mathrm{seedhash}}(H_{\mathrm{i}} - J_{\mathrm{epoch}})) & \text{otherwise}
 \end{cases}
 \end{equation}
-With $\mathbf{0}_{32}$ being 32 bytes of zeros.
+With $\mathbf{0}_{\mathrm{32}}$ being 32 bytes of zeros.
 
 \subsubsection{Cache}
-The cache production process involves using the seed hash to first sequentially filling up $c_{size}$ bytes of memory, then performing $J_{cacherounds}$ passes of the RandMemoHash algorithm created by \cite{lerner2014randmemohash}. The initial cache $\mathbf{c'}$, being an array of arrays of single bytes, will be constructed as follows.
+The cache production process involves using the seed hash to first sequentially filling up $c_{\mathrm{size}}$ bytes of memory, then performing $J_{\mathrm{cacherounds}}$ passes of the RandMemoHash algorithm created by \cite{lerner2014randmemohash}. The initial cache $\mathbf{c'}$, being an array of arrays of single bytes, will be constructed as follows.
 
-We define the array $\mathbf{c}_{i}$, consisting of 64 single bytes,  as the $i$th element of the initial cache:
+We define the array $\mathbf{c}_{\mathrm{i}}$, consisting of 64 single bytes,  as the $i$th element of the initial cache:
 \begin{equation}
- \mathbf{c}_{i} = \begin{cases}
+ \mathbf{c}_{\mathrm{i}} = \begin{cases}
 \texttt{KEC512}(\mathbf{s}) & \text{if} \quad i = 0 \quad  \\
 \texttt{KEC512}(\mathbf{c}_{i-1}) & \text{otherwise}
 \end{cases}
 \end{equation}
 Therefore $ \mathbf{c'}$ can be defined as
 \begin{equation}
- \mathbf{c'}[i] = \mathbf{c}_{i} \quad \forall \quad i < n
+ \mathbf{c'}[i] = \mathbf{c}_{\mathrm{i}} \quad \forall \quad i < n
 \end{equation}
 \begin{equation}
- n = \left\lfloor\frac{c_{size}}{J_{hashbytes}}\right\rfloor
+ n = \left\lfloor\frac{c_{\mathrm{size}}}{J_{\mathrm{hashbytes}}}\right\rfloor
 \end{equation}
-The cache is calculated by performing $J_{cacherounds}$ rounds of the RandMemoHash algorithm to the initial cache $\mathbf{c'}$:
+The cache is calculated by performing $J_{\mathrm{cacherounds}}$ rounds of the RandMemoHash algorithm to the initial cache $\mathbf{c'}$:
 \begin{equation}
- \mathbf{c} = E_{cacherounds}(\mathbf{c'}, J_{cacherounds})
+ \mathbf{c} = E_{\mathrm{cacherounds}}(\mathbf{c'}, J_{\mathrm{cacherounds}})
 \end{equation}
 \begin{equation}
- E_{cacherounds}(\mathbf{x}, y) = \begin{cases}
+ E_{\mathrm{cacherounds}}(\mathbf{x}, y) = \begin{cases}
 \mathbf{x} & \text{if} \quad y = 0 \quad  \\
 E_\text{\tiny RMH}(\mathbf{x}) & \text{if} \quad y = 1 \quad  \\
-E_{cacherounds}(E_\text{\tiny RMH}(\mathbf{x}), y -1 ) & \text{otherwise}
+E_{\mathrm{cacherounds}}(E_\text{\tiny RMH}(\mathbf{x}), y -1 ) & \text{otherwise}
 \end{cases}
 \end{equation}
 Where a single round modifies each subset of the cache as follows:
 \begin{equation}
- E_\text{\tiny RMH}(\mathbf{x}) = \big( E_{rmh}(\mathbf{x}, 0), E_{rmh}(\mathbf{x}, 1), ... , E_{rmh}(\mathbf{x}, n - 1) \big)\linkdest{E__cacherounds}{}
+ E_\text{\tiny RMH}(\mathbf{x}) = \big( E_{\mathrm{rmh}}(\mathbf{x}, 0), E_{\mathrm{rmh}}(\mathbf{x}, 1), ... , E_{\mathrm{rmh}}(\mathbf{x}, n - 1) \big)\linkdest{E__cacherounds}{}
 \end{equation}
 \begin{multline}
-  E_{rmh}(\mathbf{x}, i) = \texttt{KEC512}(\mathbf{x'}[(i - 1 + n) \mod n] \oplus \mathbf{x'}[\mathbf{x'}[i][0] \mod n]) \\
-  \text{with} \quad \mathbf{x'} = \mathbf{x} \quad \text{except} \quad \mathbf{x'}[j] = E_{rmh}(\mathbf{x}, j) \quad \forall \quad j < i
+  E_{\mathrm{rmh}}(\mathbf{x}, i) = \texttt{KEC512}(\mathbf{x'}[(i - 1 + n) \mod n] \oplus \mathbf{x'}[\mathbf{x'}[i][0] \mod n]) \\
+  \text{with} \quad \mathbf{x'} = \mathbf{x} \quad \text{except} \quad \mathbf{x'}[j] = E_{\mathrm{rmh}}(\mathbf{x}, j) \quad \forall \quad j < i
 \end{multline}
 
 \subsubsection{Full dataset calculation} \label{dataset}
-Essentially, we combine data from $J_{parents}$ pseudorandomly selected cache nodes, and hash that to compute the dataset. The entire dataset is then generated by a number of items, each $J_{hashbytes}$ bytes in size:
+Essentially, we combine data from $J_{\mathrm{parents}}$ pseudorandomly selected cache nodes, and hash that to compute the dataset. The entire dataset is then generated by a number of items, each $J_{\mathrm{hashbytes}}$ bytes in size:
 \begin{equation}
- \mathbf{d}[i] = E_{datasetitem}(\mathbf{c}, i) \quad \forall \quad i < \left\lfloor\frac{d_{size}}{J_{hashbytes}}\right\rfloor
+ \mathbf{d}[i] = E_{\mathrm{datasetitem}}(\mathbf{c}, i) \quad \forall \quad i < \left\lfloor\frac{d_{\mathrm{size}}}{J_{\mathrm{hashbytes}}}\right\rfloor
 \end{equation}
 In order to calculate the single item we use an algorithm inspired by the FNV hash (\cite{FowlerNollVo1991FNVHash}) in some cases as a non-associative substitute for XOR.
 \begin{equation}
@@ -2450,42 +2450,42 @@ In order to calculate the single item we use an algorithm inspired by the FNV ha
 \end{equation}
 The single item of the dataset can now be calculated as:
 \begin{equation}
- E_{datasetitem}(\mathbf{c}, i) = E_{parents}(\mathbf{c}, i, -1, \varnothing)
+ E_{\mathrm{datasetitem}}(\mathbf{c}, i) = E_{\mathrm{parents}}(\mathbf{c}, i, -1, \varnothing)
 \end{equation}
 \begin{equation}
-  E_{parents}(\mathbf{c}, i, p, \mathbf{m}) = \begin{cases}
-E_{parents}(\mathbf{c}, i, p +1, E_{mix}(\mathbf{m}, \mathbf{c}, i, p + 1)) & \text{if} \quad p < J_{parents} -2 \\
-E_{mix}(\mathbf{m}, \mathbf{c}, i, p + 1) & \text{otherwise}
+  E_{\mathrm{parents}}(\mathbf{c}, i, p, \mathbf{m}) = \begin{cases}
+E_{\mathrm{parents}}(\mathbf{c}, i, p +1, E_{\mathrm{mix}}(\mathbf{m}, \mathbf{c}, i, p + 1)) & \text{if} \quad p < J_{\mathrm{parents}} -2 \\
+E_{\mathrm{mix}}(\mathbf{m}, \mathbf{c}, i, p + 1) & \text{otherwise}
 \end{cases}
 \end{equation}
 \begin{equation}
- E_{mix}(\mathbf{m}, \mathbf{c}, i, p) = \begin{cases}
-\texttt{KEC512}(\mathbf{c}[i \mod c_{size}] \oplus i) & \text{if} \quad p = 0 \\
-E_\text{\tiny FNV}\big(\mathbf{m}, \mathbf{c}[E_\text{\tiny FNV}(i \oplus p, \mathbf{m}[p \mod \lfloor J_{hashbytes} / J_{wordbytes} \rfloor]) \mod c_{size}] \big) & \text{otherwise}
+ E_{\mathrm{mix}}(\mathbf{m}, \mathbf{c}, i, p) = \begin{cases}
+\texttt{KEC512}(\mathbf{c}[i \mod c_{\mathrm{size}}] \oplus i) & \text{if} \quad p = 0 \\
+E_\text{\tiny FNV}\big(\mathbf{m}, \mathbf{c}[E_\text{\tiny FNV}(i \oplus p, \mathbf{m}[p \mod \lfloor J_{\mathrm{hashbytes}} / J_{\mathrm{wordbytes}} \rfloor]) \mod c_{\mathrm{size}}] \big) & \text{otherwise}
 \end{cases}
 \end{equation}
 
 \subsection{Proof-of-work function}
-Essentially, we maintain a ``mix'' $J_{mixbytes}$ bytes wide, and repeatedly sequentially fetch $J_{mixbytes}$ bytes from the full dataset and use the $E_\text{\tiny FNV}$ function to combine it with the mix. $J_{mixbytes}$ bytes of sequential access are used so that each round of the algorithm always fetches a full page from RAM, minimizing translation lookaside buffer misses which ASICs would theoretically be able to avoid.
+Essentially, we maintain a ``mix'' $J_{\mathrm{mixbytes}}$ bytes wide, and repeatedly sequentially fetch $J_{\mathrm{mixbytes}}$ bytes from the full dataset and use the $E_\text{\tiny FNV}$ function to combine it with the mix. $J_{\mathrm{mixbytes}}$ bytes of sequential access are used so that each round of the algorithm always fetches a full page from RAM, minimizing translation lookaside buffer misses which ASICs would theoretically be able to avoid.
 
 If the output of this algorithm is below the desired target, then the nonce is valid. Note that the extra application of \texttt{KEC} at the end ensures that there exists an intermediate nonce which can be provided to prove that at least a small amount of work was done; this quick outer PoW verification can be used for anti-DDoS purposes. It also serves to provide statistical assurance that the result is an unbiased, 256 bit number.
 
 The PoW-function returns an array with the compressed mix as its first item and the Keccak-256 hash of the concatenation of the compressed mix with the seed hash as the second item:
 \begin{equation}
- \mathtt{PoW}(H_{\hcancel{n}}, H_{\mathrm{n}}, \mathbf{d}) = \lbrace \mathbf{m}_{\mathrm{c}}(\mathtt{\small KEC}(\mathtt{\small RLP}(L_{H}(H_{\hcancel{n}}))), H_{\mathrm{n}}, \mathbf{d}), \texttt{KEC}(\mathbf{s}_{\mathrm{h}}(\mathtt{\small KEC}(\mathtt{\small RLP}(L_{H}(H_{\hcancel{n}}))), H_{\mathrm{n}}) + \mathbf{m}_{\mathrm{c}}(\mathtt{\small KEC}(\mathtt{\small RLP}(L_{H}(H_{\hcancel{n}}))), H_{\mathrm{n}}, \mathbf{d})) \rbrace
+ \mathtt{PoW}(H_{\hcancel{n}}, H_{\mathrm{n}}, \mathbf{d}) = \lbrace \mathbf{m}_{\mathrm{c}}(\mathtt{\small KEC}(\mathtt{\small RLP}(L_{\mathrm{H}}(H_{\hcancel{n}}))), H_{\mathrm{n}}, \mathbf{d}), \texttt{KEC}(\mathbf{s}_{\mathrm{h}}(\mathtt{\small KEC}(\mathtt{\small RLP}(L_{\mathrm{H}}(H_{\hcancel{n}}))), H_{\mathrm{n}}) + \mathbf{m}_{\mathrm{c}}(\mathtt{\small KEC}(\mathtt{\small RLP}(L_{\mathrm{H}}(H_{\hcancel{n}}))), H_{\mathrm{n}}, \mathbf{d})) \rbrace
 \end{equation}
 With $H_{\hcancel{n}}$ being the hash of the header without the nonce. The compressed mix $\mathbf{m}_{\mathrm{c}}$ is obtained as follows:
 \begin{equation}
- \mathbf{m}_{\mathrm{c}}(\mathbf{h}, \mathbf{n}, \mathbf{d}) = E_{compress}(E_{accesses}(\mathbf{d}, \sum_{i = 0}^{n_{mix}} \mathbf{s}_{\mathrm{h}}(\mathbf{h}, \mathbf{n}), \mathbf{s}_{\mathrm{h}}(\mathbf{h}, \mathbf{n}), -1), -4)
+ \mathbf{m}_{\mathrm{c}}(\mathbf{h}, \mathbf{n}, \mathbf{d}) = E_{\mathrm{compress}}(E_{\mathrm{accesses}}(\mathbf{d}, \sum_{i = 0}^{n_{\mathrm{mix}}} \mathbf{s}_{\mathrm{h}}(\mathbf{h}, \mathbf{n}), \mathbf{s}_{\mathrm{h}}(\mathbf{h}, \mathbf{n}), -1), -4)
 \end{equation}
 
 The seed hash being:
 \begin{equation}
- \mathbf{s}_{\mathrm{h}}(\mathbf{h}, \mathbf{n}) = \texttt{KEC512}(\mathbf{h} + E_{revert}(\mathbf{n}))
+ \mathbf{s}_{\mathrm{h}}(\mathbf{h}, \mathbf{n}) = \texttt{KEC512}(\mathbf{h} + E_{\mathrm{revert}}(\mathbf{n}))
 \end{equation}
-$E_{revert}(\mathbf{n})$ returns the reverted bytes sequence of the nonce $\mathbf{n}$:
+$E_{\mathrm{revert}}(\mathbf{n})$ returns the reverted bytes sequence of the nonce $\mathbf{n}$:
 \begin{equation}
- E_{revert}(\mathbf{n})[i] = \mathbf{n}[\lVert \mathbf{n} \rVert -i]
+ E_{\mathrm{revert}}(\mathbf{n})[i] = \mathbf{n}[\lVert \mathbf{n} \rVert -i]
 \end{equation}
 We note that the ``$+$''-operator between two byte sequences results in the concatenation of both sequences.
 
@@ -2493,27 +2493,27 @@ The dataset $\mathbf{d}$ is obtained as described in section \ref{dataset}.
 
 The number of replicated sequences in the mix is:
 \begin{equation}
- n_{mix} =  \left\lfloor\frac{J_{mixbytes}}{J_{hashbytes}}\right\rfloor
+ n_{\mathrm{mix}} =  \left\lfloor\frac{J_{\mathrm{mixbytes}}}{J_{\mathrm{hashbytes}}}\right\rfloor
 \end{equation}
-In order to add random dataset nodes to the mix, the $E_{accesses}$ function is used:
+In order to add random dataset nodes to the mix, the $E_{\mathrm{accesses}}$ function is used:
 \begin{equation}
- E_{accesses}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i) = \begin{cases}
-E_{mixdataset}(\mathbf{d}, \mathbf{m},  \mathbf{s}, i) & \text{if} \quad i = J_{accesses} -2 \\
-E_{accesses}(E_{mixdataset}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i), \mathbf{s}, i + 1) & \text{otherwise}
+ E_{\mathrm{accesses}}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i) = \begin{cases}
+E_{\mathrm{mixdataset}}(\mathbf{d}, \mathbf{m},  \mathbf{s}, i) & \text{if} \quad i = J_{\mathrm{accesses}} -2 \\
+E_{\mathrm{accesses}}(E_{\mathrm{mixdataset}}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i), \mathbf{s}, i + 1) & \text{otherwise}
 \end{cases}
 \end{equation}
 \begin{equation}
- E_{mixdataset}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i) = E_\text{\tiny FNV}(\mathbf{m}, E_{newdata}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i)
+ E_{\mathrm{mixdataset}}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i) = E_\text{\tiny FNV}(\mathbf{m}, E_{\mathrm{newdata}}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i)
 \end{equation}
-$E_{newdata}$ returns an array with $n_{mix}$ elements:
+$E_{\mathrm{newdata}}$ returns an array with $n_{\mathrm{mix}}$ elements:
 \begin{equation}
- E_{newdata}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i)[j] = \mathbf{d}[E_\text{\tiny FNV}(i \oplus \mathbf{s}[0], \mathbf{m}[i \mod \left\lfloor\frac{J_{mixbytes}}{J_{wordbytes}}\right\rfloor]) \mod \left\lfloor\frac{d_{size} / J_{hashbytes}}{n_{mix}}\right\rfloor \cdot n_{mix} + j] \quad \forall \quad j < n_{mix}
+ E_{\mathrm{newdata}}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i)[j] = \mathbf{d}[E_\text{\tiny FNV}(i \oplus \mathbf{s}[0], \mathbf{m}[i \mod \left\lfloor\frac{J_{\mathrm{mixbytes}}}{J_{\mathrm{wordbytes}}}\right\rfloor]) \mod \left\lfloor\frac{d_{\mathrm{size}} / J_{\mathrm{hashbytes}}}{n_{\mathrm{mix}}}\right\rfloor \cdot n_{\mathrm{mix}} + j] \quad \forall \quad j < n_{\mathrm{mix}}
 \end{equation}
 The mix is compressed as follows:
 \begin{equation}
- E_{compress}(\mathbf{m}, i) = \begin{cases}
+ E_{\mathrm{compress}}(\mathbf{m}, i) = \begin{cases}
 \mathbf{m} & \text{if} \quad i \geqslant \lVert \mathbf{m} \rVert - 8 \\
-E_{compress}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(\mathbf{m}[i + 4], \mathbf{m}[i + 5]), \mathbf{m}[i + 6]), \mathbf{m}[i + 7]), i + 8) & \text{otherwise}
+E_{\mathrm{compress}}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(\mathbf{m}[i + 4], \mathbf{m}[i + 5]), \mathbf{m}[i + 6]), \mathbf{m}[i + 7]), i + 8) & \text{otherwise}
 \end{cases}
 \end{equation}
 
