@@ -1658,10 +1658,10 @@ The method of signing transactions is similar to the `Electrum style signatures'
 
 It is assumed that the sender has a valid private key $p_{\mathrm{r}}$, which is a randomly selected positive integer (represented as a byte array of length 32 in big-endian form) in the range \hbox{$[1, \mathtt{\tiny secp256k1n} - 1]$}.
 
-We assume the existence of functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARECOVER}$ and $\mathtt{\small ECDSAPUBKEY}$. These are formally defined in the literature.
+We assume the existence of functions $\mathtt{\small ECDSAPUBKEY}$, $\mathtt{\small ECDSASIGN}$ and $\mathtt{\small ECDSARECOVER}$. These are formally defined in the literature, \eg by \cite{ECDSAcerticom}.
 \begin{eqnarray}
 \mathtt{\small ECDSAPUBKEY}(p_{\mathrm{r}} \in \mathbb{B}_{32}) & \equiv & p_{\mathrm{u}} \in \mathbb{B}_{64} \\
-\linkdest{ECDSASIGN}{}\mathtt{\small ECDSASIGN}(e \in \mathbb{B}_{32}, p_{\mathrm{r}} \in \mathbb{B}_{32}) & \equiv & (v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) \\
+\linkdest{ECDSASIGN}\mathtt{\small ECDSASIGN}(e \in \mathbb{B}_{32}, p_{\mathrm{r}} \in \mathbb{B}_{32}) & \equiv & (v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) \\
 \mathtt{\small ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_{\mathrm{u}} \in \mathbb{B}_{64}
 \end{eqnarray}
 
