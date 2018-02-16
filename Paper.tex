@@ -1706,6 +1706,13 @@ G(T, p_{\mathrm{r}}) \equiv T \quad \text{except:} \\
 (T_{\mathrm{w}}, T_{\mathrm{r}}, T_{\mathrm{s}}) = \mathtt{\small ECDSASIGN}(h(T), p_{\mathrm{r}})
 \end{eqnarray}
 
+\hyperlink{T__w_T__r_T__s}{Reiterating from previously}: 
+\begin{eqnarray}
+\linkdest{T__w}{T_{\mathrm{w}}} = \hyperlink{v}{v}\\
+\linkdest{T__r}{T_{\mathrm{r}}} = \hyperlink{r}{r}\\
+\linkdest{T__s}{T_{\mathrm{s}}} = \hyperlink{s}{s}
+\end{eqnarray}
+
 We may then define the sender function $S$ of the transaction as:
 \begin{eqnarray}
 S(T) &\equiv& \mathcal{B}_{96..255}\big(\mathtt{\tiny KEC}\big( \mathtt{\small ECDSARECOVER}(h(T), v_0, T_{\mathrm{r}}, T_{\mathrm{s}}) \big) \big) \\
