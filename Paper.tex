@@ -1476,10 +1476,10 @@ We define $\Xi_{\mathtt{SHA256}}$ and $\Xi_{\mathtt{RIP160}}$ as precompiled con
 
 \begin{eqnarray}
 \Xi_{\mathtt{SHA256}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
-g_{\mathrm{r}} &=& 60 + 12\Big\lceil \dfrac{|I_{\mathbf{d}}|}{32} \Big\rceil\\
+\mathrm{g}_{\mathrm{r}} &=& 60 + 12\Big\lceil \dfrac{|I_{\mathbf{d}}|}{32} \Big\rceil\\
 \mathbf{o}[0..31] &=& \mathtt{\tiny SHA256}(I_{\mathbf{d}})\\
 \Xi_{\mathtt{RIP160}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
-g_{\mathrm{r}} &=& 600 + 120\Big\lceil \dfrac{|I_{\mathbf{d}}|}{32} \Big\rceil\\
+\mathrm{g}_{\mathrm{r}} &=& 600 + 120\Big\lceil \dfrac{|I_{\mathbf{d}}|}{32} \Big\rceil\\
 \mathbf{o}[0..11] &=& 0 \\
 \mathbf{o}[12..31] &=& \mathtt{\tiny RIPEMD160}(I_{\mathbf{d}})
 \end{eqnarray}
@@ -1494,7 +1494,7 @@ For the purposes here, we assume we have well-defined standard cryptographic fun
 The fourth contract, the identity function $\Xi_{\mathtt{ID}}$ simply defines the output as the input:
 \begin{eqnarray}
 \Xi_{\mathtt{ID}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
-g_{\mathrm{r}} &=& 15 + 3\Big\lceil \dfrac{|I_{\mathbf{d}}|}{32} \Big\rceil\\
+\mathrm{g}_{\mathrm{r}} &=& 15 + 3\Big\lceil \dfrac{|I_{\mathbf{d}}|}{32} \Big\rceil\\
 \mathbf{o} &=& I_{\mathbf{d}}
 \end{eqnarray}
 
