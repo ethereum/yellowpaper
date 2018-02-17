@@ -130,12 +130,12 @@ Mining is the process of dedicating effort (working) to bolster one series of tr
 
 Formally, we expand to:
 \begin{eqnarray}
-\boldsymbol{\sigma}_{t+1} & \equiv & \Pi(\boldsymbol{\sigma}_{t}, B) \\
+\boldsymbol{\sigma}_{t+1} & \equiv & \hyperlink{Pi}{\Pi}(\boldsymbol{\sigma}_{t}, B) \\
 B & \equiv & (..., (T_0, T_1, ...) ) \\
-\Pi(\boldsymbol{\sigma}, B) & \equiv & \Omega(B, \Upsilon(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...)
+\Pi(\boldsymbol{\sigma}, B) & \equiv & \hyperlink{Omega}{\Omega}(B, \hyperlink{Upsilon}{\Upsilon}(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...)
 \end{eqnarray}
 
-Where $\Omega$ is the block-finalisation state transition function (a function that rewards a nominated party); $B$ is this block, which includes a series of transactions amongst some other components; and $\Pi$ is the block-level state-transition function.
+Where \hyperlink{Omega}{$\Omega$} is the block-finalisation state transition function (a function that rewards a nominated party); \linkdest{block}{$B$} is this block, which includes a series of transactions amongst some other components; and $\hyperlink{Pi}{\Pi}$ is the block-level state-transition function.
 
 This is the basis of the blockchain paradigm, a model that forms the backbone of not only Ethereum, but all decentralised consensus-based transaction systems to date.
 
@@ -177,7 +177,7 @@ The two sets of highly structured, `top-level', state values, are denoted with b
 
 Functions operating on highly structured values are denoted with an upper-case Greek letter, \eg \hyperlink{Upsilon_state_transition}{$\Upsilon$}, the Ethereum state transition function.
 
-For most functions, an uppercase letter is used, e.g. $C$, the general cost function. These may be subscripted to denote specialised variants, \eg \hyperlink{C__SSTORE}{$C_\text{SSTORE}$}, the cost function for the \hyperlink{SSTORE}{{\tiny SSTORE}} operation. For specialised and possibly externally defined functions, we may format as typewriter text, \eg the Keccak-256 hash function (as per the winning entry to the SHA-3 contest) is denoted $\texttt{KEC}$ (and generally referred to as plain Keccak). Also $\texttt{KEC512}$ is referring to the Keccak 512 hash function.
+For most functions, an uppercase letter is used, e.g. $C$, the general cost function. These may be subscripted to denote specialised variants, \eg \hyperlink{C__SSTORE}{$C_\text{SSTORE}$}, the cost function for the \hyperlink{SSTORE}{{\tiny SSTORE}} operation. For specialised and possibly externally defined functions, we may format as typewriter text, \eg the Keccak-256 hash function (as per the winning entry to the SHA-3 contest by \cite{Keccak}, rather than later releases), is denoted $\texttt{KEC}$ (and generally referred to as plain Keccak). Also $\texttt{KEC512}$ is referring to the Keccak 512 hash function.
 
 Tuples are typically denoted with an upper-case letter, \eg $T$, is used to denote an Ethereum transaction. This symbol may, if accordingly defined, be subscripted to refer to an individual component, \eg \hyperlink{transaction_nonce}{$T_{\mathrm{n}}$}, denotes the nonce of said transaction. The form of the subscript is used to denote its type; \eg uppercase subscripts refer to tuples with subscriptable components.
 
@@ -185,7 +185,7 @@ Scalars and fixed-size byte sequences (or, synonymously, arrays) are denoted wit
 
 Arbitrary-length sequences are typically denoted as a bold lower-case letter, \eg $\mathbf{o}$ is used to denote the byte sequence given as the output data of a message call. For particularly important values, a bold uppercase letter may be used.
 
-Throughout, we assume scalars are positive integers and thus belong to the set $\mathbb{P}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{32}$ and the set of all positive integers smaller than $2^{256}$ is named $\mathbb{P}_{256}$. This is formally defined in section \ref{ch:block}.
+Throughout, we assume scalars are positive integers and thus belong to the set $\mathbb{P}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{32}$ and the set of all positive integers smaller than $2^{256}$ is named $\mathbb{P}_{256}$. This is formally defined in section \hyperlink{block}.
 
 Square brackets are used to index into and reference individual components or subsequences of sequences, \eg $\boldsymbol{\mu}_{\mathbf{s}}[0]$ denotes the first item on the machine's stack. For subsequences, ellipses are used to specify the intended range, to include elements at both limits, \eg $\boldsymbol{\mu}_{\mathbf{m}}[0..31]$ denotes the first 32 items of the machine's memory.
 
@@ -193,7 +193,7 @@ In the case of the global state $\boldsymbol{\sigma}$, which is a sequence of ac
 
 When considering variants of existing values, we follow the rule that within a given scope for definition, if we assume that the unmodified `input' value be denoted by the placeholder $\Box$ then the modified and utilisable value is denoted as $\Box'$, and intermediate values would be $\Box^*$,  $\Box^{**}$ \&c. On very particular occasions, in order to maximise readability and only if unambiguous in meaning, we may use alpha-numeric subscripts to denote intermediate values, especially those of particular note.
 
-When considering the use of existing functions, given a function $f$, the function \hyperlink{general_element_wise_sequence_transformation_f_pow_asterisk}{$f^*$} denotes a similar, element-wise version of the function mapping instead between sequences. It is formally defined in section \ref{ch:block}.
+When considering the use of existing functions, given a function $f$, the function \hyperlink{general_element_wise_sequence_transformation_f_pow_asterisk}{$f^*$} denotes a similar, element-wise version of the function mapping instead between sequences. It is formally defined in section \hyperlink{block}.
 
 We define a number of useful functions throughout. \linkdest{ell}One of the more common is $\ell$, which evaluates to the last item in the given sequence:
 
@@ -321,7 +321,7 @@ T_{\mathbf{t}} \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_{\mathrm{t}
 \mathbb{B}_{0} & \text{otherwise}\end{cases}
 \end{equation}
 
-\subsection{The Block} \label{ch:block}
+\subsection{The Block} \linkdest{block}{}
 
 The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$,\hypertarget{ommerheaders}{} and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{ommers}\footnote{\textit{ommer} is a gender-neutral term to mean ``sibling of parent''; see \url{https://nonbinary.miraheze.org/wiki/Gender_neutral_language\#Aunt.2FUncle}}). The block header contains several pieces of information:
 
@@ -330,7 +330,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \begin{description}
 \item[parentHash]\linkdest{parent_Hash_H__p_def_words}{} The Keccak 256-bit hash of the parent block's header, in its entirety; formally $H_{\mathrm{p}}$.
 \item[ommersHash] The Keccak 256-bit hash of the ommers list portion of this block; formally $H_{\mathrm{o}}$.
-\item[beneficiary]\linkdest{beneficiary_H__c}{} The 160-bit address to which all fees collected from the successful mining of this block be transferred; formally $H_{\mathrm{c}}$.
+\item[beneficiary]\linkdest{beneficiary_H__c}{}\linkdest{H__c} The 160-bit address to which all fees collected from the successful mining of this block be transferred; formally $H_{\mathrm{c}}$.
 \item[stateRoot] The Keccak 256-bit hash of the root node of the state trie, after all transactions are executed and finalisations applied; formally $H_{\mathrm{r}}$.
 \item[transactionsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with each transaction in the transactions list portion of the block; formally $H_{\mathrm{t}}$.
 \item[receiptsRoot]\linkdest{receipts_Root_def_words}{} The Keccak 256-bit hash of the root node of the trie structure populated with the receipts of each transaction in the transactions list portion of the block; formally $H_{\mathrm{e}}$.
@@ -338,13 +338,12 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[difficulty] A scalar value corresponding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_{\mathrm{d}}$.
 \item[number]\linkdest{block_number_word_def_H_i}{} A scalar value equal to the number of ancestor blocks. The genesis block has a number of zero; formally \hyperlink{block_number_H__i}{$H_{\mathrm{i}}$}.
 \item[gasLimit] A scalar value equal to the current limit of gas expenditure per block; formally $H_{\mathrm{l}}$.
-\item[gasUsed]\linkdest{block_gas_used_H__g}{} A scalar value equal to the total gas used in transactions in this block; formally $H_{\mathrm{g}}$.
+\item[gasUsed]\linkdest{block_gas_used_H__g}{}\linkdest{H__g} A scalar value equal to the total gas used in transactions in this block; formally $H_{\mathrm{g}}$.
 \item[timestamp]\linkdest{block_timestamp_word_def_H__s}{} A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally \hyperlink{block_timestamp_H__s}{$H_{\mathrm{s}}$}.
 \item[extraData]\linkdest{block_extraData_H__x}{} An arbitrary byte array containing data relevant to this block. This must be 32 bytes or fewer; formally $H_{\mathrm{x}}$.
 \item[mixHash]\linkdest{mixHash_H__m}{} A 256-bit hash which, combined with the nonce, proves that a sufficient amount of computation has been carried out on this block; formally $H_{\mathrm{m}}$.
 \item[nonce]\linkdest{block_nonce_H__n}{} A 64-bit hash which, combined with the mix-hash, proves that a sufficient amount of computation has been carried out on this block; formally $H_{\mathrm{n}}$.
 \end{description}
-
 \linkdest{ommer_block_headers_B__U}{}\linkdest{block_B}{}The other two components in the block are simply a list of ommer block headers (of the same format as above), $B_{\mathbf{U}}$ and a series of the transactions, $B_{\mathbf{T}}$. Formally, we can refer to a block $B$:
 \begin{equation}
 B \equiv (B_{H}, B_{\mathbf{T}}, B_{\mathbf{U}})
@@ -355,23 +354,23 @@ B \equiv (B_{H}, B_{\mathbf{T}}, B_{\mathbf{U}})
 In order to encode information about a transaction concerning which it may be useful to form a zero-knowledge proof, or index and search, we encode a receipt of each transaction containing certain information from concerning its execution.
 Each receipt, denoted $B_{\mathbf{R}}[i]$ for the $i$th transaction, is placed in an index-keyed \hyperlink{trie}{trie} and the root recorded in the header as \hyperlink{Receipts_Root_H__e}{$H_{\mathrm{e}}$}.
 
-\linkdest{transaction_receipt_R}{}\linkdest{tx_receipt_gas_used_R__u}{}The transaction receipt, $R$, is a tuple of four items comprising the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_{\mathrm{u}}$, the set of logs created through execution of the transaction, \hyperlink{RLP_serialisation_of_a_sequence_of_other_items_R__l_math_def}{$R_\mathbf{l}$} and the Bloom filter composed from information in those logs, \hyperlink{RLP_serialisation_of_a_byte_array_R__b_math_def}{$R_{\mathrm{b}}$} and the status code of the transaction, $R_{\mathrm{z}}$:
+\linkdest{transaction_receipt_R}{}\linkdest{tx_receipt_gas_used_R__u}{}\linkdest{R__u}The transaction receipt, $R$, is a tuple of four items comprising the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_{\mathrm{u}}$, the set of logs created through execution of the transaction, \hyperlink{RLP_serialisation_of_a_sequence_of_other_items_R__l_math_def}{$R_\mathbf{l}$} and the Bloom filter composed from information in those logs, \hyperlink{RLP_serialisation_of_a_byte_array_R__b_math_def}{$R_{\mathrm{b}}$} and the status code of the transaction, $R_{\mathrm{z}}$:
 \begin{equation}
 R \equiv (R_{\mathrm{u}}, R_{\mathrm{b}}, R_{\mathbf{l}}, R_{\mathrm{z}})
 \end{equation}
 
-The function $L_{R}$ trivially prepares a transaction receipt for being transformed into an RLP-serialised byte array:
+\hypertarget{transaction_receipt_preparation_function_for_RLP_serialisation}{}\linkdest{L__R}The function $L_{R}$ trivially prepares a transaction receipt for being transformed into an RLP-serialised byte array:
 \begin{equation}
 L_{R}(R) \equiv (0 \in \mathbb{B}_{256}, R_{\mathrm{u}}, R_{\mathrm{b}}, R_{\mathbf{l}})
 \end{equation}
 where $0 \in \mathbb{B}_{256}$ replaces the pre-transaction state root that existed in previous versions of the protocol.
 
-We assert that the status code $R_{\mathrm{z}}$ is an integer.
+\linkdest{R__z_assert}We assert that the status code $R_{\mathrm{z}}$ is an integer.
 \begin{equation}
 R_{\mathrm{z}} \in \mathbb{P}
 \end{equation}
 
-We assert $R_{\mathrm{u}}$, the cumulative gas used is a positive integer and that the logs Bloom, $R_{\mathrm{b}}$, is a hash of size 2048 bits (256 bytes):
+\linkdest{R__u_assert}We assert $R_{\mathrm{u}}$, the cumulative gas used is a positive integer and that the logs Bloom, $R_{\mathrm{b}}$, is a hash of size 2048 bits (256 bytes):
 \begin{equation}
 R_{\mathrm{u}} \in \mathbb{P} \quad \wedge \quad R_{\mathrm{b}} \in \mathbb{B}_{256}
 \end{equation}
@@ -409,7 +408,7 @@ where $\mathcal{B}$ is the bit reference function such that $\mathcal{B}_{\mathr
 \linkdest{new_state_H__r}{}H_{\mathrm{r}} &\equiv& \mathtt{\small TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) & \wedge \\
 \linkdest{Ommer_block_hash_H__o}{}H_{\mathrm{o}} &\equiv& \mathtt{\small KEC}(\mathtt{\small RLP}(L_H^*(B_{\mathbf{U}}))) & \wedge \\
 \linkdest{tx_block_hash_H__t}{}H_{\mathrm{t}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_{\mathbf{T}} \rVert, i \in \mathbb{P}: p(i, L_{T}(B_{\mathbf{T}}[i]))\}) & \wedge \\
-\linkdest{Receipts_Root_H__e}{}H_{\mathrm{e}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_{\mathbf{R}} \rVert, i \in \mathbb{P}: p(i, L_{R}(B_{\mathbf{R}}[i]))\}) & \wedge \\
+\linkdest{Receipts_Root_H__e}{}H_{\mathrm{e}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_{\mathbf{R}} \rVert, i \in \mathbb{P}: p(i, \hyperlink{transaction_receipt_preparation_function_for_RLP_serialisation}{L_{R}}(B_{\mathbf{R}}[i]))\}) & \wedge \\
 \linkdest{logs_Bloom_filter_H__b}{}H_{\mathrm{b}} &\equiv& \bigvee_{\mathbf{r} \in B_{\mathbf{R}}} \big( \mathbf{r}_{\mathrm{b}} \big)
 \end{array}
 \end{equation}
@@ -429,7 +428,7 @@ The values stemming from the computation of transactions, specifically the \hype
 
 \subsubsection{Serialisation}
 
-\hypertarget{block_preparation_function_for_RLP_serialization_L__B}{}\hypertarget{block_preparation_function_for_RLP_serialization_L__H}{}The function $L_{B}$ and $L_{H}$ are the preparation functions for a block and block header respectively. Much like the transaction receipt preparation function $L_{R}$, we assert the types and order of the structure for when the RLP transformation is required:
+\hypertarget{block_preparation_function_for_RLP_serialization_L__B}{}\linkdest{L__B}\hypertarget{block_preparation_function_for_RLP_serialization_L__H}{}\linkdest{L__B}The function $L_{B}$ and $L_{H}$ are the preparation functions for a block and block header respectively. Much like the \hyperlink{transaction_receipt_preparation_function_for_RLP_serialisation}{transaction receipt preparation function $L_{R}$}, we assert the types and order of the structure for when the RLP transformation is required:
 \begin{eqnarray}
 \quad L_{H}(H) & \equiv & (\begin{array}[t]{l}H_{\mathrm{p}}, H_{\mathrm{o}}, H_{\mathrm{c}}, H_{\mathrm{r}}, H_{\mathrm{t}}, H_{\mathrm{e}}, H_{\mathrm{b}}, H_{\mathrm{d}},\\ H_{\mathrm{i}}, H_{\mathrm{l}}, H_{\mathrm{g}}, H_{\mathrm{s}}, H_{\mathrm{x}}, H_{\mathrm{m}}, H_{\mathrm{n}} \; )\end{array} \\
 \quad L_{B}(B) & \equiv & \big( L_{H}(B_{H}), L_{T}^*(B_{\mathbf{T}}), L_{H}^*(\hyperlink{ommer_block_headers_B__U}{B_{\mathbf{U}}}) \big)
@@ -716,14 +715,14 @@ Finally, the account is initialised through the execution of the initialising EV
 \begin{equation}
 (\boldsymbol{\sigma}^{**}, g^{**}, A, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}^*, g, I, \{s, a\}) \\
 \end{equation}
-\pagebreak[1]where $I$ contains the parameters of the execution environment as defined in section \ref{ch:model}, that is:\pagebreak[1]
+\pagebreak[1]where $I$ contains the parameters of the \hyperlink{exec_env}{execution environment}, that is:\pagebreak[1]
 \begin{eqnarray}
 I_{\mathrm{a}} & \equiv & a \\
 I_{\mathrm{o}} & \equiv & o \\
 I_{\mathrm{p}} & \equiv & p \\
 I_{\mathbf{d}} & \equiv & () \\
 I_{\mathrm{s}} & \equiv & s \\
-I_{\mathrm{v}} & \equiv & v \\
+\hyperlink{I__v}{I_{\mathrm{v}}} & \equiv & v \\
 I_{\mathbf{b}} & \equiv & \mathbf{i} \\
 I_{\mathrm{e}} & \equiv & e \\
 I_{\mathrm{w}} & \equiv & w
@@ -879,21 +878,21 @@ Storage fees have a slightly nuanced behaviour---to incentivise minimisation of 
 
 See Appendix \ref{app:vm} for a rigorous definition of the EVM gas cost.
 
-\subsection{Execution Environment}
+\subsection{Execution Environment}\linkdest{exec_env}
 
 In addition to the system state $\boldsymbol{\sigma}$, and the remaining gas for computation $g$, there are several pieces of important information used in the execution environment that the execution agent must provide; these are contained in the tuple $I$:
 
 \begin{itemize}
-\item\linkdest{address_of_account_which_owns_code_I__a_def_words}{} $I_{\mathrm{a}}$, the address of the account which owns the code that is executing.
-\item\linkdest{address_of_sender_of_tx_that_originated_execution_I__o}{} $I_{\mathrm{o}}$, the sender address of the transaction that originated this execution.
-\item\linkdest{gas_price_in_tx_that_originated_execution_I__p}{} $I_{\mathrm{p}}$, the price of gas in the transaction that originated this execution.
-\item\linkdest{execution_input_data_I__d}{} $I_{\mathbf{d}}$, the byte array that is the input data to this execution; if the execution agent is a transaction, this would be the transaction data.
+\item\linkdest{address_of_account_which_owns_code_I__a_def_words}{}\linkdest{I__a} $I_{\mathrm{a}}$, the address of the account which owns the code that is executing.
+\item\linkdest{address_of_sender_of_tx_that_originated_execution_I__o}{}\linkdest{I__o} $I_{\mathrm{o}}$, the sender address of the transaction that originated this execution.
+\item\linkdest{gas_price_in_tx_that_originated_execution_I__p}{}\linkdest{I__p} $I_{\mathrm{p}}$, the price of gas in the transaction that originated this execution.
+\item\linkdest{execution_input_data_I__d}{}\linkdest{I__d} $I_{\mathbf{d}}$, the byte array that is the input data to this execution; if the execution agent is a transaction, this would be the transaction data.
 \item\linkdest{the_address_of_the_account_which_caused_the_code_to_be_executing_I__s}{} $I_{\mathrm{s}}$, the address of the account which caused the code to be executing; if the execution agent is a transaction, this would be the transaction sender.
-\item\linkdest{Wei_value_exec}{} $I_{\mathrm{v}}$, the value, in Wei, passed to this account as part of the same procedure as execution; if the execution agent is a transaction, this would be the transaction value.
-\item\linkdest{exec_machine_code_I__b}{} $I_{\mathbf{b}}$, the byte array that is the machine code to be executed.
-\item\linkdest{exec_block_header_I__H}{} $I_{\mathbf{H}}$, the block header of the present block.
-\item\linkdest{exec_call_or_create_depth_I__e}{} $I_{\mathrm{e}}$, the depth of the present message-call or contract-creation (i.e. the number of {\small CALL}s or {\small CREATE}s being executed at present).
-\item\linkdest{exec_permission_to_modify_state_I__w}{} $I_{\mathrm{w}}$, the permission to make modifications to the state.
+\item\linkdest{Wei_value_exec_I__v}{}\linkdest{I__v}{} $I_{\mathrm{v}}$, the value, in Wei, passed to this account as part of the same procedure as execution; if the execution agent is a transaction, this would be the transaction value.
+\item\linkdest{exec_machine_code_I__b}{}\linkdest{I__b} $I_{\mathbf{b}}$, the byte array that is the machine code to be executed.
+\item\linkdest{exec_block_header_I__H}{}\linkdest{I__H} $I_{\mathbf{H}}$, the block header of the present block.
+\item\linkdest{exec_call_or_create_depth_I__e}{}\linkdest{I__e} $I_{\mathrm{e}}$, the depth of the present message-call or contract-creation (i.e. the number of {\small CALL}s or {\small CREATE}s being executed at present).
+\item\linkdest{exec_permission_to_modify_state_I__w}{}\linkdest{I__w} $I_{\mathrm{w}}$, the permission to make modifications to the state.
 \end{itemize}
 
 The execution model defines the function $\Xi$, which can compute the resultant state $\boldsymbol{\sigma}'$, the remaining gas $g'$, the accrued substate $A$ and the resultant output, $\mathbf{o}$, given these definitions. For the present context, we will define it as:
@@ -909,7 +908,7 @@ A \equiv (\mathbf{s}, \mathbf{l}, \mathbf{t}, r)
 
 \subsection{Execution Overview}
 
-We must now define the $\Xi$ function. In most practical implementations this will be modelled as an iterative progression of the pair comprising the full system state, $\boldsymbol{\sigma}$ and the machine state, $\boldsymbol{\mu}$. Formally, we define it recursively with a function $X$. This uses an iterator function $O$ (which defines the result of a single cycle of the state machine) together with functions $Z$ which determines if the present state is an \hyperlink{zhalt}{exceptional halting} state of the machine and $H$, specifying the output data of the instruction if and only if the present state is a \hyperlink{hhalt}{normal halting} state of the machine.
+We must now define the $\Xi$ function. In most practical implementations this will be modelled as an iterative progression of the pair comprising the full system state, $\boldsymbol{\sigma}$ and the machine state, $\boldsymbol{\mu}$. Formally, we define it recursively with a function $X$. This uses an iterator function $O$ (which defines the result of a single cycle of the state machine) together with functions \hyperlink{zhalt}{$Z$} which determines if the present state is an \hyperlink{zhalt}{exceptional halting} state of the machine and \hyperlink{hhalt}{$H$}, specifying the output data of the instruction if and only if the present state is a \hyperlink{hhalt}{normal halting} state of the machine.
 
 \hypertarget{empty_sequence_vs_empty_set}{}The empty sequence, denoted $()$, is not equal to the empty set, denoted $\varnothing$; this is important when interpreting the output of $H$, which evaluates to $\varnothing$ when execution is to continue but a series (potentially empty) when execution should halt.
 \begin{eqnarray}
@@ -941,7 +940,7 @@ where
 
 Note that, when we evaluate $\Xi$, we drop the fourth element $I'$ and extract the remaining gas $\boldsymbol{\mu}'_{\mathrm{g}}$ from the resultant machine state $\boldsymbol{\mu}'$.
 
-$X$ is thus cycled (recursively here, but implementations are generally expected to use a simple iterative loop) until either $Z$ becomes true indicating that the present state is exceptional and that the machine must be halted and any changes discarded or until $H$ becomes a series (rather than the empty set) indicating that the machine has reached a controlled halt.
+$X$ is thus cycled (recursively here, but implementations are generally expected to use a simple iterative loop) until either \hyperlink{zhalt}{$Z$} becomes true indicating that the present state is exceptional and that the machine must be halted and any changes discarded or until \hyperlink{hhalt}{$H$} becomes a series (rather than the empty set) indicating that the machine has reached a controlled halt.
 
 \subsubsection{Machine State}
 The machine state $\boldsymbol{\mu}$ is defined as the tuple $(g, pc, \mathbf{m}, i, \mathbf{s})$ which are the gas available, the program counter $pc \in \mathbb{P}_{256}$ , the memory contents, the active number of words in memory (counting continuously from position 0), and the stack contents. The memory contents $\boldsymbol{\mu}_{\mathbf{m}}$ are a series of zeroes of size $2^{256}$.
@@ -1103,9 +1102,9 @@ where $B(H)$ is the block of the corresponding header $H$.
 
 %where $s[i]$ equals the root of the state trie immediately after the execution of the transaction $B_{\mathbf{T}}[i]$, and $g[i]$ the total gas used immediately after said transaction.
 
-The given \textbf{gasUsed} must correspond faithfully to the transactions listed: ${B_{H}}_{\mathrm{g}}$, the total gas used in the block, must be equal to the accumulated gas used according to the final transaction:
+The given \textbf{gasUsed} must correspond faithfully to the transactions listed: \hyperlink{H__g}{${B_{H}}_{\mathrm{g}}$}, the total gas used in the block, must be equal to the accumulated gas used according to the final transaction:
 \begin{equation}
-{B_{H}}_{\mathrm{g}} = \ell(\mathbf{R})_{\mathrm{u}}
+{B_{H}}_{\mathrm{g}} = \hyperlink{ell}{\ell}(\hyperlink{R__u}{\mathbf{R})_{\mathrm{u}}}
 \end{equation}
 
 \subsection{Reward Application}
@@ -1157,7 +1156,7 @@ As specified at the beginning of the present work, \hyperlink{Pi}{$\Pi$} is the 
 
 \hyperlink{Transaction_Receipt}{As previously detailed}, $\mathbf{R}[n]_{\mathrm{z}}$, $\mathbf{R}[n]_{\mathbf{l}}$ and $\mathbf{R}[n]_{\mathrm{u}}$ are the $n$th corresponding status code, logs and cumulative gas used after each transaction ($\mathbf{R}[n]_{\mathrm{b}}$, the fourth component in the tuple, has already been defined in terms of the logs). We also define the $n$th state $\boldsymbol{\sigma}[n]$, which is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
 \begin{equation}
-\boldsymbol{\sigma}[n] = \begin{cases} \Gamma(B) & \text{if} \quad n < 0 \\ \hyperlink{Upsilon}{\Upsilon}(\boldsymbol{\sigma}[n - 1], B_{\mathbf{T}}[n]) & \text{otherwise} \end{cases}
+\boldsymbol{\sigma}[n] = \begin{cases} \hyperlink{Gamma}{\Gamma}(B) & \text{if} \quad n < 0 \\ \hyperlink{Upsilon}{\Upsilon}(\boldsymbol{\sigma}[n - 1], B_{\mathbf{T}}[n]) & \text{otherwise} \end{cases}
 \end{equation}
 
 In the case of \hyperlink{Transaction_Receipt}{$B_{\mathbf{R}}[n]_{\mathrm{u}}$}, we take a similar approach defining each item as the gas used in evaluating the corresponding transaction summed with the previous item (or zero, if it is the first), giving us a running total:
@@ -1181,9 +1180,9 @@ We define \hyperlink{Upsilon_pow_z}{$\mathbf{R}[n]_{\mathrm{z}}$} in a similar m
 \Upsilon^{\mathrm{z}}(\boldsymbol{\sigma}[n - 1], B_{\mathbf{T}}[n])
 \end{equation}
 
-\hypertarget{Pi}{}Finally, we define $\Pi$ as the new state given the block reward function $\Omega$ applied to the final transaction's resultant state, $\hyperlink{ell}{\ell}(\boldsymbol{\sigma})$:
+\hypertarget{Pi}{}Finally, we define $\Pi$ as the new state given the block reward function $\hyperlink{Omega}{\Omega}$ applied to the final transaction's resultant state, $\hyperlink{ell}{\ell}(\boldsymbol{\sigma})$:
 \begin{equation}
-\Pi(\boldsymbol{\sigma}, B) \equiv \Omega(B, \ell(\boldsymbol{\sigma}))
+\Pi(\boldsymbol{\sigma}, B) \equiv \hyperlink{Omega}{\Omega}(B, \ell(\boldsymbol{\sigma}))
 \end{equation}
 
 Thus the complete block-transition mechanism is defined, except for $\mathtt{PoW}$, the proof-of-work function.
@@ -1705,6 +1704,13 @@ The signed transaction $G(T, p_{\mathrm{r}})$ is defined as:
 \begin{eqnarray}
 G(T, p_{\mathrm{r}}) \equiv T \quad \text{except:} \\
 (T_{\mathrm{w}}, T_{\mathrm{r}}, T_{\mathrm{s}}) = \mathtt{\small ECDSASIGN}(h(T), p_{\mathrm{r}})
+\end{eqnarray}
+
+\hyperlink{T__w_T__r_T__s}{Reiterating from previously}: 
+\begin{eqnarray}
+\linkdest{T__w}{T_{\mathrm{w}}} = \hyperlink{v}{v}\\
+\linkdest{T__r}{T_{\mathrm{r}}} = \hyperlink{r}{r}\\
+\linkdest{T__s}{T_{\mathrm{s}}} = \hyperlink{s}{s}
 \end{eqnarray}
 
 We may then define the sender function $S$ of the transaction as:
