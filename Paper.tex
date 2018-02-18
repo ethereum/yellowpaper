@@ -1,4 +1,3 @@
-% Create a branch to upload a file
 \documentclass[9pt,oneside]{amsart}
 %\usepackage{tweaklist}
 \usepackage{cancel}
@@ -136,7 +135,7 @@ B & \equiv & (..., (T_0, T_1, ...) ) \\
 \Pi(\boldsymbol{\sigma}, B) & \equiv & \hyperlink{Omega}{\Omega}(B, \hyperlink{Upsilon}{\Upsilon}(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...)
 \end{eqnarray}
 
-Where \hyperlink{Omega}{$\Omega$} is the block-finalisation state transition function (a function that rewards a nominated party); \linkdest{block}{$B$} is this block, which includes a series of transactions amongst some other components; and $\hyperlink{Pi}{\Pi}$ is the block-level state-transition function.
+Where \hyperlink{Omega}{$\Omega$} is the block-finalisation state transition function (a function that rewards a nominated party); \hyperlink{block}{$B$} is this block, which includes a series of transactions amongst some other components; and $\hyperlink{Pi}{\Pi}$ is the block-level state-transition function.
 
 This is the basis of the blockchain paradigm, a model that forms the backbone of not only Ethereum, but all decentralised consensus-based transaction systems to date.
 
@@ -186,7 +185,7 @@ Scalars and fixed-size byte sequences (or, synonymously, arrays) are denoted wit
 
 Arbitrary-length sequences are typically denoted as a bold lower-case letter, \eg $\mathbf{o}$ is used to denote the byte sequence given as the output data of a message call. For particularly important values, a bold uppercase letter may be used.
 
-Throughout, we assume scalars are positive integers and thus belong to the set $\mathbb{P}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{32}$ and the set of all positive integers smaller than $2^{256}$ is named $\mathbb{P}_{256}$. This is formally defined in section \hyperlink{block}.
+Throughout, we assume scalars are positive integers and thus belong to the set $\mathbb{P}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{32}$ and the set of all positive integers smaller than $2^{256}$ is named $\mathbb{P}_{256}$. This is formally defined in section \hyperlink{block}{\ref{subsec:The_Block}}.
 
 Square brackets are used to index into and reference individual components or subsequences of sequences, \eg $\boldsymbol{\mu}_{\mathbf{s}}[0]$ denotes the first item on the machine's stack. For subsequences, ellipses are used to specify the intended range, to include elements at both limits, \eg $\boldsymbol{\mu}_{\mathbf{m}}[0..31]$ denotes the first 32 items of the machine's memory.
 
@@ -322,7 +321,7 @@ T_{\mathbf{t}} \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_{\mathrm{t}
 \mathbb{B}_{0} & \text{otherwise}\end{cases}
 \end{equation}
 
-\subsection{The Block} \linkdest{block}{}
+\subsection{The Block}\linkdest{block}\label{subsec:The_Block}
 
 The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$,\hypertarget{ommerheaders}{} and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{ommers}\footnote{\textit{ommer} is a gender-neutral term to mean ``sibling of parent''; see \url{https://nonbinary.miraheze.org/wiki/Gender_neutral_language\#Aunt.2FUncle}}). The block header contains several pieces of information:
 
@@ -343,7 +342,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[timestamp]\linkdest{block_timestamp_word_def_H__s}{} A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally \hyperlink{block_timestamp_H__s}{$H_{\mathrm{s}}$}.
 \item[extraData]\linkdest{block_extraData_H__x}{} An arbitrary byte array containing data relevant to this block. This must be 32 bytes or fewer; formally $H_{\mathrm{x}}$.
 \item[mixHash]\linkdest{mixHash_H__m}{} A 256-bit hash which, combined with the nonce, proves that a sufficient amount of computation has been carried out on this block; formally $H_{\mathrm{m}}$.
-\item[nonce]\linkdest{block_nonce_H__n}{} A 64-bit hash which, combined with the mix-hash, proves that a sufficient amount of computation has been carried out on this block; formally $H_{\mathrm{n}}$.
+\item[nonce]\linkdest{block_nonce_H__n}{}\linkdest{block_nonce} A 64-bit hash which, combined with the mix-hash, proves that a sufficient amount of computation has been carried out on this block; formally $H_{\mathrm{n}}$.
 \end{description}
 \linkdest{ommer_block_headers_B__U}{}\linkdest{block_B}{}The other two components in the block are simply a list of ommer block headers (of the same format as above), $B_{\mathbf{U}}$ and a series of the transactions, $B_{\mathbf{T}}$. Formally, we can refer to a block $B$:
 \begin{equation}
@@ -591,8 +590,8 @@ A^0 \equiv (\varnothing,(), \varnothing, 0)
 \hypertarget{intrinsic_gas_g_0}{}We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
 \begin{align}
 g_0 \equiv {} & \sum_{i \in T_{\mathbf{i}}, T_{\mathbf{d}}} \begin{cases} \hyperlink{G__txdatazero}{G_{\mathrm{txdatazero}}} & \text{if} \quad i = 0 \\ \hyperlink{G__txdatanonzero}{G_{\mathrm{txdatanonzero}}} & \text{otherwise} \end{cases} \\
-{} & + \begin{cases} \hyperlink{Gtxcreate}{G_{\mathrm{txcreate}}} & \text{if} \quad T_{\mathrm{t}} = \varnothing \\ 0 & \text{otherwise} \end{cases} \\
-{} & + \hyperlink{Gtransaction}{G_{\mathrm{transaction}}}
+{} & + \begin{cases} \hyperlink{G__txcreate}{G_{\mathrm{txcreate}}} & \text{if} \quad T_{\mathrm{t}} = \varnothing \\ 0 & \text{otherwise} \end{cases} \\
+{} & + \hyperlink{G__transaction}{G_{\mathrm{transaction}}}
 \end{align}
 
 where $T_{\mathbf{i}},T_{\mathbf{d}}$ means the series of bytes of the transaction's associated data and initialisation EVM-code, depending on whether the transaction is for contract-creation or message-call. $G_{\mathrm{txcreate}}$ is added if the transaction is contract-creating, but not if a result of EVM-code. $G$ is fully defined in Appendix \ref{app:fees}.
@@ -681,7 +680,7 @@ We define the creation function formally as the function $\Lambda$, which evalua
 (\boldsymbol{\sigma}', g', A, z, \mathbf{o}) \equiv \Lambda(\boldsymbol{\sigma}, s, o, g, p, v, \mathbf{i}, e, w)
 \end{equation}
 
-The address of the new account is defined as being the rightmost 160 bits of the Keccak hash of the \hyperlink{rlp}{RLP} encoding of the structure containing only the sender and the \hyperlink{account nonce}{account nonce}. Thus we define the resultant address for the new account $a$:
+The address of the new account is defined as being the rightmost 160 bits of the Keccak hash of the \hyperlink{rlp}{RLP} encoding of the structure containing only the sender and the \hyperlink{account_nonce}{account nonce}. Thus we define the resultant address for the new account $a$:
 \begin{equation}
 a \equiv \mathcal{B}_{96..255}\Big(\mathtt{\tiny KEC}\Big(\mathtt{\tiny RLP}\big(\;(s, \boldsymbol{\sigma}[s]_{\mathrm{n}} - 1)\;\big)\Big)\Big)
 \end{equation}
@@ -1075,7 +1074,7 @@ The process of finalising a block involves four stages:
 \item Validate (or, if mining, determine) ommers;
 \item validate (or, if mining, determine) transactions;
 \item apply rewards;
-\item verify (or, if mining, compute a valid) state and \hyperlink{block nonce}{block nonce}.
+\item verify (or, if mining, compute a valid) state and \hyperlink{block_nonce}{block nonce}.
 \end{enumerate}
 
 \subsection{Ommer Validation}
