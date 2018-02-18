@@ -866,7 +866,7 @@ The EVM is a simple stack-based architecture. The word size of the machine (and 
 
 The machine does not follow the standard von Neumann architecture. Rather than storing program code in generally-accessible memory or storage, it is stored separately in a virtual ROM interactable only through a specialised instruction.
 
-The machine can have exceptional execution for several reasons, including stack underflows and invalid instructions. Like the out-of-gas exception, they do not leave state changes intact. Rather, the machine halts immediately and reports the issue to the execution agent (either the transaction processor or, recursively, the spawning execution environment) which will deal with it separately.
+The machine can have exceptional execution for several reasons, including stack underflows and invalid instructions. Like the out-of-gas exception, they leave the state intact. Rather, the machine halts immediately and reports the issue to the execution agent (either the transaction processor or, recursively, the spawning execution environment) which will deal with it separately.
 
 \subsection{Fees Overview}
 
