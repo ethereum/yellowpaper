@@ -959,8 +959,9 @@ We also assume the fixed amounts of $\mathbf{\delta}$ and $\mathbf{\alpha}$, spe
 \subsubsection{Exceptional Halting}\hypertarget{Exceptional_Halting_function_Z}{}\linkdest{zhalt}
 
 The exceptional halting function $Z$ is defined as:
-\begin{gather} 
-Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv \boldsymbol{\mu}_g < C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \quad \vee \\ 
+\begin{equation} 
+Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv \boldsymbol{\mu}_g < C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \quad \vee \\
+\begin{array}[t]{l}
 \mathbf{\delta}_w = \varnothing \quad \vee   \nonumber \\
 \lVert\boldsymbol{\mu}_\mathbf{s}\rVert < \mathbf{\delta}_w \quad \vee \nonumber \\
 ( w = \text{\small JUMP} \quad \wedge \quad \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \nonumber \\
@@ -969,6 +970,7 @@ Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv \boldsymbol{\mu}_g < C(\bolds
 \lVert\boldsymbol{\mu}_\mathbf{s}\rVert - \mathbf{\delta}_w + \mathbf{\alpha}_w > 1024 \nonumber
 \\
  \neg I_{\mathrm{w}} \wedge W(w, \boldsymbol{\mu})
+\end{array}
 \end{gather}
 where
 \begin{equation}
