@@ -1654,7 +1654,7 @@ x&\equiv&\delta_1(\bar I_{\mathbf d}[32..95])
 
 \section{Signing Transactions}\label{app:signing}
 
-The method of signing transactions is similar to the `Electrum style signatures'; it utilises the SECP-256k1 curve as described by \cite{gura2004comparing}.
+The method of signing transactions is similar to the `Electrum style signatures' as defined by \cite{npmElectrum2017}, heading "Managing styles with Radium" in the bullet point list. This method utilises the SECP-256k1 curve as described by \cite{Courtois2014}, and is implemented similarly to as described by \cite{gura2004comparing} on p.~9 of 15, para.~3.
 
 It is assumed that the sender has a valid private key $p_{\mathrm{r}}$, which is a randomly selected positive integer (represented as a byte array of length 32 in big-endian form) in the range \hbox{$[1, \mathtt{\tiny secp256k1n} - 1]$}.
 
