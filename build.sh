@@ -34,5 +34,5 @@ pdflatex -output-directory=build -interaction=errorstopmode -halt-on-error Paper
 bibtex build/Paper && \
 pdflatex -output-directory=build -interaction=errorstopmode -halt-on-error Paper.tex && \
 pdflatex -output-directory=build -interaction=errorstopmode -halt-on-error Paper.tex && \
-pdflatex -output-directory=build -interaction=errorstopmode -halt-on-error Paper.tex
+pdflatex -output-directory=build -interaction=errorstopmode -halt-on-error Paper.tex && \
 rm -rf Options.tex
