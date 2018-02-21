@@ -1669,7 +1669,7 @@ Where $p_{\mathrm{u}}$ is the public key, assumed to be a byte array of size 64 
 
 \newcommand{\slimit}{\ensuremath{\text{s-limit}}}
 
-We declare that a signature is invalid unless all the following conditions are true:
+\linkdest{invalidsig}We declare that a signature is invalid unless all the following conditions are true:
 \begin{align}
 0 < \linkdest{r}{r} &< \mathtt{\tiny secp256k1n} \\
 0 < \linkdest{s}{s} &< \mathtt{\tiny secp256k1n} \div 2 + 1 \\
