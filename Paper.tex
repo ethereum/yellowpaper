@@ -181,7 +181,7 @@ For most functions, an uppercase letter is used, e.g. $C$, the general cost func
 
 Tuples are typically denoted with an upper-case letter, \eg $T$, is used to denote an Ethereum transaction. This symbol may, if accordingly defined, be subscripted to refer to an individual component, \eg \hyperlink{transaction_nonce}{$T_{\mathrm{n}}$}, denotes the nonce of said transaction. The form of the subscript is used to denote its type; \eg uppercase subscripts refer to tuples with subscriptable components.
 
-Scalars and fixed-size byte sequences (or, synonymously, arrays) are denoted with a normal lower-case letter, \eg $n$ is used in the document to denote a \hyperlink{transaction_nonce}{transaction nonce}. Those with a particularly special meaning may be Greek, \eg $\delta$, the number of items required on the stack for a given operation.
+Scalars and fixed-size byte sequences (or, synonymously, arrays) are denoted with a normal lower-case letter, \eg $\mathrm{n}$ is used in the document to denote a \hyperlink{transaction_nonce}{transaction nonce}. Those with a particularly special meaning may be Greek, \eg $\delta$, the number of items required on the stack for a given operation.
 
 Arbitrary-length sequences are typically denoted as a bold lower-case letter, \eg $\mathbf{o}$ is used to denote the byte sequence given as the output data of a message call. For particularly important values, a bold uppercase letter may be used.
 
@@ -615,7 +615,7 @@ T_{\mathrm{g}} & \leqslant & {B_{H}}_{\mathrm{l}} - \hyperlink{ell}{\ell}(B_{\ma
 
 Note the final condition; the sum of the transaction's gas limit, $T_{\mathrm{g}}$, and the gas utilised in this block prior, given by $\hyperlink{ell}{\ell}(B_{\mathbf{R}})_{\mathrm{u}}$, must be no greater than the block's \textbf{gasLimit}, ${B_{H}}_{\mathrm{l}}$.
 
-The execution of a valid transaction begins with an irrevocable change made to the state: the \hyperlink{account_nonce}{nonce of the account of the sender}, $S(T)$, is incremented by one and the balance is reduced by part of the up-front cost, $T_{\mathrm{g}}T_{\mathrm{p}}$. The gas available for the proceeding computation, $g$, is defined as $T_{\mathrm{g}} - g_0$. The computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
+The execution of a valid transaction begins with an irrevocable change made to the state: the \hyperlink{account_nonce}{nonce of the account of the sender}, $S(T)$, is incremented by one and the balance is reduced by part of the up-front cost, $T_{\mathrm{g}}T_{\mathrm{p}}$. The gas available for the proceeding computation, $\mathrm{g}$, is defined as $T_{\mathrm{g}} - g_0$. The computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
 
 We define the checkpoint state $\boldsymbol{\sigma}_0$:
 \begin{eqnarray}
@@ -624,7 +624,7 @@ We define the checkpoint state $\boldsymbol{\sigma}_0$:
 \boldsymbol{\sigma}_0[S(T)]_{\mathrm{n}} & \equiv & \boldsymbol{\sigma}[S(T)]_{\mathrm{n}} + 1
 \end{eqnarray}
 
-Evaluating $\boldsymbol{\sigma}_{P}$ from $\boldsymbol{\sigma}_0$ depends on the transaction type; either contract creation or message call; we define the tuple of post-execution provisional state $\boldsymbol{\sigma}_{P}$, remaining gas $g'$, substate $A$ and status code $z$:
+Evaluating $\boldsymbol{\sigma}_{P}$ from $\boldsymbol{\sigma}_0$ depends on the transaction type; either contract creation or message call; we define the tuple of post-execution provisional state $\boldsymbol{\sigma}_{P}$, remaining gas $g'$, substate $A$ and status code $\mathrm{z}$:
 \begin{equation}
 (\boldsymbol{\sigma}_{P}, g', A, z) \equiv \begin{cases}
 \Lambda_{4}(\boldsymbol{\sigma}_0, S(T), T_{\mathrm{o}}, &\\ \quad\quad g, T_{\mathrm{p}}, T_{\mathrm{v}}, T_{\mathbf{i}}, 0, \top) & \text{if} \quad T_{\mathrm{t}} = \varnothing \\
@@ -632,7 +632,7 @@ Evaluating $\boldsymbol{\sigma}_{P}$ from $\boldsymbol{\sigma}_0$ depends on the
 \end{cases}
 \end{equation}
 
-where $g$ is the amount of gas remaining after deducting the basic amount required to pay for the existence of the transaction:
+where $\mathrm{g}$ is the amount of gas remaining after deducting the basic amount required to pay for the existence of the transaction:
 \begin{equation}
 g \equiv T_{\mathrm{g}} - g_0
 \end{equation}
@@ -673,7 +673,7 @@ These are used to help define the \hyperlink{Transaction_Receipt}{transaction re
 
 \section{Contract Creation}\label{ch:create}\hypertarget{endow}{}
 
-There are a number of intrinsic parameters used when creating an account: sender ($s$), original transactor ($o$), available gas ($g$), gas price ($p$), endowment ($v$) together with an arbitrary length byte array, $\mathbf{i}$, the initialisation EVM code and finally the present depth of the message-call/contract-creation stack ($e$).
+There are a number of intrinsic parameters used when creating an account: sender ($s$), original transactor ($o$), available gas ($\mathrm{g}$), gas price ($p$), endowment ($v$) together with an arbitrary length byte array, $\mathbf{i}$, the initialisation EVM code and finally the present depth of the message-call/contract-creation stack ($\mathrm{e}$).
 
 We define the creation function formally as the function $\Lambda$, which evaluates from these values, together with the state $\boldsymbol{\sigma}$ to the tuple containing the new state, remaining gas, accrued transaction substate and an error message $(\boldsymbol{\sigma}', g', A, \mathbf{o})$, as in section \ref{ch:transactions}:
 \begin{equation}
@@ -732,7 +732,7 @@ $I_{\mathbf{d}}$ evaluates to the empty tuple as there is no input data to this 
 
 Code execution depletes gas, and gas may not go below zero, thus execution may exit before the code has come to a natural halting state. In this (and several other) exceptional cases we say an out-of-gas (OOG) exception has occurred: The evaluated state is defined as being the empty set, $\varnothing$, and the entire create operation should have no effect on the state, effectively leaving it as it was immediately prior to attempting the creation.
 
-If the initialization code completes successfully, a final contract-creation cost is paid, the code-deposit cost, $c$, proportional to the size of the created contract's code:
+If the initialization code completes successfully, a final contract-creation cost is paid, the code-deposit cost, $\mathrm{c}$, proportional to the size of the created contract's code:
 \begin{equation}
 c \equiv G_{codedeposit} \times |\mathbf{o}|
 \end{equation}
@@ -771,7 +771,7 @@ Note that intention is that the result is either a successfully created new cont
 Note that while the initialisation code is executing, the newly created address exists but with no intrinsic body code. Thus any message call received by it during this time causes no code to be executed. If the initialisation execution ends with a {\small SELFDESTRUCT} instruction, the matter is moot since the account will be deleted before the transaction is completed. For a normal {\small STOP} code, or if the code returned is otherwise empty, then the state is left with a zombie account, and any remaining balance will be locked into the account forever.
 
 \section{Message Call} \label{ch:call}
-In the case of executing a message call, several parameters are required: sender ($s$), transaction originator ($o$), recipient ($r$), the account whose code is to be executed ($c$, usually the same as recipient), available gas ($g$), value ($v$) and gas price ($p$) together with an arbitrary length byte array, $\mathbf{d}$, the input data of the call and finally the present depth of the message-call/contract-creation stack ($e$).
+In the case of executing a message call, several parameters are required: sender ($s$), transaction originator ($o$), recipient ($r$), the account whose code is to be executed ($\mathrm{c}$, usually the same as recipient), available gas ($\mathrm{g}$), value ($v$) and gas price ($p$) together with an arbitrary length byte array, $\mathbf{d}$, the input data of the call and finally the present depth of the message-call/contract-creation stack ($\mathrm{e}$).
 
 Aside from evaluating to a new state and transaction substate, message calls also have an extra component---the output data denoted by the byte array $\mathbf{o}$. This is ignored when executing transactions, however message calls can be initiated due to VM-code execution and in this case this information is used.
 \begin{equation}
@@ -880,7 +880,7 @@ See Appendix \ref{app:vm} for a rigorous definition of the EVM gas cost.
 
 \subsection{Execution Environment}\linkdest{exec_env}
 
-In addition to the system state $\boldsymbol{\sigma}$, and the remaining gas for computation $g$, there are several pieces of important information used in the execution environment that the execution agent must provide; these are contained in the tuple $I$:
+In addition to the system state $\boldsymbol{\sigma}$, and the remaining gas for computation $\mathrm{g}$, there are several pieces of important information used in the execution environment that the execution agent must provide; these are contained in the tuple $I$:
 
 \begin{itemize}
 \item\linkdest{address_of_account_which_owns_code_I__a_def_words}{}\linkdest{I__a} $I_{\mathrm{a}}$, the address of the account which owns the code that is executing.
@@ -1154,7 +1154,7 @@ With $\mathbf{d}$ being a dataset as specified in appendix \ref{app:ethash}.
 
 As specified at the beginning of the present work, \hyperlink{Pi}{$\Pi$} is the state-transition function, which is defined in terms of \hyperlink{Omega}{$\Omega$}, the block finalisation function and \hyperlink{Upsilon_state_transition}{$\Upsilon$}, the transaction-evaluation function, both now well-defined.
 
-\hyperlink{Transaction_Receipt}{As previously detailed}, $\mathbf{R}[n]_{\mathrm{z}}$, $\mathbf{R}[n]_{\mathbf{l}}$ and $\mathbf{R}[n]_{\mathrm{u}}$ are the $n$th corresponding status code, logs and cumulative gas used after each transaction ($\mathbf{R}[n]_{\mathrm{b}}$, the fourth component in the tuple, has already been defined in terms of the logs). We also define the $n$th state $\boldsymbol{\sigma}[n]$, which is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
+\hyperlink{Transaction_Receipt}{As previously detailed}, $\mathbf{R}[n]_{\mathrm{z}}$, $\mathbf{R}[n]_{\mathbf{l}}$ and $\mathbf{R}[n]_{\mathrm{u}}$ are the $\mathrm{n}$th corresponding status code, logs and cumulative gas used after each transaction ($\mathbf{R}[n]_{\mathrm{b}}$, the fourth component in the tuple, has already been defined in terms of the logs). We also define the $\mathrm{n}$th state $\boldsymbol{\sigma}[n]$, which is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
 \begin{equation}
 \boldsymbol{\sigma}[n] = \begin{cases} \hyperlink{Gamma}{\Gamma}(B) & \text{if} \quad n < 0 \\ \hyperlink{Upsilon}{\Upsilon}(\boldsymbol{\sigma}[n - 1], B_{\mathbf{T}}[n]) & \text{otherwise} \end{cases}
 \end{equation}
@@ -1189,7 +1189,7 @@ Thus the complete block-transition mechanism is defined, except for $\mathtt{PoW
 
 \subsection{Mining Proof-of-Work} \label{ch:pow}
 
-The mining proof-of-work (PoW) exists as a cryptographically secure nonce that proves beyond reasonable doubt that a particular amount of computation has been expended in the determination of some token value $n$. It is utilised to enforce the blockchain security by giving meaning and credence to the notion of difficulty (and, by extension, total difficulty). However, since mining new blocks comes with an attached reward, the proof-of-work not only functions as a method of securing confidence that the blockchain will remain canonical into the future, but also as a wealth distribution mechanism.
+The mining proof-of-work (PoW) exists as a cryptographically secure nonce that proves beyond reasonable doubt that a particular amount of computation has been expended in the determination of some token value $\mathrm{n}$. It is utilised to enforce the blockchain security by giving meaning and credence to the notion of difficulty (and, by extension, total difficulty). However, since mining new blocks comes with an attached reward, the proof-of-work not only functions as a method of securing confidence that the blockchain will remain canonical into the future, but also as a wealth distribution mechanism.
 
 For both reasons, there are two important goals of the proof-of-work function; firstly, it should be as accessible as possible to as many people as possible. The requirement of, or reward from, specialised and uncommon hardware should be minimised. This makes the distribution model as open as possible, and, ideally, makes the act of mining a simple swap from electricity to Ether at roughly the same rate for anyone around the world.
 
@@ -1408,7 +1408,7 @@ We define the function $\texttt{\small TRIE}$, which evaluates to the root of th
 \texttt{\small TRIE}(\mathfrak{I}) \equiv \texttt{\small KEC}(c(\mathfrak{I}, 0))
 \end{equation}
 
-We also assume a function $n$, the trie's node cap function. When composing a node, we use RLP to encode the structure. As a means of reducing storage complexity, for nodes whose composed RLP is fewer than 32 bytes, we store the RLP directly; for those larger we assert prescience of the byte array whose Keccak hash evaluates to our reference. Thus we define in terms of $c$, the node composition function:
+We also assume a function $\mathrm{n}$, the trie's node cap function. When composing a node, we use RLP to encode the structure. As a means of reducing storage complexity, for nodes whose composed RLP is fewer than 32 bytes, we store the RLP directly; for those larger we assert prescience of the byte array whose Keccak hash evaluates to our reference. Thus we define in terms of $\mathrm{c}$, the node composition function:
 \begin{equation}
 n(\mathfrak{I}, i) \equiv \begin{cases}
 () & \text{if} \quad \mathfrak{I} = \varnothing \\
@@ -1424,7 +1424,7 @@ In a manner similar to a radix tree, when the trie is traversed from root to lea
 \item[Branch] A 17-item structure whose first sixteen items correspond to each of the sixteen possible nibble values for the keys at this point in their traversal. The 17th item is used in the case of this being a terminator node and thus a key being ended at this point in its traversal.
 \end{description}
 
-A branch is then only used when necessary; no branch nodes may exist that contain only a single non-zero entry. We may formally define this structure with the structural composition function $c$:
+A branch is then only used when necessary; no branch nodes may exist that contain only a single non-zero entry. We may formally define this structure with the structural composition function $\mathrm{c}$:
 \begin{equation}
 c(\mathfrak{I}, i) \equiv \begin{cases}
 \texttt{\small RLP}\Big( \big(\texttt{\small HP}(I_0[i .. (\lVert I_0\rVert - 1)], true), I_1 \big) \Big) & \text{if} \quad \lVert \mathfrak{I} \rVert = 1 \quad \text{where} \; \exists I: I \in \mathfrak{I} \\
@@ -1442,7 +1442,7 @@ I_1 & \text{if} \quad \exists I: I \in \mathfrak{I} \wedge \lVert I_0 \rVert = i
 \subsection{Trie Database}
 Thus no explicit assumptions are made concerning what data is stored and what is not, since that is an implementation-specific consideration; we simply define the identity function mapping the key-value set $\mathfrak{I}$ to a 32-byte hash and assert that only a single such hash exists for any $\mathfrak{I}$, which though not strictly true is accurate within acceptable precision given the Keccak hash's collision resistance. In reality, a sensible implementation will not fully recompute the trie root hash for each set.
 
-A reasonable implementation will maintain a database of nodes determined from the computation of various tries or, more formally, it will memoise the function $c$. This strategy uses the nature of the trie to both easily recall the contents of any previous key-value set and to store multiple such sets in a very efficient manner. Due to the dependency relationship, Merkle-proofs may be constructed with an $O(\log N)$ space requirement that can demonstrate a particular leaf must exist within a trie of a given root hash.
+A reasonable implementation will maintain a database of nodes determined from the computation of various tries or, more formally, it will memoise the function $\mathrm{c}$. This strategy uses the nature of the trie to both easily recall the contents of any previous key-value set and to store multiple such sets in a very efficient manner. Due to the dependency relationship, Merkle-proofs may be constructed with an $O(\log N)$ space requirement that can demonstrate a particular leaf must exist within a trie of a given root hash.
 
 \section{Precompiled Contracts}\label{app:precompiled}
 
@@ -1555,9 +1555,9 @@ $(C_1,+)$ is known to form a group. We define the scalar multiplication $\cdot$ 
 \begin{equation}\label{eq:ec-scalar-multiplication}
 n\cdot P\equiv(0,0)+\underbrace{P+\cdots+P}_{n}
 \end{equation}
-for a natural number $n$ and a point $P$ in $C_1$.
+for a natural number $\mathrm{n}$ and a point $P$ in $C_1$.
 
-We define $P_1$ to be a point $(1,2)$ on $C_1$. Let $G_1$ be the subgroup of $(C_1,+)$ generated by $P_1$. $G_1$ is known to be a cyclic group of order $q$. For a point $P$ in $G_1$, we define $\log_{P_1}(P)$ to be the smallest natural number $n$ satisfying $n\cdot P_1=P$. $\log_{P_1}(P)$ is at most $q-1$.
+We define $P_1$ to be a point $(1,2)$ on $C_1$. Let $G_1$ be the subgroup of $(C_1,+)$ generated by $P_1$. $G_1$ is known to be a cyclic group of order $q$. For a point $P$ in $G_1$, we define $\log_{P_1}(P)$ to be the smallest natural number $\mathrm{n}$ satisfying $n\cdot P_1=P$. $\log_{P_1}(P)$ is at most $q-1$.
 
 Let $F_{p^2}$ be a field $F_{\mathrm{p}}[i]/(i+1)$. We define a set $C_2$ with
 \begin{equation}
@@ -1568,7 +1568,7 @@ We define a binary operation $+$ and a scalar multiplication $\cdot$ with the sa
 P_2&\equiv&
 (11559732032986387107991004021392285783925812861821192530917403151452391805634 \times i\\\nonumber &&+ 10857046999023057135944570762232829481370756359578518086990519993285655852781,\\\nonumber && 4082367875863433681332203403145435568316851327593401208105741076214120093531 \times i\\\nonumber &&+ 8495653923123431417604973247489272438418190587263600148770280649306958101930)
 \end{eqnarray}
-We define $G_2$ to be the subgroup of $(C_2,+)$ generated by $P_2$. $G_2$ is known to be a cyclic group of order $q$. For a point $P$ in $G_2$, we define $\log_{P_2}(P)$ be the smallest natural number $n$ satisfying $n\cdot P_2=P$. With this definition, $\log_{P_2}(P)$ is at most $q-1$.
+We define $G_2$ to be the subgroup of $(C_2,+)$ generated by $P_2$. $G_2$ is known to be a cyclic group of order $q$. For a point $P$ in $G_2$, we define $\log_{P_2}(P)$ be the smallest natural number $\mathrm{n}$ satisfying $n\cdot P_2=P$. With this definition, $\log_{P_2}(P)$ is at most $q-1$.
 
 A 32 byte number $\mathbf{x}\in\mathbf{P}_{256}$ might and might not represent an element of $F_{\mathrm{p}}$.
 \begin{equation}
@@ -2140,12 +2140,12 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] = 0 \; \wedge \; \
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv c(\boldsymbol{\mu}_{pc} + 1)$ \\
 &&&& $\text{where} \quad c(x) \equiv \begin{cases} I_{\mathbf{b}}[x] & \text{if} \quad x < \lVert I_{\mathbf{b}} \rVert \\ 0 & \text{otherwise} \end{cases}$ \\
 &&&& The bytes are read in line from the program code's bytes array. \\
-&&&& The function $c$ ensures the bytes default to zero if they extend past the limits.\\
+&&&& The function $\mathrm{c}$ ensures the bytes default to zero if they extend past the limits.\\
 &&&& The byte is right-aligned (takes the lowest significant place in big endian). \\
 \midrule
 0x61 & {\small PUSH2} & 0 & 1 & Place 2-byte item on stack. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{c}\big( (\boldsymbol{\mu}_{pc} + 1) \dots (\boldsymbol{\mu}_{pc} + 2) \big)$ \\
-&&&& with $\boldsymbol{c}(\boldsymbol{x}) \equiv (c(\boldsymbol{x}_0), ..., c(\boldsymbol{x}_{\lVert x \rVert -1})) $ with $c$ as defined as above. \\
+&&&& with $\boldsymbol{c}(\boldsymbol{x}) \equiv (c(\boldsymbol{x}_0), ..., c(\boldsymbol{x}_{\lVert x \rVert -1})) $ with $\mathrm{c}$ as defined as above. \\
 &&&& The bytes are right-aligned (takes the lowest significant place in big endian). \\
 \midrule
 \multicolumn{1}{c}{\vdots} & \multicolumn{1}{c}{\vdots} & \vdots & \vdots & \multicolumn{1}{c}{\vdots} \\
