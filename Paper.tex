@@ -102,7 +102,7 @@ Overall, we wish to provide a system such that users can be guaranteed that no m
 
 \cite{dwork92pricingvia} provided the first work into the usage of a cryptographic proof of computational expenditure (``proof-of-work'') as a means of transmitting a value signal over the Internet. The value-signal was utilised here as a spam deterrence mechanism rather than any kind of currency, but critically demonstrated the potential for a basic data channel to carry a \textit{strong economic signal}, allowing a receiver to make a physical assertion without having to rely upon \textit{trust}. \cite{back2002hashcash} later produced a system in a similar vein.
 
-The first example of utilising the proof-of-work as a strong economic signal to secure a currency was by \cite{vishnumurthy03karma:a}. In this instance, the token was used to keep peer-to-peer file trading in check, ensuring ``consumers'' be able to make micro-payments to ``suppliers'' for their services. The security model afforded by the proof-of-work was augmented with digital signatures and a ledger in order to ensure that the historical record couldn't be corrupted and that malicious actors could not spoof payment or unjustly complain about service delivery. Five years later, \cite{nakamoto2008bitcoin} introduced another such proof-of-work-secured value token, somewhat wider in scope. The fruits of this project, Bitcoin, became the first widely adopted global decentralised transaction ledger.
+The first example of utilising the proof-of-work as a strong economic signal to secure a currency was by \cite{vishnumurthy03karma:a}. In this instance, the token was used to keep peer-to-peer file trading in check, providing ``consumers'' with the ability to make micro-payments to ``suppliers'' for their services. The security model afforded by the proof-of-work was augmented with digital signatures and a ledger in order to ensure that the historical record couldn't be corrupted and that malicious actors could not spoof payment or unjustly complain about service delivery. Five years later, \cite{nakamoto2008bitcoin} introduced another such proof-of-work-secured value token, somewhat wider in scope. The fruits of this project, Bitcoin, became the first widely adopted global decentralised transaction ledger.
 
 Other projects built on Bitcoin's success; the alt-coins introduced numerous other currencies through alteration to the protocol. Some of the best known are Litecoin and Primecoin, discussed by \cite{sprankel2013technical}. Other projects sought to take the core value content mechanism of the protocol and repurpose it; \cite{aron2012bitcoin} discusses, for example, the Namecoin project which aims to provide a decentralised name-resolution system.
 
@@ -135,7 +135,7 @@ B & \equiv & (..., (T_0, T_1, ...) ) \\
 \Pi(\boldsymbol{\sigma}, B) & \equiv & \hyperlink{Omega}{\Omega}(B, \hyperlink{Upsilon}{\Upsilon}(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...)
 \end{eqnarray}
 
-Where \hyperlink{Omega}{$\Omega$} is the block-finalisation state transition function (a function that rewards a nominated party); \linkdest{block}{$B$} is this block, which includes a series of transactions amongst some other components; and $\hyperlink{Pi}{\Pi}$ is the block-level state-transition function.
+Where \hyperlink{Omega}{$\Omega$} is the block-finalisation state transition function (a function that rewards a nominated party); \hyperlink{block}{$B$} is this block, which includes a series of transactions amongst some other components; and $\hyperlink{Pi}{\Pi}$ is the block-level state-transition function.
 
 This is the basis of the blockchain paradigm, a model that forms the backbone of not only Ethereum, but all decentralised consensus-based transaction systems to date.
 
@@ -185,7 +185,7 @@ Scalars and fixed-size byte sequences (or, synonymously, arrays) are denoted wit
 
 Arbitrary-length sequences are typically denoted as a bold lower-case letter, \eg $\mathbf{o}$ is used to denote the byte sequence given as the output data of a message call. For particularly important values, a bold uppercase letter may be used.
 
-Throughout, we assume scalars are positive integers and thus belong to the set $\mathbb{P}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{32}$ and the set of all positive integers smaller than $2^{256}$ is named $\mathbb{P}_{256}$. This is formally defined in section \hyperlink{block}.
+Throughout, we assume scalars are positive integers and thus belong to the set $\mathbb{P}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{32}$ and the set of all positive integers smaller than $2^{256}$ is named $\mathbb{P}_{256}$. This is formally defined in section \hyperlink{block}{\ref{subsec:The_Block}}.
 
 Square brackets are used to index into and reference individual components or subsequences of sequences, \eg $\boldsymbol{\mu}_{\mathbf{s}}[0]$ denotes the first item on the machine's stack. For subsequences, ellipses are used to specify the intended range, to include elements at both limits, \eg $\boldsymbol{\mu}_{\mathbf{m}}[0..31]$ denotes the first 32 items of the machine's memory.
 
@@ -193,7 +193,7 @@ In the case of the global state $\boldsymbol{\sigma}$, which is a sequence of ac
 
 When considering variants of existing values, we follow the rule that within a given scope for definition, if we assume that the unmodified `input' value be denoted by the placeholder $\Box$ then the modified and utilisable value is denoted as $\Box'$, and intermediate values would be $\Box^*$,  $\Box^{**}$ \&c. On very particular occasions, in order to maximise readability and only if unambiguous in meaning, we may use alpha-numeric subscripts to denote intermediate values, especially those of particular note.
 
-When considering the use of existing functions, given a function $f$, the function \hyperlink{general_element_wise_sequence_transformation_f_pow_asterisk}{$f^*$} denotes a similar, element-wise version of the function mapping instead between sequences. It is formally defined in section \hyperlink{block}.
+When considering the use of existing functions, given a function $f$, the function \hyperlink{general_element_wise_sequence_transformation_f_pow_asterisk}{$f^*$} denotes a similar, element-wise version of the function mapping instead between sequences. It is formally defined in section \hyperlink{block}{\ref{subsec:The_Block}}.
 
 We define a number of useful functions throughout. \linkdest{ell}One of the more common is $\ell$, which evaluates to the last item in the given sequence:
 
@@ -321,7 +321,7 @@ T_{\mathbf{t}} \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_{\mathrm{t}
 \mathbb{B}_{0} & \text{otherwise}\end{cases}
 \end{equation}
 
-\subsection{The Block} \linkdest{block}{}
+\subsection{The Block}\linkdest{block}\label{subsec:The_Block}
 
 The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$,\hypertarget{ommerheaders}{} and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{ommers}\footnote{\textit{ommer} is a gender-neutral term to mean ``sibling of parent''; see \url{https://nonbinary.miraheze.org/wiki/Gender_neutral_language\#Aunt.2FUncle}}). The block header contains several pieces of information:
 
@@ -342,7 +342,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[timestamp]\linkdest{block_timestamp_word_def_H__s}{} A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally \hyperlink{block_timestamp_H__s}{$H_{\mathrm{s}}$}.
 \item[extraData]\linkdest{block_extraData_H__x}{} An arbitrary byte array containing data relevant to this block. This must be 32 bytes or fewer; formally $H_{\mathrm{x}}$.
 \item[mixHash]\linkdest{mixHash_H__m}{} A 256-bit hash which, combined with the nonce, proves that a sufficient amount of computation has been carried out on this block; formally $H_{\mathrm{m}}$.
-\item[nonce]\linkdest{block_nonce_H__n}{} A 64-bit hash which, combined with the mix-hash, proves that a sufficient amount of computation has been carried out on this block; formally $H_{\mathrm{n}}$.
+\item[nonce]\linkdest{block_nonce_H__n}{}\linkdest{block_nonce} A 64-bit hash which, combined with the mix-hash, proves that a sufficient amount of computation has been carried out on this block; formally $H_{\mathrm{n}}$.
 \end{description}
 \linkdest{ommer_block_headers_B__U}{}\linkdest{block_B}{}The other two components in the block are simply a list of ommer block headers (of the same format as above), $B_{\mathbf{U}}$ and a series of the transactions, $B_{\mathbf{T}}$. Formally, we can refer to a block $B$:
 \begin{equation}
@@ -590,8 +590,8 @@ A^0 \equiv (\varnothing,(), \varnothing, 0)
 \hypertarget{intrinsic_gas_g_0}{}We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
 \begin{align}
 g_0 \equiv {} & \sum_{i \in T_{\mathbf{i}}, T_{\mathbf{d}}} \begin{cases} \hyperlink{G__txdatazero}{G_{\mathrm{txdatazero}}} & \text{if} \quad i = 0 \\ \hyperlink{G__txdatanonzero}{G_{\mathrm{txdatanonzero}}} & \text{otherwise} \end{cases} \\
-{} & + \begin{cases} \hyperlink{Gtxcreate}{G_{\mathrm{txcreate}}} & \text{if} \quad T_{\mathrm{t}} = \varnothing \\ 0 & \text{otherwise} \end{cases} \\
-{} & + \hyperlink{Gtransaction}{G_{\mathrm{transaction}}}
+{} & + \begin{cases} \hyperlink{G__txcreate}{G_{\mathrm{txcreate}}} & \text{if} \quad T_{\mathrm{t}} = \varnothing \\ 0 & \text{otherwise} \end{cases} \\
+{} & + \hyperlink{G__transaction}{G_{\mathrm{transaction}}}
 \end{align}
 
 where $T_{\mathbf{i}},T_{\mathbf{d}}$ means the series of bytes of the transaction's associated data and initialisation EVM-code, depending on whether the transaction is for contract-creation or message-call. $G_{\mathrm{txcreate}}$ is added if the transaction is contract-creating, but not if a result of EVM-code. $G$ is fully defined in Appendix \ref{app:fees}.
@@ -680,7 +680,7 @@ We define the creation function formally as the function $\Lambda$, which evalua
 (\boldsymbol{\sigma}', g', A, z, \mathbf{o}) \equiv \Lambda(\boldsymbol{\sigma}, s, o, g, p, v, \mathbf{i}, e, w)
 \end{equation}
 
-The address of the new account is defined as being the rightmost 160 bits of the Keccak hash of the \hyperlink{rlp}{RLP} encoding of the structure containing only the sender and the \hyperlink{account nonce}{account nonce}. Thus we define the resultant address for the new account $a$:
+The address of the new account is defined as being the rightmost 160 bits of the Keccak hash of the \hyperlink{rlp}{RLP} encoding of the structure containing only the sender and the \hyperlink{account_nonce}{account nonce}. Thus we define the resultant address for the new account $a$:
 \begin{equation}
 a \equiv \mathcal{B}_{96..255}\Big(\mathtt{\tiny KEC}\Big(\mathtt{\tiny RLP}\big(\;(s, \boldsymbol{\sigma}[s]_{\mathrm{n}} - 1)\;\big)\Big)\Big)
 \end{equation}
@@ -1015,7 +1015,7 @@ The normal halting function $H$ is defined:
 \begin{equation}
 H(\boldsymbol{\mu}, I) \equiv \begin{cases}
 H_{\text{\tiny RETURN}}(\boldsymbol{\mu}) & \text{if} \quad w \in \{\text{\small \hyperlink{RETURN}{RETURN}}, \text{\small REVERT}\} \\
-() & \text{if} \quad w \in \{ \text{\small STOP}, \text{\small \hyperlink{selfdestruct}{SELFDESTRUCT}} \} \\
+() & \text{if} \quad w \in \{ \text{\small \hyperlink{stop}{STOP}}, \text{\small \hyperlink{selfdestruct}{SELFDESTRUCT}}\} \\
 \varnothing & \text{otherwise}
 \end{cases}
 \end{equation}
@@ -1074,7 +1074,7 @@ The process of finalising a block involves four stages:
 \item Validate (or, if mining, determine) ommers;
 \item validate (or, if mining, determine) transactions;
 \item apply rewards;
-\item verify (or, if mining, compute a valid) state and \hyperlink{block nonce}{block nonce}.
+\item verify (or, if mining, compute a valid) state and \hyperlink{block_nonce}{block nonce}.
 \end{enumerate}
 
 \subsection{Ommer Validation}
@@ -1109,7 +1109,7 @@ The given \textbf{gasUsed} must correspond faithfully to the transactions listed
 
 \subsection{Reward Application}
 
-The application of rewards to a block involves raising the balance of the accounts of the beneficiary address of the block and each ommer by a certain amount. We raise the block's beneficiary account by $R_{\mathrm{block}}$; for each ommer, we raise the block's beneficiary by an additional $\frac{1}{32}$ of the block reward and the beneficiary of the ommer gets rewarded depending on the block number.\hypertarget{Omega}{} Formally we define the function $\Omega$:
+The application of rewards to a block involves raising the balance of the accounts of the beneficiary address of the block and each ommer by a certain amount. We raise the block's beneficiary account by \hyperlink{R__block}{$R_{\mathrm{block}}$}; for each ommer, we raise the block's beneficiary by an additional $\frac{1}{32}$ of the block reward and the beneficiary of the ommer gets rewarded depending on the block number.\hypertarget{Omega}{} Formally we define the function $\Omega$:
 \begin{eqnarray}
 \\ \nonumber
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
@@ -1125,7 +1125,7 @@ R & \equiv & (1 + \frac{1}{8} (U_{\mathrm{i}} - {B_{H}}_{\mathrm{i}})) R_{\mathr
 
 If there are collisions of the beneficiary addresses between ommers and the block (i.e. two ommers with the same beneficiary address or an ommer with the same beneficiary address as the present block), additions are applied cumulatively.
 
-\hypertarget{block_reward_R__block}{}We define the block reward as 3 Ether:
+\hypertarget{block_reward_R__block}{}\linkdest{R__block}We define the block reward as 3 Ether:
 \begin{equation}
 \text{Let} \quad R_{\mathrm{block}} = 3 \times 10^{18}
 \end{equation}
@@ -1208,9 +1208,9 @@ Where $H_{\hcancel{n}}$ is the new block's header but \textit{without} the nonce
 \subsubsection{Ethash}
 Ethash is the PoW algorithm for Ethereum 1.0. It is the latest version of Dagger-Hashimoto, introduced by \cite{dagger} and \cite{hashimoto}, although it can no longer appropriately be called that since many of the original features of both algorithms have been drastically changed in the last month of research and development. The general route that the algorithm takes is as follows:
 
-There exists a seed which can be computed for each block by scanning through the block headers up until that point. From the seed, one can compute a pseudorandom cache, $J_{cacheinit}$ bytes in initial size. Light clients store the cache. From the cache, we can generate a dataset, $J_{datasetinit}$ bytes in initial size, with the property that each item in the dataset depends on only a small number of items from the cache. Full clients and miners store the dataset. The dataset grows linearly with time.
+There exists a seed which can be computed for each block by scanning through the block headers up until that point. From the seed, one can compute a pseudorandom cache, $\hyperlink{J__cacheinit}{J_{cacheinit}}$ bytes in initial size. Light clients store the cache. From the cache, we can generate a dataset, $\hyperlink{J__datasetinit}{J_{datasetinit}}$ bytes in initial size, with the property that each item in the dataset depends on only a small number of items from the cache. Full clients and miners store the dataset. The dataset grows linearly with time.
 
-Mining involves grabbing random slices of the dataset and hashing them together. Verification can be done with low memory by using the cache to regenerate the specific pieces of the dataset that you need, so you only need to store the cache. The large dataset is updated once every $J_{epoch}$ blocks, so the vast majority of a miner's effort will be reading the dataset, not making changes to it. The mentioned parameters as well as the algorithm is explained in detail in appendix \ref{app:ethash}.
+Mining involves grabbing random slices of the dataset and hashing them together. Verification can be done with low memory by using the cache to regenerate the specific pieces of the dataset that you need, so you only need to store the cache. The large dataset is updated once every $\hyperlink{J__epoch}{J_{epoch}}$ blocks, so the vast majority of a miner's effort will be reading the dataset, not making changes to it. The mentioned parameters as well as the algorithm is explained in detail in appendix \ref{app:ethash}.
 
 \section{Implementing Contracts}
 
@@ -1222,13 +1222,13 @@ A data feed contract is one which provides a single service: it gives access to 
 The general pattern involves a single contract within Ethereum which, when given a message call, replies with some timely information concerning an external phenomenon. An example might be the local temperature of New York City. This would be implemented as a contract that returned that value of some known point in storage. Of course this point in storage must be maintained with the correct such temperature, and thus the second part of the pattern would be for an external server to run an Ethereum node, and immediately on discovery of a new block, creates a new valid transaction, sent to the contract, updating said value in storage. The contract's code would accept such updates only from the identity contained on said server.
 
 \subsection{Random Numbers}
-Providing random numbers within a deterministic system is, naturally, an impossible task. However, we can approximate with pseudo-random numbers by utilising data which is generally unknowable at the time of transacting. Such data might include the block's hash, the block's timestamp and the block's beneficiary address. In order to make it hard for malicious miners to control those values, one should use the {\small BLOCKHASH} operation in order to use hashes of the previous 256 blocks as pseudo-random numbers. For a series of such numbers, a trivial solution would be to add some constant amount and hashing the result.
+Providing random numbers within a deterministic system is, naturally, an impossible task. However, we can approximate with pseudo-random numbers by utilising data which is generally unknowable at the time of transacting. Such data might include the block's hash, the block's timestamp and the block's beneficiary address. In order to make it hard for malicious miners to control those values, one should use the {\small \hyperlink{blockhash}{BLOCKHASH}} operation in order to use hashes of the previous 256 blocks as pseudo-random numbers. For a series of such numbers, a trivial solution would be to add some constant amount and hashing the result.
 
 \section{Future Directions} \label{ch:future}
 
-The state database won't be forced to maintain all past state trie structures into the future. It should maintain an age for each node and eventually discard nodes that are neither recent enough nor checkpoints; checkpoints, or a set of nodes in the database that allow a particular block's state trie to be traversed, could be used to place a maximum limit on the amount of computation needed in order to retrieve any state throughout the blockchain.
+The state database won't be forced to maintain all past state \hyperlink{trie}{trie} structures into the future. It should maintain an age for each node and eventually discard nodes that are neither recent enough nor checkpoints. Checkpoints, or a set of nodes in the database that allow a particular block's state trie to be traversed, could be used to place a maximum limit on the amount of computation needed in order to retrieve any state throughout the blockchain.
 
-Blockchain consolidation could be used in order to reduce the amount of blocks a client would need to download to act as a full, mining, node. A compressed archive of the trie structure at given points in time (perhaps one in every 10,000th block) could be maintained by the peer network, effectively recasting the genesis block. This would reduce the amount to be downloaded to a single archive plus a hard maximum limit  of blocks.
+Blockchain consolidation could be used in order to reduce the amount of blocks a client would need to download to act as a full, mining, node. A compressed archive of the trie structure at given points in time (perhaps one in every 10,000th block) could be maintained by the peer network, effectively recasting the \hyperlink{Genesis_Block}{genesis block}. This would reduce the amount to be downloaded to a single archive plus a hard maximum limit  of blocks.
 
 Finally, blockchain compression could perhaps be conducted: nodes in state trie that haven't sent/received a transaction in some constant amount of blocks could be thrown out, reducing both Ether-leakage and the growth of the state database.
 
@@ -1236,7 +1236,7 @@ Finally, blockchain compression could perhaps be conducted: nodes in state trie 
 
 Scalability remains an eternal concern. With a generalised state transition function, it becomes difficult to partition and parallelise transactions to apply the divide-and-conquer strategy. Unaddressed, the dynamic value-range of the system remains essentially fixed and as the average transaction value increases, the less valuable of them become ignored, being economically pointless to include in the main ledger. However, several strategies exist that may potentially be exploited to provide a considerably more scalable protocol.
 
-Some form of hierarchical structure, achieved by either consolidating smaller lighter-weight chains into the main block or building the main block through the incremental combination and adhesion (through proof-of-work) of smaller transaction sets may allow parallelisation of transaction combination and block-building. Parallelism could also come from a prioritised set of parallel blockchains, consolidated each block and with duplicate or invalid transactions thrown out accordingly.
+Some form of hierarchical structure, achieved by either consolidating smaller lighter-weight chains into the main block or building the main block through the incremental combination and adhesion (through proof-of-work) of smaller transaction sets may allow parallelisation of transaction combination and block-building. Parallelism could also come from a prioritised set of parallel blockchains, consolidating each block and with duplicate or invalid transactions thrown out accordingly.
 
 Finally, verifiable computation, if made generally available and efficient enough, may provide a route to allow the proof-of-work to be the verification of final state.
 
@@ -1464,7 +1464,7 @@ g_{\mathrm{r}} &=& 3000\\
 \text{if} \quad |\mathbf{o}| = 32: &&\\
 \mathbf{o}[0..11] &=& 0 \\
 \mathbf{o}[12..31] &=& \mathtt{\tiny KEC}\big(\mathtt{\tiny ECDSARECOVER}(h, v, r, s)\big)[12..31] \quad \text{where:}\\
-\mathbf{d}[0..(|I_{\mathbf{d}}|-1)] &=& I_{\mathbf{d}}\\
+\mathbf{d}[0..(|\hyperlink{I__d}{I_{\mathbf{d}}}|-1)] &=& I_{\mathbf{d}}\\
 \mathbf{d}[|I_{\mathbf{d}}|..] &=& (0, 0, ...) \\
 h &=& \mathbf{d}[0..31]\\
 v &=& \mathbf{d}[32..63]\\
@@ -1654,18 +1654,18 @@ x&\equiv&\delta_1(\bar I_{\mathbf d}[32..95])
 
 \section{Signing Transactions}\label{app:signing}
 
-The method of signing transactions is similar to the `Electrum style signatures'; it utilises the SECP-256k1 curve as described by \cite{gura2004comparing}.
+The method of signing transactions is similar to the `Electrum style signatures' as defined by \cite{npmElectrum2017}, heading "Managing styles with Radium" in the bullet point list. This method utilises the SECP-256k1 curve as described by \cite{Courtois2014}, and is implemented similarly to as described by \cite{gura2004comparing} on p.~9 of 15, para.~3.
 
 It is assumed that the sender has a valid private key $p_{\mathrm{r}}$, which is a randomly selected positive integer (represented as a byte array of length 32 in big-endian form) in the range \hbox{$[1, \mathtt{\tiny secp256k1n} - 1]$}.
 
-We assume the existence of functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARECOVER}$ and $\mathtt{\small ECDSAPUBKEY}$. These are formally defined in the literature.
+We assume the existence of functions $\mathtt{\small ECDSAPUBKEY}$, $\mathtt{\small ECDSASIGN}$ and $\mathtt{\small ECDSARECOVER}$. These are formally defined in the literature, \eg by \cite{ECDSAcerticom}.
 \begin{eqnarray}
 \mathtt{\small ECDSAPUBKEY}(p_{\mathrm{r}} \in \mathbb{B}_{32}) & \equiv & p_{\mathrm{u}} \in \mathbb{B}_{64} \\
-\linkdest{ECDSASIGN}{}\mathtt{\small ECDSASIGN}(e \in \mathbb{B}_{32}, p_{\mathrm{r}} \in \mathbb{B}_{32}) & \equiv & (v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) \\
+\linkdest{ECDSASIGN}\mathtt{\small ECDSASIGN}(e \in \mathbb{B}_{32}, p_{\mathrm{r}} \in \mathbb{B}_{32}) & \equiv & (v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) \\
 \mathtt{\small ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_{\mathrm{u}} \in \mathbb{B}_{64}
 \end{eqnarray}
 
-Where $p_{\mathrm{u}}$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_{\mathrm{r}}$ is the private key, a byte array of size 32 (or a single positive integer in the \hypertarget{v}{}aforementioned range). It is assumed that $v$ is either the `recovery identifier' or `chain identifier doubled plus 35 or 36'. The recovery identifier is a 1 byte value specifying the parity and finiteness of the coordinates of the curve point for which $r$ is the x-value; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid. The value 27 represents an even $y$ value and 28 represents an odd $y$ value.
+Where $p_{\mathrm{u}}$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_{\mathrm{r}}$ is the private key, a byte array of size 32 (or a single positive integer in the aforementioned range). It is assumed that \hypertarget{v}{}$v$ is either the `recovery identifier' or `chain identifier doubled plus 35 or 36'. The recovery identifier is a 1 byte value specifying the parity and finiteness of the coordinates of the curve point for which $r$ is the x-value; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid. The value 27 represents an even $y$ value and 28 represents an odd $y$ value.
 
 \newcommand{\slimit}{\ensuremath{\text{s-limit}}}
 
@@ -1673,7 +1673,7 @@ We declare that a signature is invalid unless all the following conditions are t
 \begin{align}
 0 < \linkdest{r}{r} &< \mathtt{\tiny secp256k1n} \\
 0 < \linkdest{s}{s} &< \mathtt{\tiny secp256k1n} \div 2 + 1 \\
-v &\in \{27,28,\mathtt{\tiny chain\_{\mathrm{id}}} \times 2 + 35, \mathtt{\tiny chain\_{\mathrm{id}}} \times 2 + 36\}
+\hyperlink{v}{v} &\in \{27,28,\mathtt{\tiny chain\_{\mathrm{id}}} \times 2 + 35, \mathtt{\tiny chain\_{\mathrm{id}}} \times 2 + 36\}
 \end{align}
 where:
 \begin{align}
@@ -1769,7 +1769,7 @@ $G_{logtopic}$ & 375 & Paid for each topic of a {\small LOG} operation. \\
 $G_{sha3}$ & 30 & Paid for each {\small SHA3} operation. \\
 $G_{sha3word}$ & 6 & Paid for each word (rounded up) for input data to a {\small SHA3} operation. \\
 $G_{copy}$ & 3 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
-$G_{blockhash}$ & 20 & Payment for {\small BLOCKHASH} operation. \\
+$G_{blockhash}$ & 20 & Payment for {\small \hyperlink{blockhash}{BLOCKHASH}} operation. \\
 $G_{quaddivisor}$ & 100 & The quadratic coefficient of the input sizes of the exponation-over-modulo precompiled contract. \\
 
 %extern u256 const c_{\mathrm{copyGas}};			///< Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
@@ -1812,7 +1812,7 @@ G_{mid} & \text{if} \quad w \in W_{mid}\\
 G_{high} & \text{if} \quad w \in W_{high}\\
 G_{extcode} & \text{if} \quad w \in W_{extcode}\\
 G_{balance} & \text{if} \quad w = \text{\small BALANCE}\\
-G_{blockhash} & \text{if} \quad w = \text{\small BLOCKHASH}\\
+G_{blockhash} & \text{if} \quad w = \text{\small \hyperlink{blockhash}{BLOCKHASH}}\\
 \end{cases}
 \end{equation}
 \begin{equation}
@@ -2047,8 +2047,8 @@ Here given are the various exceptions to the state transition rules given in sec
 \toprule
 \multicolumn{5}{c}{\textbf{40s: Block Information}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
-0x40 & {\small BLOCKHASH} & 1 & 1 & Get the hash of one of the 256 most recent complete blocks. \\
-\linkdest{blockhash}{}&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv P(I_{\mathbf{H}_{\mathrm{p}}}, \boldsymbol{\mu}_{\mathbf{s}}[0], 0)$ \\
+0x40 & \linkdest{blockhash}{}{\small BLOCKHASH} & 1 & 1 & Get the hash of one of the 256 most recent complete blocks. \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv P(I_{\mathbf{H}_{\mathrm{p}}}, \boldsymbol{\mu}_{\mathbf{s}}[0], 0)$ \\
 &&&& where $P$ is the hash of a block of a particular number, up to a maximum age.\\
 &&&& 0 is left on the stack if the looked for block number is greater than the current block number \\
 &&&& or more than 256 blocks behind the current block. \\
