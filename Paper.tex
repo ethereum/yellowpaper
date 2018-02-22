@@ -915,7 +915,7 @@ We must now define the $\Xi$ function. In most practical implementations this wi
 \Xi(\boldsymbol{\sigma}, g, I, T) & \equiv & (\boldsymbol{\sigma}'\!, \boldsymbol{\mu}'_{\mathrm{g}}, A, \mathbf{o}) \\
 (\boldsymbol{\sigma}', \boldsymbol{\mu}'\!, A, ..., \mathbf{o}) & \equiv & X\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A^0\!, I)\big) \\
 \boldsymbol{\mu}_{\mathrm{g}} & \equiv & g \\
-\boldsymbol{\mu}_{pc} & \equiv & 0 \\
+\boldsymbol{\mu}_{\mathrm{pc}} & \equiv & 0 \\
 \boldsymbol{\mu}_{\mathbf{m}} & \equiv & (0, 0, ...) \\
 \boldsymbol{\mu}_{\mathrm{i}} & \equiv & 0 \\
 \boldsymbol{\mu}_{\mathbf{s}} & \equiv & () \\
@@ -949,7 +949,7 @@ For the ease of reading, the instruction mnemonics, written in small-caps (\eg \
 
 For the purposes of defining $Z$, $H$ and $O$, we define $w$ as the current operation to be executed:
 \begin{equation}\label{eq:currentoperation}
-w \equiv \begin{cases} I_{\mathbf{b}}[\boldsymbol{\mu}_{pc}] & \text{if} \quad \boldsymbol{\mu}_{pc} < \lVert I_{\mathbf{b}} \rVert \\
+w \equiv \begin{cases} I_{\mathbf{b}}[\boldsymbol{\mu}_{\mathrm{pc}}] & \text{if} \quad \boldsymbol{\mu}_{\mathrm{pc}} < \lVert I_{\mathbf{b}} \rVert \\
 \text{\hyperlink{stop}{\small STOP}} & \text{otherwise}
 \end{cases}
 \end{equation}
@@ -1015,7 +1015,7 @@ The normal halting function $H$ is defined:
 \begin{equation}
 H(\boldsymbol{\mu}, I) \equiv \begin{cases}
 H_{\text{\tiny RETURN}}(\boldsymbol{\mu}) & \text{if} \quad w \in \{\text{\small \hyperlink{RETURN}{RETURN}}, \text{\small REVERT}\} \\
-() & \text{if} \quad w \in \{ \text{\small STOP}, \text{\small \hyperlink{selfdestruct}{SELFDESTRUCT}} \} \\
+() & \text{if} \quad w \in \{ \text{\small \hyperlink{stop}{STOP}}, \text{\small \hyperlink{selfdestruct}{SELFDESTRUCT}}\} \\
 \varnothing & \text{otherwise}
 \end{cases}
 \end{equation}
@@ -1035,10 +1035,10 @@ O\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I)\big) & \equiv & (\boldsymbol
 The gas is reduced by the instruction's gas cost and for most instructions, the program counter increments on each cycle, for the three exceptions, we assume a function $J$, subscripted by one of two instructions, which evaluates to the according value:
 \begin{eqnarray}
 \quad \boldsymbol{\mu}'_{g} & \equiv & \boldsymbol{\mu}_{g} - C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \label{eq:mu_pc}\\
-\quad \boldsymbol{\mu}'_{pc} & \equiv & \begin{cases}
+\quad \boldsymbol{\mu}'_{\mathrm{pc}} & \equiv & \begin{cases}
 \hyperlink{JUMP}{J_{\text{JUMP}}}(\boldsymbol{\mu}) & \text{if} \quad w = \text{\small JUMP} \\
 \hyperlink{JUMPI}{J_{\text{JUMPI}}}(\boldsymbol{\mu}) & \text{if} \quad w = \text{\small JUMPI} \\
-N(\boldsymbol{\mu}_{pc}, w) & \text{otherwise}
+N(\boldsymbol{\mu}_{\mathrm{pc}}, w) & \text{otherwise}
 \end{cases}
 \end{eqnarray}
 
@@ -1206,7 +1206,7 @@ m = H_{\mathrm{m}} \quad \wedge \quad n \leqslant \frac{2^{256}}{H_{\mathrm{d}}}
 
 Where $H_{\hcancel{n}}$ is the new block's header but \textit{without} the nonce and mix-hash components; $H_{\mathrm{n}}$ is the nonce of the header; $\mathbf{d}$ is a large data set needed to compute the mixHash and $H_{\mathrm{d}}$ is the new block's difficulty value (i.e. the block difficulty from section \ref{ch:ghost}). $\mathtt{PoW}$ is the proof-of-work function which evaluates to an array with the first item being the mixHash and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. The underlying algorithm is called Ethash and is described below.
 \subsubsection{Ethash}
-Ethash is the PoW algorithm for Ethereum 1.0. It is the latest version of Dagger-Hashimoto, introduced by \cite{dagger} and \cite{hashimoto}, although it can no longer appropriately be called that since many of the original features of both algorithms have been drastically changed in the last month of research and development. The general route that the algorithm takes is as follows:
+Ethash is the PoW algorithm for Ethereum 1.0. It is the latest version of Dagger-Hashimoto, introduced by \cite{dagger} and \cite{hashimoto}, although it can no longer appropriately be called that since many of the original features of both algorithms were drastically changed with R\&D from February 2015 until May 4 2015 (\cite{commitdateforEthash}). The general route that the algorithm takes is as follows:
 
 There exists a seed which can be computed for each block by scanning through the block headers up until that point. From the seed, one can compute a pseudorandom cache, $\hyperlink{J__cacheinit}{J_{cacheinit}}$ bytes in initial size. Light clients store the cache. From the cache, we can generate a dataset, $\hyperlink{J__datasetinit}{J_{datasetinit}}$ bytes in initial size, with the property that each item in the dataset depends on only a small number of items from the cache. Full clients and miners store the dataset. The dataset grows linearly with time.
 
@@ -1738,9 +1738,9 @@ Name & Value & Description* \\
 $G_{zero}$ & 0 & Nothing paid for operations of the set {\small $W_{zero}$}. \\
 $G_{base}$ & 2 & Amount of gas to pay for operations of the set {\small $W_{base}$}. \\
 $G_{verylow}$ & 3 & Amount of gas to pay for operations of the set {\small $W_{verylow}$}. \\
-$G_{low}$ & 5 & Amount of gas to pay for operations of the set {\small $W_{low}$}. \\
+$G_{\mathrm{low}}$ & 5 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{low}}$}. \\
 $G_{mid}$ & 8 & Amount of gas to pay for operations of the set {\small $W_{mid}$}. \\
-$G_{high}$ & 10 & Amount of gas to pay for operations of the set {\small $W_{high}$}. \\
+$G_{\mathrm{high}}$ & 10 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{high}}$}. \\
 $G_{extcode}$ & 700 & Amount of gas to pay for operations of the set {\small $W_{extcode}$}. \\
 $G_{balance}$ & 400 & Amount of gas to pay for a {\small BALANCE} operation. \\
 $G_{sload}$ & 200 & Paid for a {\small SLOAD} operation. \\
@@ -1763,9 +1763,9 @@ $G_{memory}$ & 3 & Paid for every additional word when expanding memory. \\
 \linkdest{G__txdatazero}{}$G_{txdatazero}$ & 4 & Paid for every zero byte of data or code for a transaction. \\
 \linkdest{G__txdatanonzero}{}$G_{txdatanonzero}$ & 68 & Paid for every non-zero byte of data or code for a transaction. \\
 \linkdest{G__transaction}{}$G_{transaction}$ & 21000 & Paid for every transaction. \\
-$G_{log}$ & 375 & Partial payment for a {\small LOG} operation. \\
-$G_{logdata}$ & 8 & Paid for each byte in a {\small LOG} operation's data. \\
-$G_{logtopic}$ & 375 & Paid for each topic of a {\small LOG} operation. \\
+$G_{\mathrm{log}}$ & 375 & Partial payment for a {\small LOG} operation. \\
+$G_{\mathrm{logdata}}$ & 8 & Paid for each byte in a {\small LOG} operation's data. \\
+$G_{\mathrm{logtopic}}$ & 375 & Paid for each topic of a {\small LOG} operation. \\
 $G_{sha3}$ & 30 & Paid for each {\small SHA3} operation. \\
 $G_{sha3word}$ & 6 & Paid for each word (rounded up) for input data to a {\small SHA3} operation. \\
 $G_{copy}$ & 3 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
@@ -1793,11 +1793,11 @@ G_{exp} & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_{\mathbf
 G_{exp} + G_{expbyte}\times(1+\lfloor\log_{256}(\boldsymbol{\mu}_{\mathbf{s}}[1])\rfloor) & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_{\mathbf{s}}[1] > 0 \\
 G_{verylow} + G_{copy}\times\lceil\boldsymbol{\mu}_{\mathbf{s}}[2] \div 32\rceil & \text{if} \quad w = \text{\small CALLDATACOPY} \lor \text{\small CODECOPY} \lor \text{\small RETURNDATACOPY} \\
 G_{extcode} + G_{copy}\times\lceil\boldsymbol{\mu}_{\mathbf{s}}[3] \div 32\rceil & \text{if} \quad w = \text{\small EXTCODECOPY} \\
-G_{log}+G_{logdata}\times\boldsymbol{\mu}_{\mathbf{s}}[1] & \text{if} \quad w = \text{\small LOG0} \\
-G_{log}+G_{logdata}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+G_{logtopic} & \text{if} \quad w = \text{\small LOG1} \\
-G_{log}+G_{logdata}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+2G_{logtopic} & \text{if} \quad w = \text{\small LOG2} \\
-G_{log}+G_{logdata}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+3G_{logtopic} & \text{if} \quad w = \text{\small LOG3} \\
-G_{log}+G_{logdata}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+4G_{logtopic} & \text{if} \quad w = \text{\small LOG4} \\
+G_{\mathrm{log}}+G_{\mathrm{logdata}}\times\boldsymbol{\mu}_{\mathbf{s}}[1] & \text{if} \quad w = \text{\small LOG0} \\
+G_{\mathrm{log}}+G_{\mathrm{logdata}}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+G_{\mathrm{logtopic}} & \text{if} \quad w = \text{\small LOG1} \\
+G_{\mathrm{log}}+G_{\mathrm{logdata}}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+2G_{\mathrm{logtopic}} & \text{if} \quad w = \text{\small LOG2} \\
+G_{\mathrm{log}}+G_{\mathrm{logdata}}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+3G_{\mathrm{logtopic}} & \text{if} \quad w = \text{\small LOG3} \\
+G_{\mathrm{log}}+G_{\mathrm{logdata}}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+4G_{\mathrm{logtopic}} & \text{if} \quad w = \text{\small LOG4} \\
 C_\text{\tiny CALL}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small CALL} \lor \text{\small CALLCODE} \lor \text{\small DELEGATECALL} \\
 C_\text{\tiny SELFDESTRUCT}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SELFDESTRUCT} \\
 G_{create} & \text{if} \quad w = \text{\small CREATE}\\
@@ -1807,16 +1807,16 @@ G_{sload} & \text{if} \quad w = \text{\small SLOAD}\\
 G_{zero} & \text{if} \quad w \in W_{zero}\\
 G_{base} & \text{if} \quad w \in W_{base}\\
 G_{verylow} & \text{if} \quad w \in W_{verylow}\\
-G_{low} & \text{if} \quad w \in W_{low}\\
+G_{\mathrm{low}} & \text{if} \quad w \in W_{\mathrm{low}}\\
 G_{mid} & \text{if} \quad w \in W_{mid}\\
-G_{high} & \text{if} \quad w \in W_{high}\\
+G_{\mathrm{high}} & \text{if} \quad w \in W_{\mathrm{high}}\\
 G_{extcode} & \text{if} \quad w \in W_{extcode}\\
 G_{balance} & \text{if} \quad w = \text{\small BALANCE}\\
 G_{blockhash} & \text{if} \quad w = \text{\small \hyperlink{blockhash}{BLOCKHASH}}\\
 \end{cases}
 \end{equation}
 \begin{equation}
-w \equiv \begin{cases} I_{\mathbf{b}}[\boldsymbol{\mu}_{pc}] & \text{if} \quad \boldsymbol{\mu}_{pc} < \lVert I_{\mathbf{b}} \rVert\\
+w \equiv \begin{cases} I_{\mathbf{b}}[\boldsymbol{\mu}_{\mathrm{pc}}] & \text{if} \quad \boldsymbol{\mu}_{\mathrm{pc}} < \lVert I_{\mathbf{b}} \rVert\\
 \text{\small STOP} & \text{otherwise}
 \end{cases}
 \end{equation}
@@ -1834,11 +1834,11 @@ $W_{base}$ = \{{\small ADDRESS}, {\small ORIGIN}, {\small CALLER}, {\small CALLV
 
 $W_{verylow}$ = \{{\small ADD}, {\small SUB}, {\small NOT}, {\small LT}, {\small GT}, {\small SLT}, {\small SGT}, {\small EQ}, {\small ISZERO}, {\small AND}, {\small OR}, {\small XOR}, {\small BYTE}, {\small CALLDATALOAD}, \newline \noindent\hspace*{1cm} {\small MLOAD}, {\small MSTORE}, {\small MSTORE8}, {\small PUSH*}, {\small DUP*}, {\small SWAP*}\}
 
-$W_{low}$ = \{{\small MUL}, {\small DIV}, {\small SDIV}, {\small MOD}, {\small SMOD}, {\small SIGNEXTEND}\}
+$W_{\mathrm{low}}$ = \{{\small MUL}, {\small DIV}, {\small SDIV}, {\small MOD}, {\small SMOD}, {\small SIGNEXTEND}\}
 
 $W_{mid}$ = \{{\small ADDMOD}, {\small MULMOD}, {\small JUMP}\}
 
-$W_{high}$ = \{{\small JUMPI}\}
+$W_{\mathrm{high}}$ = \{{\small JUMPI}\}
 
 $W_{extcode}$ = \{{\small EXTCODESIZE}\}
 
@@ -2110,15 +2110,15 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] = 0 \; \wedge \; \
 \midrule
 \linkdest{JUMP}{}0x56 & {\small JUMP} & 1 & 0 & Alter the program counter. \\
 &&&& $J_{\text{\tiny JUMP}}(\boldsymbol{\mu}) \equiv \boldsymbol{\mu}_{\mathbf{s}}[0] $ \\
-&&&& This has the effect of writing said value to $\boldsymbol{\mu}_{pc}$. See section \ref{ch:model}.\\
+&&&& This has the effect of writing said value to $\boldsymbol{\mu}_{\mathrm{pc}}$. See section \ref{ch:model}.\\
 \midrule
 \linkdest{JUMPI}{}0x57 & {\small JUMPI} & 2 & 0 & Conditionally alter the program counter. \\
-&&&& $J_{\text{\tiny JUMPI}}(\boldsymbol{\mu}) \equiv \begin{cases} \boldsymbol{\mu}_{\mathbf{s}}[0] & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] \neq 0 \\ \boldsymbol{\mu}_{pc} + 1 & \text{otherwise} \end{cases} $ \\
-&&&& This has the effect of writing said value to $\boldsymbol{\mu}_{pc}$. See section \ref{ch:model}. \\
+&&&& $J_{\text{\tiny JUMPI}}(\boldsymbol{\mu}) \equiv \begin{cases} \boldsymbol{\mu}_{\mathbf{s}}[0] & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] \neq 0 \\ \boldsymbol{\mu}_{\mathrm{pc}} + 1 & \text{otherwise} \end{cases} $ \\
+&&&& This has the effect of writing said value to $\boldsymbol{\mu}_{\mathrm{pc}}$. See section \ref{ch:model}. \\
 \midrule
 0x58 & {\small PC} & 0 & 1 & Get the value of the program counter \textit{prior} to the increment \\
 &&&&  corresponding to this instruction. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{\mu}_{pc}$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{\mu}_{\mathrm{pc}}$ \\
 \midrule
 0x59 & {\small MSIZE} & 0 & 1 & Get the size of active memory in bytes. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv 32\boldsymbol{\mu}_{i}$ \\
@@ -2137,21 +2137,21 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] = 0 \; \wedge \; \
 \multicolumn{5}{c}{\textbf{60s \& 70s: Push Operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x60 & {\small PUSH1} & 0 & 1 & Place 1 byte item on stack. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv c(\boldsymbol{\mu}_{pc} + 1)$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv c(\boldsymbol{\mu}_{\mathrm{pc}} + 1)$ \\
 &&&& $\text{where} \quad c(x) \equiv \begin{cases} I_{\mathbf{b}}[x] & \text{if} \quad x < \lVert I_{\mathbf{b}} \rVert \\ 0 & \text{otherwise} \end{cases}$ \\
 &&&& The bytes are read in line from the program code's bytes array. \\
 &&&& The function $c$ ensures the bytes default to zero if they extend past the limits.\\
 &&&& The byte is right-aligned (takes the lowest significant place in big endian). \\
 \midrule
 0x61 & {\small PUSH2} & 0 & 1 & Place 2-byte item on stack. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{c}\big( (\boldsymbol{\mu}_{pc} + 1) \dots (\boldsymbol{\mu}_{pc} + 2) \big)$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{c}\big( (\boldsymbol{\mu}_{\mathrm{pc}} + 1) \dots (\boldsymbol{\mu}_{\mathrm{pc}} + 2) \big)$ \\
 &&&& with $\boldsymbol{c}(\boldsymbol{x}) \equiv (c(\boldsymbol{x}_0), ..., c(\boldsymbol{x}_{\lVert x \rVert -1})) $ with $c$ as defined as above. \\
 &&&& The bytes are right-aligned (takes the lowest significant place in big endian). \\
 \midrule
 \multicolumn{1}{c}{\vdots} & \multicolumn{1}{c}{\vdots} & \vdots & \vdots & \multicolumn{1}{c}{\vdots} \\
 \midrule
 0x7f & {\small PUSH32} & 0 & 1 & Place 32-byte (full word) item on stack. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{c}\big((\boldsymbol{\mu}_{pc} + 1) \dots (\boldsymbol{\mu}_{pc} + 32) \big)$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{c}\big((\boldsymbol{\mu}_{\mathrm{pc}} + 1) \dots (\boldsymbol{\mu}_{\mathrm{pc}} + 32) \big)$ \\
 &&&& where $\boldsymbol{c}$ is defined as above. \\
 &&&& The bytes are right-aligned (takes the lowest significant place in big endian). \\
 \bottomrule
@@ -2360,10 +2360,10 @@ Name & Value & Description \\
 \linkdest{J__cachegrowth}{}$J_{cachegrowth}$ & $2^{17}$ & Cache growth per epoch. \\
 \linkdest{J__epoch}{}$J_{epoch}$ & 30000 & Blocks per epoch. \\
 \linkdest{J__mixbytes}{}$J_{mixbytes}$ & 128 & mix length in bytes. \\
-\linkdest{J__hashbytes}{}$J_{hashbytes}$ & 64 & Hash length in bytes. \\
-\linkdest{J__parents}{}$J_{parents}$ & 256 & Number of parents of each dataset element. \\
+\linkdest{J__hashbytes}{}$J_{\mathrm{hashbytes}}$ & 64 & Hash length in bytes. \\
+\linkdest{J__parents}{}$J_{\mathrm{parents}}$ & 256 & Number of parents of each dataset element. \\
 \linkdest{J__cacherounds}{}$J_{cacherounds}$ & 3 & Number of rounds in cache production. \\
-\linkdest{J__accesses}{}$J_{accesses}$ & 64 & Number of accesses in hashimoto loop. \\
+\linkdest{J__accesses}{}$J_{\mathrm{accesses}}$ & 64 & Number of accesses in hashimoto loop. \\
 \bottomrule
 \end{tabular*}
 
@@ -2372,19 +2372,19 @@ The size for Ethash's cache $\mathbf{c} \in \mathbb{B}$  and dataset $\mathbf{d}
 \begin{equation}
  E_{epoch}(H_{\mathrm{i}}) = \left\lfloor\frac{H_{\mathrm{i}}}{J_{epoch}}\right\rfloor
 \end{equation}
-The size of the dataset growth by $J_{datasetgrowth}$ bytes, and the size of the cache by $J_{cachegrowth}$ bytes, every epoch. In order to avoid regularity leading to cyclic behavior, the size must be a prime number. Therefore the size is reduced by a multiple of $J_{mixbytes}$, for the dataset, and $J_{hashbytes}$ for the cache.
+The size of the dataset growth by $J_{datasetgrowth}$ bytes, and the size of the cache by $J_{cachegrowth}$ bytes, every epoch. In order to avoid regularity leading to cyclic behavior, the size must be a prime number. Therefore the size is reduced by a multiple of $J_{mixbytes}$, for the dataset, and $J_{\mathrm{hashbytes}}$ for the cache.
 \linkdest{d__size}{}Let $d_{size} = \lVert \mathbf{d} \rVert$ be the size of the dataset. Which is calculated using
 \begin{equation}
- d_{size} = E_{prime}(J_{datasetinit} + J_{datasetgrowth} \cdot E_{epoch} - J_{mixbytes}, J_{mixbytes})
+ d_{size} = E_{\mathrm{prime}}(J_{datasetinit} + J_{datasetgrowth} \cdot E_{epoch} - J_{mixbytes}, J_{mixbytes})
 \end{equation}
 The size of the cache, $c_{size}$, is calculated using
 \begin{equation}
- c_{size} = E_{prime}(J_{cacheinit} + J_{cachegrowth} \cdot E_{epoch} - J_{hashbytes}, J_{hashbytes})
+ c_{size} = E_{\mathrm{prime}}(J_{cacheinit} + J_{cachegrowth} \cdot E_{epoch} - J_{\mathrm{hashbytes}}, J_{\mathrm{hashbytes}})
 \end{equation}
 \begin{equation}
- E_{prime}(x, y) = \begin{cases}
+ E_{\mathrm{prime}}(x, y) = \begin{cases}
 x & \text{if} \quad x / y \in \mathbb{P} \\
-E_{prime}(x - 2 \cdot y, y) & \text{otherwise}
+E_{\mathrm{prime}}(x - 2 \cdot y, y) & \text{otherwise}
 \end{cases}
 \end{equation}
 \subsection{Dataset generation}
@@ -2417,7 +2417,7 @@ Therefore $ \mathbf{c'}$ can be defined as
  \mathbf{c'}[i] = \mathbf{c}_{i} \quad \forall \quad i < n
 \end{equation}
 \begin{equation}
- n = \left\lfloor\frac{c_{size}}{J_{hashbytes}}\right\rfloor
+ n = \left\lfloor\frac{c_{size}}{J_{\mathrm{hashbytes}}}\right\rfloor
 \end{equation}
 The cache is calculated by performing $J_{cacherounds}$ rounds of the RandMemoHash algorithm to the initial cache $\mathbf{c'}$:
 \begin{equation}
@@ -2440,9 +2440,9 @@ Where a single round modifies each subset of the cache as follows:
 \end{multline}
 
 \subsubsection{Full dataset calculation} \label{dataset}
-Essentially, we combine data from $J_{parents}$ pseudorandomly selected cache nodes, and hash that to compute the dataset. The entire dataset is then generated by a number of items, each $J_{hashbytes}$ bytes in size:
+Essentially, we combine data from $J_{\mathrm{parents}}$ pseudorandomly selected cache nodes, and hash that to compute the dataset. The entire dataset is then generated by a number of items, each $J_{\mathrm{hashbytes}}$ bytes in size:
 \begin{equation}
- \mathbf{d}[i] = E_{datasetitem}(\mathbf{c}, i) \quad \forall \quad i < \left\lfloor\frac{d_{size}}{J_{hashbytes}}\right\rfloor
+ \mathbf{d}[i] = E_{datasetitem}(\mathbf{c}, i) \quad \forall \quad i < \left\lfloor\frac{d_{size}}{J_{\mathrm{hashbytes}}}\right\rfloor
 \end{equation}
 In order to calculate the single item we use an algorithm inspired by the FNV hash (\cite{FowlerNollVo1991FNVHash}) in some cases as a non-associative substitute for XOR.
 \begin{equation}
@@ -2450,18 +2450,18 @@ In order to calculate the single item we use an algorithm inspired by the FNV ha
 \end{equation}
 The single item of the dataset can now be calculated as:
 \begin{equation}
- E_{datasetitem}(\mathbf{c}, i) = E_{parents}(\mathbf{c}, i, -1, \varnothing)
+ E_{datasetitem}(\mathbf{c}, i) = E_{\mathrm{parents}}(\mathbf{c}, i, -1, \varnothing)
 \end{equation}
 \begin{equation}
-  E_{parents}(\mathbf{c}, i, p, \mathbf{m}) = \begin{cases}
-E_{parents}(\mathbf{c}, i, p +1, E_{mix}(\mathbf{m}, \mathbf{c}, i, p + 1)) & \text{if} \quad p < J_{parents} -2 \\
+  E_{\mathrm{parents}}(\mathbf{c}, i, p, \mathbf{m}) = \begin{cases}
+E_{\mathrm{parents}}(\mathbf{c}, i, p +1, E_{mix}(\mathbf{m}, \mathbf{c}, i, p + 1)) & \text{if} \quad p < J_{\mathrm{parents}} -2 \\
 E_{mix}(\mathbf{m}, \mathbf{c}, i, p + 1) & \text{otherwise}
 \end{cases}
 \end{equation}
 \begin{equation}
  E_{mix}(\mathbf{m}, \mathbf{c}, i, p) = \begin{cases}
 \texttt{KEC512}(\mathbf{c}[i \mod c_{size}] \oplus i) & \text{if} \quad p = 0 \\
-E_\text{\tiny FNV}\big(\mathbf{m}, \mathbf{c}[E_\text{\tiny FNV}(i \oplus p, \mathbf{m}[p \mod \lfloor J_{hashbytes} / J_{wordbytes} \rfloor]) \mod c_{size}] \big) & \text{otherwise}
+E_\text{\tiny FNV}\big(\mathbf{m}, \mathbf{c}[E_\text{\tiny FNV}(i \oplus p, \mathbf{m}[p \mod \lfloor J_{\mathrm{hashbytes}} / J_{wordbytes} \rfloor]) \mod c_{size}] \big) & \text{otherwise}
 \end{cases}
 \end{equation}
 
@@ -2476,7 +2476,7 @@ The PoW-function returns an array with the compressed mix as its first item and 
 \end{equation}
 With $H_{\hcancel{n}}$ being the hash of the header without the nonce. The compressed mix $\mathbf{m}_{\mathrm{c}}$ is obtained as follows:
 \begin{equation}
- \mathbf{m}_{\mathrm{c}}(\mathbf{h}, \mathbf{n}, \mathbf{d}) = E_{compress}(E_{accesses}(\mathbf{d}, \sum_{i = 0}^{n_{mix}} \mathbf{s}_{\mathrm{h}}(\mathbf{h}, \mathbf{n}), \mathbf{s}_{\mathrm{h}}(\mathbf{h}, \mathbf{n}), -1), -4)
+ \mathbf{m}_{\mathrm{c}}(\mathbf{h}, \mathbf{n}, \mathbf{d}) = E_{compress}(E_{\mathrm{accesses}}(\mathbf{d}, \sum_{i = 0}^{n_{mix}} \mathbf{s}_{\mathrm{h}}(\mathbf{h}, \mathbf{n}), \mathbf{s}_{\mathrm{h}}(\mathbf{h}, \mathbf{n}), -1), -4)
 \end{equation}
 
 The seed hash being:
@@ -2493,13 +2493,13 @@ The dataset $\mathbf{d}$ is obtained as described in section \ref{dataset}.
 
 The number of replicated sequences in the mix is:
 \begin{equation}
- n_{mix} =  \left\lfloor\frac{J_{mixbytes}}{J_{hashbytes}}\right\rfloor
+ n_{mix} =  \left\lfloor\frac{J_{mixbytes}}{J_{\mathrm{hashbytes}}}\right\rfloor
 \end{equation}
-In order to add random dataset nodes to the mix, the $E_{accesses}$ function is used:
+In order to add random dataset nodes to the mix, the $E_{\mathrm{accesses}}$ function is used:
 \begin{equation}
- E_{accesses}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i) = \begin{cases}
-E_{mixdataset}(\mathbf{d}, \mathbf{m},  \mathbf{s}, i) & \text{if} \quad i = J_{accesses} -2 \\
-E_{accesses}(E_{mixdataset}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i), \mathbf{s}, i + 1) & \text{otherwise}
+ E_{\mathrm{accesses}}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i) = \begin{cases}
+E_{mixdataset}(\mathbf{d}, \mathbf{m},  \mathbf{s}, i) & \text{if} \quad i = J_{\mathrm{accesses}} -2 \\
+E_{\mathrm{accesses}}(E_{mixdataset}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i), \mathbf{s}, i + 1) & \text{otherwise}
 \end{cases}
 \end{equation}
 \begin{equation}
@@ -2507,7 +2507,7 @@ E_{accesses}(E_{mixdataset}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i), \mathbf{s}, 
 \end{equation}
 $E_{newdata}$ returns an array with $n_{mix}$ elements:
 \begin{equation}
- E_{newdata}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i)[j] = \mathbf{d}[E_\text{\tiny FNV}(i \oplus \mathbf{s}[0], \mathbf{m}[i \mod \left\lfloor\frac{J_{mixbytes}}{J_{wordbytes}}\right\rfloor]) \mod \left\lfloor\frac{d_{size} / J_{hashbytes}}{n_{mix}}\right\rfloor \cdot n_{mix} + j] \quad \forall \quad j < n_{mix}
+ E_{newdata}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i)[j] = \mathbf{d}[E_\text{\tiny FNV}(i \oplus \mathbf{s}[0], \mathbf{m}[i \mod \left\lfloor\frac{J_{mixbytes}}{J_{wordbytes}}\right\rfloor]) \mod \left\lfloor\frac{d_{size} / J_{\mathrm{hashbytes}}}{n_{mix}}\right\rfloor \cdot n_{mix} + j] \quad \forall \quad j < n_{mix}
 \end{equation}
 The mix is compressed as follows:
 \begin{equation}
