@@ -963,11 +963,11 @@ The exceptional halting function $Z$ is defined as:
 Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv
 \begin{array}[t]{l}
 \boldsymbol{\mu}_{\mathrm{g}} < C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \quad \vee \\
-\mathbf{\delta}_{\mathrm{w}} = \varnothing \quad \vee \\
-\lVert\boldsymbol{\mu}_{\mathbf{s}}\rVert < \mathbf{\delta}_{\mathrm{w}} \quad \vee \\
+\mathbf{\delta}_{w} = \varnothing \quad \vee \\
+\lVert\boldsymbol{\mu}_{\mathbf{s}}\rVert < \mathbf{\delta}_{w} \quad \vee \\
 ( w \in \{ \text{\small JUMP}, \text{\small JUMPI} \} \quad \wedge \\ \quad \boldsymbol{\mu}_{\mathbf{s}}[0] \notin D(I_{\mathbf{b}}) ) \quad \vee \\
 ( w = \text{\small RETURNDATACOPY} \wedge \\ \quad \boldsymbol{\mu}_{\mathbf{s}}[1] + \boldsymbol{\mu}_{\mathbf{s}}[2] > \lVert\boldsymbol{\mu}_{\mathbf{o}}\rVert) \quad \vee \\
- \lVert\boldsymbol{\mu}_{\mathbf{s}}\rVert - \mathbf{\delta}_{\mathrm{w}} + \mathbf{\alpha}_{\mathrm{w}} > 1024 \quad \vee \\
+ \lVert\boldsymbol{\mu}_{\mathbf{s}}\rVert - \mathbf{\delta}_{w} + \mathbf{\alpha}_{w} > 1024 \quad \vee \\
  \neg I_{\mathrm{w}} \wedge W(w, \boldsymbol{\mu})
 \end{array}
 \end{equation}
@@ -1027,9 +1027,9 @@ The data-returning halt operations, \hyperlink{RETURN}{\text{\small RETURN}} and
 Stack items are added or removed from the left-most, lower-indexed portion of the series; all other items remain unchanged:
 \begin{eqnarray}
 O\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I)\big) & \equiv & (\boldsymbol{\sigma}', \boldsymbol{\mu}', A', I) \\
-\Delta & \equiv & \mathbf{\alpha}_{\mathrm{w}} - \mathbf{\delta}_{\mathrm{w}} \\
+\Delta & \equiv & \mathbf{\alpha}_{w} - \mathbf{\delta}_{w} \\
 \lVert\boldsymbol{\mu}'_{\mathbf{s}}\rVert & \equiv & \lVert\boldsymbol{\mu}_{\mathbf{s}}\rVert + \Delta \\
-\quad \forall x \in [\mathbf{\alpha}_{\mathrm{w}}, \lVert\boldsymbol{\mu}'_{\mathbf{s}}\rVert): \boldsymbol{\mu}'_{\mathbf{s}}[x] & \equiv & \boldsymbol{\mu}_{\mathbf{s}}[x-\Delta]
+\quad \forall x \in [\mathbf{\alpha}_{w}, \lVert\boldsymbol{\mu}'_{\mathbf{s}}\rVert): \boldsymbol{\mu}'_{\mathbf{s}}[x] & \equiv & \boldsymbol{\mu}_{\mathbf{s}}[x-\Delta]
 \end{eqnarray}
 
 The gas is reduced by the instruction's gas cost and for most instructions, the program counter increments on each cycle, for the three exceptions, we assume a function $J$, subscripted by one of two instructions, which evaluates to the according value:
