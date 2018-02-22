@@ -959,24 +959,27 @@ We also assume the fixed amounts of $\mathbf{\delta}$ and $\mathbf{\alpha}$, spe
 \subsubsection{Exceptional Halting}\hypertarget{Exceptional_Halting_function_Z}{}\linkdest{zhalt}
 
 The exceptional halting function $Z$ is defined as:
-\begin{equation}
+\begin{equation} 
 Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv
 \begin{array}[t]{l}
-\boldsymbol{\mu}_{\mathrm{g}} < C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \quad \vee \\
-\mathbf{\delta}_{w} = \varnothing \quad \vee \\
-\lVert\boldsymbol{\mu}_{\mathbf{s}}\rVert < \mathbf{\delta}_{w} \quad \vee \\
-( w \in \{ \text{\small JUMP}, \text{\small JUMPI} \} \quad \wedge \\ \quad \boldsymbol{\mu}_{\mathbf{s}}[0] \notin D(I_{\mathbf{b}}) ) \quad \vee \\
+\boldsymbol{\mu}_g < C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \quad \vee \\
+\mathbf{\delta}_w = \varnothing \quad \vee \\
+\lVert\boldsymbol{\mu}_\mathbf{s}\rVert < \mathbf{\delta}_w \quad \vee \\
+( w = \text{\small JUMP} \quad \wedge \quad \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \\
+( w = \text{\small JUMPI} \quad \wedge \quad \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \quad \wedge \\
+\quad \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \\
 ( w = \text{\small RETURNDATACOPY} \wedge \\ \quad \boldsymbol{\mu}_{\mathbf{s}}[1] + \boldsymbol{\mu}_{\mathbf{s}}[2] > \lVert\boldsymbol{\mu}_{\mathbf{o}}\rVert) \quad \vee \\
- \lVert\boldsymbol{\mu}_{\mathbf{s}}\rVert - \mathbf{\delta}_{w} + \mathbf{\alpha}_{w} > 1024 \quad \vee \\
+\lVert\boldsymbol{\mu}_\mathbf{s}\rVert - \mathbf{\delta}_w + \mathbf{\alpha}_w > 1024
  \neg I_{\mathrm{w}} \wedge W(w, \boldsymbol{\mu})
 \end{array}
 \end{equation}
 where
 \begin{equation}
 W(w, \boldsymbol{\mu}) \equiv \begin{array}[t]{l}
-w \in \{\text{\small CREATE}, \text{\small SSTORE}, \text{\small SELFDESTRUCT}\} \quad \vee \\
-\text{\small LOG0} \le w \wedge w \le \text{\small LOG4} \quad \vee \\
-w \in \{\text{\small CALL}, \text{\small CALLCODE}\} \wedge \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0
+w \in \{\text{\small CREATE}, \, \text{\small SSTORE}, \\
+\text{\small SELFDESTRUCT}\} \quad \vee \\
+(\text{\small LOG0} \le w \wedge w \le \text{\small LOG4}) \quad \vee \\
+(w \in \{\text{\small CALL}, \text{\small CALLCODE}\} \wedge \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0)
 \end{array}
 \end{equation}
 
