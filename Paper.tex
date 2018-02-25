@@ -185,7 +185,7 @@ Scalars and fixed-size byte sequences (or, synonymously, arrays) are denoted wit
 
 Arbitrary-length sequences are typically denoted as a bold lower-case letter, \eg $\mathbf{o}$ is used to denote the byte sequence given as the output data of a message call. For particularly important values, a bold uppercase letter may be used.
 
-Throughout, we assume scalars are positive integers and thus belong to the set $\mathbb{P}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{32}$ and the set of all positive integers smaller than $2^{256}$ is named $\mathbb{P}_{256}$. This is formally defined in section \hyperlink{block}{\ref{subsec:The_Block}}.
+Throughout, we assume scalars are positive integers and thus belong to the set $\mathbb{N}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{32}$ and the set of all positive integers smaller than $2^{256}$ is named $\mathbb{N}_{256}$. This is formally defined in section \hyperlink{block}{\ref{subsec:The_Block}}.
 
 Square brackets are used to index into and reference individual components or subsequences of sequences, \eg $\boldsymbol{\mu}_{\mathbf{s}}[0]$ denotes the first item on the machine's stack. For subsequences, ellipses are used to specify the intended range, to include elements at both limits, \eg $\boldsymbol{\mu}_{\mathbf{m}}[0..31]$ denotes the first 32 items of the machine's memory.
 
@@ -230,7 +230,7 @@ L_{I}\big( (k, v) \big) \equiv \big(\texttt{\small KEC}(k), \texttt{\small RLP}(
 
 where:
 \begin{equation}
-k \in \mathbb{B}_{32} \quad \wedge \quad v \in \mathbb{P}
+k \in \mathbb{B}_{32} \quad \wedge \quad v \in \mathbb{N}
 \end{equation}
 
 It shall be understood that $\boldsymbol{\sigma}[a]_{\mathbf{s}}$ is not a `physical' member of the account and does not contribute to its later serialisation.
@@ -252,7 +252,7 @@ This function, $L_{S}$, is used alongside the trie function to provide a short i
 \end{equation}
 \linkdest{account_validity_function_v__x}{}where $v$ is the account validity function:
 \begin{equation}
-\quad v(x) \equiv x_{\mathrm{n}} \in \mathbb{P}_{256} \wedge x_{\mathrm{b}} \in \mathbb{P}_{256} \wedge x_{\mathrm{s}} \in \mathbb{B}_{32} \wedge x_{\mathrm{c}} \in \mathbb{B}_{32}
+\quad v(x) \equiv x_{\mathrm{n}} \in \mathbb{N}_{256} \wedge x_{\mathrm{b}} \in \mathbb{N}_{256} \wedge x_{\mathrm{s}} \in \mathbb{B}_{32} \wedge x_{\mathrm{c}} \in \mathbb{B}_{32}
 \end{equation}
 
 An account is \textit{empty} when it has no code, zero nonce and zero balance:
@@ -305,14 +305,14 @@ L_{T}(T) \equiv \begin{cases}
 Here, we assume all components are interpreted by the RLP as integer values, with the exception of the arbitrary length byte arrays $T_{\mathbf{i}}$ and $T_{\mathbf{d}}$.
 \begin{equation}
 \begin{array}[t]{lclclc}
-T_{\mathrm{n}} \in \mathbb{P}_{256} & \wedge & T_{\mathrm{v}} \in \mathbb{P}_{256} & \wedge & T_{\mathrm{p}} \in \mathbb{P}_{256} & \wedge \\
-T_{\mathrm{g}} \in \mathbb{P}_{256} & \wedge & T_{\mathrm{w}} \in \mathbb{P}_5 & \wedge & T_{\mathrm{r}} \in \mathbb{P}_{256} & \wedge \\
-T_{\mathrm{s}} \in \mathbb{P}_{256} & \wedge & T_{\mathbf{d}} \in \mathbb{B} & \wedge & T_{\mathbf{i}} \in \mathbb{B}
+T_{\mathrm{n}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{v}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{p}} \in \mathbb{N}_{256} & \wedge \\
+T_{\mathrm{g}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{w}} \in \mathbb{N}_5 & \wedge & T_{\mathrm{r}} \in \mathbb{N}_{256} & \wedge \\
+T_{\mathrm{s}} \in \mathbb{N}_{256} & \wedge & T_{\mathbf{d}} \in \mathbb{B} & \wedge & T_{\mathbf{i}} \in \mathbb{B}
 \end{array}
 \end{equation}
 where
 \begin{equation}
-\mathbb{P}_{\mathrm{n}} = \{ P: P \in \mathbb{P} \wedge P < 2^n \}
+\mathbb{N}_{\mathrm{n}} = \{ P: P \in \mathbb{N} \wedge P < 2^n \}
 \end{equation}
 
 The address hash $T_{\mathbf{t}}$ is slightly different: it is either a 20-byte address hash or, in the case of being a contract-creation transaction (and thus formally equal to $\varnothing$), it is the RLP empty byte sequence and thus the member of $\mathbb{B}_0$:
@@ -367,12 +367,12 @@ where $0 \in \mathbb{B}_{256}$ replaces the pre-transaction state root that exis
 
 \linkdest{R__z_assert}We assert that the status code $R_{\mathrm{z}}$ is an integer.
 \begin{equation}
-R_{\mathrm{z}} \in \mathbb{P}
+R_{\mathrm{z}} \in \mathbb{N}
 \end{equation}
 
 \linkdest{R__u_assert}We assert $R_{\mathrm{u}}$, the cumulative gas used is a positive integer and that the logs Bloom, $R_{\mathrm{b}}$, is a hash of size 2048 bits (256 bytes):
 \begin{equation}
-R_{\mathrm{u}} \in \mathbb{P} \quad \wedge \quad R_{\mathrm{b}} \in \mathbb{B}_{256}
+R_{\mathrm{u}} \in \mathbb{N} \quad \wedge \quad R_{\mathrm{b}} \in \mathbb{B}_{256}
 \end{equation}
 
 %Notably $B_{\mathbf{T}}$ does not get serialised into the block by the block preparation function $L_{B}$; it is merely a convenience equivalence.
@@ -407,8 +407,8 @@ where $\mathcal{B}$ is the bit reference function such that $\mathcal{B}_{\mathr
 \begin{array}[t]{lclc}
 \linkdest{new_state_H__r}{}H_{\mathrm{r}} &\equiv& \mathtt{\small TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) & \wedge \\
 \linkdest{Ommer_block_hash_H__o}{}H_{\mathrm{o}} &\equiv& \mathtt{\small KEC}(\mathtt{\small RLP}(L_H^*(B_{\mathbf{U}}))) & \wedge \\
-\linkdest{tx_block_hash_H__t}{}H_{\mathrm{t}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_{\mathbf{T}} \rVert, i \in \mathbb{P}: p(i, L_{T}(B_{\mathbf{T}}[i]))\}) & \wedge \\
-\linkdest{Receipts_Root_H__e}{}H_{\mathrm{e}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_{\mathbf{R}} \rVert, i \in \mathbb{P}: p(i, \hyperlink{transaction_receipt_preparation_function_for_RLP_serialisation}{L_{R}}(B_{\mathbf{R}}[i]))\}) & \wedge \\
+\linkdest{tx_block_hash_H__t}{}H_{\mathrm{t}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_{\mathbf{T}} \rVert, i \in \mathbb{N}: p(i, L_{T}(B_{\mathbf{T}}[i]))\}) & \wedge \\
+\linkdest{Receipts_Root_H__e}{}H_{\mathrm{e}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_{\mathbf{R}} \rVert, i \in \mathbb{N}: p(i, \hyperlink{transaction_receipt_preparation_function_for_RLP_serialisation}{L_{R}}(B_{\mathbf{R}}[i]))\}) & \wedge \\
 \linkdest{logs_Bloom_filter_H__b}{}H_{\mathrm{b}} &\equiv& \bigvee_{\mathbf{r} \in B_{\mathbf{R}}} \big( \mathbf{r}_{\mathrm{b}} \big)
 \end{array}
 \end{equation}
@@ -444,8 +444,8 @@ The component types are defined thus:
 \begin{array}[t]{lclclcl}
 \hyperlink{parent_Hash_H__p_def_words}{H_{\mathrm{p}}} \in \mathbb{B}_{32} & \wedge & H_{\mathrm{o}} \in \mathbb{B}_{32} & \wedge & H_{\mathrm{c}} \in \mathbb{B}_{20} & \wedge \\
 \hyperlink{new_state_H__r}{H_{\mathrm{r}}} \in \mathbb{B}_{32} & \wedge & H_{\mathrm{t}} \in \mathbb{B}_{32} & \wedge & \hyperlink{Receipts_Root_H__e}{H_{\mathrm{e}}} \in \mathbb{B}_{32} & \wedge \\
-\hyperlink{logs_Bloom_filter_H__b}{H_{\mathrm{b}}} \in \mathbb{B}_{256} & \wedge & H_{\mathrm{d}} \in \mathbb{P} & \wedge & \hyperlink{block_number_H__i}{H_{\mathrm{i}}} \in \mathbb{P} & \wedge \\
-\hyperlink{block_gas_limit_H__l}{H_{\mathrm{l}}} \in \mathbb{P} & \wedge & H_{\mathrm{g}} \in \mathbb{P} & \wedge & \hyperlink{block_timestamp_H__s}{H_{\mathrm{s}}} \in \mathbb{P}_{256} & \wedge \\
+\hyperlink{logs_Bloom_filter_H__b}{H_{\mathrm{b}}} \in \mathbb{B}_{256} & \wedge & H_{\mathrm{d}} \in \mathbb{N} & \wedge & \hyperlink{block_number_H__i}{H_{\mathrm{i}}} \in \mathbb{N} & \wedge \\
+\hyperlink{block_gas_limit_H__l}{H_{\mathrm{l}}} \in \mathbb{N} & \wedge & H_{\mathrm{g}} \in \mathbb{N} & \wedge & \hyperlink{block_timestamp_H__s}{H_{\mathrm{s}}} \in \mathbb{N}_{256} & \wedge \\
 \hyperlink{block_extraData_H__x}{H_{\mathrm{x}}} \in \mathbb{B} & \wedge & H_{\mathrm{m}} \in \mathbb{B}_{32} & \wedge & \hyperlink{block_nonce_H__n}{H_{\mathrm{n}}} \in \mathbb{B}_{8}
 \end{array}
 \end{equation}
@@ -943,7 +943,7 @@ Note that, when we evaluate $\Xi$, we drop the fourth element $I'$ and extract t
 $X$ is thus cycled (recursively here, but implementations are generally expected to use a simple iterative loop) until either \hyperlink{zhalt}{$Z$} becomes true indicating that the present state is exceptional and that the machine must be halted and any changes discarded or until \hyperlink{hhalt}{$H$} becomes a series (rather than the empty set) indicating that the machine has reached a controlled halt.
 
 \subsubsection{Machine State}
-The machine state $\boldsymbol{\mu}$ is defined as the tuple $(g, pc, \mathbf{m}, i, \mathbf{s})$ which are the gas available, the program counter $pc \in \mathbb{P}_{256}$ , the memory contents, the active number of words in memory (counting continuously from position 0), and the stack contents. The memory contents $\boldsymbol{\mu}_{\mathbf{m}}$ are a series of zeroes of size $2^{256}$.
+The machine state $\boldsymbol{\mu}$ is defined as the tuple $(g, pc, \mathbf{m}, i, \mathbf{s})$ which are the gas available, the program counter $pc \in \mathbb{N}_{256}$ , the memory contents, the active number of words in memory (counting continuously from position 0), and the stack contents. The memory contents $\boldsymbol{\mu}_{\mathbf{m}}$ are a series of zeroes of size $2^{256}$.
 
 For the ease of reading, the instruction mnemonics, written in small-caps (\eg \space {\small ADD}), should be interpreted as their numeric equivalents; the full table of instructions and their specifics is given in Appendix \ref{app:vm}.
 
@@ -1357,9 +1357,9 @@ R_{\mathrm{l}}(\mathbf{x}) & \equiv & \begin{cases}
 s(\mathbf{x}) & \equiv & \mathtt{\tiny RLP}(\mathbf{x}_0) \cdot \mathtt{\tiny RLP}(\mathbf{x}_1) ...
 \end{eqnarray}
 
-If RLP is used to encode a scalar, defined only as a positive integer ($\mathbb{P}$ or any $x$ for $\mathbb{P}_{\mathrm{x}}$), it must be specified as the shortest byte array such that the big-endian interpretation of it is equal. Thus the RLP of some positive integer $i$ is defined as:
+If RLP is used to encode a scalar, defined only as a positive integer ($\mathbb{N}$ or any $x$ for $\mathbb{N}_{\mathrm{x}}$), it must be specified as the shortest byte array such that the big-endian interpretation of it is equal. Thus the RLP of some positive integer $i$ is defined as:
 \begin{equation}
-\mathtt{\tiny RLP}(i : i \in \mathbb{P}) \equiv \mathtt{\tiny RLP}(\mathtt{\tiny BE}(i))
+\mathtt{\tiny RLP}(i : i \in \mathbb{N}) \equiv \mathtt{\tiny RLP}(\mathtt{\tiny BE}(i))
 \end{equation}
 
 When interpreting RLP data, if an expected fragment is decoded as a scalar and leading zeroes are found in the byte sequence, clients are required to consider it non-canonical and treat it in the same manner as otherwise invalid RLP data, dismissing it completely.
@@ -2385,7 +2385,7 @@ The size of the cache, $c_{size}$, is calculated using
 \end{equation}
 \begin{equation}
  E_{\mathrm{prime}}(x, y) = \begin{cases}
-x & \text{if} \quad x / y \in \mathbb{P} \\
+x & \text{if} \quad x / y \in \mathbb{N} \\
 E_{\mathrm{prime}}(x - 2 \cdot y, y) & \text{otherwise}
 \end{cases}
 \end{equation}
