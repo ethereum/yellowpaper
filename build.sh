@@ -29,6 +29,12 @@ fi
 
 echo "\newcommand{\YellowPaperVersionNumber}{$REV}" > Version.tex
 
+if grep '=========' Paper.tex
+then
+  echo "merge conflict?"
+  exit 1
+fi
+
 mkdir -p build
 pdflatex -output-directory=build -interaction=errorstopmode -halt-on-error Paper.tex && \
 bibtex build/Paper && \
