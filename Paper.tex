@@ -1668,7 +1668,7 @@ We assume the existence of functions $\mathtt{\small ECDSAPUBKEY}$, $\mathtt{\sm
 \mathtt{\small ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_{\mathrm{u}} \in \mathbb{B}_{64}
 \end{eqnarray}
 
-Where $p_{\mathrm{u}}$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_{\mathrm{r}}$ is the private key, a byte array of size 32 (or a single positive integer in the aforementioned range). It is assumed that \hypertarget{v}{}$v$ is either the `recovery identifier' or `chain identifier doubled plus 35 or 36'. The recovery identifier is a 1 byte value specifying the parity and finiteness of the coordinates of the curve point for which $r$ is the x-value; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid. The value 27 represents an even $y$ value and 28 represents an odd $y$ value.
+Where $p_{\mathrm{u}}$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$), $p_{\mathrm{r}}$ is the private key, a byte array of size 32 (or a single positive integer in the aforementioned range) and $e$ is the hash of the transaction, \hyperlink{h_of_T}{$h(T)$}. It is assumed that \hypertarget{v}{}$v$ is either the `recovery identifier' or `chain identifier doubled plus 35 or 36'. The recovery identifier is a 1 byte value specifying the parity and finiteness of the coordinates of the curve point for which $r$ is the x-value; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid. The value 27 represents an even $y$ value and 28 represents an odd $y$ value.
 
 \newcommand{\slimit}{\ensuremath{\text{s-limit}}}
 
@@ -1689,7 +1689,7 @@ For a given private key, $p_{\mathrm{r}}$, the Ethereum address $A(p_{\mathrm{r}
 A(p_{\mathrm{r}}) = \mathcal{B}_{96..255}\big(\mathtt{\tiny KEC}\big( \mathtt{\small ECDSAPUBKEY}(p_{\mathrm{r}}) \big) \big)
 \end{equation}
 
-\hypertarget{h T}{}The message hash, $h(T)$, to be signed is the Keccak hash of the transaction. Two different flavors of signing schemes are available. One operates without the latter three signature components, formally described as $T_{\mathrm{r}}$, $T_{\mathrm{s}}$ and $T_{\mathrm{w}}$. The other operates on nine elements:
+\hypertarget{h_of_T}{}The message hash, $h(T)$, to be signed is the Keccak hash of the transaction. Two different flavors of signing schemes are available. One operates without the latter three signature components, formally described as $T_{\mathrm{r}}$, $T_{\mathrm{s}}$ and $T_{\mathrm{w}}$. The other operates on nine elements:
 \begin{eqnarray}
 L_{S}(T) & \equiv & \begin{cases}
 (T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}) & \text{if} \; v \in \{27, 28\} \\
