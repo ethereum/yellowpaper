@@ -1,6 +1,55 @@
+@misc{ECDSAcerticom,
+	url = "https://web.archive.org/web/20170921160141/http://cs.ucsb.edu/~koc/ccs130h/notes/ecdsa-cert.pdf",
+ 	note = "Accessed 21 September 2017, but the original link was inaccessible on 19 October 2017. Refer to section 6.2 for ECDSAPUBKEY, and section 7 for ECDSASIGN and ECDSARECOVER.",
+	title = {{The Elliptic Curve Digital Signature Algorithm (ECDSA)}},
+	publisher = {{Certicom Research}},
+	location = "Canada",
+	author = "Don Johnson
+and Alfred Menezes
+and Scott Vanstone",
+	year = "2001",
+	abstract = "The Elliptic Curve Digital Signature Algorithm (ECDSA) is the elliptic curve analogue of the Digital Signature Algorithm (DSA). It was accepted in 1999 as an ANSI standard, and was accepted in 2000 as IEEE and NIST standards. It was also accepted in 1998 as an ISO standard, and is under consideration for inclusion in some other ISO standards. Unlike the ordinary discrete logarithm problem and the integer factorization problem, no subexponential-time algorithm is known for the elliptic curve discrete logarithm problem. For this reason, the strength-per-key-bit is substantially greater in an algorithm that uses elliptic curves. This paper describes the ANSI X9.62 ECDSA, and discusses related security, implementation, and interoperability issues.",
+}
+
+@misc{commitdateforEthash,
+	url = "https://github.com/ethereum/yellowpaper/commit/77a8cf2428ce245bf6e2c39c5e652ba58a278666#commitcomment-24644869",
+	author = "Christoph Jentzsch",
+	year = "2015",
+	publisher = "Github",
+	title = "Commit date for Ethash",
+}
+
+@misc{npmElectrum2017,
+	url = "https://www.npmjs.com/package/electrum",
+	author = "Arnaud, Pierre
+and Schroeter, Mathieu
+and Le Barbare, Sam",
+	title = {{Electrum}},
+	year = {{2017}},
+}
+
+@Inbook{Courtois2014,
+	author="Courtois, Nicolas T.
+and Grajek, Marek
+and Naik, Rahul",
+	editor="Kotulski, Zbigniew
+and Ksi{\k{e}}{\.{z}}opolski, Bogdan
+and Mazur, Katarzyna",
+	title="Optimizing SHA256 in Bitcoin Mining",
+	bookTitle="Cryptography and Security Systems: Third International Conference, CSS 2014, Lublin, Poland, September 22-24, 2014. Proceedings",
+	year="2014",
+	publisher="Springer Berlin Heidelberg",
+	address="Berlin, Heidelberg",
+	pages="131--144",
+abstract="Bitcoin is a ``crypto currency'', a decentralized electronic payment scheme based on cryptography. It implements a particular type of peer-to-peer payment system. Bitcoin depends on well-known cryptographic standards such as SHA-256. In this paper we revisit the cryptographic process which allows one to make money by producing new bitcoins. We reformulate this problem as a specific sort of Constrained Input Small Output (CISO) hashing problem and reduce the problem to a pure block cipher problem, cf. Fig. 1. We estimate the speed of this process and we show that the amortized cost of this process is less than it seems and it depends on a certain cryptographic constant which is estimated to be at most 1.89. These optimizations enable bitcoin miners to save countless millions of dollars per year in electricity bills.",
+	isbn="978-3-662-44893-9",
+	doi="10.1007/978-3-662-44893-9_12",
+	url="https://doi.org/10.1007/978-3-662-44893-9_12",
+}
+
 @misc{Keccak,
 	url = "https://keccak.team/keccak.html",
-	note = "Accessed 6 October 2017. Unable to be archived by the Wayback Machine.",
+	_note = "Accessed 6 October 2017. Unable to be archived by the Wayback Machine.",
 	author = "Guido Bertoni
 and Joan Daemen
 and Michaël Peeters
@@ -47,14 +96,15 @@ and Ronny Van Keer",
 }
 
 @Misc{cryptoeprint:2013:881,
-	Note = "\url{http://eprint.iacr.org/}",
-	Url = "Cryptology ePrint Archive, Report 2013/881",
+	url = "https://eprint.iacr.org/2013/881",
 	author = "Sompolinsky, Yonatan and Zohar, Aviv",
 	title = "Accelerating Bitcoin{'}s Transaction Processing. Fast Money Grows on Trees, Not Chains",
 	year = "2013",
 }
 
 @InCollection{gura2004comparing,
+	url = "https://www.iacr.org/archive/ches2004/31560117/31560117.pdf",
+	_note = "\url{https://web.archive.org/web/20170810035057/https://www.iacr.org/archive/ches2004/31560117/31560117.pdf}",
 	BookTitle = "Cryptographic Hardware and Embedded Systems-CHES 2004",
 	Publisher = "Springer",
 	author = "Gura, Nils and Patel, Arun and Wander, Arvinderpal and Eberle, Hans and Shantz, Sheueling Chang",
@@ -71,35 +121,44 @@ and Ronny Van Keer",
 }
 
 @Misc{vishnumurthy03karma:a,
+    url = "https://www.cs.cornell.edu/people/egs/papers/karma.pdf",
+    _note = "\url{https://web.archive.org/web/20170810031834/https://www.cs.cornell.edu/people/egs/papers/karma.pdf}",
     author = "Vivek Vishnumurthy and Sangeeth Chandrakumar and Emin Gün Sirer",
     title = "{KARMA}: A Secure Economic Framework for Peer-to-Peer Resource Sharing",
-    year = "2003"
+    year = "2003",
 }
 
 @InProceedings{dwork92pricingvia,
+    _note = "\url{https://web.archive.org/web/20170810035254/http://www.wisdom.weizmann.ac.il/~naor/PAPERS/pvp.pdf}",
+    url = "http://www.wisdom.weizmann.ac.il/~naor/PAPERS/pvp.pdf",
     author = "Cynthia Dwork and Moni Naor",
     title = {Pricing via processing or combatting junk mail},
     booktitle = {In 12th Annual International Cryptology Conference},
     year = {1992},
-    pages = {139--147}
+    pages = {139--147},
 }
 
-@Article{nakamoto2008bitcoin,
-	author = {Nakamoto, Satoshi},
+@misc{nakamoto2008bitcoin,
+	url = {{http://www.bitcoin.org/bitcoin.pdf}},
+	_note = "The above URL is recommended by the author here: https://www.mail-archive.com/cryptography@metzdowd.com/msg09959.html.",
 	title = {{Bitcoin: A peer-to-peer electronic cash system}},
-	journal = {{Consulted}},
-	volume = {{1}},
-	pages = {2012},
+	author = {Nakamoto, Satoshi},
+	_journal = {{Consulted}},
+	_volume = {{1}},
+	_pages = {2012},
 	year = {{2008}},
 }
 
 @Misc{sprankel2013technical,
+	url = {{http://www.coderblog.de/wp-content/uploads/technical-basis-of-digital-currencies.pdf}},
+	_note = {{\url{https://web.archive.org/web/20170810025028/http://www.coderblog.de/wp-content/uploads/technical-basis-of-digital-currencies.pdf}}},
 	author = {Sprankel, Simon},
 	title = {{Technical Basis of Digital Currencies}},
 	year = {{2013}},
 }
 
 @Article{aron2012bitcoin,
+	url = {{http://www.sciencedirect.com/science/article/pii/S0262407912601055}},
 	Publisher = {{Elsevier}},
 	author = {Aron, Jacob},
 	title = {{BitCoin software finds new life}},
@@ -112,19 +171,23 @@ and Ronny Van Keer",
 
 @misc{mastercoin2013willett,
 	url = {{https://github.com/mastercoin-MSC/spec}},
-	author = {J. R. Willett},
+	_note = {{\url{https://web.archive.org/web/20170810035927/https://github.com/OmniLayer/spec}}},
+	author = {Willett, J. R.},
 	title = {{MasterCoin Complete Specification}},
 	year = {{2013}},
 }
 
 @misc{colouredcoins2012rosenfeld,
-	url = {{https://bitcoil.co.il/BitcoinX.pdf}},
-	author = {Meni Rosenfeld},
-	title = {{Overview of Colored Coins}},
+	url = {{https://github.com/Colored-Coins/Colored-Coins-Protocol-Specification}},
+	_note = {{Archive: \url{https://web.archive.org/web/20180220235952/https://github.com/Colored-Coins/Colored-Coins-Protocol-Specification}. Earlier version: \url{https://docs.google.com/document/d/1AnkP_cVZTCMLIzw4DvsW6M8Q2JC0lIzrTLuoWu2z1BE/}}},
+	author = {Meni Rosenfeld and Yoni Assia and Vitalik Buterin and m liorhakiLior and Oded Leiba and Assaf Shomer and Eliran Zach},
+	title = {{Colored Coins Protocol Specification}},
 	year = {{2012}},
 }
 
 @incollection{boutellier2014pirates,
+	url = {{https://www.springer.com/gb/book/9783319040158}},
+	_note = {{\url{http://wiki.erights.org/wiki/Documentation} and \url{https://web.archive.org/web/20170810040208/https://www.springer.com/gb/book/9783319040158}}},
 	booktitle = {{Growth Through Innovation}},
 	publisher = {{Springer}},
 	author = {Boutellier, Roman and Heinzen, Mareike},
@@ -134,6 +197,8 @@ and Ronny Van Keer",
 }
 
 @Article{szabo1997formalizing,
+	url = {{http://firstmonday.org/ojs/index.php/fm/article/view/548}},
+	_note = {{\url{https://web.archive.org/web/20170810042659/http://firstmonday.org/ojs/index.php/fm/article/view/548}}},
 	author = {Szabo, Nick},
 	title = {{Formalizing and securing relationships on public networks}},
 	journal = {{First Monday}},
@@ -143,6 +208,7 @@ and Ronny Van Keer",
 }
 
 @InProceedings{miller1997future,
+	url = {{https://drive.google.com/file/d/0Bw0VXJKBgYPMS0J2VGIyWWlocms/edit?usp=sharing}},
 	BookTitle = {{paper delivered at the Extro 3 Conference (August 9)}},
 	author = {Miller, Mark},
 	title = {{The Future of Law}},
@@ -158,20 +224,23 @@ and Ronny Van Keer",
 
 @misc{back2002hashcash,
 	url = {{http://www.hashcash.org/papers/amortizable.pdf}},
+	_note = {{\url{https://web.archive.org/web/20170810043047/http://www.hashcash.org/papers/amortizable.pdf}}},
 	author = {Adam Back},
 	title = {{Hashcash - Amortizable Publicly Auditable Cost-Functions}},
 	year = {{2002}},
 }
 
 @misc{hashimoto,
-	url = {{https://mirrorx.com/files/hashimoto.pdf}},
+	url = {{http://diyhpl.us/~bryan/papers2/bitcoin/meh/hashimoto.pdf}},
+	_note = "Using the ~bryan link after an affirmative reply from the author. If that doesn't work anymore, consider https://web.archive.org/web/20170810043640/https://pdfs.semanticscholar.org/3b23/7cc60c1b9650e260318d33bec471b8202d5e.pdf",
 	author = {Thaddeus Dryja},
 	title = {{Hashimoto: I/O bound proof of work}},
 	year = {{2014}},
 }
 
 @misc{dagger,
-	url = {{http://vitalik.ca/ethereum/dagger.html}},
+	url = {{http://www.hashcash.org/papers/dagger.html}},
+	_note = {{\url{https://web.archive.org/web/20170810043955/http://www.hashcash.org/papers/dagger.html}. Dead original link as of 10 August 2017: \url{http://vitalik.ca/ethereum/dagger.html}}},
 	author = {Vitalik Buterin},
 	title = {{Dagger: A Memory-Hard to Compute, Memory-Easy to Verify Scrypt Alternative}},
 	year = {{2013}},
@@ -179,13 +248,15 @@ and Ronny Van Keer",
 
 @misc{lerner2014randmemohash,
 	url = {{http://www.hashcash.org/papers/memohash.pdf}},
+	_note = {{\url{https://web.archive.org/web/20170810044110/http://www.hashcash.org/papers/memohash.pdf}}},
 	author = {Sergio Demian Lerner},
 	title = {{Strict Memory Hard Hashing Functions}},
 	year = {{2014}},
 }
 
 @misc{FowlerNollVo1991FNVHash,
-	url = {{https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function#cite_note-2}},
+	url = {{http://www.isthe.com/chongo/tech/comp/fnv/index.html}},
+	_note = {{\url{https://web.archive.org/web/20180205025406/http://www.isthe.com/chongo/tech/comp/fnv/index.html}}},
 	author = {Glenn Fowler, Landon Curt Noll, Phong Vo},
 	title = {{Fowler–Noll–Vo hash function}},
 	year = {{1991}},
