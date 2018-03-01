@@ -9,4 +9,4 @@ Each protocol version is specified in `Paper.tex` found in a branch of this repo
 | tangerine-whistle | [Tangerine Whistle](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-608.md) | Since 2,463,000 until 2,674,999 |
 | dao-fork          | [DAO Fork](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-779.md)          | Since 1,920,000 until 2,462,000 |
 | homestead         | [Homestead](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-606.md)         | Since 1,150,000 until 1,919,999         |
-| frontier         | [Frontier](https://github.com/ethereum/yellowpaper/)         | Since 1 until 1,149,999         |
+| frontier         | [Frontier](https://github.com/ethereum/yellowpaper/tree/frontier)         | Since 1 until 1,149,999         |
