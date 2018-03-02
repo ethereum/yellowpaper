@@ -322,7 +322,7 @@ R \equiv (R_{\boldsymbol{\sigma}}, R_u, R_b, R_\mathbf{l})
 
 The function $L_R$ trivially prepares a transaction receipt for being transformed into an RLP-serialised byte array:
 \begin{equation}
-L_R(R) \equiv (\mathtt{\small TRIE}(L_S(R_{\boldsymbol{\sigma}})), R_u, R_b, R_\mathbf{l})
+L_R(R) \equiv (\mathtt{TRIE}(L_S(R_{\boldsymbol{\sigma}})), R_u, R_b, R_\mathbf{l})
 \end{equation}
 thus the post-transaction state, $R_{\boldsymbol{\sigma}}$ is encoded into a trie structure, the root of which forms the first item.
 
@@ -351,7 +351,7 @@ where $M_{3:512}$ is a specialised Bloom filter that sets three bits out of 2048
 M_{3:2048}(\mathbf{x}: \mathbf{x} \in \mathbb{B}) & \equiv & \mathbf{y}: \mathbf{y} \in \mathbb{B}_{256} \quad \text{where:}\\
 \mathbf{y} & = & (0, 0, ..., 0) \quad \text{except:}\\
 \forall_{i \in \{0, 2, 4\}}&:& \mathcal{B}_{m(\mathbf{x}, i)}(\mathbf{y}) = 1\\
-m(\mathbf{x}, i) &\equiv& \mathtt{\tiny KEC}(\mathbf{x})[i, i + 1] \bmod 2048
+m(\mathbf{x}, i) &\equiv& \mathtt{KEC}(\mathbf{x})[i, i + 1] \bmod 2048
 \end{eqnarray}
 
 where $\mathcal{B}$ is the bit reference function such that $\mathcal{B}_j(\mathbf{x})$ equals the bit of index $j$ (indexed from 0) in the byte array $\mathbf{x}$.
@@ -361,22 +361,22 @@ where $\mathcal{B}$ is the bit reference function such that $\mathcal{B}_j(\math
 We can assert a block's validity if and only if it satisfies several conditions: it must be internally consistent with the ommer and transaction block hashes and the given transactions $B_\mathbf{T}$ (as specified in sec \ref{ch:finalisation}), when executed in order on the base state $\boldsymbol{\sigma}$ (derived from the final state of the parent block), result in a new state of the identity $H_r$:
 \begin{equation}
 \begin{array}[t]{lclc}
-H_r &\equiv& \mathtt{\small TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) & \wedge \\
-H_o &\equiv& \mathtt{\small KEC}(\mathtt{\small RLP}(L_H^*(B_\mathbf{U}))) & \wedge \\
-H_t &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert, i \in \mathbb{P}: p(i, L_T(B_\mathbf{T}[i]))\}) & \wedge \\
-H_e &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_\mathbf{R} \rVert, i \in \mathbb{P}: p(i, L_R(B_\mathbf{R}[i]))\}) & \wedge \\
+H_r &\equiv& \mathtt{TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) & \wedge \\
+H_o &\equiv& \mathtt{KEC}(\mathtt{RLP}(L_H^*(B_\mathbf{U}))) & \wedge \\
+H_t &\equiv& \mathtt{TRIE}(\{\forall i < \lVert B_\mathbf{T} \rVert, i \in \mathbb{P}: p(i, L_T(B_\mathbf{T}[i]))\}) & \wedge \\
+H_e &\equiv& \mathtt{TRIE}(\{\forall i < \lVert B_\mathbf{R} \rVert, i \in \mathbb{P}: p(i, L_R(B_\mathbf{R}[i]))\}) & \wedge \\
 H_b &\equiv& \bigvee_{\mathbf{r} \in B_\mathbf{R}} \big( \mathbf{r}_b \big)
 \end{array}
 \end{equation}
 
 where $p(k, v)$ is simply the pairwise RLP transformation, in this case, the first being the index of the transaction in the block and the second being the transaction receipt:
 \begin{equation}
-p(k, v) \equiv \big( \mathtt{\small RLP}(k), \mathtt{\small RLP}(v) \big)
+p(k, v) \equiv \big( \mathtt{RLP}(k), \mathtt{RLP}(v) \big)
 \end{equation}
 
 Furthermore:
 \begin{equation}
-\mathtt{\small TRIE}(L_S(\boldsymbol{\sigma})) = {P(B_H)_H}_r
+\mathtt{TRIE}(L_S(\boldsymbol{\sigma})) = {P(B_H)_H}_r
 \end{equation}
 
 Thus $\texttt{\small TRIE}(L_S(\boldsymbol{\sigma}))$ is the root node hash of the Merkle Patricia tree structure containing the key-value pairs of the state $\boldsymbol{\sigma}$ with values encoded using RLP, and $P(B_H)$ is the parent block of $B$, defined directly.
@@ -418,7 +418,7 @@ We now have a rigorous specification for the construction of a formal block stru
 
 We define $P(B_H)$ to be the parent block of $B$, formally:
 \begin{equation}
-P(H) \equiv B': \mathtt{\tiny KEC}(\mathtt{\tiny RLP}(B'_H)) = H_p
+P(H) \equiv B': \mathtt{KEC}(\mathtt{RLP}(B'_H)) = H_p
 \end{equation}
 
 The block number is the parent's block number incremented by one:
@@ -620,17 +620,17 @@ We define the creation function formally as the function $\Lambda$, which evalua
 
 The address of the new account is defined as being the rightmost 160 bits of the Keccak hash of RLP encoding of the structure containing only the sender and the nonce. Thus we define the resultant address for the new account $a$:
 \begin{equation}
-a \equiv \mathcal{B}_{96..255}\Big(\mathtt{\tiny KEC}\Big(\mathtt{\tiny RLP}\big(\;(s, \boldsymbol{\sigma}[s]_n - 1)\;\big)\Big)\Big)
+a \equiv \mathcal{B}_{96..255}\Big(\mathtt{KEC}\Big(\mathtt{RLP}\big(\;(s, \boldsymbol{\sigma}[s]_n - 1)\;\big)\Big)\Big)
 \end{equation}
 
-where $\mathtt{\tiny KEC}$ is the Keccak 256-bit hash function, $\mathtt{\tiny RLP}$ is the RLP encoding function, $\mathcal{B}_{a..b}(X)$ evaluates to binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$ and $\boldsymbol{\sigma}[x]$ is the address state of $x$ or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
+where $\mathtt{KEC}$ is the Keccak 256-bit hash function, $\mathtt{RLP}$ is the RLP encoding function, $\mathcal{B}_{a..b}(X)$ evaluates to binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$ and $\boldsymbol{\sigma}[x]$ is the address state of $x$ or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
 
 The account's nonce is initially defined as zero, the balance as the value passed, the storage as empty and the code hash as the Keccak 256-bit hash of the empty string; the sender's balance is also reduced by the value passed. Thus the mutated state becomes $\boldsymbol{\sigma}^*$:
 \begin{equation}
 \boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except:}
 \end{equation}
 \begin{eqnarray}
-\boldsymbol{\sigma}^*[a] &\equiv& \big( 0, v + v', \mathtt{\tiny TRIE}(\varnothing), \mathtt{\tiny KEC}\big(()\big) \big) \\
+\boldsymbol{\sigma}^*[a] &\equiv& \big( 0, v + v', \mathtt{TRIE}(\varnothing), \mathtt{KEC}\big(()\big) \big) \\
 \boldsymbol{\sigma}^*[s]_b &\equiv& \boldsymbol{\sigma}[s]_b - v
 \end{eqnarray}
 
@@ -715,7 +715,7 @@ Throughout the present work, it is assumed that if $\boldsymbol{\sigma}_1[r]$ wa
 \end{equation}
 \begin{equation}
 \begin{cases}
-\boldsymbol{\sigma}_1'[r] \equiv (v, 0, \mathtt{\tiny KEC}(()), \mathtt{\tiny TRIE}(\varnothing)) & \text{if} \quad \boldsymbol{\sigma}[r] = \varnothing \\
+\boldsymbol{\sigma}_1'[r] \equiv (v, 0, \mathtt{KEC}(()), \mathtt{TRIE}(\varnothing)) & \text{if} \quad \boldsymbol{\sigma}[r] = \varnothing \\
 \boldsymbol{\sigma}_1'[r]_b \equiv \boldsymbol{\sigma}[r]_b + v & \text{otherwise}
 \end{cases}
 \end{equation}
@@ -740,10 +740,10 @@ I_\mathbf{d} & \equiv & \mathbf{d} \\
 I_s & \equiv & s \\
 I_v & \equiv & v \\
 I_e & \equiv & e \\
-\text{Let} \; \mathtt{\tiny KEC}(I_\mathbf{b}) & = & \boldsymbol{\sigma}[c]_c
+\text{Let} \; \mathtt{KEC}(I_\mathbf{b}) & = & \boldsymbol{\sigma}[c]_c
 \end{eqnarray}
 
-It is assumed that the client will have stored the pair $(\mathtt{\tiny KEC}(I_\mathbf{b}), I_\mathbf{b})$ at some point prior in order to make the determination of $I_\mathbf{b}$ feasible.
+It is assumed that the client will have stored the pair $(\mathtt{KEC}(I_\mathbf{b}), I_\mathbf{b})$ at some point prior in order to make the determination of $I_\mathbf{b}$ feasible.
 
 As can be seen, there are four exceptions to the usage of the general execution framework $\Xi$ for evaluation of the message call: these are four so-called `precompiled' contracts, meant as a preliminary piece of architecture that may later become \textit{native extensions}. The four contracts in addresses 1, 2, 3 and 4 execute the elliptic curve public key recovery function, the SHA2 256-bit hash scheme, the RIPEMD 160-bit hash scheme and the identity function respectively.
 
@@ -1024,11 +1024,11 @@ We may now define the function, $\Gamma$, that maps a block $B$ to its initiatio
 \begin{equation}
 \Gamma(B) \equiv \begin{cases}
 \boldsymbol{\sigma}_0 & \text{if} \quad P(B_H) = \varnothing \\
-\boldsymbol{\sigma}_i: \mathtt{\small TRIE}(L_S(\boldsymbol{\sigma}_i)) = {P(B_H)_H}_r & \text{otherwise}
+\boldsymbol{\sigma}_i: \mathtt{TRIE}(L_S(\boldsymbol{\sigma}_i)) = {P(B_H)_H}_r & \text{otherwise}
 \end{cases}
 \end{equation}
 
-Here, $\mathtt{\small TRIE}(L_S(\boldsymbol{\sigma}_i))$ means the hash of the root node of a trie of state $\boldsymbol{\sigma}_i$; it is assumed that implementations will store this in the state database, trivial and efficient since the trie is by nature an immutable data structure.
+Here, $\mathtt{TRIE}(L_S(\boldsymbol{\sigma}_i))$ means the hash of the root node of a trie of state $\boldsymbol{\sigma}_i$; it is assumed that implementations will store this in the state database, trivial and efficient since the trie is by nature an immutable data structure.
 
 And finally define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
 \begin{eqnarray}
@@ -1189,9 +1189,9 @@ We define the set of possible structures $\mathbb{T}$:
 
 Where $\mathbb{Y}$ is the set of bytes. Thus $\mathbb{B}$ is the set of all sequences of bytes (otherwise known as byte-arrays, and a leaf if imagined as a tree), $\mathbb{L}$ is the set of all tree-like (sub-)structures that are not a single leaf (a branch node if imagined as a tree) and $\mathbb{T}$ is the set of all byte-arrays and such structural sequences.
 
-We define the RLP function as $\mathtt{\tiny RLP}$ through two sub-functions, the first handling the instance when the value is a byte array, the second when it is a sequence of further values:
+We define the RLP function as $\mathtt{RLP}$ through two sub-functions, the first handling the instance when the value is a byte array, the second when it is a sequence of further values:
 \begin{equation}
-\mathtt{\tiny RLP}(\mathbf{x}) \equiv \begin{cases} R_b(\mathbf{x}) & \text{if} \quad \mathbf{x} \in \mathbb{B} \\ R_l(\mathbf{x}) & \text{otherwise} \end{cases}
+\mathtt{RLP}(\mathbf{x}) \equiv \begin{cases} R_b(\mathbf{x}) & \text{if} \quad \mathbf{x} \in \mathbb{B} \\ R_l(\mathbf{x}) & \text{otherwise} \end{cases}
 \end{equation}
 
 If the value to be serialised is a byte-array, the RLP serialisation takes one of three forms:
@@ -1207,13 +1207,13 @@ Formally, we define $R_b$:
 R_b(\mathbf{x}) & \equiv & \begin{cases}
 \mathbf{x} & \text{if} \quad \lVert \mathbf{x} \rVert = 1 \wedge \mathbf{x}[0] < 128 \\
 (128 + \lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{else if} \quad \lVert \mathbf{x} \rVert < 56 \\
-\big(183 + \big\lVert \mathtt{\tiny BE}(\lVert \mathbf{x} \rVert) \big\rVert \big) \cdot \mathtt{\tiny BE}(\lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{otherwise}
+\big(183 + \big\lVert \mathtt{BE}(\lVert \mathbf{x} \rVert) \big\rVert \big) \cdot \mathtt{BE}(\lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{otherwise}
 \end{cases} \\
-\mathtt{\tiny BE}(x) & \equiv & (b_0, b_1, ...): b_0 \neq 0 \wedge x = \sum_{n = 0}^{n < \lVert \mathbf{b} \rVert} b_n \cdot 256^{\lVert \mathbf{b} \rVert - 1 - n} \\
+\mathtt{BE}(x) & \equiv & (b_0, b_1, ...): b_0 \neq 0 \wedge x = \sum_{n = 0}^{n < \lVert \mathbf{b} \rVert} b_n \cdot 256^{\lVert \mathbf{b} \rVert - 1 - n} \\
 (a) \cdot (b, c) \cdot (d, e) & = & (a, b, c, d, e)
 \end{eqnarray}
 
-Thus $\mathtt{\tiny BE}$ is the function that expands a positive integer value to a big-endian byte array of minimal length and the dot operator performs sequence concatenation.
+Thus $\mathtt{BE}$ is the function that expands a positive integer value to a big-endian byte array of minimal length and the dot operator performs sequence concatenation.
 
 If instead, the value to be serialised is a sequence of other items then the RLP serialisation takes one of two forms:
 
@@ -1226,14 +1226,14 @@ Thus we finish by formally defining $R_l$:
 \begin{eqnarray}
 R_l(\mathbf{x}) & \equiv & \begin{cases}
 (192 + \lVert s(\mathbf{x}) \rVert) \cdot s(\mathbf{x}) & \text{if} \quad \lVert s(\mathbf{x}) \rVert < 56 \\
-\big(247 + \big\lVert \mathtt{\tiny BE}(\lVert s(\mathbf{x}) \rVert) \big\rVert \big) \cdot \mathtt{\tiny BE}(\lVert s(\mathbf{x}) \rVert) \cdot s(\mathbf{x}) & \text{otherwise}
+\big(247 + \big\lVert \mathtt{BE}(\lVert s(\mathbf{x}) \rVert) \big\rVert \big) \cdot \mathtt{BE}(\lVert s(\mathbf{x}) \rVert) \cdot s(\mathbf{x}) & \text{otherwise}
 \end{cases} \\
-s(\mathbf{x}) & \equiv & \mathtt{\tiny RLP}(\mathbf{x}_0) \cdot \mathtt{\tiny RLP}(\mathbf{x}_1) ...
+s(\mathbf{x}) & \equiv & \mathtt{RLP}(\mathbf{x}_0) \cdot \mathtt{RLP}(\mathbf{x}_1) ...
 \end{eqnarray}
 
 If RLP is used to encode a scalar, defined only as a positive integer ($\mathbb{P}$ or any $x$ for $\mathbb{P}_x$), it must be specified as the shortest byte array such that the big-endian interpretation of it is equal. Thus the RLP of some positive integer $i$ is defined as:
 \begin{equation}
-\mathtt{\tiny RLP}(i : i \in \mathbb{P}) \equiv \mathtt{\tiny RLP}(\mathtt{\tiny BE}(i))
+\mathtt{RLP}(i : i \in \mathbb{P}) \equiv \mathtt{RLP}(\mathtt{BE}(i))
 \end{equation}
 
 When interpreting RLP data, if an expected fragment is decoded as a scalar and leading zeroes are found in the byte sequence, clients are required to consider it non-canonical and treat it in the same manner as otherwise invalid RLP data, dismissing it completely.
@@ -1243,10 +1243,10 @@ There is no specific canonical encoding format for signed or floating-point valu
 \section{Hex-Prefix Encoding}\label{app:hexprefix}
 Hex-prefix encoding is an efficient method of encoding an arbitrary number of nibbles as a byte array. It is able to store an additional flag which, when used in the context of the trie (the only context in which it is used), disambiguates between node types.
 
-It is defined as the function $\mathtt{\tiny HP}$ which maps from a sequence of nibbles (represented by the set $\mathbb{Y}$) together with a boolean value to a sequence of bytes (represented by the set $\mathbb{B}$):
+It is defined as the function $\mathtt{HP}$ which maps from a sequence of nibbles (represented by the set $\mathbb{Y}$) together with a boolean value to a sequence of bytes (represented by the set $\mathbb{B}$):
 
 \begin{eqnarray}
-\mathtt{\tiny HP}(\mathbf{x}, t): \mathbf{x} \in \mathbb{Y} & \equiv & \begin{cases}
+\mathtt{HP}(\mathbf{x}, t): \mathbf{x} \in \mathbb{Y} & \equiv & \begin{cases}
 (16f(t), 16\mathbf{x}[0] + \mathbf{x}[1], 16\mathbf{x}[2] + \mathbf{x}[3], ...) &
 \text{if} \quad \lVert \mathbf{x} \rVert \; \text{is even} \\
 (16(f(t) + 1) + \mathbf{x}[0], 16\mathbf{x}[1] + \mathbf{x}[2], 16\mathbf{x}[3] + \mathbf{x}[4], ...) &
@@ -1332,14 +1332,14 @@ For each precompiled contract, we make use of a template function, $\Xi_{\mathtt
 
 The precompiled contracts each use these definitions and provide specifications for the $\mathbf{o}$ (the output data) and $g_r$, the gas requirements.
 
-For the elliptic curve DSA recover VM execution function, we also define $\mathbf{d}$ to be the input data, well-defined for an infinite length by appending zeroes as required. Importantly in the case of an invalid signature ($\mathtt{\tiny ECDSARECOVER}(h, v, r, s) = \varnothing$), then we have no output.
+For the elliptic curve DSA recover VM execution function, we also define $\mathbf{d}$ to be the input data, well-defined for an infinite length by appending zeroes as required. Importantly in the case of an invalid signature ($\mathtt{ECDSARECOVER}(h, v, r, s) = \varnothing$), then we have no output.
 \begin{eqnarray}
 \Xi_{\mathtt{ECREC}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
 g_r &=& 3000\\
-|\mathbf{o}| &=& \begin{cases} 0 & \text{if} \quad \mathtt{\tiny ECDSARECOVER}(h, v, r, s) = \varnothing\\ 32 & \text{otherwise} \end{cases}\\
+|\mathbf{o}| &=& \begin{cases} 0 & \text{if} \quad \mathtt{ECDSARECOVER}(h, v, r, s) = \varnothing\\ 32 & \text{otherwise} \end{cases}\\
 \text{if} \quad |\mathbf{o}| = 32: &&\\
 \mathbf{o}[0..11] &=& 0 \\
-\mathbf{o}[12..31] &=& \mathtt{\tiny KEC}\big(\mathtt{\tiny ECDSARECOVER}(h, v, r, s)\big)[12..31] \quad \text{where:}\\
+\mathbf{o}[12..31] &=& \mathtt{KEC}\big(\mathtt{ECDSARECOVER}(h, v, r, s)\big)[12..31] \quad \text{where:}\\
 \mathbf{d}[0..(|I_\mathbf{d}|-1)] &=& I_\mathbf{d}\\
 \mathbf{d}[|I_\mathbf{d}|..] &=& (0, 0, ...) \\
 h &=& \mathbf{d}[0..31]\\
@@ -1352,17 +1352,17 @@ The two hash functions, RIPEMD-160 and SHA2-256 are more trivially defined as an
 \begin{eqnarray}
 \Xi_{\mathtt{SHA256}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
 g_r &=& 60 + 12\Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil\\
-\mathbf{o}[0..31] &=& \mathtt{\tiny SHA256}(I_\mathbf{d})\\
+\mathbf{o}[0..31] &=& \mathtt{SHA256}(I_\mathbf{d})\\
 \Xi_{\mathtt{RIP160}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
 g_r &=& 600 + 120\Big\lceil \dfrac{|I_\mathbf{d}|}{32} \Big\rceil\\
 \mathbf{o}[0..11] &=& 0 \\
-\mathbf{o}[12..31] &=& \mathtt{\tiny RIPEMD160}(I_\mathbf{d})\\
+\mathbf{o}[12..31] &=& \mathtt{RIPEMD160}(I_\mathbf{d})\\
 \end{eqnarray}
 
 For the purposes here, we assume we have well-defined standard cryptographic functions for RIPEMD-160 and SHA2-256 of the form:
 \begin{eqnarray}
-\mathtt{\small SHA256}(\mathbf{i} \in \mathbb{B}) & \equiv & o \in \mathbb{B}_{32} \\
-\mathtt{\small RIPEMD160}(\mathbf{i} \in \mathbb{B}) & \equiv & o \in \mathbb{B}_{20}
+\mathtt{SHA256}(\mathbf{i} \in \mathbb{B}) & \equiv & o \in \mathbb{B}_{32} \\
+\mathtt{RIPEMD160}(\mathbf{i} \in \mathbb{B}) & \equiv & o \in \mathbb{B}_{20}
 \end{eqnarray}
 
 Finally, the fourth contract, the identity function $\Xi_{\mathtt{ID}}$ simply defines the output as the input:
@@ -1380,33 +1380,33 @@ The method of signing transactions is similar to the `Electrum style signatures'
 It is assumed that the sender has a valid private key $p_r$, a randomly selected positive integer
 % to avoid line break in range definition
 
-in the range $(1, \mathtt{\tiny secp256k1n} - 1)$ represented as a byte array of length 32 in big-endian form.
+in the range $(1, \mathtt{secp256k1n} - 1)$ represented as a byte array of length 32 in big-endian form.
 
-We assert the functions $\mathtt{\small ECDSASIGN}$, $\mathtt{\small ECDSARESTORE}$ and $\mathtt{\small ECDSAPUBKEY}$. These are formally defined in the literature.
+We assert the functions $\mathtt{ECDSASIGN}$, $\mathtt{ECDSARESTORE}$ and $\mathtt{ECDSAPUBKEY}$. These are formally defined in the literature.
 \begin{eqnarray}
-\mathtt{\small ECDSAPUBKEY}(p_r \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64} \\
-\mathtt{\small ECDSASIGN}(e \in \mathbb{B}_{32}, p_r \in \mathbb{B}_{32}) & \equiv & (v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) \\
-\mathtt{\small ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64}
+\mathtt{ECDSAPUBKEY}(p_r \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64} \\
+\mathtt{ECDSASIGN}(e \in \mathbb{B}_{32}, p_r \in \mathbb{B}_{32}) & \equiv & (v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) \\
+\mathtt{ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_u \in \mathbb{B}_{64}
 \end{eqnarray}
 
 Where $p_u$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$) and $p_r$ is the private key, a byte array of size 32 (or a single positive integer in the aforementioned range). It is assumed that $v$ is the `recovery id', a 1 byte value specifying the sign and finiteness of the curve point; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid.
 
 We declare that a signature is invalid unless the following is true:
 \begin{eqnarray}
-0 < r < \mathtt{\tiny secp256k1n} \quad\wedge\quad \\
-0 < s < \mathtt{\tiny secp256k1n} \quad\wedge\quad \\
+0 < r < \mathtt{secp256k1n} \quad\wedge\quad \\
+0 < s < \mathtt{secp256k1n} \quad\wedge\quad \\
 v \in \{27,28\}
 \end{eqnarray}
 
 where:
 \begin{eqnarray}
-\mathtt{\tiny secp256k1n} &=& 115792089237316195423570985008687907852837564279074904382605163141518161494337
-%\mathtt{\tiny secp256k1p} &=& 2^{256} - 2^{32} - 977\\
+\mathtt{secp256k1n} &=& 115792089237316195423570985008687907852837564279074904382605163141518161494337
+%\mathtt{secp256k1p} &=& 2^{256} - 2^{32} - 977\\
 \end{eqnarray}
 
 For a given private key, $p_r$, the Ethereum address $A(p_r)$ (a 160-bit value) to which it corresponds is defined as the right most 160-bits of the Keccak hash of the corresponding ECDSA public key:
 \begin{equation}
-A(p_r) = \mathcal{B}_{96..255}\big(\mathtt{\tiny KEC}\big( \mathtt{\small ECDSAPUBKEY}(p_r) \big) \big)
+A(p_r) = \mathcal{B}_{96..255}\big(\mathtt{KEC}\big( \mathtt{ECDSAPUBKEY}(p_r) \big) \big)
 \end{equation}
 
 The message hash, $h(T)$, to be signed is the Keccak hash of the transaction without the latter three signature components, formally described as $T_r$, $T_s$ and $T_w$:
@@ -1415,18 +1415,18 @@ L_S(T) & \equiv & \begin{cases}
 (T_n, T_p, T_g, T_t, T_v, T_\mathbf{i}) & \text{if} \; T_t = 0\\
 (T_n, T_p, T_g, T_t, T_v, T_\mathbf{d}) & \text{otherwise} 
 \end{cases} \\
-h(T) & \equiv & \mathtt{\small KEC}( L_S(T) )
+h(T) & \equiv & \mathtt{KEC}( L_S(T) )
 \end{eqnarray}
 
 The signed transaction $G(T, p_r)$ is defined as:
 \begin{eqnarray}
 G(T, p_r) \equiv T \quad \text{except:} \\
-(T_w, T_r, T_s) = \mathtt{\small ECDSASIGN}(h(T), p_r)
+(T_w, T_r, T_s) = \mathtt{ECDSASIGN}(h(T), p_r)
 \end{eqnarray}
 
 We may then define the sender function $S$ of the transaction as:
 \begin{equation}
-S(T) \equiv \mathcal{B}_{96..255}\big(\mathtt{\tiny KEC}\big( \mathtt{\small ECDSARECOVER}(h(T), T_w, T_r, T_s) \big) \big)
+S(T) \equiv \mathcal{B}_{96..255}\big(\mathtt{KEC}\big( \mathtt{ECDSARECOVER}(h(T), T_w, T_r, T_s) \big) \big)
 \end{equation}
 
 The assertion that the sender of the a signed transaction equals the address of the signer should be self-evident:
@@ -1659,7 +1659,7 @@ Here given are the various exceptions to the state transition rules given in sec
 \multicolumn{5}{c}{\textbf{20s: SHA3}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x20 & {\small SHA3} & 2 & 1 & Compute Keccak-256 hash. \\
-&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \mathtt{\tiny Keccak}(\boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[0] \dots (\boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1] - 1) ])$ \\
+&&&& $\boldsymbol{\mu}'_\mathbf{s}[0] \equiv \mathtt{Keccak}(\boldsymbol{\mu}_\mathbf{m}[ \boldsymbol{\mu}_\mathbf{s}[0] \dots (\boldsymbol{\mu}_\mathbf{s}[0] + \boldsymbol{\mu}_\mathbf{s}[1] - 1) ])$ \\
 &&&& $\boldsymbol{\mu}'_i \equiv M(\boldsymbol{\mu}_i, \boldsymbol{\mu}_\mathbf{s}[0], \boldsymbol{\mu}_\mathbf{s}[1])$ \\
 \bottomrule
 \end{tabular*}
@@ -1965,10 +1965,10 @@ R_{suicide} & \text{if} \quad I_a \notin A_\mathbf{s} \\
 
 The genesis block is 15 items, and is specified thus:
 \begin{equation}
-\big( \big( 0_{256}, \mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big), 0_{160}, stateRoot, 0, 0, 0_{2048}, 2^{17}, 0, 0, 3141592, time, 0, 0_{256},  \mathtt{\tiny KEC}\big( (42) \big) \big), (), () \big)
+\big( \big( 0_{256}, \mathtt{KEC}\big(\mathtt{RLP}\big( () \big)\big), 0_{160}, stateRoot, 0, 0, 0_{2048}, 2^{17}, 0, 0, 3141592, time, 0, 0_{256},  \mathtt{KEC}\big( (42) \big) \big), (), () \big)
 \end{equation}
 
-Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $0_{160}$ refers to the beneficiary address, a 160-bit hash which is all zeroes; $0_{2048}$ refers to the log bloom, 2048-bit of all zeros; $2^{17}$ refers to the difficulty; the transaction trie root, receipt trie root, gas used, block number and extradata are both $0$, being equivalent to the empty byte array. The sequences of both ommers and transactions are empty and represented by $()$. $\mathtt{\tiny KEC}\big( (42) \big)$ refers to the Keccak hash of a byte array of length one whose first and only byte is of value 42, used for the nonce. $\mathtt{\tiny KEC}\big(\mathtt{\tiny RLP}\big( () \big)\big)$ value refers to the hash of the ommer lists in RLP, both empty lists.
+Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $0_{160}$ refers to the beneficiary address, a 160-bit hash which is all zeroes; $0_{2048}$ refers to the log bloom, 2048-bit of all zeros; $2^{17}$ refers to the difficulty; the transaction trie root, receipt trie root, gas used, block number and extradata are both $0$, being equivalent to the empty byte array. The sequences of both ommers and transactions are empty and represented by $()$. $\mathtt{KEC}\big( (42) \big)$ refers to the Keccak hash of a byte array of length one whose first and only byte is of value 42, used for the nonce. $\mathtt{KEC}\big(\mathtt{RLP}\big( () \big)\big)$ value refers to the hash of the ommer lists in RLP, both empty lists.
 
 The proof-of-concept series include a development premine, making the state root hash some value $stateRoot$. Also $time$ will be set to the intial timestamp of the genesis block. The latest documentation should be consulted for those values.
 
@@ -2099,7 +2099,7 @@ If the output of this algorithm is below the desired target, then the nonce is v
 
 The PoW-function returns an array with the compressed mix as its first item and the Keccak-256 hash of the concatenation of the compressed mix with the seed hash as the second item:
 \begin{equation}
- \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d}) = \lbrace \mathbf{m}_c(\mathtt{\small KEC}(\mathtt{\small RLP}(L_H(H_{\hcancel{n}}))), H_n, \mathbf{d}), \texttt{KEC}(\mathbf{s}_h(\mathtt{\small KEC}(\mathtt{\small RLP}(L_H(H_{\hcancel{n}}))), H_n) + \mathbf{m}_c(\mathtt{\small KEC}(\mathtt{\small RLP}(L_H(H_{\hcancel{n}}))), H_n, \mathbf{d})) \rbrace
+ \mathtt{PoW}(H_{\hcancel{n}}, H_n, \mathbf{d}) = \lbrace \mathbf{m}_c(\mathtt{KEC}(\mathtt{RLP}(L_H(H_{\hcancel{n}}))), H_n, \mathbf{d}), \texttt{KEC}(\mathbf{s}_h(\mathtt{KEC}(\mathtt{RLP}(L_H(H_{\hcancel{n}}))), H_n) + \mathbf{m}_c(\mathtt{KEC}(\mathtt{RLP}(L_H(H_{\hcancel{n}}))), H_n, \mathbf{d})) \rbrace
 \end{equation}
 With $H_{\hcancel{n}}$ being the hash of the header without the nonce. The compressed mix $\mathbf{m}_c$ is obtained as follows:
 \begin{equation}
