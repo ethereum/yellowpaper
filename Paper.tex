@@ -1555,15 +1555,26 @@ We define a set~$C_1$ with
 \begin{equation}
 C_1\equiv\{(X,Y)\in F_{\mathrm{p}}\times F_{\mathrm{p}}\mid Y^2=X^3+3\}\cup\{(0,0)\}
 \end{equation}
-We define a binary operation $+$ on $C_1$ with
+We define a binary operation $+$ on $C_1$ for distinct elements $(X_1, Y_1), (X_2, Y_2)$ with
 \begin{eqnarray}\label{eq:ec-addition}
 (X_1, Y_1) + (X_2, Y_2)&\equiv&\begin{cases}
 (X,Y)&\text{if}\ X_1\neq X_2\\
 (0,0)&\text{otherwise}
 \end{cases}\\
+\lambda&\equiv&\frac{Y_2-Y_1}{X_2-X_1}\\
 X&\equiv&\lambda^2-X_1-X_2\\
-Y&\equiv&\lambda(X_1-X)-Y_1\\
-\lambda&\equiv&\frac{Y_2-Y_1}{X_2-X_1}
+Y&\equiv&\lambda(X_1-X)-Y_1
+\end{eqnarray}
+
+In the case where $(X_1, Y_1) = (X_2, Y_2)$, we define $+$ on $C_1$ with
+\begin{eqnarray}\label{eq:ec-doubling}
+(X_1, Y_1) + (X_1, Y_1)&\equiv&\begin{cases}
+(X,Y)&\text{if}\ Y_1\neq 0\\
+(0,0)&\text{otherwise}
+\end{cases}\\
+\lambda&\equiv&\frac{3X_1^2}{2Y_1}\\
+X&\equiv&\lambda^2-2X_1\\
+Y&\equiv&\lambda(X_1-X)-Y_1
 \end{eqnarray}
 
 $(C_1,+)$ is known to form a group. We define the scalar multiplication $\cdot$ with
@@ -1578,7 +1589,7 @@ Let $F_{p^2}$ be a field $F_{\mathrm{p}}[i]/(i+1)$. We define a set $C_2$ with
 \begin{equation}
 C_2\equiv\{(X,Y)\in F_{p^2}\times F_{p^2}\mid Y^2=X^3+3(i+9)^{-1}\}\cup\{(0,0)\}
 \end{equation}
-We define a binary operation $+$ and a scalar multiplication $\cdot$ with the same equations (\ref{eq:ec-addition}) and (\ref{eq:ec-scalar-multiplication}). $(C_2,+)$ is also known to be a group. We define $P_2$ in $C_2$ with
+We define a binary operation $+$ and a scalar multiplication $\cdot$ with the same equations (\ref{eq:ec-addition}), (\ref{eq:ec-doubling}) and (\ref{eq:ec-scalar-multiplication}). $(C_2,+)$ is also known to be a group. We define $P_2$ in $C_2$ with
 \begin{eqnarray}
 P_2&\equiv&
 (11559732032986387107991004021392285783925812861821192530917403151452391805634 \times i\\\nonumber &&+ 10857046999023057135944570762232829481370756359578518086990519993285655852781,\\\nonumber && 4082367875863433681332203403145435568316851327593401208105741076214120093531 \times i\\\nonumber &&+ 8495653923123431417604973247489272438418190587263600148770280649306958101930)
