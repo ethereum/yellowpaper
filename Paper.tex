@@ -510,8 +510,8 @@ Note that $\mindifficulty$ is the difficulty of the genesis block. The \textit{H
 \hypertarget{block_gas_limit_H__l}{}The canonical gas limit $H_{\mathrm{l}}$ of a block of header $H$ must fulfil the relation:
 \begin{eqnarray}
 & & H_{\mathrm{l}} < {P(H)_{H}}_{\mathrm{l}} + \left\lfloor\frac{{P(H)_{H}}_{\mathrm{l}}}{1024}\right\rfloor \quad \wedge \\
-& & H_{\mathrm{l}} > {P(H)_{H}}_{\mathrm{l}} - \left\lfloor\frac{{P(H)_{H}}_{\mathrm{l}}}{1024}\right\rfloor \quad \wedge \\
-& & H_{\mathrm{l}} \geqslant 5000
+\nonumber& & H_{\mathrm{l}} > {P(H)_{H}}_{\mathrm{l}} - \left\lfloor\frac{{P(H)_{H}}_{\mathrm{l}}}{1024}\right\rfloor \quad \wedge \\
+\nonumber& & H_{\mathrm{l}} \geqslant 5000
 \end{eqnarray}
 
 \hypertarget{block_timestamp_H__s}{}$H_{\mathrm{s}}$ is the timestamp (in Unix's time()) of block $H$ and must fulfil the relation:
@@ -534,14 +534,14 @@ This is the foundation of the security of the blockchain and is the fundamental 
 \hypertarget{block_header_validity_function}{}Thus we are able to define the block header validity function $V(H)$:
 \begin{eqnarray}
 V(H) & \equiv &  n \leqslant \frac{2^{256}}{H_{\mathrm{d}}} \wedge m = H_{\mathrm{m}} \quad \wedge \\
-& & H_{\mathrm{d}} = D(H) \quad \wedge \\
-& & H_{\mathrm{g}} \le H_{\mathrm{l}}  \quad \wedge \\
-& & H_{\mathrm{l}} < {P(H)_{H}}_{\mathrm{l}} + \left\lfloor\frac{{P(H)_{H}}_{\mathrm{l}}}{1024}\right\rfloor  \quad \wedge \\
-& & H_{\mathrm{l}} > {P(H)_{H}}_{\mathrm{l}} - \left\lfloor\frac{{P(H)_{H}}_{\mathrm{l}}}{1024}\right\rfloor  \quad \wedge \\
-& & H_{\mathrm{l}} \geqslant 5000  \quad \wedge \\
-& & H_{\mathrm{s}} > {P(H)_{H}}_{\mathrm{s}} \quad \wedge \\
-& & H_{\mathrm{i}} = {P(H)_{H}}_{\mathrm{i}} +1 \quad \wedge \\
-& & \lVert H_{\mathrm{x}} \rVert \le 32
+\nonumber & & H_{\mathrm{d}} = D(H) \quad \wedge \\
+\nonumber& & H_{\mathrm{g}} \le H_{\mathrm{l}}  \quad \wedge \\
+\nonumber& & H_{\mathrm{l}} < {P(H)_{H}}_{\mathrm{l}} + \left\lfloor\frac{{P(H)_{H}}_{\mathrm{l}}}{1024}\right\rfloor  \quad \wedge \\
+\nonumber& & H_{\mathrm{l}} > {P(H)_{H}}_{\mathrm{l}} - \left\lfloor\frac{{P(H)_{H}}_{\mathrm{l}}}{1024}\right\rfloor  \quad \wedge \\
+\nonumber& & H_{\mathrm{l}} \geqslant 5000  \quad \wedge \\
+\nonumber& & H_{\mathrm{s}} > {P(H)_{H}}_{\mathrm{s}} \quad \wedge \\
+\nonumber& & H_{\mathrm{i}} = {P(H)_{H}}_{\mathrm{i}} +1 \quad \wedge \\
+\nonumber& & \lVert H_{\mathrm{x}} \rVert \le 32
 \end{eqnarray}
 where $(n, m) = \mathtt{PoW}(H_{\hcancel{n}}, H_{\mathrm{n}}, \mathbf{d})$
 
