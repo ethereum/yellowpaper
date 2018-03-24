@@ -1310,10 +1310,10 @@ We define the set of possible structures $\mathbb{T}$:
 \begin{eqnarray}
 \mathbb{T} & \equiv & \mathbb{L} \cup \mathbb{B} \\
 \mathbb{L} & \equiv & \{ \mathbf{t}: \mathbf{t} = ( \mathbf{t}[0], \mathbf{t}[1], ... ) \; \wedge \; \forall_{n < \lVert \mathbf{t} \rVert} \; \mathbf{t}[n] \in \mathbb{T} \; \wedge \; \lVert \mathbf{t} \rVert < 2^{256} \} \\
-\mathbb{B} & \equiv & \{ \mathbf{b}: \mathbf{b} = ( \mathbf{b}[0], \mathbf{b}[1], ... ) \; \wedge \; \forall_{n < \lVert \mathbf{b} \rVert} \; \mathbf{b}[n] \in \mathbb{O} \; \wedge \; \lVert \mathbf{b} \rVert < 2^{256} \}
+\mathbb{B} & \equiv & \{ \mathbf{b}: \mathbf{b} = ( \mathbf{b}[0], \mathbf{b}[1], ... ) \; \wedge \; \forall_{n < \lVert \mathbf{b} \rVert} \; \mathbf{b}[n] \in \mathbb{O} \}
 \end{eqnarray}
 
-Where $\mathbb{O}$ is the set of bytes. Thus $\mathbb{B}$ is the set of all sequences of bytes (otherwise known as byte-arrays, and a leaf if imagined as a tree), $\mathbb{L}$ is the set of all tree-like (sub-)structures that are not a single leaf (a branch node if imagined as a tree) and $\mathbb{T}$ is the set of all byte-arrays and such structural sequences.
+where $\mathbb{O}$ is the set of bytes, and an additional restriction is placed on $\mathbb{L}$ as discussed below. Thus $\mathbb{B}$ is the set of all sequences of bytes (otherwise known as byte-arrays, and a leaf if imagined as a tree), $\mathbb{L}$ is the set of all tree-like (sub-)structures that are not a single leaf (a branch node if imagined as a tree) and $\mathbb{T}$ is the set of all byte-arrays and such structural sequences.
 
 We define the RLP function as $\mathtt{\tiny RLP}$ through two sub-functions, the first handling the instance when the value is a byte array, the second when it is a sequence of further values:
 \begin{equation}
@@ -1345,7 +1345,9 @@ Thus $\mathtt{\tiny BE}$ is the function that expands a positive integer value t
 
 \begin{itemize}
 \item If the concatenated serialisations of each contained item is less than 56 bytes in length, then the output is equal to that concatenation prefixed by the byte equal to the length of this byte array plus 192.
-\item Otherwise, the output is equal to the concatenated serialisations prefixed by the minimal-length byte-array which when interpreted as a big-endian integer is equal to the length of the concatenated serialisations byte array, which is itself prefixed by the number of bytes required to faithfully encode this length value plus 247.
+\item If the concatenated serialisations of each contained item is less than $2^{64}$ bytes in length, then the output is equal to the concatenated serialisations prefixed by the minimal-length byte-array which when interpreted as a big-endian integer is equal to the length of the concatenated serialisations byte array, which is itself prefixed by the number of bytes required to faithfully encode this length value plus 247.
+\item Otherwise, this sequence cannot be encoded.
+
 \end{itemize}
 
 \hypertarget{RLP_serialisation_of_a_sequence_of_other_items_R__l_math_def}{}Thus we finish by formally defining $R_{\mathrm{l}}$:
