@@ -1959,7 +1959,18 @@ Here given are the various exceptions to the state transition rules given in sec
 \midrule
 0x0b & {\small SIGNEXTEND} & 2 & 1 & Extend length of two's complement signed integer. \\
 &&&& $ \forall i \in [0..255]: \boldsymbol{\mu}'_{\mathbf{s}}[0]_{\mathrm{i}} \equiv \begin{cases} \boldsymbol{\mu}_{\mathbf{s}}[1]_{\mathrm{t}} &\text{if} \quad i \leqslant t \quad \text{where} \; t = 256 - 8(\boldsymbol{\mu}_{\mathbf{s}}[0] + 1) \\ \boldsymbol{\mu}_{\mathbf{s}}[1]_{\mathrm{i}} &\text{otherwise} \end{cases}$ \\
-\multicolumn{5}{l}{$\boldsymbol{\mu}_{\mathbf{s}}[x]_{\mathrm{i}}$ gives the $i$th bit (counting from zero) of $\boldsymbol{\mu}_{\mathbf{s}}[x]$} \vspace{5pt} \\
+& \multicolumn{4}{l}{$\boldsymbol{\mu}_{\mathbf{s}}[x]_{\mathrm{i}}$ gives the $i$th bit (counting from zero) of $\boldsymbol{\mu}_{\mathbf{s}}[x]$} \vspace{5pt}  \\
+\midrule
+0x1b & {\small SHL} & 2 & 1 & Bitwise shifting to the left. \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv 2 ^ {\boldsymbol{\mu}_{\mathbf{s}}[0]} \times \boldsymbol{\mu}_{\mathbf{s}}[1].$ \\
+\midrule
+0x1c & {\small SHR} & 2 & 1 & Bitwise logical shifting to the right. \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \left\lfloor \dfrac{ \boldsymbol{\mu}_{\mathbf{s}}[1]}{ 2 ^ {\boldsymbol{\mu}_{\mathbf{s}}[0]} } \right\rfloor$
+\\
+\midrule
+0x1d & {\small SAR} & 2 & 1 & Bitwise arithmetic shifting to the right. \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \left\lfloor \dfrac{ \boldsymbol{\mu}_{\mathbf{s}}[1]}{ 2 ^ {\boldsymbol{\mu}_{\mathbf{s}}[0]} } \right\rfloor$ \\
+& \multicolumn{4}{l}{where $\boldsymbol{\mu}_{\mathbf{s}}[1]$ is treated as two's complement signed 256-bit integer.}  \\
 \midrule
 \end{tabu}
 
