@@ -643,9 +643,14 @@ and $T_{\mathrm{o}}$ is the original transactor, which can differ from the sende
 
 Note we use $\Theta_{4}$ and $\Lambda_{4}$ to denote the fact that only the first four components of the functions' values are taken; the final represents the message-call's output value (a byte array) and is unused in the context of transaction evaluation.
 
-After the message call or contract creation is processed, the state is finalised by determining the amount to be refunded, $g^*$ from the remaining gas, $g'$, plus some allowance from the refund counter, to the sender at the original rate\footnote{Note that the total refundable gas equation prevents the gas refund from exceeding the transaction gas limit $T_{\mathrm{g}}$.}.
+After the message call or contract creation is processed, the refund counter has to be incremented for the account that were self-destructed throughout its invocation.
 \begin{equation}
-g^* \equiv g' + \min \left\{ \Big\lfloor \dfrac{T_{\mathrm{g}} - g'}{2} \Big\rfloor, \hyperlink{refund_balance_defn_words_A__r}{A_{\mathrm{r}}} \right\}
+	A'_{r} \equiv A_{r} + \sum_{i \in A_{s}} R_{selfdestruct}
+\end{equation}
+
+Then the state is finalised by determining the amount to be refunded, $g^*$ from the remaining gas, $g'$, plus some allowance from the refund counter, to the sender at the original rate.
+\begin{equation}
+g^* \equiv g' + \min \left\{ \Big\lfloor \dfrac{T_{\mathrm{g}} - g'}{2} \Big\rfloor, \hyperlink{refund_balance_defn_words_A__r}{A'_{\mathrm{r}}} \right\}
 \end{equation}
 
 The total refundable amount is the legitimately remaining gas $g'$, added to \hyperlink{refund_balance_defn_words_A__r}{$A_{\mathrm{r}}$}, with the latter component being capped up to a maximum of half (rounded down) of the total amount used $T_{\mathrm{g}} - g'$. Therefore, $g^*$ is the total gas that remains after the transaction has been executed.
@@ -2369,13 +2374,9 @@ G_{newaccount} & \text{if} \quad \mathtt{\tiny DEAD}(\boldsymbol{\sigma}, \bolds
 \varnothing &\text{if}\ \boldsymbol{\sigma}[r] = \varnothing\ \wedge\ \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} = 0\\
 (\boldsymbol{\sigma}[r]_{\mathrm{n}}, \boldsymbol{\sigma}[r]_{\mathrm{b}} + \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}}, \boldsymbol{\sigma}[r]_{\mathbf{s}}, \boldsymbol{\sigma}[r]_{\mathrm{c}}) & \text{if}\ r \neq I_{\mathrm{a}} \\
 (\boldsymbol{\sigma}[r]_{\mathrm{n}}, 0, \boldsymbol{\sigma}[r]_{\mathbf{s}}, \boldsymbol{\sigma}[r]_{\mathrm{c}}) & \text{otherwise}
-\end{cases}$\\
-&&&& where $r = \boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160}$\\
+\end{cases}$\\ \\
+&&&& where $r = \boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160}$\\ \\
 &&&& $\boldsymbol{\sigma}'[I_{\mathrm{a}}]_{\mathrm{b}} = 0$ \\
-&&&& $A'_{r} \equiv A_{r} + \begin{cases}
-R_{selfdestruct} & \text{if} \quad I_{\mathrm{a}} \notin A_{\mathbf{s}} \\
-0 & \text{otherwise}
-\end{cases}$ \\
 &&&&\linkdest{C tiny SELFDESTRUCT}{} $C_{\text{\tiny SELFDESTRUCT}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv G_{selfdestruct} + \begin{cases}
 G_{newaccount} & \text{if} \quad n \\
 0 & \text{otherwise}
