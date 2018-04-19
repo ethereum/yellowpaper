@@ -2447,7 +2447,7 @@ The seed hash is different for every epoch. For the first epoch it is the Keccak
 \end{equation}
 \begin{equation}
  C_{seedhash}(H_{\mathrm{i}}) = \begin{cases}
-\texttt{KEC}(\mathbf{0}_{32}) & \text{if} \quad E_{epoch}(H_{\mathrm{i}}) = 0 \quad  \\
+\mathbf{0}_{32} & \text{if} \quad E_{epoch}(H_{\mathrm{i}}) = 0 \quad  \\
 \texttt{KEC}(C_{seedhash}(H_{\mathrm{i}} - J_{epoch})) & \text{otherwise}
 \end{cases}
 \end{equation}
