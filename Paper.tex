@@ -776,7 +776,7 @@ The exception in the determination of $\boldsymbol{\sigma}'$ dictates that $\mat
 Note that intention is that the result is either a successfully created new contract with its endowment, or no new contract with no transfer of value.
 
 \subsection{Subtleties}
-Note that while the initialisation code is executing, the newly created address exists but with no intrinsic body code. Thus any message call received by it during this time causes no code to be executed. If the initialisation execution ends with a {\small SELFDESTRUCT} instruction, the matter is moot since the account will be deleted before the transaction is completed. For a normal {\small STOP} code, or if the code returned is otherwise empty, then the state is left with a zombie account, and any remaining balance will be locked into the account forever.
+Note that while the initialisation code is executing, the newly created address exists but with no intrinsic body code\footnote{During initialization code execution, \texttt{EXTCODESIZE} on the address should return zero, which is the length of the code of the account while \texttt{CODESIZE} should return the length of the initialization code (as defined in \ref{subsec:instruction-set}).}. Thus any message call received by it during this time causes no code to be executed. If the initialisation execution ends with a {\small SELFDESTRUCT} instruction, the matter is moot since the account will be deleted before the transaction is completed. For a normal {\small STOP} code, or if the code returned is otherwise empty, then the state is left with a zombie account, and any remaining balance will be locked into the account forever.
 
 \section{Message Call} \label{ch:call}
 In the case of executing a message call, several parameters are required: sender ($s$), transaction originator ($o$), recipient ($r$), the account whose code is to be executed ($c$, usually the same as recipient), available gas ($g$), value ($v$) and gas price ($p$) together with an arbitrary length byte array, $\mathbf{d}$, the input data of the call and finally the present depth of the message-call/contract-creation stack ($e$).
@@ -1909,6 +1909,7 @@ L(n) \equiv n - \lfloor n / 64 \rfloor
 \end{equation}
 
 \subsection{Instruction Set}
+\label{subsec:instruction-set}
 
 As previously specified in section \ref{ch:model}, these definitions take place in the final context there. In particular we assume $O$ is the EVM state-progression function and define the terms pertaining to the next cycle's state $(\boldsymbol{\sigma}', \boldsymbol{\mu}')$ such that:
 \begin{equation}
