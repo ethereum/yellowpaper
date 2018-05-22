@@ -410,8 +410,8 @@ where $\mathcal{B}$ is the bit reference function such that $\mathcal{B}_{\mathr
 \begin{array}[t]{lclc}
 \linkdest{new_state_H__r}{}H_{\mathrm{r}} &\equiv& \mathtt{\small TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) & \wedge \\
 \linkdest{Ommer_block_hash_H__o}{}H_{\mathrm{o}} &\equiv& \mathtt{\small KEC}(\mathtt{\small RLP}(L_H^*(B_{\mathbf{U}}))) & \wedge \\
-\linkdest{tx_block_hash_H__t}{}H_{\mathrm{t}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_{\mathbf{T}} \rVert, i \in \mathbb{P}: &\\&& \quad\quad p (i, L_{T}(B_{\mathbf{T}}[i]))\}) & \wedge \\
-\linkdest{Receipts_Root_H__e}{}H_{\mathrm{e}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_{\mathbf{R}} \rVert, i \in \mathbb{P}: &\\&& \quad\quad p(i, \hyperlink{transaction_receipt_preparation_function_for_RLP_serialisation}{L_{R}}(B_{\mathbf{R}}[i]))\}) & \wedge \\
+\linkdest{tx_block_hash_H__t}{}H_{\mathrm{t}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_{\mathbf{T}} \rVert, i \in \mathbb{N}: &\\&& \quad\quad p (i, L_{T}(B_{\mathbf{T}}[i]))\}) & \wedge \\
+\linkdest{Receipts_Root_H__e}{}H_{\mathrm{e}} &\equiv& \mathtt{\small TRIE}(\{\forall i < \lVert B_{\mathbf{R}} \rVert, i \in \mathbb{N}: &\\&& \quad\quad p(i, \hyperlink{transaction_receipt_preparation_function_for_RLP_serialisation}{L_{R}}(B_{\mathbf{R}}[i]))\}) & \wedge \\
 \linkdest{logs_Bloom_filter_H__b}{}H_{\mathrm{b}} &\equiv& \bigvee_{\mathbf{r} \in B_{\mathbf{R}}} \big( \mathbf{r}_{\mathrm{b}} \big)
 \end{array}
 \end{equation}
@@ -974,7 +974,7 @@ We also assume the fixed amounts of $\mathbf{\delta}$ and $\mathbf{\alpha}$, spe
 \subsubsection{Exceptional Halting}\hypertarget{Exceptional_Halting_function_Z}{}\linkdest{zhalt}
 
 The exceptional halting function $Z$ is defined as:
-\begin{equation} 
+\begin{equation}
 Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv
 \begin{array}[t]{l}
 \boldsymbol{\mu}_g < C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \quad \vee \\
@@ -990,7 +990,7 @@ Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv
 \end{equation}
 where
 \begin{equation}
-W(w, \boldsymbol{\mu}) \equiv \\ 
+W(w, \boldsymbol{\mu}) \equiv \\
 \begin{array}[t]{l}
 w \in \{\text{\small CREATE}, \text{\small SSTORE},\\ \text{\small SELFDESTRUCT}\} \ \vee \\
 \text{\small LOG0} \le w \wedge w \le \text{\small LOG4} \quad \vee \\
@@ -1534,7 +1534,7 @@ x^2 & \text{if}\ x \le 64 \\[0.5em]
 8(\ell_{E} - 32) + \lfloor \log_2(i[(96+\ell_{B})..(127+\ell_{B})]) \rfloor & \text{if}\ 32 < \ell_{E} \wedge i[(96 + \ell_{B})..(127 + \ell_{B})]\neq 0 \\
 8(\ell_{E} - 32) & \text{otherwise} \\
 \end{cases} \\
-\mathbf{o} &=& \left(B^E\bmod M\right)\in\mathbb{P}_{8\ell_{M}} \\
+\mathbf{o} &=& \left(B^E\bmod M\right)\in\mathbb{N}_{8\ell_{M}} \\
 \ell_{B} &\equiv& i[0..31] \\
 \ell_{E} &\equiv& i[32..63] \\
 \ell_{M} &\equiv& i[64..95] \\
@@ -1746,7 +1746,7 @@ G(T, p_{\mathrm{r}}) \equiv T \quad \text{except:} \\
 (T_{\mathrm{w}}, T_{\mathrm{r}}, T_{\mathrm{s}}) = \mathtt{\small ECDSASIGN}(h(T), p_{\mathrm{r}})
 \end{eqnarray}
 
-\hyperlink{T__w_T__r_T__s}{Reiterating from previously}: 
+\hyperlink{T__w_T__r_T__s}{Reiterating from previously}:
 \begin{eqnarray}
 \linkdest{T__r}{T_{\mathrm{r}}} = \hyperlink{r}{r}\\
 \linkdest{T__s}{T_{\mathrm{s}}} = \hyperlink{s}{s}
@@ -1813,7 +1813,7 @@ $G_{sha3word}$ & 6 & Paid for each word (rounded up) for input data to a {\small
 $G_{copy}$ & 3 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
 $G_{blockhash}$ & 20 & Payment for {\small BLOCKHASH} operation. \\
 $G_{quaddivisor}$ & 100 & The quadratic coefficient of the input sizes of the exponentiation-over-modulo precompiled\\
-&&contract. \\ 
+&&contract. \\
 
 %extern u256 const c_{\mathrm{copyGas}};			///< Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
 \bottomrule
@@ -2285,7 +2285,7 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] = 0 \; \wedge \; \
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv x$ \\
 &&&& where $x=0$ if the code execution for this operation failed due to an\\
 &&&& \hyperlink{Exceptional_Halting_function_Z}{exceptional halting} (or for a \text{\small REVERT}) $\boldsymbol{\sigma}' = \varnothing$, or $I_{\mathrm{e}} = 1024$ \\
-&&&& (the maximum call depth limit is reached) or $\boldsymbol{\mu}_{\mathbf{s}}[0] > \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}}$ (balance of the caller\\ 
+&&&& (the maximum call depth limit is reached) or $\boldsymbol{\mu}_{\mathbf{s}}[0] > \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}}$ (balance of the caller\\
 &&&& is too low to fulfil the value transfer); and otherwise $x=A(I_{\mathrm{a}}, \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{n}})$, the\\
 &&&& address of the newly created account. \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[1], \boldsymbol{\mu}_{\mathbf{s}}[2])$ \\
