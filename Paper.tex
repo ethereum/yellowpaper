@@ -357,7 +357,7 @@ B \equiv (B_{H}, B_{\mathbf{T}}, B_{\mathbf{U}})
 In order to encode information about a transaction concerning which it may be useful to form a zero-knowledge proof, or index and search, we encode a receipt of each transaction containing certain information from its execution.
 Each receipt, denoted $B_{\mathbf{R}}[i]$ for the $i$th transaction, is placed in an index-keyed \hyperlink{trie}{trie} and the root recorded in the header as \hyperlink{Receipts_Root_H__e}{$H_{\mathrm{e}}$}.
 
-\linkdest{transaction_receipt_R}{}\linkdest{tx_receipt_gas_used_R__u}{}\linkdest{R__u}The transaction receipt, $R$, is a tuple of four items comprising the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_{\mathrm{u}}$, the set of logs created through execution of the transaction, \hyperlink{RLP_serialisation_of_a_sequence_of_other_items_R__l_math_def}{$R_\mathbf{l}$} and the Bloom filter composed from information in those logs, \hyperlink{RLP_serialisation_of_a_byte_array_R__b_math_def}{$R_{\mathrm{b}}$} and the status code of the transaction, $R_{\mathrm{z}}$:
+\linkdest{transaction_receipt_R}{}\linkdest{tx_receipt_gas_used_R__u}{}\linkdest{R__u}The transaction receipt, $R$, is a tuple of four items comprising: the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_{\mathrm{u}}$, the set of logs created through execution of the transaction, \hyperlink{RLP_serialisation_of_a_sequence_of_other_items_R__l_math_def}{$R_\mathbf{l}$} and the Bloom filter composed from information in those logs, \hyperlink{RLP_serialisation_of_a_byte_array_R__b_math_def}{$R_{\mathrm{b}}$} and the status code of the transaction, $R_{\mathrm{z}}$:
 \begin{equation}
 R \equiv (R_{\mathrm{u}}, R_{\mathrm{b}}, R_{\mathbf{l}}, R_{\mathrm{z}})
 \end{equation}
@@ -368,12 +368,12 @@ L_{R}(R) \equiv (0 \in \mathbb{B}_{256}, R_{\mathrm{u}}, R_{\mathrm{b}}, R_{\mat
 \end{equation}
 where $0 \in \mathbb{B}_{256}$ replaces the pre-transaction state root that existed in previous versions of the protocol.
 
-\linkdest{R__z_assert}We assert that the status code $R_{\mathrm{z}}$ is an integer.
+\linkdest{R__z_assert}We assert that the status code $R_{\mathrm{z}}$ is a non-negative integer.
 \begin{equation}
 R_{\mathrm{z}} \in \mathbb{N}
 \end{equation}
 
-\linkdest{R__u_assert}We assert $R_{\mathrm{u}}$, the cumulative gas used is a non-negative integer and that the logs Bloom, $R_{\mathrm{b}}$, is a hash of size 2048 bits (256 bytes):
+\linkdest{R__u_assert}We assert that $R_{\mathrm{u}}$, the cumulative gas used, is a non-negative integer and that the logs Bloom, $R_{\mathrm{b}}$, is a hash of size 2048 bits (256 bytes):
 \begin{equation}
 R_{\mathrm{u}} \in \mathbb{N} \quad \wedge \quad R_{\mathrm{b}} \in \mathbb{B}_{256}
 \end{equation}
