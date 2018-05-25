@@ -134,7 +134,7 @@ Mining is the process of dedicating effort (working) to bolster one series of tr
 Formally, we expand to:
 \begin{eqnarray}
 \boldsymbol{\sigma}_{t+1} & \equiv & \hyperlink{Pi}{\Pi}(\boldsymbol{\sigma}_{t}, B) \\
-B & \equiv & (..., (T_0, T_1, ...) ) \\
+B & \equiv & (..., (T_0, T_1, ...), ...) \\
 \Pi(\boldsymbol{\sigma}, B) & \equiv & \hyperlink{Omega}{\Omega}(B, \hyperlink{Upsilon}{\Upsilon}(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...)
 \end{eqnarray}
 
@@ -188,7 +188,7 @@ Scalars and fixed-size byte sequences (or, synonymously, arrays) are denoted wit
 
 Arbitrary-length sequences are typically denoted as a bold lower-case letter, \eg $\mathbf{o}$ is used to denote the byte sequence given as the output data of a message call. For particularly important values, a bold uppercase letter may be used.
 
-Throughout, we assume scalars are positive integers and thus belong to the set $\mathbb{N}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{32}$ and the set of all positive integers smaller than $2^{256}$ is named $\mathbb{N}_{256}$. This is formally defined in section \hyperlink{block}{\ref{subsec:The_Block}}.
+Throughout, we assume scalars are non-negative integers and thus belong to the set $\mathbb{N}$. The set of all byte sequences is $\mathbb{B}$, formally defined in Appendix \ref{app:rlp}. If such a set of sequences is restricted to those of a particular length, it is denoted with a subscript, thus the set of all byte sequences of length $32$ is named $\mathbb{B}_{32}$ and the set of all non-negative integers smaller than $2^{256}$ is named $\mathbb{N}_{256}$. This is formally defined in section \hyperlink{block}{\ref{subsec:The_Block}}.
 
 Square brackets are used to index into and reference individual components or subsequences of sequences, \eg $\boldsymbol{\mu}_{\mathbf{s}}[0]$ denotes the first item on the machine's stack. For subsequences, ellipses are used to specify the intended range, to include elements at both limits, \eg $\boldsymbol{\mu}_{\mathbf{m}}[0..31]$ denotes the first 32 items of the machine's memory.
 
@@ -373,7 +373,7 @@ where $0 \in \mathbb{B}_{256}$ replaces the pre-transaction state root that exis
 R_{\mathrm{z}} \in \mathbb{N}
 \end{equation}
 
-\linkdest{R__u_assert}We assert $R_{\mathrm{u}}$, the cumulative gas used is a positive integer and that the logs Bloom, $R_{\mathrm{b}}$, is a hash of size 2048 bits (256 bytes):
+\linkdest{R__u_assert}We assert $R_{\mathrm{u}}$, the cumulative gas used is a non-negative integer and that the logs Bloom, $R_{\mathrm{b}}$, is a hash of size 2048 bits (256 bytes):
 \begin{equation}
 R_{\mathrm{u}} \in \mathbb{N} \quad \wedge \quad R_{\mathrm{b}} \in \mathbb{B}_{256}
 \end{equation}
@@ -1356,7 +1356,7 @@ R_{\mathrm{b}}(\mathbf{x}) & \equiv & \begin{cases}
 (a) \cdot (b, c) \cdot (d, e) & = & (a, b, c, d, e)
 \end{eqnarray}
 
-Thus $\mathtt{\tiny BE}$ is the function that expands a positive integer value to a big-endian byte array of minimal length and the dot operator performs sequence concatenation.
+Thus $\mathtt{\tiny BE}$ is the function that expands a non-negative integer value to a big-endian byte array of minimal length and the dot operator performs sequence concatenation.
 
 \hypertarget{RLP_serialisation_of_a_sequence_of_other_items_R__l_word_def}{}\linkdest{R__l}If instead, the value to be serialised is a sequence of other items then the RLP serialisation takes one of two forms:
 
@@ -1374,7 +1374,7 @@ R_{\mathrm{l}}(\mathbf{x}) & \equiv & \begin{cases}
 s(\mathbf{x}) & \equiv & \mathtt{\tiny RLP}(\mathbf{x}_0) \cdot \mathtt{\tiny RLP}(\mathbf{x}_1) ...
 \end{eqnarray}
 
-If RLP is used to encode a scalar, defined only as a positive integer ($\mathbb{N}$ or any $x$ for $\mathbb{N}_{\mathrm{x}}$), it must be specified as the shortest byte array such that the big-endian interpretation of it is equal. Thus the RLP of some positive integer $i$ is defined as:
+If RLP is used to encode a scalar, defined only as a non-negative integer ($\mathbb{N}$ or any $x$ for $\mathbb{N}_{\mathrm{x}}$), it must be specified as the shortest byte array such that the big-endian interpretation of it is equal. Thus the RLP of some non-negative integer $i$ is defined as:
 \begin{equation}
 \mathtt{\tiny RLP}(i : i \in \mathbb{N}) \equiv \mathtt{\tiny RLP}(\mathtt{\tiny BE}(i))
 \end{equation}
