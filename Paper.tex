@@ -1843,7 +1843,7 @@ G_{log}+G_{logdata}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+2G_{logtopic} & \text{
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+3G_{logtopic} & \text{if} \quad w = \text{\small LOG3} \\
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+4G_{logtopic} & \text{if} \quad w = \text{\small LOG4} \\
 C_\text{\tiny CALL}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small CALL} \lor \text{\small CALLCODE} \> \lor \\
-&\quad\text{\small DELEGATECALL} \\
+&\quad\text{\small DELEGATECALL} \lor \text{\small STATICCALL} \\
 C_\text{\tiny SELFDESTRUCT}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SELFDESTRUCT} \\
 G_{create} & \text{if} \quad w = \text{\small CREATE}\\
 G_{sha3}+G_{sha3word} \lceil \mathbf{s}[1] \div 32 \rceil & \text{if} \quad w = \text{\small SHA3}\\
