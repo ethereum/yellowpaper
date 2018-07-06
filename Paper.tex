@@ -120,31 +120,35 @@ For a list of terms used in this paper, refer to Appendix \ref{ch:Terminology}.
 
 \section{The Blockchain Paradigm} \label{ch:overview}
 
-Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissible. Transactions thus represent a valid arc between two states; the `valid' part is important---there exist far more invalid state changes than valid state changes. Invalid state changes might, \eg, be things such as reducing an account balance without an equal and opposite increase elsewhere. A valid state transition is one which comes about through a transaction. Formally:
+Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to transform it into some final state. It is this final state which we accept as the canonical ``version'' of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissible. Transactions thus represent a valid transition between two states. The `valid' part is important---there exist far more invalid state transitions than valid state transitions. An invalid state transitions might, for \eg, reduce an account balance without increasing another by the same amount. A valid state transition is one which comes about through a transaction.
+
+Formally, we define a well-known genesis state $\boldsymbol{\sigma}_0$, a subsequent series of states $\boldsymbol{\sigma}_t$, and a state transition function $\Upsilon$:
 \begin{equation}
 \linkdest{Upsilon_state_transition}\linkdest{Upsilon}\boldsymbol{\sigma}_{t+1} \equiv \Upsilon(\boldsymbol{\sigma}_{t}, T)
 \end{equation}
 
-where $\Upsilon$ is the Ethereum state transition function. In Ethereum, $\Upsilon$, together with $\boldsymbol{\sigma}$ are considerably more powerful than any existing comparable system; $\Upsilon$ allows components to carry out arbitrary computation, while $\boldsymbol{\sigma}$ allows components to store arbitrary state between transactions.
+The state and state transition function of Ethereum are considerably more powerful than those of existing comparable system; $\Upsilon$ is allowed to carry out arbitrary computation, and $\boldsymbol{\sigma}$ is allowed to store arbitrary state between transactions.
 
-Transactions are collated into blocks; blocks are chained together using a cryptographic hash as a means of reference. Blocks function as a journal, recording a series of transactions together with the previous block and an identifier for the final state (though do not store the final state itself---that would be far too big). They also punctuate the transaction series with incentives for nodes to \textit{mine}. This incentivisation takes place as a state-transition function, adding value to a nominated account.
+Transactions are collated into blocks; a block consists of a list of transactions together with a cryptographic hash of the previous block that it ``builds upon'', as well as a cryptographic commitment to the final state (blocks do not store the final state itself---that would be far too big). Blocks also incentivize nodes to \textit{mine} by allowing the state transition function to add value to a nominated account.
 
 Mining is the process of dedicating effort (working) to bolster one series of transactions (a block) over any other potential competitor block. It is achieved thanks to a cryptographically secure proof. This scheme is known as a proof-of-work and is discussed in detail in section \ref{ch:pow}.
 
-Formally, we expand to:
+Formally, we define a block \hyperlink{block}{$B$} as a list of transactions as well as some other components:
 \begin{eqnarray}
-\boldsymbol{\sigma}_{t+1} & \equiv & \hyperlink{Pi}{\Pi}(\boldsymbol{\sigma}_{t}, B) \\
-B & \equiv & (..., (T_0, T_1, ...), ...) \\
-\Pi(\boldsymbol{\sigma}, B) & \equiv & \hyperlink{Omega}{\Omega}(B, \hyperlink{Upsilon}{\Upsilon}(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...)
+B & \equiv & (..., (T_0, T_1, ...), ...)
 \end{eqnarray}
 
-Where \hyperlink{Omega}{$\Omega$} is the block-finalisation state transition function (a function that rewards a nominated party); \hyperlink{block}{$B$} is this block, which includes a series of transactions amongst some other components; and $\hyperlink{Pi}{\Pi}$ is the block-level state-transition function.
+We define the block-level state transition function $\hyperlink{Pi}{\Pi}$, the block-level analogue to the transaction-level state transition function $\hyperlink{Upsilon}{\Upsilon}$. $\Pi$ applies $\Upsilon$ to the transactions of a block in order and then applies an additional block-finalisation state transition $\Omega$.
+\begin{eqnarray}
+\boldsymbol{\sigma}_{t+1} & \equiv & \hyperlink{Pi}{\Pi}(\boldsymbol{\sigma}_{t}, B) \\
+\Pi(\boldsymbol{\sigma}, B) & \equiv & \hyperlink{Omega}{\Omega}(B, \hyperlink{Upsilon}{\Upsilon}(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...)
+\end{eqnarray}
 
 This is the basis of the blockchain paradigm, a model that forms the backbone of not only Ethereum, but all decentralised consensus-based transaction systems to date.
 
 \subsection{Value}
 
-In order to incentivise computation within the network, there needs to be an agreed method for transmitting value. To address this issue, Ethereum has an intrinsic currency, Ether, known also as {\small ETH} and sometimes referred to by the Old English \DH{}. The smallest subdenomination of Ether, and thus the one in which all integer values of the currency are counted, is the Wei. One Ether is defined as being $10^{18}$ Wei. There exist other subdenominations of Ether:
+In order to incentivise computation within the network, there needs to be a method to transmit value. For this purpose, Ethereum provides an intrinsic currency, Ether, known also as {\small ETH} and sometimes referred to by the Old English \DH{}. The smallest denomination of Ether is the Wei; all other denominations must be an integer multiple of a Wei. One Ether is defined as being $10^{18}$ Wei. There exist other subdenominations of Ether:
 \par
 \begin{center}
 \begin{tabular}{rl}
