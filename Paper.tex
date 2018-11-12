@@ -2029,7 +2029,7 @@ Here given are the various exceptions to the state transition rules given in sec
 
 \begin{tabu}{\usetabu{opcodes}}
 \toprule
-\multicolumn{5}{c}{\textbf{30s: Environmental Information}} \vspace{5pt} \\
+\multicolumn{5}{c}{\textbf{30s: Environmental Information (0x30 - 0x39)}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x30 & {\small ADDRESS} & 0 & 1 & Get address of currently executing account. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv I_{\mathrm{a}}$ \\
@@ -2078,7 +2078,13 @@ Here given are the various exceptions to the state transition rules given in sec
 \begin{cases} I_{\mathbf{b}}[\boldsymbol{\mu}_{\mathbf{s}}[1] + i] & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] + i < \lVert I_{\mathbf{b}} \rVert \\ \text{\small STOP} & \text{otherwise} \end{cases}$\\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \boldsymbol{\mu}_{\mathbf{s}}[2])$ \\
 &&&& The additions in $\boldsymbol{\mu}_{\mathbf{s}}[1] + i$ are not subject to the $2^{256}$ modulo. \\
-\midrule
+\bottomrule
+\end{tabu}
+
+\begin{tabu}{\usetabu{opcodes}}
+\toprule
+\multicolumn{5}{c}{\textbf{30s: Environmental Information (0x3a - 0x3f)}} \vspace{5pt} \\
+\textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x3a & {\small GASPRICE} & 0 & 1 & Get price of gas in current environment. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv I_{\mathrm{p}}$ \\
 &&&& This is gas price specified by the originating transaction.\\
@@ -2103,6 +2109,9 @@ Here given are the various exceptions to the state transition rules given in sec
 \begin{cases} \boldsymbol{\mu}_{\mathbf{o}}[\boldsymbol{\mu}_{\mathbf{s}}[1] + i] & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] + i < \lVert \boldsymbol{\mu}_{\mathbf{o}} \rVert \\ 0 & \text{otherwise} \end{cases}$\\
 &&&& The additions in $\boldsymbol{\mu}_{\mathbf{s}}[1] + i$ are not subject to the $2^{256}$ modulo. \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \boldsymbol{\mu}_{\mathbf{s}}[2])$ \\
+\midrule
+0x3f & {\small EXTCODEHASH} & 1 & 1 & Get hash of an account's code. \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \mod 2^{160}]_{\mathrm{c}}$ \\
 \bottomrule
 \end{tabu}
 
@@ -2116,8 +2125,8 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& age. 0 is left on the stack if the looked for block number is greater than\\
 &&&& the current block number or more than 256 blocks behind the current block.\\
 &&&& $P(h, n, a) \equiv \begin{cases} 0 & \text{if} \quad n > H_{\mathrm{i}} \vee a = 256 \vee h = 0 \\ h & \text{if} \quad n = H_{\mathrm{i}} \\ P(H_{\mathrm{p}}, n, a + 1) & \text{otherwise} \end{cases}$ \\
-&&&& and we assert the header $H$ can be determined from its hash~$h$ unless as its hash is the parent\\
-&&&& $h$ is zero.\\
+&&&& and we assert the header $H$ can be determined from its hash~$h$ unless as its\\
+&&&& hash is the parent $h$ is zero.\\
 \midrule
 0x41 & {\small COINBASE} & 0 & 1 & Get the block's beneficiary address. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{H}}_{\mathrm{c}}$ \\
