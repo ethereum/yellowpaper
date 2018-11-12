@@ -2084,7 +2084,8 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& This is gas price specified by the originating transaction.\\
 \midrule
 0x3b & {\small EXTCODESIZE} & 1 & 1 & Get size of an account's code. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \lVert \boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \mod 2^{160}]_{\mathrm{c}} \rVert$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \lVert \mathbf{b} \rVert$ \\
+&&&& where $\texttt{\small KEC}(\mathbf{b}) \equiv \boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \mod 2^{160}]_{\mathrm{c}}$ \\
 \midrule
 0x3c & {\small EXTCODECOPY} & 4 & 0 & Copy an account's code to memory. \\
 &&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_{\mathbf{s}}[3] - 1\} } \boldsymbol{\mu}'_{\mathbf{m}}[\boldsymbol{\mu}_{\mathbf{s}}[1] + i ] \equiv
