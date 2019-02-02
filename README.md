@@ -13,14 +13,16 @@ The paper comes as a single ``latex`` file ``Paper.tex``. The latest version is 
 
 ## How to build
 
+**Method 1** (simpler, recommended): use [Visual Studio Code](https://code.visualstudio.com/) with the LaTeX Workshop extension (which is a full IDE), to use for editing the tex file, and showing the PDF.
 The paper also comes as a single ``latex`` file ``Paper.tex``, which is built as a PDF as follows.
 
+**Method 2**
 ```
 git clone https://github.com/ethereum/yellowpaper.git
 cd yellowpaper
 ./build.sh
 ```
-This will create a PDF version of the Yellow Paper. Following building, you can also use standard `pdflatex` tools like http://latex.informatik.uni-halle.de/latex-online/latex.php for compiling/preview.
+This will create a PDF version of the Yellow Paper. Following building, you can also use standard `pdflatex` tools for compiling/preview, like http://latex.informatik.uni-halle.de/latex-online/latex.php.
 
 ## Tips on editing
 
