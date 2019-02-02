@@ -9,14 +9,14 @@ It is a free culture work, licensed under Creative Commons Attribution Share-Ali
 
 ## Usage
 
-The paper comes as a single ``latex`` file ``Paper.tex``. The latest version is generally available as a PDF at https://ethereum.github.io/yellowpaper/paper.pdf. If you find that the borders for links block too much text when viewing the PDF in the browser, you can instead download it and open and view it with a PDF viewer application such as Adobe Acrobat or Evince, where the borders are less likely to display over text.
+If you just want to read the paper, the latest version is generally available as a PDF at https://ethereum.github.io/yellowpaper/paper.pdf. If you find that the borders for links block too much text when viewing the PDF in the browser, you can instead download it and open and view it with a PDF viewer application such as Adobe Acrobat or Evince, where the borders are less likely to display over text.
 
-## How to build
+However, if you want to edit the paper, then read on. The paper comes as a single ``latex`` file ``Paper.tex``.  
 
-**Method 1** (simpler, recommended): use [Visual Studio Code](https://code.visualstudio.com/) with the LaTeX Workshop extension (which is a full IDE), to use for editing the tex file, and showing the PDF.
-The paper also comes as a single ``latex`` file ``Paper.tex``, which is built as a PDF as follows.
+It is recommended to use an IDE such as [Visual Studio Code](https://code.visualstudio.com/) with the LaTeX Workshop extension, to edit the tex file, and show the PDF.
 
-**Method 2**
+Another option is to separately edit the `tex` file and build as follows (you'll still need to clone the repo then open the yellowpaper folder):
+
 ```
 git clone https://github.com/ethereum/yellowpaper.git
 cd yellowpaper
