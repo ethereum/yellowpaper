@@ -1342,15 +1342,18 @@ We define the RLP function as $\mathtt{RLP}$ through two sub-functions, the firs
 \begin{itemize}
 \item If the byte-array contains solely a single byte and that single byte is less than 128, then the input is exactly equal to the output.
 \item If the byte-array contains fewer than 56 bytes, then the output is equal to the input prefixed by the byte equal to the length of the byte array plus 128.
-\item Otherwise, the output is equal to the input prefixed by the minimal-length byte-array which when interpreted as a big-endian integer is equal to the length of the input byte array, which is itself prefixed by the number of bytes required to faithfully encode this length value plus 183.
+\item Otherwise, the output is equal to the input, provided that it contains fewer than $2^{64}$ bytes, prefixed by the minimal-length byte-array which when interpreted as a big-endian integer is equal to the length of the input byte array, which is itself prefixed by the number of bytes required to faithfully encode this length value plus 183.
 \end{itemize}
+
+Byte arrays containing $2^{64}$ or more bytes cannot be encoded. This restriction ensures that the first byte of the encoding of a byte array is always below 192, and thus it can be readily distinguished from the encodings of sequences in $\mathbb{L}$.
 
 \hypertarget{RLP_serialisation_of_a_byte_array_R__b_math_def}{}Formally, we define $R_{\mathrm{b}}$:
 \begin{eqnarray}
 R_{\mathrm{b}}(\mathbf{x}) & \equiv & \begin{cases}
 \mathbf{x} & \text{if} \quad \lVert \mathbf{x} \rVert = 1 \wedge \mathbf{x}[0] < 128 \\
 (128 + \lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{else if} \quad \lVert \mathbf{x} \rVert < 56 \\
-\big(183 + \big\lVert \mathtt{BE}(\lVert \mathbf{x} \rVert) \big\rVert \big) \cdot \mathtt{BE}(\lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{otherwise}
+\big(183 + \big\lVert \mathtt{BE}(\lVert \mathbf{x} \rVert) \big\rVert \big) \cdot \mathtt{BE}(\lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{else if} \quad \lVert \mathbf{x} \rVert < 2^{64} \\
+\varnothing & \text{otherwise}
 \end{cases} \\
 \mathtt{BE}(x) & \equiv & (b_0, b_1, ...): b_0 \neq 0 \wedge x = \sum_{n = 0}^{n < \lVert \mathbf{b} \rVert} b_{\mathrm{n}} \cdot 256^{\lVert \mathbf{b} \rVert - 1 - n} \\
 (a) \cdot (b, c) \cdot (d, e) & = & (a, b, c, d, e)
@@ -1362,16 +1365,22 @@ Thus $\mathtt{BE}$ is the function that expands a non-negative integer value to 
 
 \begin{itemize}
 \item If the concatenated serialisations of each contained item is less than 56 bytes in length, then the output is equal to that concatenation prefixed by the byte equal to the length of this byte array plus 192.
-\item Otherwise, the output is equal to the concatenated serialisations prefixed by the minimal-length byte-array which when interpreted as a big-endian integer is equal to the length of the concatenated serialisations byte array, which is itself prefixed by the number of bytes required to faithfully encode this length value plus 247.
+\item Otherwise, the output is equal to the concatenated serialisations, provided that they contain fewer than $2^{64}$ bytes, prefixed by the minimal-length byte-array which when interpreted as a big-endian integer is equal to the length of the concatenated serialisations byte array, which is itself prefixed by the number of bytes required to faithfully encode this length value plus 247.
 \end{itemize}
+
+Sequences whose concatenated serialized items contain $2^{64}$ or more bytes cannot be encoded. This restriction ensures that the first byte of the encoding does not exceed 255 (otherwise it would not be a byte).
 
 \hypertarget{RLP_serialisation_of_a_sequence_of_other_items_R__l_math_def}{}Thus we finish by formally defining $R_{\mathrm{l}}$:
 \begin{eqnarray}
 R_{\mathrm{l}}(\mathbf{x}) & \equiv & \begin{cases}
-(192 + \lVert s(\mathbf{x}) \rVert) \cdot s(\mathbf{x}) & \text{if} \quad \lVert s(\mathbf{x}) \rVert < 56 \\
-\big(247 + \big\lVert \mathtt{BE}(\lVert s(\mathbf{x}) \rVert) \big\rVert \big) \cdot \mathtt{BE}(\lVert s(\mathbf{x}) \rVert) \cdot s(\mathbf{x}) & \text{otherwise}
+(192 + \lVert s(\mathbf{x}) \rVert) \cdot s(\mathbf{x}) & \text{if} \quad s(\mathbf{x}) \neq \varnothing \wedge \lVert s(\mathbf{x}) \rVert < 56 \\
+\big(247 + \big\lVert \mathtt{BE}(\lVert s(\mathbf{x}) \rVert) \big\rVert \big) \cdot \mathtt{BE}(\lVert s(\mathbf{x}) \rVert) \cdot s(\mathbf{x}) & \text{else if} \quad s(\mathbf{x}) \neq \varnothing \wedge \lVert s(\mathbf{x}) \rVert < 2^{64} \\
+\varnothing & \text{otherwise}
 \end{cases} \\
-s(\mathbf{x}) & \equiv & \mathtt{RLP}(\mathbf{x}_0) \cdot \mathtt{RLP}(\mathbf{x}_1) ...
+s(\mathbf{x}) & \equiv & \begin{cases}
+\mathtt{RLP}(\mathbf{x}_0) \cdot \mathtt{RLP}(\mathbf{x}_1) \cdot ... & \text{if} \quad \forall i: \mathtt{RLP}(\mathbf{x}_i) \neq \varnothing \\
+\varnothing & \text{otherwise}
+\end{cases}
 \end{eqnarray}
 
 If RLP is used to encode a scalar, defined only as a non-negative integer ($\mathbb{N}$ or any $x$ for $\mathbb{N}_{\mathrm{x}}$), it must be specified as the shortest byte array such that the big-endian interpretation of it is equal. Thus the RLP of some non-negative integer $i$ is defined as:
