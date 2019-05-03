@@ -1356,7 +1356,7 @@ R_{\mathrm{b}}(\mathbf{x}) & \equiv & \begin{cases}
 \varnothing & \text{otherwise}
 \end{cases} \\
 \mathtt{BE}(x) & \equiv & (b_0, b_1, ...): b_0 \neq 0 \wedge x = \sum_{n = 0}^{\lVert \mathbf{b} \rVert - 1} b_n \cdot 256^{\lVert \mathbf{b} \rVert - 1 - n} \\
-(a) \cdot (b, c) \cdot (d, e) & = & (a, b, c, d, e)
+(x_1, ..., x_n) \cdot (y_1, ..., y_m) & = & (x_1, ..., x_n, y_1, ..., y_m)
 \end{eqnarray}
 
 Thus $\mathtt{BE}$ is the function that expands a non-negative integer value to a big-endian byte array of minimal length and the dot operator performs sequence concatenation.
