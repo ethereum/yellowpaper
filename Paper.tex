@@ -385,7 +385,7 @@ The sequence $R_{\mathbf{l}}$ is a series of log entries, $(O_0, O_1, ...)$. A l
 O \equiv (O_{\mathrm{a}}, ({O_{\mathbf{t}}}_0, {O_{\mathbf{t}}}_1, ...), O_{\mathbf{d}})
 \end{equation}
 \begin{equation}
-O_{\mathrm{a}} \in \mathbb{B}_{20} \quad \wedge \quad \forall_{x \in O_{\mathbf{t}}}: x \in \mathbb{B}_{32} \quad \wedge \quad O_{\mathbf{d}} \in \mathbb{B}
+O_{\mathrm{a}} \in \mathbb{B}_{20} \quad \wedge \quad \forall x \in O_{\mathbf{t}}: x \in \mathbb{B}_{32} \quad \wedge \quad O_{\mathbf{d}} \in \mathbb{B}
 \end{equation}
 
 We define the Bloom filter function, $M$, to reduce a log entry into a single 256-byte hash:
@@ -397,7 +397,7 @@ where $M_{3:2048}$ is a specialised Bloom filter that sets three bits out of 204
 \begin{eqnarray}
 M_{3:2048}(\mathbf{x}: \mathbf{x} \in \mathbb{B}) & \equiv & \mathbf{y}: \mathbf{y} \in \mathbb{B}_{256} \quad \text{where:}\\
 \mathbf{y} & = & (0, 0, ..., 0) \quad \text{except:}\\
-\forall_{i \in \{0, 2, 4\}}&:& \mathcal{B}_{m(\mathbf{x}, i)}(\mathbf{y}) = 1\\
+\forall i \in \{0, 2, 4\}&:&\mathcal{B}_{m(\mathbf{x}, i)}(\mathbf{y}) = 1\\
 m(\mathbf{x}, i) &\equiv& \mathtt{KEC}(\mathbf{x})[i, i + 1] \bmod 2048
 \end{eqnarray}
 
@@ -1134,7 +1134,8 @@ The application of rewards to a block involves raising the balance of the accoun
 \\ \nonumber
 \Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
 \qquad\boldsymbol{\sigma}'[{\mathbf{B}_{H}}_{\mathrm{c}}]_{\mathrm{b}} & = & \boldsymbol{\sigma}[{\mathbf{B}_{H}}_{\mathrm{c}}]_{\mathrm{b}} + \left(1 + \frac{\lVert \mathbf{B}_{\mathbf{U}}\rVert}{32}\right)R_{\mathrm{block}} \\
-\qquad\forall_{\mathbf{U} \in \mathbf{B}_{\mathbf{U}}}: \\ \nonumber
+\\ \nonumber
+\forall \mathbf{U} \in \mathbf{B}_{\mathbf{U}}: \\ \nonumber
 \boldsymbol{\sigma}'[\mathbf{U}_{\mathrm{c}}] & = & \begin{cases}
 \varnothing &\text{if}\ \boldsymbol{\sigma}[\mathbf{U}_{\mathrm{c}}] = \varnothing\ \wedge\ R = 0 \\
 \mathbf{a}' &\text{otherwise}
@@ -1326,8 +1327,8 @@ This is a serialisation method for encoding arbitrarily structured binary data (
 We define the set of possible structures $\mathbb{T}$:
 \begin{eqnarray}
 \mathbb{T} & \equiv & \mathbb{L} \uplus \mathbb{B} \\
-\mathbb{L} & \equiv & \{ \mathbf{t}: \mathbf{t} = ( \mathbf{t}[0], \mathbf{t}[1], ... ) \; \wedge \; \forall_{n < \lVert \mathbf{t} \rVert} \; \mathbf{t}[n] \in \mathbb{T} \} \\
-\mathbb{B} & \equiv & \{ \mathbf{b}: \mathbf{b} = ( \mathbf{b}[0], \mathbf{b}[1], ... ) \; \wedge \; \forall_{n < \lVert \mathbf{b} \rVert} \; \mathbf{b}[n] \in \mathbb{O} \}
+\mathbb{L} & \equiv & \{ \mathbf{t}: \mathbf{t} = ( \mathbf{t}[0], \mathbf{t}[1], ... ) \; \wedge \; \forall n < \lVert \mathbf{t} \rVert : \mathbf{t}[n] \in \mathbb{T} \} \\
+\mathbb{B} & \equiv & \{ \mathbf{b}: \mathbf{b} = ( \mathbf{b}[0], \mathbf{b}[1], ... ) \; \wedge \; \forall n < \lVert \mathbf{b} \rVert : \mathbf{b}[n] \in \mathbb{O} \}
 \end{eqnarray}
 
 Where $\mathbb{O}$ is the set of (8-bit) bytes. Thus $\mathbb{B}$ is the set of all sequences of bytes (otherwise known as byte arrays, and a leaf if imagined as a tree), $\mathbb{L}$ is the set of all tree-like (sub-)structures that are not a single leaf (a branch node if imagined as a tree) and $\mathbb{T}$ is the set of all byte arrays and such structural sequences. The disjoint union $\uplus$ is needed only to distinguish the empty byte array $()\in\mathbb{B}$ from the empty list $()\in\mathbb{L}$, which are encoded differently as defined below; as common, we will abuse notation and leave the disjoint union indices implicit, inferable from context.
@@ -1419,13 +1420,13 @@ Formally, we assume the input value $\mathfrak{I}$, a set containing pairs of by
 
 When considering such a sequence, we use the common numeric subscript notation to refer to a tuple's key or value, thus:
 \begin{equation}
-\forall_{\mathbf{I} \in \mathfrak{I}} I \equiv (I_0, I_1)
+\forall I \in \mathfrak{I}: I \equiv (I_0, I_1)
 \end{equation}
 
 Any series of bytes may also trivially be viewed as a series of nibbles, given an endian-specific notation; here we assume big-endian. Thus:
 \begin{eqnarray}
 y(\mathfrak{I}) & = & \{ (\mathbf{k}_0' \in \mathbb{Y}, \mathbf{v}_0 \in \mathbb{B}), (\mathbf{k}_1' \in \mathbb{Y}, \mathbf{v}_1 \in \mathbb{B}), ... \} \\
-\forall_{n} \quad \forall_{i: i < 2\lVert\mathbf{k}_{n}\rVert} \quad \mathbf{k}_{n}'[i] & \equiv &
+\forall n: \quad \forall i < 2\lVert\mathbf{k}_{n}\rVert: \quad \mathbf{k}_{n}'[i] & \equiv &
 \begin{cases}
 \lfloor \mathbf{k}_{n}[i \div 2] \div 16 \rfloor & \text{if} \; i \; \text{is even} \\
 \mathbf{k}_{n}[\lfloor i \div 2 \rfloor] \bmod 16 & \text{otherwise}
@@ -1457,7 +1458,7 @@ A branch is then only used when necessary; no branch nodes may exist that contai
 \begin{equation}
 c(\mathfrak{I}, i) \equiv \begin{cases}
 \texttt{RLP}\Big( \big(\texttt{HP}(I_0[i .. (\lVert I_0\rVert - 1)], true), I_1 \big) \Big) & \text{if} \quad \lVert \mathfrak{I} \rVert = 1 \quad \text{where} \; \exists I: I \in \mathfrak{I} \\
-\texttt{RLP}\Big( \big(\texttt{HP}(I_0[i .. (j - 1)], false), n(\mathfrak{I}, j) \big) \Big) & \text{if} \quad i \ne j \quad \text{where} \; j = \max \{ x : \exists \mathbf{l}: \lVert \mathbf{l} \rVert = x \wedge \forall_{I \in \mathfrak{I}}: I_0[0 .. (x - 1)] = \mathbf{l} \} \\
+\texttt{RLP}\Big( \big(\texttt{HP}(I_0[i .. (j - 1)], false), n(\mathfrak{I}, j) \big) \Big) & \text{if} \quad i \ne j \quad \text{where} \; j = \max \{ x : \exists \mathbf{l}: \lVert \mathbf{l} \rVert = x \wedge \forall I \in \mathfrak{I}: I_0[0 .. (x - 1)] = \mathbf{l} \} \\
 \texttt{RLP}\Big( (u(0), u(1), ..., u(15), v) \Big) & \text{otherwise} \quad \text{where} \begin{array}[t]{rcl}
 u(j) & \equiv & n(\{ I : I \in \mathfrak{I} \wedge I_0[i] = j \}, i + 1) \\
 v & = & \begin{cases}
@@ -2066,7 +2067,7 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& instruction or transaction. \\
 \midrule
 0x37 & {\small CALLDATACOPY} & 3 & 0 & Copy input data in current environment to memory. \\
-&&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_{\mathbf{s}}[2] - 1\} } \boldsymbol{\mu}'_{\mathbf{m}}[\boldsymbol{\mu}_{\mathbf{s}}[0] + i ] \equiv
+&&&& $\forall i \in \{ 0 \dots \boldsymbol{\mu}_{\mathbf{s}}[2] - 1\}: \boldsymbol{\mu}'_{\mathbf{m}}[\boldsymbol{\mu}_{\mathbf{s}}[0] + i ] \equiv
 \begin{cases} I_{\mathbf{d}}[\boldsymbol{\mu}_{\mathbf{s}}[1] + i] & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] + i < \lVert I_{\mathbf{d}} \rVert \\ 0 & \text{otherwise} \end{cases}$\\
 &&&& The additions in $\boldsymbol{\mu}_{\mathbf{s}}[1] + i$ are not subject to the $2^{256}$ modulo. \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \boldsymbol{\mu}_{\mathbf{s}}[2])$ \\
@@ -2077,7 +2078,7 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \lVert I_{\mathbf{b}} \rVert$ \\
 \midrule
 0x39 & {\small CODECOPY} & 3 & 0 & Copy code running in current environment to memory. \\
-&&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_{\mathbf{s}}[2] - 1\} } \boldsymbol{\mu}'_{\mathbf{m}}[\boldsymbol{\mu}_{\mathbf{s}}[0] + i ] \equiv
+&&&& $\forall i \in \{ 0 \dots \boldsymbol{\mu}_{\mathbf{s}}[2] - 1\}: \boldsymbol{\mu}'_{\mathbf{m}}[\boldsymbol{\mu}_{\mathbf{s}}[0] + i ] \equiv
 \begin{cases} I_{\mathbf{b}}[\boldsymbol{\mu}_{\mathbf{s}}[1] + i] & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] + i < \lVert I_{\mathbf{b}} \rVert \\ \text{\small STOP} & \text{otherwise} \end{cases}$\\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \boldsymbol{\mu}_{\mathbf{s}}[2])$ \\
 &&&& The additions in $\boldsymbol{\mu}_{\mathbf{s}}[1] + i$ are not subject to the $2^{256}$ modulo. \\
@@ -2090,7 +2091,7 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \lVert \boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \mod 2^{160}]_{\mathrm{c}} \rVert$ \\
 \midrule
 0x3c & {\small EXTCODECOPY} & 4 & 0 & Copy an account's code to memory. \\
-&&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_{\mathbf{s}}[3] - 1\} } \boldsymbol{\mu}'_{\mathbf{m}}[\boldsymbol{\mu}_{\mathbf{s}}[1] + i ] \equiv
+&&&& $\forall i \in \{ 0 \dots \boldsymbol{\mu}_{\mathbf{s}}[3] - 1\}: \boldsymbol{\mu}'_{\mathbf{m}}[\boldsymbol{\mu}_{\mathbf{s}}[1] + i ] \equiv
 \begin{cases} \mathbf{c}[\boldsymbol{\mu}_{\mathbf{s}}[2] + i] & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] + i < \lVert \mathbf{c} \rVert \\ \text{\small STOP} & \text{otherwise} \end{cases}$\\
 &&&& where $\mathbf{c} \equiv \boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \mod 2^{160}]_{\mathrm{c}}$ \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[1], \boldsymbol{\mu}_{\mathbf{s}}[3])$ \\
@@ -2101,7 +2102,7 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \lVert \boldsymbol{\mu}_{\mathbf{o}} \rVert$ \\
 \midrule
 0x3e & {\small RETURNDATACOPY} & 3 & 0 & Copy output data from the previous call to memory. \\
-&&&& $\forall_{i \in \{ 0 \dots \boldsymbol{\mu}_{\mathbf{s}}[2] - 1\} } \boldsymbol{\mu}'_{\mathbf{m}}[\boldsymbol{\mu}_{\mathbf{s}}[0] + i ] \equiv
+&&&& $\forall i \in \{ 0 \dots \boldsymbol{\mu}_{\mathbf{s}}[2] - 1\}: \boldsymbol{\mu}'_{\mathbf{m}}[\boldsymbol{\mu}_{\mathbf{s}}[0] + i ] \equiv
 \begin{cases} \boldsymbol{\mu}_{\mathbf{o}}[\boldsymbol{\mu}_{\mathbf{s}}[1] + i] & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] + i < \lVert \boldsymbol{\mu}_{\mathbf{o}} \rVert \\ 0 & \text{otherwise} \end{cases}$\\
 &&&& The additions in $\boldsymbol{\mu}_{\mathbf{s}}[1] + i$ are not subject to the $2^{256}$ modulo. \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \boldsymbol{\mu}_{\mathbf{s}}[2])$ \\
