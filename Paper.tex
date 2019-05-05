@@ -1404,7 +1404,7 @@ It is defined as the function $\mathtt{HP}$ which maps from a sequence of nibble
 (16(f(t) + 1) + \mathbf{x}[0], 16\mathbf{x}[1] + \mathbf{x}[2], 16\mathbf{x}[3] + \mathbf{x}[4], ...) &
 \text{otherwise}
 \end{cases} \\
-f(t) & \equiv & \begin{cases} 2 & \text{if} \quad t \neq 0 \\ 0 & \text{otherwise} \end{cases}
+f(t) & \equiv & \begin{cases} 2 & \text{if} \quad t = \mathit{true} \\ 0 & \text{otherwise} \end{cases}
 \end{eqnarray}
 
 Thus the high nibble of the first byte contains two flags; the lowest bit encoding the oddness of the length and the second-lowest encoding the flag $t$. The low nibble of the first byte is zero in the case of an even number of nibbles and the first nibble in the case of an odd number. All remaining nibbles (now an even number) fit properly into the remaining bytes.
