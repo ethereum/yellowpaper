@@ -1697,8 +1697,8 @@ We define a precompiled contract for scalar multiplication on $G_1$, where $\bar
 \Xi_{\mathtt{BN\_MUL}}(\boldsymbol\sigma,g,I)&=&\left(\varnothing,0,A^0,()\right)\quad\text{if}\ x=\varnothing\\
 g_{\mathrm{r}} &=& 40000\\
 \mathbf{o}&\equiv&\delta_1^{-1}(n\cdot x)\quad\text{where $\cdot$ is the scalar multiplication in $G_1$}\\
-n&\equiv&\bar I_{\mathbf{d}}[0..31]\\
-x&\equiv&\delta_1\left(\bar I_{\mathbf{d}}[32..95]\right)
+x&\equiv&\delta_1\left(\bar I_{\mathbf{d}}[0..63]\right)\\
+n&\equiv&\bar I_{\mathbf{d}}[64..95]
 \end{eqnarray}
 
 \section{Signing Transactions}\label{app:signing}
