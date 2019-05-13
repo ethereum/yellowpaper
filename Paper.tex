@@ -1731,7 +1731,7 @@ where:
 %\mathtt{secp256k1p} &= 2^{256} - 2^{32} - 977\\
 \end{align}
 
-For a given private key, $p_{\mathrm{r}}$, the Ethereum address $A(p_{\mathrm{r}})$ (a 160-bit value) to which it corresponds is defined as the right most 160-bits of the Keccak hash of the corresponding ECDSA public key:
+For a given private key, $p_{\mathrm{r}}$, the Ethereum address $A(p_{\mathrm{r}})$ (a 160-bit value) to which it corresponds is defined as the rightmost 160-bits of the Keccak hash of the corresponding ECDSA public key:
 \begin{equation}
 A(p_{\mathrm{r}}) = \mathcal{B}_{96..255}\big(\mathtt{KEC}\big( \mathtt{ECDSAPUBKEY}(p_{\mathrm{r}}) \big) \big)
 \end{equation}
@@ -1833,7 +1833,7 @@ $G_{quaddivisor}$ & 100 & The quadratic coefficient of the input sizes of the ex
 
 When interpreting 256-bit binary values as integers, the representation is big-endian.
 
-When a 256-bit machine datum is converted to and from a 160-bit address or hash, the rightwards (low-order for BE) 20 bytes are used and the left most 12 are discarded or filled with zeroes, thus the integer values (when the bytes are interpreted as big-endian) are equivalent.
+When a 256-bit machine datum is converted to and from a 160-bit address or hash, the rightwards (low-order for BE) 20 bytes are used and the leftmost 12 are discarded or filled with zeroes, thus the integer values (when the bytes are interpreted as big-endian) are equivalent.
 
 \subsection{Gas Cost}
 
