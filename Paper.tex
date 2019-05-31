@@ -577,14 +577,14 @@ Formally, we consider the function \hyperlink{Upsilon_state_transition}{$\Upsilo
 Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define \hyperlink{tx_total_gas_used_Upsilon_pow_g}{$\Upsilon^{\mathrm{g}}$} to evaluate to the amount of gas used in the execution of a transaction, \hyperlink{tx_logs_Upsilon_pow_l}{$\Upsilon^{\mathbf{l}}$} to evaluate to the transaction's accrued log items and \hyperlink{tx_status_Upsilon_pow_z}{$\Upsilon^{\mathrm{z}}$} to evaluate to the status code resulting from the transaction. These will be formally defined later.
 
 \subsection{Substate}
-Throughout transaction execution, we accrue certain information that is acted upon immediately following the transaction. We call this \textit{transaction substate}, and represent it as $A$, which is a tuple:
+Throughout transaction execution, we accrue certain information that is acted upon immediately following the transaction. We call this the \textit{accrued transaction substate}, or \textit{accrued substate} for short, and represent it as $A$, which is a tuple:
 \begin{equation}
 A \equiv (A_{\mathbf{s}}, A_{\mathbf{l}}, A_{\mathbf{t}}, A_{\mathrm{r}})
 \end{equation}
 
 \hypertarget{self_destruct_set_wordy_defn_A__s}{}The tuple contents include $A_{\mathbf{s}}$, the self-destruct set: a set of accounts that will be discarded following the transaction's completion.\hypertarget{tx_log_series_wordy_defn_A__l}{} $A_{\mathbf{l}}$ is the log series: this is a series of archived and indexable `checkpoints' in VM code execution that allow for contract-calls to be easily tracked by onlookers external to the Ethereum world (such as decentralised application front-ends).\hypertarget{tx_touched_accounts_wordy_defn_A__t}{} $A_{\mathbf{t}}$ is the set of touched accounts, of which the empty ones are deleted at the end of a transaction.\hypertarget{refund_balance_defn_words_A__r}{} Finally there is $A_{\mathrm{r}}$, the refund balance, increased through using the \hyperlink{SSTORE}{{\small SSTORE}} instruction in order to reset contract storage to zero from some non-zero value. Though not immediately refunded, it is allowed to partially offset the total execution costs.
 
-We define the empty substate $A^0$ to have no self-destructs, no logs, no touched accounts and a zero refund balance:
+We define the empty accrued substate $A^0$ to have no self-destructs, no logs, no touched accounts and a zero refund balance:
 \begin{equation}
 A^0 \equiv (\varnothing,(), \varnothing, 0)
 \end{equation}
@@ -627,7 +627,7 @@ We define the checkpoint state $\boldsymbol{\sigma}_0$:
 \boldsymbol{\sigma}_0[S(T)]_{\mathrm{n}} & \equiv & \boldsymbol{\sigma}[S(T)]_{\mathrm{n}} + 1
 \end{eqnarray}
 
-Evaluating $\boldsymbol{\sigma}_{P}$ from $\boldsymbol{\sigma}_0$ depends on the transaction type; either contract creation or message call; we define the tuple of post-execution provisional state $\boldsymbol{\sigma}_{P}$, remaining gas $g'$, substate $A$ and status code $z$:
+Evaluating $\boldsymbol{\sigma}_{P}$ from $\boldsymbol{\sigma}_0$ depends on the transaction type; either contract creation or message call; we define the tuple of post-execution provisional state $\boldsymbol{\sigma}_{P}$, remaining gas $g'$, accrued substate $A$ and status code $z$:
 \begin{equation}
 (\boldsymbol{\sigma}_{P}, g', A, z) \equiv \begin{cases}
 \Lambda_{4}(\boldsymbol{\sigma}_0, S(T), T_{\mathrm{o}}, g, &\\ \quad\quad T_{\mathrm{p}}, T_{\mathrm{v}}, T_{\mathbf{i}}, 0, \top) & \text{if} \quad T_{\mathrm{t}} = \varnothing \\
@@ -663,7 +663,7 @@ The Ether for the gas is given to the miner, whose address is specified as the b
 m & \equiv & {B_{H}}_{\mathrm{c}}
 \end{eqnarray}
 
-The final state, $\boldsymbol{\sigma}'$, is reached after deleting all accounts that either appear in the self-destruct list or are touched and empty:
+The final state, $\boldsymbol{\sigma}'$, is reached after deleting all accounts that either appear in the self-destruct set or are touched and empty:
 \begin{eqnarray}
 \boldsymbol{\sigma}' & \equiv & \boldsymbol{\sigma}^* \quad \text{except} \\
 \linkdest{self_destruct_list_A__s}{}\forall i \in A_{\mathbf{s}}: \boldsymbol{\sigma}'[i] & = & \varnothing \\
@@ -749,7 +749,7 @@ If there is not enough gas remaining to pay this, \ie $g^{**} < c$, then we also
 
 The gas remaining will be zero in any such exceptional condition, \ie if the creation was conducted as the reception of a transaction, then this doesn't affect payment of the intrinsic cost of contract creation; it is paid regardless. However, the value of the transaction is not transferred to the aborted contract's address when we are out-of-gas.
 
-If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persist. Thus formally, we may specify the resultant state, gas, substate and status code as $(\boldsymbol{\sigma}', g', A, z)$ where:
+If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persist. Thus formally, we may specify the resultant state, gas, accrued substate and status code as $(\boldsymbol{\sigma}', g', A, z)$ where:
 
 \begin{align}
 \quad g' &\equiv \begin{cases}
@@ -781,7 +781,7 @@ Note that while the initialisation code is executing, the newly created address 
 \section{Message Call} \label{ch:call}
 In the case of executing a message call, several parameters are required: sender ($s$), transaction originator ($o$), recipient ($r$), the account whose code is to be executed ($c$, usually the same as recipient), available gas ($g$), value ($v$) and gas price ($p$) together with an arbitrary length byte array, $\mathbf{d}$, the input data of the call, the present depth of the message-call/contract-creation stack ($e$) and finally the permission to make modifications to the state ($w$).
 
-Aside from evaluating to a new state and transaction substate, message calls also have an extra component---the output data denoted by the byte array $\mathbf{o}$. This is ignored when executing transactions, however message calls can be initiated due to VM-code execution and in this case this information is used.
+Aside from evaluating to a new state and accrued transaction substate, message calls also have an extra component---the output data denoted by the byte array $\mathbf{o}$. This is ignored when executing transactions, however message calls can be initiated due to VM-code execution and in this case this information is used.
 \begin{equation}
 (\boldsymbol{\sigma}', g', A, z, \mathbf{o}) \equiv \Theta(\boldsymbol{\sigma}, s, o, r, c, g, p, v, \tilde{v}, \mathbf{d}, e, w)
 \end{equation}
@@ -915,10 +915,9 @@ The execution model defines the function $\Xi$, which can compute the resultant 
 (\boldsymbol{\sigma}', g', A, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}, g, I)
 \end{equation}
 
-where we will remember that $A$, the accrued substate is defined as the tuple of the selfdestructs set $\mathbf{s}$, the log series $\mathbf{l}$, the touched accounts $\mathbf{t}$ and the refunds $r$:
-
+where we will remember that $A$, the accrued substate, is defined as the tuple of the self-destructs set $A_{\mathbf{s}}$, the log series $A_{\mathbf{l}}$, the touched accounts $A_{\mathbf{t}}$ and the refund balance $A_{\mathrm{r}}$:
 \begin{equation}
-A \equiv (\mathbf{s}, \mathbf{l}, \mathbf{t}, r)
+A \equiv (A_{\mathbf{s}}, A_{\mathbf{l}}, A_{\mathbf{t}}, A_{\mathrm{r}})
 \end{equation}
 
 \subsection{Execution Overview}
