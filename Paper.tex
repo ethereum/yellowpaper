@@ -2560,7 +2560,7 @@ In order to add random dataset nodes to the mix, the $E_{\mathrm{accesses}}$ fun
 \begin{equation}
  E_{\mathrm{accesses}}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i) = \begin{cases}
 E_{mixdataset}(\mathbf{d}, \mathbf{m},  \mathbf{s}, i) & \text{if} \quad i = J_{\mathrm{accesses}} -2 \\
-E_{\mathrm{accesses}}(E_{mixdataset}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i), \mathbf{s}, i + 1) & \text{otherwise}
+E_{\mathrm{accesses}}(\mathbf{d}, E_{mixdataset}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i), \mathbf{s}, i + 1) & \text{otherwise}
 \end{cases}
 \end{equation}
 \begin{equation}
