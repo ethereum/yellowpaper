@@ -1663,7 +1663,7 @@ We define $\Xi_{\mathtt{SNARKV}}$ as a precompiled contract which checks if (\re
 \qquad\Xi_{\mathtt{SNARKV}}(\boldsymbol\sigma,g,I)&=&\left(\varnothing,0,A^0,()\right)\quad\text{if}\ F\\
 F&\equiv&(|I_{\mathbf{d}}|\bmod 192\neq 0\vee(\exists j.\ a_{\mathrm{j}}=\varnothing\vee b_{\mathrm{j}}=\varnothing))\\
 k &=& \dfrac{|I_{\mathbf{d}}|}{192} \\
-g_{\mathrm{r}}&=& 60000k + 40000 \\
+g_{\mathrm{r}}&=& 80000k + 100000 \\
 \mathbf{o}[0..31]&\equiv&\begin{cases}
 0x0000000000000000000000000000000000000000000000000000000000000001&\text{if}\ v\wedge\neg F\\
 0x0000000000000000000000000000000000000000000000000000000000000000&\text{if}\ \neg v\wedge\neg F
