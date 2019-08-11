@@ -742,7 +742,7 @@ Code execution depletes gas, and gas may not go below zero, thus execution may e
 
 If the initialization code completes successfully, a final contract-creation cost is paid, the code-deposit cost, $c$, proportional to the size of the created contract's code:
 \begin{equation}
-c \equiv G_{codedeposit} \times |\mathbf{o}|
+c \equiv G_{codedeposit} \times \lVert \mathbf{o} \rVert
 \end{equation}
 
 If there is not enough gas remaining to pay this, \ie $g^{**} < c$, then we also declare an out-of-gas exception.
@@ -768,7 +768,7 @@ g^{**} - c & \text{otherwise} \\
 1 & \text{otherwise}
 \end{cases} \\
 \nonumber \text{where} \\
-F &\equiv \big((\boldsymbol{\sigma}^{**} = \varnothing \ \wedge\ \mathbf{o} = \varnothing) \vee\  g^{**} < c \ \vee\  |\mathbf{o}| > 24576\big)
+F &\equiv \big((\boldsymbol{\sigma}^{**} = \varnothing \ \wedge\ \mathbf{o} = \varnothing) \vee\  g^{**} < c \ \vee\  \lVert \mathbf{o} \rVert > 24576\big)
 \end{align}
 
 The exception in the determination of $\boldsymbol{\sigma}'$ dictates that $\mathbf{o}$, the resultant byte sequence from the execution of the initialisation code, specifies the final body code for the newly-created account.
