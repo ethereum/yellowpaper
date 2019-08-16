@@ -1013,7 +1013,7 @@ D(\mathbf{c}) \equiv D_{J}(\mathbf{c}, 0)
 where:
 \begin{equation}
 D_{J}(\mathbf{c}, i) \equiv \begin{cases}
-\{\} & \text{if} \quad i \geqslant |\mathbf{c}|  \\
+\{\} & \text{if} \quad i \geqslant \lVert \mathbf{c} \rVert  \\
 \{ i \} \cup D_{J}(\mathbf{c}, N(i, \mathbf{c}[i])) & \\
 \quad\quad\text{if} \quad \mathbf{c}[i] = \text{\small JUMPDEST} \\
 D_{J}(\mathbf{c}, N(i, \mathbf{c}[i])) & \text{otherwise} \\
@@ -1489,12 +1489,12 @@ We define $\Xi_{\mathtt{ECREC}}$ as a precompiled contract for the elliptic curv
 \begin{eqnarray}
 \Xi_{\mathtt{ECREC}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
 g_{\mathrm{r}} &=& 3000\\
-|\mathbf{o}| &=& \begin{cases} 0 & \text{if} \quad \mathtt{ECDSARECOVER}(h, v, r, s) = \varnothing\\ 32 & \text{otherwise} \end{cases}\\
-\text{if} \quad |\mathbf{o}| = 32: &&\\
+\lVert \mathbf{o} \rVert &=& \begin{cases} 0 & \text{if} \quad \mathtt{ECDSARECOVER}(h, v, r, s) = \varnothing\\ 32 & \text{otherwise} \end{cases}\\
+\text{if} \quad \lVert \mathbf{o} \rVert = 32: &&\\
 \mathbf{o}[0..11] &=& 0 \\
 \mathbf{o}[12..31] &=& \mathtt{KEC}\big(\mathtt{ECDSARECOVER}(h, v, r, s)\big)[12..31] \quad \text{where:}\\
-\mathbf{d}[0..(|\hyperlink{I__d}{I_{\mathbf{d}}}|-1)] &=& I_{\mathbf{d}}\\
-\mathbf{d}[|I_{\mathbf{d}}|..] &=& (0, 0, ...) \\
+\mathbf{d}[0..(\lVert \hyperlink{I__d}{I_{\mathbf{d}}} \rVert-1)] &=& I_{\mathbf{d}}\\
+\mathbf{d}[\lVert I_{\mathbf{d}} \rVert..] &=& (0, 0, ...) \\
 h &=& \mathbf{d}[0..31]\\
 v &=& \mathbf{d}[32..63]\\
 r &=& \mathbf{d}[64..95]\\
@@ -1505,10 +1505,10 @@ We define $\Xi_{\mathtt{SHA256}}$ and $\Xi_{\mathtt{RIP160}}$ as precompiled con
 
 \begin{eqnarray}
 \Xi_{\mathtt{SHA256}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
-g_{\mathrm{r}} &=& 60 + 12\Big\lceil \dfrac{|I_{\mathbf{d}}|}{32} \Big\rceil\\
+g_{\mathrm{r}} &=& 60 + 12\Big\lceil \dfrac{\lVert I_{\mathbf{d}} \rVert}{32} \Big\rceil\\
 \mathbf{o}[0..31] &=& \mathtt{SHA256}(I_{\mathbf{d}})\\
 \Xi_{\mathtt{RIP160}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
-g_{\mathrm{r}} &=& 600 + 120\Big\lceil \dfrac{|I_{\mathbf{d}}|}{32} \Big\rceil\\
+g_{\mathrm{r}} &=& 600 + 120\Big\lceil \dfrac{\lVert I_{\mathbf{d}} \rVert}{32} \Big\rceil\\
 \mathbf{o}[0..11] &=& 0 \\
 \mathbf{o}[12..31] &=& \mathtt{RIPEMD160}(I_{\mathbf{d}})
 \end{eqnarray}
@@ -1523,7 +1523,7 @@ For the purposes here, we assume we have well-defined standard cryptographic fun
 The fourth contract, the identity function $\Xi_{\mathtt{ID}}$ simply defines the output as the input:
 \begin{eqnarray}
 \Xi_{\mathtt{ID}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
-g_{\mathrm{r}} &=& 15 + 3\Big\lceil \dfrac{|I_{\mathbf{d}}|}{32} \Big\rceil\\
+g_{\mathrm{r}} &=& 15 + 3\Big\lceil \dfrac{\lVert I_{\mathbf{d}} \rVert}{32} \Big\rceil\\
 \mathbf{o} &=& I_{\mathbf{d}}
 \end{eqnarray}
 
@@ -1551,7 +1551,7 @@ B &\equiv& i[96..(95+\ell_{B})] \\
 E &\equiv& i[(96+\ell_{B})..(95+\ell_{B}+\ell_{E})] \\
 M &\equiv& i[(96+\ell_{B}+\ell_{E})..(95+\ell_{B}+\ell_{E}+\ell_{M})] \\
 i[x] &\equiv& \begin{cases}
-I_{\mathbf{d}}[x] &\text{if}\ x < |I_{\mathbf{d}}| \\
+I_{\mathbf{d}}[x] &\text{if}\ x < \lVert I_{\mathbf{d}} \rVert \\
 0 &\text{otherwise}
 \end{cases}
 \end{eqnarray}
@@ -1661,8 +1661,8 @@ We define $\Xi_{\mathtt{SNARKV}}$ as a precompiled contract which checks if (\re
 \begin{eqnarray}
 \Xi_{\mathtt{SNARKV}}&\equiv&\Xi_{\mathtt{PRE}}\quad\text{except:}\\
 \qquad\Xi_{\mathtt{SNARKV}}(\boldsymbol\sigma,g,I)&=&\left(\varnothing,0,A^0,()\right)\quad\text{if}\ F\\
-F&\equiv&(|I_{\mathbf{d}}|\bmod 192\neq 0\vee(\exists j.\ a_{\mathrm{j}}=\varnothing\vee b_{\mathrm{j}}=\varnothing))\\
-k &=& \dfrac{|I_{\mathbf{d}}|}{192} \\
+F&\equiv&(\lVert I_{\mathbf{d}} \rVert\bmod 192\neq 0\vee(\exists j.\ a_{\mathrm{j}}=\varnothing\vee b_{\mathrm{j}}=\varnothing))\\
+k &=& \dfrac{\lVert I_{\mathbf{d}} \rVert}{192} \\
 g_{\mathrm{r}}&=& 80000k + 100000 \\
 \mathbf{o}[0..31]&\equiv&\begin{cases}
 0x0000000000000000000000000000000000000000000000000000000000000001&\text{if}\ v\wedge\neg F\\
@@ -1672,8 +1672,8 @@ v&\equiv&(\log_{P_1}(a_1)\times\log_{P_2}(b_1)+\cdots+\log_{P_1}(a_k)\times\log_
 a_1&\equiv&\delta_1(I_{\mathbf{d}}[0..63])\\
 b_1&\equiv&\delta_2(I_{\mathbf{d}}[64..191])\\\nonumber
 \vdots\\
-a_k&\equiv&\delta_1(I_{\mathbf{d}}[(|I_{\mathbf{d}}|-192)..(|I_{\mathbf{d}}|-129)])\\
-b_k&\equiv&\delta_2(I_{\mathbf{d}}[(|I_{\mathbf{d}}|-128)..(|I_{\mathbf{d}}|-1)])
+a_k&\equiv&\delta_1(I_{\mathbf{d}}[(\lVert I_{\mathbf{d}} \rVert-192)..(\lVert I_{\mathbf{d}} \rVert-129)])\\
+b_k&\equiv&\delta_2(I_{\mathbf{d}}[(\lVert I_{\mathbf{d}} \rVert-128)..(\lVert I_{\mathbf{d}} \rVert-1)])
 \end{eqnarray}
 
 We define a precompiled contract for addition on $G_1$.
@@ -1686,7 +1686,7 @@ g_{\mathrm{r}} &=& 500\\
 x&\equiv&\delta_1\left(\bar I_{\mathbf{d}}[0..63]\right)\\
 y&\equiv&\delta_1\left(\bar I_{\mathbf{d}}[64..127]\right)\\
 \label{eq:complemented_input}\bar I_{\mathbf{d}}[x]&\equiv&\begin{cases}
-I_{\mathbf{d}}[x]&\text{if}\ x < |I_{\mathbf{d}}|\\
+I_{\mathbf{d}}[x]&\text{if}\ x < \lVert I_{\mathbf{d}} \rVert\\
 0&\text{otherwise}
 \end{cases}
 \end{eqnarray}
@@ -2304,7 +2304,7 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] = 0 \; \wedge \; \
 0xf1 & {\small CALL} & 7 & 1 & Message-call into an account. \\
 &&&& $\mathbf{i} \equiv \boldsymbol{\mu}_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[3] \dots (\boldsymbol{\mu}_{\mathbf{s}}[3] + \boldsymbol{\mu}_{\mathbf{s}}[4] - 1) ]$ \\
 &&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}, I_{\mathrm{a}}, I_{\mathrm{o}}, t, t, C_{\text{\tiny CALLGAS}}(\boldsymbol{\mu}),\\ \quad I_{\mathrm{p}}, \boldsymbol{\mu}_{\mathbf{s}}[2], \boldsymbol{\mu}_{\mathbf{s}}[2], \mathbf{i}, I_{\mathrm{e}} + 1, I_{\mathrm{w}})\end{array} & \begin{array}{l}\text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] \leqslant \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \;\wedge \\ \quad\quad I_{\mathrm{e}} < 1024\end{array}\\ (\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
-&&&& $n \equiv \min(\{ \boldsymbol{\mu}_{\mathbf{s}}[6], |\mathbf{o}|\})$ \\
+&&&& $n \equiv \min(\{ \boldsymbol{\mu}_{\mathbf{s}}[6], \lVert \mathbf{o} \rVert\})$ \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[5] \dots (\boldsymbol{\mu}_{\mathbf{s}}[5] + n - 1) ] = \mathbf{o}[0 \dots (n - 1)]$ \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{o}} = \mathbf{o}$ \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{g}} \equiv \boldsymbol{\mu}_{\mathrm{g}} + g'$ \\
