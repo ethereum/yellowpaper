@@ -1855,7 +1855,7 @@ C_\text{\tiny CALL}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w =
 &\quad\text{\small DELEGATECALL} \\
 C_\text{\tiny SELFDESTRUCT}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SELFDESTRUCT} \\
 G_{create} & \text{if} \quad w = \text{\small CREATE}\\
-G_{sha3}+G_{sha3word} \lceil \mathbf{s}[1] \div 32 \rceil & \text{if} \quad w = \text{\small SHA3}\\
+G_{sha3}+G_{sha3word}\times\lceil \boldsymbol{\mu}_{\mathbf{s}}[1] \div 32 \rceil & \text{if} \quad w = \text{\small SHA3}\\
 G_{jumpdest} & \text{if} \quad w = \text{\small JUMPDEST}\\
 G_{sload} & \text{if} \quad w = \text{\small SLOAD}\\
 G_{zero} & \text{if} \quad w \in W_{zero}\\
@@ -2444,7 +2444,7 @@ The size of the cache, $c_{size}$, is calculated using
 \end{equation}
 \begin{equation}
  E_{\mathrm{prime}}(x, y) = \begin{cases}
-x & \text{if} \quad x / y \in \mathbb{N} \\
+x & \text{if} \quad x / y \in \mathbb{P} \\
 E_{\mathrm{prime}}(x - 2 \cdot y, y) & \text{otherwise}
 \end{cases}
 \end{equation}
