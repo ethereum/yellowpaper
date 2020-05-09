@@ -64,7 +64,7 @@
 \newcommand*\ie{i.e.\@\xspace}
 %\renewcommand{\itemhook}{\setlength{\topsep}{0pt}  \setlength{\itemsep}{0pt}\setlength{\leftmargin}{15pt}}
 
-\title{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ {\smaller \textbf{Byzantium version \YellowPaperVersionNumber}}}
+\title{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ {\smaller \textbf{Constantinople version \YellowPaperVersionNumber}}}
 \author{
     Dr. Gavin Wood\\
     Founder, Ethereum \& Parity\\
@@ -1790,7 +1790,8 @@ $G_{verylow}$ & 3 & Amount of gas to pay for operations of the set {\small $W_{v
 $G_{\mathrm{low}}$ & 5 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{low}}$}. \\
 $G_{mid}$ & 8 & Amount of gas to pay for operations of the set {\small $W_{mid}$}. \\
 $G_{\mathrm{high}}$ & 10 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{high}}$}. \\
-$G_{extcode}$ & 700 & Amount of gas to pay for operations of the set {\small $W_{extcode}$}. \\
+$G_{extcode}$ & 700 & Amount of gas to pay for an {\small EXTCODESIZE} operation. \\
+$G_{extcodehash}$ & 400 & Amount of gas to pay for an {\small EXTCODEHASH} operation. \\
 $G_{balance}$ & 400 & Amount of gas to pay for a {\small BALANCE} operation. \\
 $G_{sload}$ & 200 & Paid for a {\small SLOAD} operation. \\
 $G_{jumpdest}$ & 1 & Paid for a {\small JUMPDEST} operation. \\
@@ -1864,7 +1865,8 @@ G_{verylow} & \text{if} \quad w \in W_{verylow}\\
 G_{\mathrm{low}} & \text{if} \quad w \in W_{\mathrm{low}}\\
 G_{mid} & \text{if} \quad w \in W_{mid}\\
 G_{\mathrm{high}} & \text{if} \quad w \in W_{\mathrm{high}}\\
-G_{extcode} & \text{if} \quad w \in W_{extcode}\\
+G_{extcode} & \text{if} \quad w = \text{\small EXTCODESIZE}\\
+G_{extcodehash} & \text{if} \quad w = \text{\small \hyperlink{extcodehash}{EXTCODEHASH}}\\
 G_{balance} & \text{if} \quad w = \text{\small BALANCE}\\
 G_{blockhash} & \text{if} \quad w = \text{\small \hyperlink{blockhash}{BLOCKHASH}}\\
 \end{cases}
@@ -1893,8 +1895,6 @@ $W_{\mathrm{low}}$ = \{{\small MUL}, {\small DIV}, {\small SDIV}, {\small MOD}, 
 $W_{mid}$ = \{{\small ADDMOD}, {\small MULMOD}, {\small JUMP}\}
 
 $W_{\mathrm{high}}$ = \{{\small JUMPI}\}
-
-$W_{extcode}$ = \{{\small EXTCODESIZE}\}
 
 Note the memory cost component, given as the product of $G_{memory}$ and the maximum of 0 \& the ceiling of the number of words in size that the memory must be over the current number of words, $\boldsymbol{\mu}_{\mathrm{i}}$ in order that all accesses reference valid memory whether for read or write. Such accesses must be for non-zero number of bytes.
 
@@ -2025,7 +2025,7 @@ Here given are the various exceptions to the state transition rules given in sec
 \multicolumn{5}{c}{\textbf{20s: SHA3}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x20 & {\small SHA3} & 2 & 1 & Compute Keccak-256 hash. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \mathtt{Keccak}(\boldsymbol{\mu}_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[0] \dots (\boldsymbol{\mu}_{\mathbf{s}}[0] + \boldsymbol{\mu}_{\mathbf{s}}[1] - 1) ])$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \mathtt{KEC}(\boldsymbol{\mu}_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[0] \dots (\boldsymbol{\mu}_{\mathbf{s}}[0] + \boldsymbol{\mu}_{\mathbf{s}}[1] - 1) ])$ \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \boldsymbol{\mu}_{\mathbf{s}}[1])$ \\
 \bottomrule
 \end{tabu}
@@ -2105,6 +2105,13 @@ Here given are the various exceptions to the state transition rules given in sec
 \begin{cases} \boldsymbol{\mu}_{\mathbf{o}}[\boldsymbol{\mu}_{\mathbf{s}}[1] + i] & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] + i < \lVert \boldsymbol{\mu}_{\mathbf{o}} \rVert \\ 0 & \text{otherwise} \end{cases}$\\
 &&&& The additions in $\boldsymbol{\mu}_{\mathbf{s}}[1] + i$ are not subject to the $2^{256}$ modulo. \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \boldsymbol{\mu}_{\mathbf{s}}[2])$ \\
+\end{tabu}
+
+\begin{tabu}{\usetabu{opcodes}}
+\midrule
+\linkdest{extcodehash}{}0x3f & {\small EXTCODEHASH} & 1 & 1 & Get hash of an account's code. \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv
+\begin{cases} 0 & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, \boldsymbol{\mu}_{\mathbf{s}}[0] \mod 2^{160}) \\ \mathtt{KEC}(\boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \mod 2^{160}]_{\mathrm{c}}) & \text{otherwise} \end{cases}$ \\
 \bottomrule
 \end{tabu}
 
