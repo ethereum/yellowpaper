@@ -630,7 +630,7 @@ We define the checkpoint state $\boldsymbol{\sigma}_0$:
 Evaluating $\boldsymbol{\sigma}_{P}$ from $\boldsymbol{\sigma}_0$ depends on the transaction type; either contract creation or message call; we define the tuple of post-execution provisional state $\boldsymbol{\sigma}_{P}$, remaining gas $g'$, accrued substate $A$ and status code $z$:
 \begin{equation}
 (\boldsymbol{\sigma}_{P}, g', A, z) \equiv \begin{cases}
-\Lambda_{4}(\boldsymbol{\sigma}_0, S(T), T_{\mathrm{o}}, g, &\\ \quad\quad T_{\mathrm{p}}, T_{\mathrm{v}}, T_{\mathbf{i}}, 0, \top) & \text{if} \quad T_{\mathrm{t}} = \varnothing \\
+\Lambda_{4}(\boldsymbol{\sigma}_0, S(T), T_{\mathrm{o}}, g, &\\ \quad\quad T_{\mathrm{p}}, T_{\mathrm{v}}, T_{\mathbf{i}}, 0, \varnothing, \top) & \text{if} \quad T_{\mathrm{t}} = \varnothing \\
 \Theta_{4}(\boldsymbol{\sigma}_0, S(T), T_{\mathrm{o}}, T_{\mathrm{t}}, T_{\mathrm{t}}, &\\ \quad\quad g, T_{\mathrm{p}}, T_{\mathrm{v}}, T_{\mathrm{v}}, T_{\mathbf{d}}, 0, \top) & \text{otherwise}
 \end{cases}
 \end{equation}
@@ -681,19 +681,31 @@ These are used to help define the \hyperlink{Transaction_Receipt}{transaction re
 
 \section{Contract Creation}\label{ch:create}\hypertarget{endow}{}
 
-There are a number of intrinsic parameters used when creating an account: sender ($s$), original transactor ($o$), available gas ($g$), gas price ($p$), endowment ($v$) together with an arbitrary length byte array, $\mathbf{i}$, the initialisation EVM code, the present depth of the message-call/contract-creation stack ($e$) and finally the permission to make modifications to the state ($w$).
+There are a number of intrinsic parameters used when creating an account: sender ($s$), original transactor ($o$), available gas ($g$), gas price ($p$), endowment ($v$) together with an arbitrary length byte array, $\mathbf{i}$, the initialisation EVM code, the present depth of the message-call/contract-creation stack ($e$), the salt for new account's address ($\zeta$) and finally the permission to make modifications to the state ($w$).
+The salt $\zeta$ might be missing ($\zeta = \varnothing$); formally,
+\begin{equation}
+\zeta \in \mathbb{B}_{32} \cup \mathbb{B}_{0}
+\end{equation}
+If the creation was caused by {\small \hyperlink{create2}{CREATE2}}, then $\zeta \neq \varnothing$.
 
 We define the creation function formally as the function $\Lambda$, which evaluates from these values, together with the state $\boldsymbol{\sigma}$ to the tuple containing the new state, remaining gas, accrued transaction substate and an error message $(\boldsymbol{\sigma}', g', A, \mathbf{o})$, as in section \ref{ch:transactions}:
 \begin{equation}
-(\boldsymbol{\sigma}', g', A, z, \mathbf{o}) \equiv \Lambda(\boldsymbol{\sigma}, s, o, g, p, v, \mathbf{i}, e, w)
+(\boldsymbol{\sigma}', g', A, z, \mathbf{o}) \equiv \Lambda(\boldsymbol{\sigma}, s, o, g, p, v, \mathbf{i}, e, \zeta, w)
 \end{equation}
 
-The address of the new account is defined as being the rightmost 160 bits of the Keccak hash of the \hyperlink{rlp}{RLP} encoding of the structure containing only the sender and the \hyperlink{account_nonce}{account nonce}. Thus we define the resultant address for the new account $a$:
-\begin{equation}
-a \equiv \mathcal{B}_{96..255}\Big(\mathtt{KEC}\Big(\mathtt{RLP}\big(\;(s, \boldsymbol{\sigma}[s]_{\mathrm{n}} - 1)\;\big)\Big)\Big)
-\end{equation}
+The address of the new account is defined as being the rightmost 160 bits of the Keccak hash of the \hyperlink{rlp}{RLP} encoding of the structure containing only the sender and the \hyperlink{account_nonce}{account nonce}.
+For {\small \hyperlink{create2}{CREATE2}} the rule is different and is described in EIP-1014.
+Combining the two cases, we define the resultant address for the new account $a$:
+\begin{eqnarray}
+a & \equiv & A(s, \boldsymbol{\sigma}[s]_{\mathrm{n}} - 1, \zeta, \mathbf{i}) \\
+\label{eq:new-address} A(s, n, \zeta, \mathbf{i}) & \equiv & \mathcal{B}_{96..255}\Big(\mathtt{KEC}\big(B(s, n, \zeta, \mathbf{i})\big)\Big) \\
+B(s, n, \zeta, \mathbf{i}) & \equiv & \begin{cases}
+\mathtt{RLP}\big(\;(s, n)\;\big) & \text{if}\ \zeta = \varnothing \\
+(255) \cdot s \cdot \zeta \cdot \mathtt{KEC}(\mathbf{i}) & \text{otherwise}
+\end{cases}
+\end{eqnarray}
 
-where $\mathtt{KEC}$ is the Keccak 256-bit hash function, $\mathtt{RLP}$ is the RLP encoding function, $\mathcal{B}_{a..b}(X)$ evaluates to a binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$, and $\boldsymbol{\sigma}[x]$ is the address state of $x$, or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
+where $\cdot$ is the concatenation of byte arrays, $\mathcal{B}_{a..b}(X)$ evaluates to a binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$, and $\boldsymbol{\sigma}[x]$ is the address state of $x$, or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
 
 The account's nonce is initially defined as one, the balance as the value passed, the storage as empty and the code hash as the Keccak 256-bit hash of the empty string; the sender's balance is also reduced by the value passed. Thus the mutated state becomes $\boldsymbol{\sigma}^*$:
 \begin{equation}
@@ -885,7 +897,7 @@ The machine can have exceptional execution for several reasons, including stack 
 
 \subsection{Fees Overview}
 
-Fees (denominated in gas) are charged under three distinct circumstances, all three as prerequisite to the execution of an operation. The first and most common is the fee intrinsic to the computation of the operation (see Appendix \ref{app:fees}). Secondly, gas may be deducted in order to form the payment for a subordinate message call or contract creation; this forms part of the payment for {\small CREATE}, {\small CALL} and {\small CALLCODE}. Finally, gas may be paid due to an increase in the usage of the memory.
+Fees (denominated in gas) are charged under three distinct circumstances, all three as prerequisite to the execution of an operation. The first and most common is the fee intrinsic to the computation of the operation (see Appendix \ref{app:fees}). Secondly, gas may be deducted in order to form the payment for a subordinate message call or contract creation; this forms part of the payment for {\small CREATE}, {\small CREATE2}, {\small CALL} and {\small CALLCODE}. Finally, gas may be paid due to an increase in the usage of the memory.
 
 Over an account's execution, the total fee for memory-usage payable is proportional to smallest multiple of 32 bytes that are required such that all memory indices (whether for read or write) are included in the range. This is paid for on a just-in-time basis; as such, referencing an area of memory at least 32 bytes greater than any previously indexed memory will certainly result in an additional memory usage fee. Due to this fee it is highly unlikely addresses will ever go above 32-bit bounds. That said, implementations must be able to manage this eventuality.
 
@@ -906,7 +918,7 @@ In addition to the system state $\boldsymbol{\sigma}$, and the remaining gas for
 \item\linkdest{Wei_value_exec_I__v}{}\linkdest{I__v}{} $I_{\mathrm{v}}$, the value, in Wei, passed to this account as part of the same procedure as execution; if the execution agent is a transaction, this would be the transaction value.
 \item\linkdest{exec_machine_code_I__b}{}\linkdest{I__b} $I_{\mathbf{b}}$, the byte array that is the machine code to be executed.
 \item\linkdest{exec_block_header_I__H}{}\linkdest{I__H} $I_{\mathbf{H}}$, the block header of the present block.
-\item\linkdest{exec_call_or_create_depth_I__e}{}\linkdest{I__e} $I_{\mathrm{e}}$, the depth of the present message-call or contract-creation (i.e. the number of {\small CALL}s or {\small CREATE}s being executed at present).
+\item\linkdest{exec_call_or_create_depth_I__e}{}\linkdest{I__e} $I_{\mathrm{e}}$, the depth of the present message-call or contract-creation (i.e. the number of {\small CALL}s or {\small CREATE(2)}s being executed at present).
 \item\linkdest{exec_permission_to_modify_state_I__w}{}\linkdest{I__w} $I_{\mathrm{w}}$, the permission to make modifications to the state.
 \end{itemize}
 
@@ -991,7 +1003,7 @@ where
 \begin{equation}
 W(w, \boldsymbol{\mu}) \equiv \\
 \begin{array}[t]{l}
-w \in \{\text{\small CREATE}, \text{\small SSTORE},\\ \text{\small SELFDESTRUCT}\} \ \vee \\
+w \in \{\text{\small CREATE}, \text{\small CREATE2}, \text{\small SSTORE},\\ \text{\small SELFDESTRUCT}\} \ \vee \\
 \text{\small LOG0} \le w \wedge w \le \text{\small LOG4} \quad \vee \\
 w \in \{\text{\small CALL}, \text{\small CALLCODE}\} \wedge \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0
 \end{array}
@@ -1856,6 +1868,7 @@ C_\text{\tiny CALL}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w =
 &\quad\text{\small DELEGATECALL} \\
 C_\text{\tiny SELFDESTRUCT}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SELFDESTRUCT} \\
 G_{create} & \text{if} \quad w = \text{\small CREATE}\\
+G_{create}+G_{sha3word} \lceil \mathbf{s}[2] \div 32 \rceil & \text{if} \quad w = \text{\small \hyperlink{create2}{CREATE2}}\\
 G_{sha3}+G_{sha3word} \lceil \mathbf{s}[1] \div 32 \rceil & \text{if} \quad w = \text{\small SHA3}\\
 G_{jumpdest} & \text{if} \quad w = \text{\small JUMPDEST}\\
 G_{sload} & \text{if} \quad w = \text{\small SLOAD}\\
@@ -2303,20 +2316,8 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] = 0 \; \wedge \; \
 \multicolumn{5}{c}{\textbf{f0s: System operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0xf0 & {\small CREATE} & 3 & 1 & Create a new account with associated code. \\
-&&&& $\mathbf{i} \equiv \boldsymbol{\mu}_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[1] \dots (\boldsymbol{\mu}_{\mathbf{s}}[1] + \boldsymbol{\mu}_{\mathbf{s}}[2] - 1) ]$ \\
-&&&& $(\boldsymbol{\sigma}', \boldsymbol{\mu}'_{\mathrm{g}}, A^+, \mathbf{o}) \equiv \begin{cases}\Lambda(\boldsymbol{\sigma}^*, I_{\mathrm{a}}, I_{\mathrm{o}}, L(\boldsymbol{\mu}_{\mathrm{g}}), I_{\mathrm{p}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \mathbf{i}, I_{\mathrm{e}} + 1, I_{\mathrm{w}}) & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[0] \leqslant \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \; \\ \quad &\wedge\; I_{\mathrm{e}} < 1024\\ \big(\boldsymbol{\sigma}, \boldsymbol{\mu}_{\mathrm{g}}, \varnothing\big) & \text{otherwise} \end{cases}$ \\
-&&&& $\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except} \quad \boldsymbol{\sigma}^*[I_{\mathrm{a}}]_{\mathrm{n}} = \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{n}} + 1$ \\
-&&&& $A' \equiv A \Cup A^+$ which abbreviates: $A'_{\mathbf{s}} \equiv A_{\mathbf{s}} \cup A^+_{\mathbf{s}} \quad \wedge \quad A'_{\mathbf{l}} \equiv A_{\mathbf{l}} \cdot A^+_{\mathbf{l}} \quad \wedge$ \\
-&&&& $A'_{\mathbf{t}} \equiv A_{\mathbf{t}} \cup A^+_{\mathbf{t}} \wedge \quad A'_{\mathbf{r}} \equiv A_{\mathbf{r}} + A^+_{\mathbf{r}}$ \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv x$ \\
-&&&& where $x=0$ if the code execution for this operation failed due to an\\
-&&&& \hyperlink{Exceptional_Halting_function_Z}{exceptional halting} (or for a \text{\small REVERT}) $\boldsymbol{\sigma}' = \varnothing$, or $I_{\mathrm{e}} = 1024$ \\
-&&&& (the maximum call depth limit is reached) or $\boldsymbol{\mu}_{\mathbf{s}}[0] > \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}}$ (balance of the caller\\
-&&&& is too low to fulfil the value transfer); and otherwise $x=A(I_{\mathrm{a}}, \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{n}})$, the\\
-&&&& address of the newly created account. \\
-&&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[1], \boldsymbol{\mu}_{\mathbf{s}}[2])$ \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{o}} \equiv ()$ \\
-&&&& Thus the operand order is: value, input offset, input size. \\
+&&&& Exactly equivalent to {\small \hyperlink{create2}{CREATE2}} except: \\
+&&&& The salt $\zeta = \varnothing$ instead of $\boldsymbol{\mu}_{\mathbf{s}}[3]$. \\
 \midrule
 0xf1 & {\small CALL} & 7 & 1 & Message-call into an account. \\
 &&&& $\mathbf{i} \equiv \boldsymbol{\mu}_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[3] \dots (\boldsymbol{\mu}_{\mathbf{s}}[3] + \boldsymbol{\mu}_{\mathbf{s}}[4] - 1) ]$ \\
@@ -2365,9 +2366,6 @@ G_{newaccount} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, \boldsymbol{
 &&&& This has the effect of halting the execution at this point with output defined.\\
 &&&& See section \ref{ch:model}. \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \boldsymbol{\mu}_{\mathbf{s}}[1])$ \\
-\end{tabu}
-
-\begin{tabu}{\usetabu{opcodes}}
 \midrule
 0xf4 & {\small DELEGATECALL} & 6 & 1 & Message-call into this account with an alternative account's code, but\\
 &&&& persisting the current values for {\it sender} and {\it value}. \\
@@ -2380,6 +2378,26 @@ G_{newaccount} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, \boldsymbol{
 &&&& and ninth parameters to the call $\Theta$.\\
 &&&& This means that the recipient is in fact the same account as at present, simply\\
 &&&& that the code is overwritten {\it and} the context is almost entirely identical.\\
+\end{tabu}
+
+\begin{tabu}{\usetabu{opcodes}}
+\midrule
+\linkdest{create2}{} 0xf5 & {\small CREATE2} & 4 & 1 & Create a new account with associated code. \\
+&&&& $\mathbf{i} \equiv \boldsymbol{\mu}_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[1] \dots (\boldsymbol{\mu}_{\mathbf{s}}[1] + \boldsymbol{\mu}_{\mathbf{s}}[2] - 1) ]$ \\
+&&&& $\zeta \equiv \boldsymbol{\mu}_{\mathbf{s}}[3]$ \\
+&&&& $(\boldsymbol{\sigma}', \boldsymbol{\mu}'_{\mathrm{g}}, A^+, \mathbf{o}) \equiv \begin{cases}\Lambda(\boldsymbol{\sigma}^*, I_{\mathrm{a}}, I_{\mathrm{o}}, L(\boldsymbol{\mu}_{\mathrm{g}}), I_{\mathrm{p}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \mathbf{i}, I_{\mathrm{e}} + 1, \zeta, I_{\mathrm{w}}) & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[0] \leqslant \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \; \\ \quad &\wedge\; I_{\mathrm{e}} < 1024\\ \big(\boldsymbol{\sigma}, \boldsymbol{\mu}_{\mathrm{g}}, \varnothing\big) & \text{otherwise} \end{cases}$ \\
+&&&& $\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except} \quad \boldsymbol{\sigma}^*[I_{\mathrm{a}}]_{\mathrm{n}} = \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{n}} + 1$ \\
+&&&& $A' \equiv A \Cup A^+$ which abbreviates: $A'_{\mathbf{s}} \equiv A_{\mathbf{s}} \cup A^+_{\mathbf{s}} \quad \wedge \quad A'_{\mathbf{l}} \equiv A_{\mathbf{l}} \cdot A^+_{\mathbf{l}} \quad \wedge$ \\
+&&&& $A'_{\mathbf{t}} \equiv A_{\mathbf{t}} \cup A^+_{\mathbf{t}} \wedge \quad A'_{\mathbf{r}} \equiv A_{\mathbf{r}} + A^+_{\mathbf{r}}$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv x$ \\
+&&&& where $x=0$ if the code execution for this operation failed due to an\\
+&&&& \hyperlink{Exceptional_Halting_function_Z}{exceptional halting} (or for a \text{\small REVERT}) $\boldsymbol{\sigma}' = \varnothing$, or $I_{\mathrm{e}} = 1024$ \\
+&&&& (the maximum call depth limit is reached) or $\boldsymbol{\mu}_{\mathbf{s}}[0] > \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}}$ (balance of the caller\\
+&&&& is too low to fulfil the value transfer); and otherwise $x=A(I_{\mathrm{a}}, \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{n}}, \zeta, \mathbf{i} )$, the\\
+&&&& address of the newly created account (\ref{eq:new-address}). \\
+&&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[1], \boldsymbol{\mu}_{\mathbf{s}}[2])$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{o}} \equiv ()$ \\
+&&&& Thus the operand order is: value, input offset, input size, salt. \\
 \midrule
 0xfa & {\small STATICCALL} & 6 & 1 & Static message-call into an account. \\
 &&&& Exactly equivalent to {\small CALL} except: \\
