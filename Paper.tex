@@ -1888,7 +1888,7 @@ $W_{zero}$ = \{{\small STOP}, {\small RETURN}, {\small REVERT}\}
 
 $W_{base}$ = \{{\small ADDRESS}, {\small ORIGIN}, {\small CALLER}, {\small CALLVALUE}, {\small CALLDATASIZE}, {\small CODESIZE}, {\small GASPRICE}, {\small COINBASE},\newline \noindent\hspace*{1cm} {\small TIMESTAMP}, {\small NUMBER}, {\small DIFFICULTY}, {\small GASLIMIT}, {\small RETURNDATASIZE}, {\small POP}, {\small PC}, {\small MSIZE}, {\small GAS}\}
 
-$W_{verylow}$ = \{{\small ADD}, {\small SUB}, {\small NOT}, {\small LT}, {\small GT}, {\small SLT}, {\small SGT}, {\small EQ}, {\small ISZERO}, {\small AND}, {\small OR}, {\small XOR}, {\small BYTE}, {\small CALLDATALOAD}, \newline \noindent\hspace*{1cm} {\small MLOAD}, {\small MSTORE}, {\small MSTORE8}, {\small PUSH*}, {\small DUP*}, {\small SWAP*}\}
+$W_{verylow}$ = \{{\small ADD}, {\small SUB}, {\small NOT}, {\small LT}, {\small GT}, {\small SLT}, {\small SGT}, {\small EQ}, {\small ISZERO}, {\small AND}, {\small OR}, {\small XOR}, {\small BYTE}, {\small SHL}, {\small SHR}, {\small SAR}, {\small CALLDATALOAD}, \newline \noindent\hspace*{1cm} {\small MLOAD}, {\small MSTORE}, {\small MSTORE8}, {\small PUSH*}, {\small DUP*}, {\small SWAP*}\}
 
 $W_{\mathrm{low}}$ = \{{\small MUL}, {\small DIV}, {\small SDIV}, {\small MOD}, {\small SMOD}, {\small SIGNEXTEND}\}
 
@@ -2017,6 +2017,16 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_{\mathbf{s}}[0]_{\mathrm{i}} \equiv \begin{cases} \boldsymbol{\mu}_{\mathbf{s}}[1]_{(i + 8\boldsymbol{\mu}_{\mathbf{s}}[0])} & \text{if} \quad i < 8 \wedge \boldsymbol{\mu}_{\mathbf{s}}[0] < 32 \\ 0 & \text{otherwise} \end{cases} $\\
 &&&& For the Nth byte, we count from the left (i.e. N=0 would be the most significant\\
 &&&& in big endian). \\
+\midrule
+0x1b & {\small SHL} & 2 & 1 & Left shift operation. \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv (\boldsymbol{\mu}_{\mathbf{s}}[1] \times 2^{\boldsymbol{\mu}_{\mathbf{s}}[0]}) \mod 2^{256}$ \\
+\midrule
+0x1c & {\small SHR} & 2 & 1 & Logical right shift operation. \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \lfloor \boldsymbol{\mu}_{\mathbf{s}}[1] \div 2^{\boldsymbol{\mu}_{\mathbf{s}}[0]} \rfloor$ \\
+\midrule
+0x1d & {\small SAR} & 2 & 1 & Arithmetic (signed) right shift operation. \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \begin{cases} \lfloor \boldsymbol{\mu}_{\mathbf{s}}[1] \div 2^{\boldsymbol{\mu}_{\mathbf{s}}[0]} \rfloor & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] \geqslant 0 \\ -\lceil |\boldsymbol{\mu}_{\mathbf{s}}[1]| \div 2^{\boldsymbol{\mu}_{\mathbf{s}}[0]} \rceil & \text{otherwise} \end{cases} $ \\
+&&&& Where $\boldsymbol{\mu}'_{\mathbf{s}}[0]$ and $\boldsymbol{\mu}_{\mathbf{s}}[1]$ (but not $\boldsymbol{\mu}_{\mathbf{s}}[0]$) are treated as two's complement signed 256-bit integers. \\
 \bottomrule
 \end{tabu}
 
