@@ -1868,8 +1868,8 @@ C_\text{\tiny CALL}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w =
 &\quad\text{\small DELEGATECALL} \\
 C_\text{\tiny SELFDESTRUCT}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SELFDESTRUCT} \\
 G_{create} & \text{if} \quad w = \text{\small CREATE}\\
-G_{create}+G_{sha3word} \lceil \mathbf{s}[2] \div 32 \rceil & \text{if} \quad w = \text{\small \hyperlink{create2}{CREATE2}}\\
-G_{sha3}+G_{sha3word} \lceil \mathbf{s}[1] \div 32 \rceil & \text{if} \quad w = \text{\small SHA3}\\
+G_{create}+G_{sha3word} \times \lceil \boldsymbol{\mu}_{\mathbf{s}}[2] \div 32 \rceil & \text{if} \quad w = \text{\small \hyperlink{create2}{CREATE2}}\\
+G_{sha3}+G_{sha3word} \times \lceil \boldsymbol{\mu}_{\mathbf{s}}[1] \div 32 \rceil & \text{if} \quad w = \text{\small SHA3}\\
 G_{jumpdest} & \text{if} \quad w = \text{\small JUMPDEST}\\
 G_{sload} & \text{if} \quad w = \text{\small SLOAD}\\
 G_{zero} & \text{if} \quad w \in W_{zero}\\
