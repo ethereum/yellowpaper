@@ -2039,7 +2039,8 @@ Here given are the various exceptions to the state transition rules given in sec
 \midrule
 0x1d & {\small SAR} & 2 & 1 & Arithmetic (signed) right shift operation. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \lfloor \boldsymbol{\mu}_{\mathbf{s}}[1] \div 2^{\boldsymbol{\mu}_{\mathbf{s}}[0]} \rfloor$ \\
-&&&& Where $\boldsymbol{\mu}'_{\mathbf{s}}[0]$ and $\boldsymbol{\mu}_{\mathbf{s}}[1]$ (but not $\boldsymbol{\mu}_{\mathbf{s}}[0]$) are treated as two's complement signed 256-bit integers. \\
+&&&& Where $\boldsymbol{\mu}'_{\mathbf{s}}[0]$ and $\boldsymbol{\mu}_{\mathbf{s}}[1]$ are treated as two's complement signed 256-bit integers, \\
+&&&& while $\boldsymbol{\mu}_{\mathbf{s}}[0]$ is treated as unsigned. \\
 \bottomrule
 \end{tabu}
 
