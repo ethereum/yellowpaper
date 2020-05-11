@@ -13,7 +13,7 @@ if [ -d ".git" ]; then
 
 SHA=`git rev-parse --short --verify HEAD`
 DATE=`git show -s --format="%cd" --date=short HEAD`
-REV="$SHA - $DATE"
+REV="$SHA -- $DATE"
 echo "\def\YellowPaperVersionNumber{$REV}" >> Options.tex
 
 fi
