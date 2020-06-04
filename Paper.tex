@@ -2186,7 +2186,7 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] = 0 \; \wedge \; \
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{\mu}_{\mathrm{pc}}$ \\
 \midrule
 0x59 & {\small MSIZE} & 0 & 1 & Get the size of active memory in bytes. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \begin{cases} 32\boldsymbol{\mu}_{i} & \text{if} \quad \boldsymbol{\mu}_{i} < 2^{251} \\ 2^{251}-1 & \text{otherwise} \end{cases}$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \begin{cases} 32\boldsymbol{\mu}_{i} & \text{if} \quad \boldsymbol{\mu}_{i} < 2^{251} \\ 2^{256}-1 & \text{otherwise} \end{cases}$ \\
 \midrule
 0x5a & {\small GAS} & 0 & 1 & Get the amount of available gas, including the corresponding reduction \\
 &&&& for the cost of this instruction. \\
