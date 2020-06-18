@@ -364,9 +364,8 @@ R \equiv (R_{\mathrm{u}}, R_{\mathrm{b}}, R_{\mathbf{l}}, R_{\mathrm{z}})
 
 \hypertarget{transaction_receipt_preparation_function_for_RLP_serialisation}{}\linkdest{L__R}The function $L_{R}$ trivially prepares a transaction receipt for being transformed into an RLP-serialised byte array:
 \begin{equation}
-L_{R}(R) \equiv (0 \in \mathbb{B}_{256}, R_{\mathrm{u}}, R_{\mathrm{b}}, R_{\mathbf{l}})
+L_{R}(R) \equiv (R_{\mathrm{z}}, R_{\mathrm{u}}, R_{\mathrm{b}}, R_{\mathbf{l}})
 \end{equation}
-where $0 \in \mathbb{B}_{256}$ replaces the pre-transaction state root that existed in previous versions of the protocol.
 
 \linkdest{R__z_assert}We assert that the status code $R_{\mathrm{z}}$ is a non-negative integer.
 \begin{equation}
