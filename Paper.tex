@@ -1159,10 +1159,10 @@ If there are collisions of the beneficiary addresses between ommers and the bloc
 
 \hypertarget{block_reward_R__block}{}\linkdest{R__block}We define the block reward in Ether:
 \begin{equation}
-\text{Let} \quad R_{\mathrm{block}} = 3 \times 10^{18}
 \text{Let} \quad R_{\mathrm{block}} = 10^{18} \times \begin{cases}
 5 &\text{if}\ H_{\mathrm{i}} < 4370000 \\
-3 &\text{otherwise}
+3 &\text{if}\ H_{\mathrm{i}} < 7280000 \\
+2 &\text{otherwise}
 \end{cases} \\
 \end{equation}
 
