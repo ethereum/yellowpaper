@@ -514,10 +514,9 @@ y \equiv \begin{cases}
 \expdiffsymb &\equiv \left\lfloor 2^{ \left\lfloor H'_{\mathrm{i}} \div 100000 \right\rfloor - 2 } \right\rfloor \\
 H'_{\mathrm{i}} &\equiv \max(H_{\mathrm{i}} - \kappa, 0) \\
 \kappa &\equiv \begin{cases} 
-  0  & \text{if} \quad H_{\mathrm{i}} < 4370000 \\
   3000000  & \text{if} \quad 4370000 \leqslant H_{\mathrm{i}} < 7280000 \\
   5000000  & \text{if} \quad 7280000 \leqslant H_{\mathrm{i}} < 9200000 \\
-  9000000  & \text{otherwise} \\
+  9000000  & \text{if} \quad H_{\mathrm{i}} \geqslant 9200000 \\
 \end{cases}
 \end{align}
 
