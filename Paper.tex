@@ -2157,19 +2157,19 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& and we assert the header $H$ can be determined from its hash~$h$ unless $h$ is zero\\
 &&&& (as is the case for the parent hash of the genesis block).\\
 \midrule
-0x41 & {\small COINBASE} & 0 & 1 & Get the block's beneficiary address. \\
+0x41 & {\small COINBASE} & 0 & 1 & Get the current block's beneficiary address. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{H}}_{\mathrm{c}}$ \\
 \midrule
-0x42 & {\small TIMESTAMP} & 0 & 1 & Get the block's timestamp. \\
+0x42 & {\small TIMESTAMP} & 0 & 1 & Get the current block's timestamp. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{H}}_{\mathrm{s}}$ \\
 \midrule
-0x43 & {\small NUMBER} & 0 & 1 & Get the block's number. \\
+0x43 & {\small NUMBER} & 0 & 1 & Get the current block's number. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{H}}_{\mathrm{i}}$ \\
 \midrule
-0x44 & {\small DIFFICULTY} & 0 & 1 & Get the block's difficulty. \\
+0x44 & {\small DIFFICULTY} & 0 & 1 & Get the current block's difficulty. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{H}}_{\mathrm{d}}$ \\
 \midrule
-0x45 & {\small GASLIMIT} & 0 & 1 & Get the block's gas limit. \\
+0x45 & {\small GASLIMIT} & 0 & 1 & Get the current block's gas limit. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{H}}_{\mathrm{l}}$ \\
 \bottomrule
 \end{tabu}
