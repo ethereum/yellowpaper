@@ -64,7 +64,7 @@
 \newcommand*\ie{i.e.\@\xspace}
 %\renewcommand{\itemhook}{\setlength{\topsep}{0pt}  \setlength{\itemsep}{0pt}\setlength{\leftmargin}{15pt}}
 
-\title[Ethereum: A Secure Decentralised Generalised Transaction Ledger]{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ \smaller{Petersburg version \YellowPaperVersionNumber}}
+\title[Ethereum: A Secure Decentralised Generalised Transaction Ledger\\ \smaller \textbf{{Istanbul version}}]{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ \smaller \textbf{{Istanbul version \YellowPaperVersionNumber}}}
 \author{
     Dr. Gavin Wood\\
     Founder, Ethereum \& Parity\\
@@ -116,7 +116,7 @@ Additional work has been done in the area with discarding the decentralisation f
 Early work on smart contracts has been done by \cite{szabo1997formalizing} and \cite{miller1997future}. Around the 1990s it became clear that algorithmic enforcement of agreements could become a significant force in human cooperation. Though no specific system was proposed to implement such a system, it was proposed that the future of law would be heavily affected by such systems. In this light, Ethereum may be seen as a general implementation of such a \textit{crypto-law} system.
 
 %E language?
-For a list of terms used in this paper, refer to Appendix \ref{ch:Terminology}.
+For a list of terms used in this paper, refer to Appendix~\ref{ch:Terminology}.
 
 \section{The Blockchain Paradigm} \label{ch:overview}
 
@@ -170,7 +170,17 @@ This would mean that past a given point in time (block), multiple states of the 
 
 The scheme we use in order to generate consensus is a simplified version of the GHOST protocol introduced by \cite{cryptoeprint:2013:881}. This process is described in detail in section \ref{ch:ghost}.
 
-Sometimes, a path follows a new protocol from a particular height (block number).  This document describes one version of the protocol.  In order to follow back the history of a path, one must reference multiple versions of this document.
+Sometimes, a path follows a new protocol from a particular height (block number).
+This document describes one version of the protocol, namely the \textit{Istanbul} version defined in EIP-1679 by \cite{EIP-1679}.
+In order to follow back the history of a path, one must reference multiple versions of this document.
+
+Occasionally actors cannot agree on a protocol change, and a permanent fork occurs.
+In order to distinguish between diverged blockchains, EIP-155 by \cite{EIP-155} introduced the concept of chain ID, which we denote by $\beta$.
+For the Ethereum main network
+\begin{equation}
+  \linkdest{chain_id}
+  \beta = 1
+\end{equation}
 
 \section{Conventions}\label{ch:conventions}
 
@@ -210,7 +220,7 @@ Having introduced the basic concepts behind Ethereum, we will discuss the meanin
 
 \subsection{World State} \label{ch:state}
 
-The world state (\textit{state}), is a mapping between addresses (160-bit identifiers) and account states (a data structure serialised as RLP, see Appendix \ref{app:rlp}). Though not stored on the blockchain, it is assumed that the implementation will maintain this mapping in a modified Merkle Patricia tree (\textit{trie}, see Appendix \ref{app:trie}). The trie requires a simple database backend that maintains a mapping of byte arrays to byte arrays; we name this underlying database the state database. This has a number of benefits; firstly the root node of this structure is cryptographically dependent on all internal data and as such its hash can be used as a secure identity for the entire system state. Secondly, being an immutable data structure, it allows any previous state (whose root hash is known) to be recalled by simply altering the root hash accordingly. Since we store all such root hashes in the blockchain, we are able to trivially revert to old states.
+The world state (\textit{state}), is a mapping between addresses (160-bit identifiers) and account states (a data structure serialised as RLP, see Appendix~\ref{app:rlp}). Though not stored on the blockchain, it is assumed that the implementation will maintain this mapping in a modified Merkle Patricia tree (\textit{trie}, see Appendix \ref{app:trie}). The trie requires a simple database backend that maintains a mapping of byte arrays to byte arrays; we name this underlying database the state database. This has a number of benefits; firstly the root node of this structure is cryptographically dependent on all internal data and as such its hash can be used as a secure identity for the entire system state. Secondly, being an immutable data structure, it allows any previous state (whose root hash is known) to be recalled by simply altering the root hash accordingly. Since we store all such root hashes in the blockchain, we are able to trivially revert to old states.
 
 The account state, $\boldsymbol{\sigma}[a]$, comprises the following four fields:
 
@@ -309,7 +319,7 @@ Here, we assume all components are interpreted by the RLP as integer values, wit
 \begin{equation}
 \begin{array}[t]{lclclc}
 T_{\mathrm{n}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{v}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{p}} \in \mathbb{N}_{256} & \wedge \\
-T_{\mathrm{g}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{w}} \in \mathbb{N}_5 & \wedge & T_{\mathrm{r}} \in \mathbb{N}_{256} & \wedge \\
+T_{\mathrm{g}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{w}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{r}} \in \mathbb{N}_{256} & \wedge \\
 T_{\mathrm{s}} \in \mathbb{N}_{256} & \wedge & T_{\mathbf{d}} \in \mathbb{B} & \wedge & T_{\mathbf{i}} \in \mathbb{B}
 \end{array}
 \end{equation}
@@ -326,7 +336,7 @@ T_{\mathbf{t}} \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_{\mathrm{t}
 
 \subsection{The Block}\linkdest{block}\label{subsec:The_Block}
 
-The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$,\hypertarget{ommerheaders}{} and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{ommers}\footnote{\textit{ommer} is a gender-neutral term to mean ``sibling of parent''; see \url{https://nonbinary.miraheze.org/wiki/Gender_neutral_language\#Aunt.2FUncle}}). The block header contains several pieces of information:
+The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$,\hypertarget{ommerheaders}{} and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{ommers}\footnote{\textit{ommer} is a gender-neutral term to mean ``sibling of parent''; see \url{https://nonbinary.miraheze.org/wiki/Gender_neutral_language_in_English\#Aunt/Uncle}}). The block header contains several pieces of information:
 
 %\textit{TODO: Introduce logs}
 
@@ -502,10 +512,21 @@ y \equiv \begin{cases}
 \end{equation*}
 \begin{align}
 \expdiffsymb &\equiv \left\lfloor 2^{ \left\lfloor H'_{\mathrm{i}} \div 100000 \right\rfloor - 2 } \right\rfloor \\
-H'_{\mathrm{i}} &\equiv \max(H_{\mathrm{i}} - 5000000, 0)
+H'_{\mathrm{i}} &\equiv \max(H_{\mathrm{i}} - \kappa, 0) \\
+\kappa &\equiv \begin{cases} 
+  3000000  & \text{if} \quad 4370000 \leqslant H_{\mathrm{i}} < 7280000 \\
+  5000000  & \text{if} \quad 7280000 \leqslant H_{\mathrm{i}} < 9200000 \\
+  9000000  & \text{if} \quad H_{\mathrm{i}} \geqslant 9200000 \\
+\end{cases}
 \end{align}
 
-Note that $\mindifficulty$ is the difficulty of the genesis block. The \textit{Homestead} difficulty parameter, $\homesteadmod$, is used to affect a dynamic homeostasis of time between blocks, as the time between blocks varies, as discussed below, as implemented in EIP-2 by \cite{EIP-2}. In the Homestead release, the exponential difficulty symbol, $\expdiffsymb$ causes the difficulty to slowly increase (every 100,000 blocks) at an exponential rate, and thus increasing the block time difference, and putting time pressure on transitioning to proof-of-stake. This effect, known as the "difficulty bomb", or "ice age", was explained in EIP-649 by \cite{EIP-649} and delayed and implemented earlier in EIP-2. $\homesteadmod$ was also modified in EIP-100 with the use of $x$, the adjustment factor above, and the denominator 9, in order to target the mean block time including uncle blocks by \cite{EIP-100}. In the \textit{Byzantium} release, with EIP-649, the ice age was delayed by creating a fake block number, $H'_{\mathrm{i}}$, which is obtained by subtracting three million\footnote{five million since the \textit{Constantinople} release as per EIP-1234} from the actual block number, which in other words reduced $\expdiffsymb$ and the time difference between blocks, in order to allow more time to develop proof-of-stake and preventing the network from "freezing" up.
+Note that $\mindifficulty$ is the difficulty of the genesis block. The \textit{Homestead} difficulty parameter, $\homesteadmod$, is used to affect a dynamic homeostasis of time between blocks, as the time between blocks varies, as discussed below, as implemented in EIP-2 by \cite{EIP-2}.
+In the Homestead release, the exponential difficulty symbol, $\expdiffsymb$ causes the difficulty to slowly increase (every 100,000 blocks) at an exponential rate, and thus increasing the block time difference, and putting time pressure on transitioning to proof-of-stake.
+This effect, known as the "difficulty bomb", or "ice age", was explained in EIP-649 by \cite{EIP-649} and delayed and implemented earlier in EIP-2.
+$\homesteadmod$ was also modified in EIP-100 with the use of $x$, the adjustment factor above, and the denominator 9, in order to target the mean block time including uncle blocks by \cite{EIP-100}.
+In the \textit{Byzantium} release, with EIP-649, the ice age was delayed by creating a fake block number, $H'_{\mathrm{i}}$, which is obtained by subtracting three million from the actual block number,
+which in other words reduced $\expdiffsymb$ and the time difference between blocks, in order to allow more time to develop proof-of-stake and preventing the network from "freezing" up.
+Subsequently, with EIP-1234 by \cite{EIP-1234} and EIP-2384 by \cite{EIP-2384} the subtrahend $\kappa$ was increased to five and nine million respectively.
 
 \hypertarget{block_gas_limit_H__l}{}The canonical gas limit $H_{\mathrm{l}}$ of a block of header $H$ must fulfil the relation:
 \begin{eqnarray}
@@ -641,7 +662,7 @@ g \equiv T_{\mathrm{g}} - g_0
 \end{equation}
 and $T_{\mathrm{o}}$ is the original transactor, which can differ from the sender in the case of a message call or contract creation not directly triggered by a transaction but coming from the execution of EVM-code.
 
-Note we use $\Theta_{4}$ and $\Lambda_{4}$ to denote the fact that only the first four components of the functions' values are taken; the final represents the message-call's output value (a byte array) and is unused in the context of transaction evaluation.
+Note we use $\hyperlink{theta}{\Theta}_{4}$ and $\hyperlink{lambda}{\Lambda}_{4}$ to denote the fact that only the first four components of the functions' values are taken; the final represents the message-call's output value (a byte array) and is unused in the context of transaction evaluation.
 
 After the message call or contract creation is processed, the refund counter has to be incremented for the accounts that were self-destructed throughout its invocation.
 \begin{equation}
@@ -682,19 +703,19 @@ These are used to help define the \hyperlink{Transaction_Receipt}{transaction re
 \section{Contract Creation}\label{ch:create}\hypertarget{endow}{}
 
 There are a number of intrinsic parameters used when creating an account: sender ($s$), original transactor ($o$), available gas ($g$), gas price ($p$), endowment ($v$) together with an arbitrary length byte array, $\mathbf{i}$, the initialisation EVM code, the present depth of the message-call/contract-creation stack ($e$), the salt for new account's address ($\zeta$) and finally the permission to make modifications to the state ($w$).
-The salt $\zeta$ might be missing ($\zeta = \varnothing$); formally,
+The salt \linkdest{salt}{$\zeta$} might be missing ($\zeta = \varnothing$); formally,
 \begin{equation}
 \zeta \in \mathbb{B}_{32} \cup \mathbb{B}_{0}
 \end{equation}
 If the creation was caused by {\small \hyperlink{create2}{CREATE2}}, then $\zeta \neq \varnothing$.
 
-We define the creation function formally as the function $\Lambda$, which evaluates from these values, together with the state $\boldsymbol{\sigma}$ to the tuple containing the new state, remaining gas, accrued transaction substate and an error message $(\boldsymbol{\sigma}', g', A, \mathbf{o})$, as in section \ref{ch:transactions}:
+We define the creation function formally as the function \linkdest{lambda}{$\Lambda$}, which evaluates from these values, together with the state $\boldsymbol{\sigma}$ to the tuple containing the new state, remaining gas, accrued transaction substate and an error message $(\boldsymbol{\sigma}', g', A, \mathbf{o})$, as in section \ref{ch:transactions}:
 \begin{equation}
 (\boldsymbol{\sigma}', g', A, z, \mathbf{o}) \equiv \Lambda(\boldsymbol{\sigma}, s, o, g, p, v, \mathbf{i}, e, \zeta, w)
 \end{equation}
 
 The address of the new account is defined as being the rightmost 160 bits of the Keccak hash of the \hyperlink{rlp}{RLP} encoding of the structure containing only the sender and the \hyperlink{account_nonce}{account nonce}.
-For {\small \hyperlink{create2}{CREATE2}} the rule is different and is described in EIP-1014.
+For {\small \hyperlink{create2}{CREATE2}} the rule is different and is described in EIP-1014 by \cite{EIP-1014}.
 Combining the two cases, we define the resultant address for the new account $a$:
 \begin{eqnarray}
 a & \equiv & A(s, \boldsymbol{\sigma}[s]_{\mathrm{n}} - 1, \zeta, \mathbf{i}) \\
@@ -795,7 +816,7 @@ In the case of executing a message call, several parameters are required: sender
 
 Aside from evaluating to a new state and accrued transaction substate, message calls also have an extra component---the output data denoted by the byte array $\mathbf{o}$. This is ignored when executing transactions, however message calls can be initiated due to VM-code execution and in this case this information is used.
 \begin{equation}
-(\boldsymbol{\sigma}', g', A, z, \mathbf{o}) \equiv \Theta(\boldsymbol{\sigma}, s, o, r, c, g, p, v, \tilde{v}, \mathbf{d}, e, w)
+(\boldsymbol{\sigma}', g', A, z, \mathbf{o}) \equiv \linkdest{theta}{\Theta}(\boldsymbol{\sigma}, s, o, r, c, g, p, v, \tilde{v}, \mathbf{d}, e, w)
 \end{equation}
 Note that we need to differentiate between the value that is to be transferred, $v$, from the value apparent in the execution context, $\tilde{v}$, for the {\small DELEGATECALL} instruction.
 
@@ -870,6 +891,7 @@ I_{\mathrm{w}} & \equiv & w \\
 \Xi_{\mathtt{BN\_ADD}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 6 \\
 \Xi_{\mathtt{BN\_MUL}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 7 \\
 \Xi_{\mathtt{SNARKV}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 8 \\
+\Xi_{\mathtt{BLAKE2\_F}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 9 \\
 \Xi(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{otherwise} \end{cases}
 \end{equation}
 
@@ -879,7 +901,8 @@ I_{\mathrm{w}} & \equiv & w \\
 
 It is assumed that the client will have stored the pair $(\mathtt{KEC}(I_{\mathbf{b}}), I_{\mathbf{b}})$ at some point prior in order to make the determination of $I_{\mathbf{b}}$ feasible.
 
-As can be seen, there are eight exceptions to the usage of the general execution framework $\Xi$ for evaluation of the message call: these are eight so-called `precompiled' contracts, meant as a preliminary piece of architecture that may later become \textit{native extensions}. The eight contracts in addresses 1 to 8 execute the elliptic curve public key recovery function, the SHA2 256-bit hash scheme, the RIPEMD 160-bit hash scheme, the identity function, arbitrary precision modular exponentiation, elliptic curve addition, elliptic curve scalar multiplication and an elliptic curve pairing check respectively.
+As can be seen, there are nine exceptions to the usage of the general execution framework $\Xi$ for evaluation of the message call: these are so-called `precompiled' contracts, meant as a preliminary piece of architecture that may later become \textit{native extensions}.
+The contracts in addresses 1 to 9 execute the elliptic curve public key recovery function, the SHA2 256-bit hash scheme, the RIPEMD 160-bit hash scheme, the identity function, arbitrary precision modular exponentiation, elliptic curve addition, elliptic curve scalar multiplication, an elliptic curve pairing check, and the BLAKE2 compression function $\mathtt{F}$ respectively.
 
 Their full formal definition is in Appendix \ref{app:precompiled}.
 
@@ -1157,9 +1180,13 @@ R & \equiv & \left(1 + \frac{1}{8} (U_{\mathrm{i}} - {B_{H}}_{\mathrm{i}})\right
 
 If there are collisions of the beneficiary addresses between ommers and the block (i.e. two ommers with the same beneficiary address or an ommer with the same beneficiary address as the present block), additions are applied cumulatively.
 
-\hypertarget{block_reward_R__block}{}\linkdest{R__block}We define the block reward as 2 Ether:
+\hypertarget{block_reward_R__block}{}\linkdest{R__block}We define the block reward in Ether:
 \begin{equation}
-\text{Let} \quad R_{\mathrm{block}} = 2 \times 10^{18}
+\text{Let} \quad R_{\mathrm{block}} = 10^{18} \times \begin{cases}
+5 &\text{if}\ H_{\mathrm{i}} < 4370000 \\
+3 &\text{if}\ H_{\mathrm{i}} < 7280000 \\
+2 &\text{otherwise}
+\end{cases} \\
 \end{equation}
 
 \subsection{State \& Nonce Validation}\label{sec:statenoncevalidation}
@@ -1179,10 +1206,10 @@ Here, $\mathtt{TRIE}(L_{S}(\boldsymbol{\sigma}_{\mathrm{i}}))$ means the hash of
 \Phi(B) & \equiv & B': \quad B' = B^* \quad \text{except:} \\
 B'_{\mathrm{n}} & = & n: \quad x \leqslant \frac{2^{256}}{\hyperlink{H__d}{H_{\mathrm{d}}}} \\
 B'_{\mathrm{m}} & = & m \quad \text{with } (x, m) = \mathtt{PoW}(B^*_{\hyperlink{H_cancel_n}{\hcancel{n}}}, n, \mathbf{d}) \\
-B^* & \equiv & B \quad \text{except:} \quad {\hyperlink{Transaction Receipt}{B^*_{\mathrm{r}}}} = \hyperlink{r}{r}(\hyperlink{Pi}{\Pi}(\Gamma(B), B))
+B^* & \equiv & B \quad \text{except:} \quad {\hyperlink{Transaction_Receipt}{B^*_{\mathrm{r}}}} = \hyperlink{r}{r}(\hyperlink{Pi}{\Pi}(\Gamma(B), B))
 \end{eqnarray}
 
-With $\mathbf{d}$ being a dataset as specified in appendix \ref{app:ethash}.
+With $\mathbf{d}$ being a dataset as specified in Appendix \ref{app:ethash}.
 
 As specified at the beginning of the present work, \hyperlink{Pi}{$\Pi$} is the state-transition function, which is defined in terms of \hyperlink{Omega}{$\Omega$}, the block finalisation function and \hyperlink{Upsilon_state_transition}{$\Upsilon$}, the transaction-evaluation function, both now well-defined.
 
@@ -1242,7 +1269,7 @@ Ethash is the PoW algorithm for Ethereum 1.0. It is the latest version of Dagger
 
 There exists a seed which can be computed for each block by scanning through the block headers up until that point. From the seed, one can compute a pseudorandom cache, $\hyperlink{J__cacheinit}{J_{cacheinit}}$ bytes in initial size. Light clients store the cache. From the cache, we can generate a dataset, $\hyperlink{J__datasetinit}{J_{datasetinit}}$ bytes in initial size, with the property that each item in the dataset depends on only a small number of items from the cache. Full clients and miners store the dataset. The dataset grows linearly with time.
 
-Mining involves grabbing random slices of the dataset and hashing them together. Verification can be done with low memory by using the cache to regenerate the specific pieces of the dataset that you need, so you only need to store the cache. The large dataset is updated once every $\hyperlink{J__epoch}{J_{epoch}}$ blocks, so the vast majority of a miner's effort will be reading the dataset, not making changes to it. The mentioned parameters as well as the algorithm is explained in detail in appendix \ref{app:ethash}.
+Mining involves grabbing random slices of the dataset and hashing them together. Verification can be done with low memory by using the cache to regenerate the specific pieces of the dataset that you need, so you only need to store the cache. The large dataset is updated once every $\hyperlink{J__epoch}{J_{epoch}}$ blocks, so the vast majority of a miner's effort will be reading the dataset, not making changes to it. The mentioned parameters as well as the algorithm is explained in detail in Appendix \ref{app:ethash}.
 
 \section{Implementing Contracts}
 
@@ -1367,6 +1394,7 @@ R_{\mathrm{b}}(\mathbf{x}) & \equiv & \begin{cases}
 \big(183 + \big\lVert \mathtt{BE}(\lVert \mathbf{x} \rVert) \big\rVert \big) \cdot \mathtt{BE}(\lVert \mathbf{x} \rVert) \cdot \mathbf{x} & \text{else if} \quad \lVert \mathbf{x} \rVert < 2^{64} \\
 \varnothing & \text{otherwise}
 \end{cases} \\
+\label{eq:BE}
 \mathtt{BE}(x) & \equiv & (b_0, b_1, ...): b_0 \neq 0 \wedge x = \sum_{n = 0}^{\lVert \mathbf{b} \rVert - 1} b_n \cdot 256^{\lVert \mathbf{b} \rVert - 1 - n} \\
 (x_1, ..., x_n) \cdot (y_1, ..., y_m) & = & (x_1, ..., x_n, y_1, ..., y_m)
 \end{eqnarray}
@@ -1675,7 +1703,7 @@ We define $\Xi_{\mathtt{SNARKV}}$ as a precompiled contract which checks if (\re
 \qquad\Xi_{\mathtt{SNARKV}}(\boldsymbol\sigma,g,I)&=&\left(\varnothing,0,A^0,()\right)\quad\text{if}\ F\\
 F&\equiv&(\lVert I_{\mathbf{d}} \rVert\bmod 192\neq 0\vee(\exists j.\ a_{\mathrm{j}}=\varnothing\vee b_{\mathrm{j}}=\varnothing))\\
 k &=& \dfrac{\lVert I_{\mathbf{d}} \rVert}{192} \\
-g_{\mathrm{r}}&=& 80000k + 100000 \\
+g_{\mathrm{r}}&=& 34000k + 45000 \\
 \mathbf{o}[0..31]&\equiv&\begin{cases}
 0x0000000000000000000000000000000000000000000000000000000000000001&\text{if}\ v\wedge\neg F\\
 0x0000000000000000000000000000000000000000000000000000000000000000&\text{if}\ \neg v\wedge\neg F
@@ -1693,7 +1721,7 @@ We define a precompiled contract for addition on $G_1$.
 \begin{eqnarray}
 \Xi_{\mathtt{BN\_ADD}}&\equiv&\Xi_{\mathtt{BN\_PRE}}\quad\text{except:}\\
 \Xi_{\mathtt{BN\_ADD}}(\boldsymbol\sigma,g,I)&=&\left(\varnothing,0,A^0,()\right)\quad\text{if}\ x=\varnothing\vee y=\varnothing\\
-g_{\mathrm{r}} &=& 500\\
+g_{\mathrm{r}} &=& 150\\
 \mathbf{o}&\equiv&\delta_1^{-1}(x+y)\quad\text{where $+$ is the group operation in $G_1$}\\
 x&\equiv&\delta_1\left(\bar I_{\mathbf{d}}[0..63]\right)\\
 y&\equiv&\delta_1\left(\bar I_{\mathbf{d}}[64..127]\right)\\
@@ -1707,11 +1735,43 @@ We define a precompiled contract for scalar multiplication on $G_1$, where $\bar
 \begin{eqnarray}
 \Xi_{\mathtt{BN\_MUL}}&\equiv&\Xi_{\mathtt{PRE}}\quad\text{except:}\\
 \Xi_{\mathtt{BN\_MUL}}(\boldsymbol\sigma,g,I)&=&\left(\varnothing,0,A^0,()\right)\quad\text{if}\ x=\varnothing\\
-g_{\mathrm{r}} &=& 40000\\
+g_{\mathrm{r}} &=& 6000\\
 \mathbf{o}&\equiv&\delta_1^{-1}(n\cdot x)\quad\text{where $\cdot$ is the scalar multiplication in $G_1$}\\
 x&\equiv&\delta_1\left(\bar I_{\mathbf{d}}[0..63]\right)\\
 n&\equiv&\bar I_{\mathbf{d}}[64..95]
 \end{eqnarray}
+
+\subsection{BLAKE2 Precompiled Contract}
+
+EIP-152 by \cite{EIP-152} defines $\Xi_{\mathtt{BLAKE2\_F}}$ as a precompiled contract implementing the compression function $\mathtt{F}$ used in the BLAKE2 cryptographic hashing algorithm.
+The $\mathtt{F}$ compression function is specified in RFC 7693 by \cite{RFC-7693}.
+\begin{eqnarray}
+  \Xi_{\mathtt{BLAKE2\_F}}&\equiv&\Xi_{\mathtt{PRE}}\quad\text{except:}\\
+  \Xi_{\mathtt{BLAKE2\_F}}(\boldsymbol\sigma,g,I)&=&\left(\varnothing,0,A^0,()\right)\quad\text{if}\ \lVert I_{\mathbf{d}}\rVert \neq 213 \vee f \notin \{0, 1\} \\
+  g_{\mathrm{r}} &=& r\\
+  \mathbf{o} &\equiv& \mathtt{LE}_8(h'_0)\cdot ... \cdot \mathtt{LE}_8(h'_7) \\
+  (h'_0,\dots,h'_7) &\equiv& \mathtt{F}(h, m, t_\mathrm{low}, t_\mathrm{high}, f) \quad\text{with } r \text{ rounds and } w = 64 \\
+  \mathtt{BE}_4(r) &\equiv& I_{\mathbf{d}}[0..4] \\
+  \mathtt{LE}_8(h_0) &\equiv& I_{\mathbf{d}}[4..12] \\
+  &\dots& \\
+  \mathtt{LE}_8(h_7) &\equiv& I_{\mathbf{d}}[60..68] \\
+  \mathtt{LE}_8(m_0) &\equiv& I_{\mathbf{d}}[68..76] \\
+  &\dots& \\
+  \mathtt{LE}_8(m_{15}) &\equiv& I_{\mathbf{d}}[188..196] \\
+  \mathtt{LE}_8(t_\mathrm{low}) &\equiv& I_{\mathbf{d}}[196..204] \\
+  \mathtt{LE}_8(t_\mathrm{high}) &\equiv& I_{\mathbf{d}}[204..212] \\
+  f &\equiv& I_{\mathbf{d}}[212]
+\end{eqnarray}
+where $r \in \mathbb{B}_{32}$, $\forall i \in 0..7: h_i \in \mathbb{B}_{64}$, $\forall i \in 0..15: m_i \in \mathbb{B}_{64}$,
+$t_\mathrm{low} \in \mathbb{B}_{64}$, $t_\mathrm{high} \in \mathbb{B}_{64}$, $f \in \mathbb{B}_8$,
+$\mathtt{BE}_k$ is the $k$-byte big-endian representation---compare with(\ref{eq:BE}):
+\begin{equation}
+  \mathtt{BE}_k(x) \equiv (b_0, b_1, ..., b_{k-1}): x = \sum_{n = 0}^{k-1} b_n \cdot 256^{k-1-n}
+\end{equation}
+and $\mathtt{LE}_k$ is the $k$-byte little-endian representation:
+\begin{equation}
+  \mathtt{LE}_k(x) \equiv (b_0, b_1, ..., b_{k-1}): x = \sum_{n = 0}^{k-1} b_n \cdot 256^n
+\end{equation}
 
 \section{Signing Transactions}\label{app:signing}
 
@@ -1751,7 +1811,7 @@ A(p_{\mathrm{r}}) = \mathcal{B}_{96..255}\big(\mathtt{KEC}\big( \mathtt{ECDSAPUB
 \begin{eqnarray}
 L_{S}(T) & \equiv & \begin{cases}
 (T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}) & \text{if} \; v \in \{27, 28\} \\
-(T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, \mathtt{chain\_id}, (), ()) & \text{otherwise} \\
+(T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, \beta, (), ()) & \text{otherwise} \\
 \end{cases} \\
 \nonumber \text{where} \\
 \nonumber \mathbf{p} & \equiv & \begin{cases}
@@ -1772,7 +1832,7 @@ G(T, p_{\mathrm{r}}) \equiv T \quad \text{except:} \\
 \linkdest{T__r}{T_{\mathrm{r}}} = \hyperlink{r}{r}\\
 \linkdest{T__s}{T_{\mathrm{s}}} = \hyperlink{s}{s}
 \end{eqnarray}
-$\linkdest{T__w}{T_{\mathrm{w}}}$ is either the recovery identifier or `chain identifier doubled plus 35 or 36'.  In the second case, where \hypertarget{v}{}$v$ is the chain identifier doubled plus 35 or 36, the values 35 and 36 assume the role of the `recovery identifier' by specifying the parity of $y$, with the value 35 representing an even value and 36 representing an odd value.
+$\linkdest{T__w}{T_{\mathrm{w}}}$ is either the recovery identifier or `chain identifier \hyperlink{chain_id}{$\beta$} doubled plus 35 or 36'.  In the second case, where \hypertarget{v}{}$v$ is the chain identifier $\beta$ doubled plus 35 or 36, the values 35 and 36 assume the role of the `recovery identifier' by specifying the parity of $y$, with the value 35 representing an even value and 36 representing an odd value.
 
 We may then define the sender function $S$ of the transaction as:
 \begin{eqnarray}
@@ -1790,23 +1850,24 @@ The assertion that the sender of a signed transaction equals the address of the 
 
 \section{Fee Schedule}\label{app:fees}
 
-The fee schedule $G$ is a tuple of 31 scalar values corresponding to the relative costs, in gas, of a number of abstract operations that a transaction may effect.
+\nopagebreak
+The fee schedule $G$ is a tuple of scalar values corresponding to the relative costs, in gas, of a number of abstract operations that a transaction may effect.
 
+\nopagebreak
 \begin{tabu}{l r l}
 \toprule
-Name & Value & Description* \\
+Name & Value & Description \\
 \midrule
 $G_{zero}$ & 0 & Nothing paid for operations of the set {\small $W_{zero}$}. \\
+$G_{jumpdest}$ & 1 & Amount of gas to pay for a {\small JUMPDEST} operation. \\
 $G_{base}$ & 2 & Amount of gas to pay for operations of the set {\small $W_{base}$}. \\
 $G_{verylow}$ & 3 & Amount of gas to pay for operations of the set {\small $W_{verylow}$}. \\
 $G_{\mathrm{low}}$ & 5 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{low}}$}. \\
 $G_{mid}$ & 8 & Amount of gas to pay for operations of the set {\small $W_{mid}$}. \\
 $G_{\mathrm{high}}$ & 10 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{high}}$}. \\
-$G_{extcode}$ & 700 & Amount of gas to pay for an {\small EXTCODESIZE} operation. \\
-$G_{extcodehash}$ & 400 & Amount of gas to pay for an {\small EXTCODEHASH} operation. \\
-$G_{balance}$ & 400 & Amount of gas to pay for a {\small BALANCE} operation. \\
-$G_{sload}$ & 200 & Paid for a {\small SLOAD} operation. \\
-$G_{jumpdest}$ & 1 & Paid for a {\small JUMPDEST} operation. \\
+$G_{extcode}$ & 700 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{extcode}}$}. \\
+$G_{balance}$ & 700 & Amount of gas to pay for a {\small BALANCE} operation. \\
+$G_{sload}$ & 800 & Paid for an {\small SLOAD} operation. \\
 $G_{sset}$ & 20000 & Paid for an {\small SSTORE} operation when the storage value is set to non-zero from zero. \\
 $G_{sreset}$ & 5000 & Paid for an {\small SSTORE} operation when the storage value's zeroness remains unchanged or\\
 &&is set to zero. \\
@@ -1818,14 +1879,14 @@ $G_{create}$ & 32000 & Paid for a {\small CREATE} operation. \\
 \linkdest{G__codedeposit}{}$G_{codedeposit}$ & 200 & Paid per byte for a {\small CREATE} operation to succeed in placing code into state. \\
 $G_{call}$ & 700 & Paid for a {\small CALL} operation. \\
 $G_{callvalue}$ & 9000 & Paid for a non-zero value transfer as part of the {\small CALL} operation. \\
-$G_{callstipend}$ & 2300 & A stipend for the called contract subtracted from $G_{callvalue}$ for a non-zero value transfer. \\
+\linkdest{G__callstipend}{}$G_{callstipend}$ & 2300 & A stipend for the called contract subtracted from $G_{callvalue}$ for a non-zero value transfer. \\
 \linkdest{G__newaccount}{}$G_{newaccount}$ & 25000 & Paid for a {\small CALL} or {\small SELFDESTRUCT} operation which creates an account. \\
 $G_{exp}$ & 10 & Partial payment for an {\small EXP} operation. \\
 $G_{expbyte}$ & 50 & Partial payment when multiplied by $\lceil\log_{256}(exponent)\rceil$ for the {\small EXP} operation. \\
 $G_{memory}$ & 3 & Paid for every additional word when expanding memory. \\
 \linkdest{G__txcreate}{}$G_\text{txcreate}$ & 32000 & Paid by all contract-creating transactions after the {\textit{Homestead} transition}.\\
 \linkdest{G__txdatazero}{}$G_{txdatazero}$ & 4 & Paid for every zero byte of data or code for a transaction. \\
-\linkdest{G__txdatanonzero}{}$G_{txdatanonzero}$ & 68 & Paid for every non-zero byte of data or code for a transaction. \\
+\linkdest{G__txdatanonzero}{}$G_{txdatanonzero}$ & 16 & Paid for every non-zero byte of data or code for a transaction. \\
 \linkdest{G__transaction}{}$G_{transaction}$ & 21000 & Paid for every transaction. \\
 $G_{\mathrm{log}}$ & 375 & Partial payment for a {\small LOG} operation. \\
 $G_{\mathrm{logdata}}$ & 8 & Paid for each byte in a {\small LOG} operation's data. \\
@@ -1851,21 +1912,22 @@ When a 256-bit machine datum is converted to and from a 160-bit address or hash,
 
 The general gas cost function, $C$, is defined as:
 
+\nopagebreak
 \begin{equation}
 C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv C_{mem}(\boldsymbol{\mu}'_{\mathrm{i}})-C_{mem}(\boldsymbol{\mu}_{\mathrm{i}}) + \begin{cases}
 C_\text{\tiny SSTORE}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SSTORE} \\
 G_{exp} & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_{\mathbf{s}}[1] = 0 \\
 G_{exp} + G_{expbyte}\times(1+\lfloor\log_{256}(\boldsymbol{\mu}_{\mathbf{s}}[1])\rfloor) & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_{\mathbf{s}}[1] > 0 \\
-G_{verylow} + G_{copy}\times\lceil\boldsymbol{\mu}_{\mathbf{s}}[2] \div 32\rceil & \text{if} \quad w = \text{\small CALLDATACOPY} \> \lor \\
-&\quad\text{\small CODECOPY} \lor \text{\small RETURNDATACOPY} \\
+G_{verylow} + G_{copy}\times\lceil\boldsymbol{\mu}_{\mathbf{s}}[2] \div 32\rceil & \text{if} \quad w \in W_{\mathrm{copy}} \\
+
 G_{extcode} + G_{copy}\times\lceil\boldsymbol{\mu}_{\mathbf{s}}[3] \div 32\rceil & \text{if} \quad w = \text{\small EXTCODECOPY} \\
+G_{extcode} & \text{if} \quad w \in W_{\mathrm{extcode}}\\
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_{\mathbf{s}}[1] & \text{if} \quad w = \text{\small LOG0} \\
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+G_{logtopic} & \text{if} \quad w = \text{\small LOG1} \\
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+2G_{logtopic} & \text{if} \quad w = \text{\small LOG2} \\
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+3G_{logtopic} & \text{if} \quad w = \text{\small LOG3} \\
 G_{log}+G_{logdata}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+4G_{logtopic} & \text{if} \quad w = \text{\small LOG4} \\
-C_\text{\tiny CALL}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small CALL} \lor \text{\small CALLCODE} \> \lor \\
-&\quad\text{\small DELEGATECALL} \\
+C_\text{\tiny CALL}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w \in W_{\mathrm{call}} \\
 C_\text{\tiny SELFDESTRUCT}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SELFDESTRUCT} \\
 G_{create} & \text{if} \quad w = \text{\small CREATE}\\
 G_{create}+G_{sha3word} \times \lceil \boldsymbol{\mu}_{\mathbf{s}}[2] \div 32 \rceil & \text{if} \quad w = \text{\small \hyperlink{create2}{CREATE2}}\\
@@ -1878,8 +1940,6 @@ G_{verylow} & \text{if} \quad w \in W_{verylow}\\
 G_{\mathrm{low}} & \text{if} \quad w \in W_{\mathrm{low}}\\
 G_{mid} & \text{if} \quad w \in W_{mid}\\
 G_{\mathrm{high}} & \text{if} \quad w \in W_{\mathrm{high}}\\
-G_{extcode} & \text{if} \quad w = \text{\small EXTCODESIZE}\\
-G_{extcodehash} & \text{if} \quad w = \text{\small \hyperlink{extcodehash}{EXTCODEHASH}}\\
 G_{balance} & \text{if} \quad w = \text{\small BALANCE}\\
 G_{blockhash} & \text{if} \quad w = \text{\small \hyperlink{blockhash}{BLOCKHASH}}\\
 \end{cases}
@@ -1899,15 +1959,21 @@ with $C_\text{\tiny CALL}$, $C_\text{\tiny SELFDESTRUCT}$ and $C_\text{\tiny SST
 
 $W_{zero}$ = \{{\small STOP}, {\small RETURN}, {\small REVERT}\}
 
-$W_{base}$ = \{{\small ADDRESS}, {\small ORIGIN}, {\small CALLER}, {\small CALLVALUE}, {\small CALLDATASIZE}, {\small CODESIZE}, {\small GASPRICE}, {\small COINBASE},\newline \noindent\hspace*{1cm} {\small TIMESTAMP}, {\small NUMBER}, {\small DIFFICULTY}, {\small GASLIMIT}, {\small RETURNDATASIZE}, {\small POP}, {\small PC}, {\small MSIZE}, {\small GAS}\}
+$W_{base}$ = \{{\small ADDRESS}, {\small ORIGIN}, {\small CALLER}, {\small CALLVALUE}, {\small CALLDATASIZE}, {\small CODESIZE}, {\small GASPRICE}, {\small COINBASE},\newline \noindent\hspace*{1cm} {\small TIMESTAMP}, {\small NUMBER}, {\small DIFFICULTY}, {\small GASLIMIT}, {\small CHAINID}, {\small RETURNDATASIZE}, {\small POP}, {\small PC}, {\small MSIZE}, {\small GAS}\}
 
 $W_{verylow}$ = \{{\small ADD}, {\small SUB}, {\small NOT}, {\small LT}, {\small GT}, {\small SLT}, {\small SGT}, {\small EQ}, {\small ISZERO}, {\small AND}, {\small OR}, {\small XOR}, {\small BYTE}, {\small SHL}, {\small SHR}, {\small SAR}, \newline \noindent\hspace*{1cm} {\small CALLDATALOAD}, {\small MLOAD}, {\small MSTORE}, {\small MSTORE8}, {\small PUSH*}, {\small DUP*}, {\small SWAP*}\}
 
-$W_{\mathrm{low}}$ = \{{\small MUL}, {\small DIV}, {\small SDIV}, {\small MOD}, {\small SMOD}, {\small SIGNEXTEND}\}
+$W_{\mathrm{low}}$ = \{{\small MUL}, {\small DIV}, {\small SDIV}, {\small MOD}, {\small SMOD}, {\small SIGNEXTEND}, {\small SELFBALANCE}\}
 
 $W_{mid}$ = \{{\small ADDMOD}, {\small MULMOD}, {\small JUMP}\}
 
 $W_{\mathrm{high}}$ = \{{\small JUMPI}\}
+
+$W_{\mathrm{copy}}$ = \{{\small CALLDATACOPY}, {\small CODECOPY}, {\small RETURNDATACOPY}\}
+
+$W_{\mathrm{call}}$ = \{{\small CALL}, {\small CALLCODE}, {\small DELEGATECALL}, {\small STATICCALL}\}
+
+$W_{\mathrm{extcode}}$ = \{{\small EXTCODESIZE}, {\small EXTCODEHASH}\}
 
 Note the memory cost component, given as the product of $G_{memory}$ and the maximum of 0 \& the ceiling of the number of words in size that the memory must be over the current number of words, $\boldsymbol{\mu}_{\mathrm{i}}$ in order that all accesses reference valid memory whether for read or write. Such accesses must be for non-zero number of bytes.
 
@@ -1917,6 +1983,7 @@ Note also that $C_{mem}$ is the memory cost function (the expansion function bei
 
 While defining the instruction set, we defined the memory-expansion for range function, $M$, thus:
 
+\nopagebreak
 \begin{equation}
 M(s, f, l) \equiv \begin{cases}
 s & \text{if} \quad l = 0 \\
@@ -2153,20 +2220,26 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& and we assert the header $H$ can be determined from its hash~$h$ unless $h$ is zero\\
 &&&& (as is the case for the parent hash of the genesis block).\\
 \midrule
-0x41 & {\small COINBASE} & 0 & 1 & Get the block's beneficiary address. \\
+0x41 & {\small COINBASE} & 0 & 1 & Get the current block's beneficiary address. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{H}}_{\mathrm{c}}$ \\
 \midrule
-0x42 & {\small TIMESTAMP} & 0 & 1 & Get the block's timestamp. \\
+0x42 & {\small TIMESTAMP} & 0 & 1 & Get the current block's timestamp. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{H}}_{\mathrm{s}}$ \\
 \midrule
-0x43 & {\small NUMBER} & 0 & 1 & Get the block's number. \\
+0x43 & {\small NUMBER} & 0 & 1 & Get the current block's number. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{H}}_{\mathrm{i}}$ \\
 \midrule
-0x44 & {\small DIFFICULTY} & 0 & 1 & Get the block's difficulty. \\
+0x44 & {\small DIFFICULTY} & 0 & 1 & Get the current block's difficulty. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{H}}_{\mathrm{d}}$ \\
 \midrule
-0x45 & {\small GASLIMIT} & 0 & 1 & Get the block's gas limit. \\
+0x45 & {\small GASLIMIT} & 0 & 1 & Get the current block's gas limit. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{H}}_{\mathrm{l}}$ \\
+\midrule
+0x46 & {\small CHAINID} & 0 & 1 & Get the \hyperlink{chain_id}{chain ID}. \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \beta$ \\
+\midrule
+0x47 & {\small SELFBALANCE} & 0 & 1 & Get balance of currently executing account. \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} $ \\
 \bottomrule
 \end{tabu}
 
@@ -2319,8 +2392,8 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] = 0 \; \wedge \; \
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0xf0 & {\small CREATE} & 3 & 1 & Create a new account with associated code. \\
 &&&& $\mathbf{i} \equiv \boldsymbol{\mu}_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[1] \dots (\boldsymbol{\mu}_{\mathbf{s}}[1] + \boldsymbol{\mu}_{\mathbf{s}}[2] - 1) ]$ \\
-&&&& $\zeta \equiv \varnothing$ \\
-&&&& $(\boldsymbol{\sigma}', \boldsymbol{\mu}'_{\mathrm{g}}, A^+, \mathbf{o}) \equiv \begin{cases}\Lambda(\boldsymbol{\sigma}^*, I_{\mathrm{a}}, I_{\mathrm{o}}, L(\boldsymbol{\mu}_{\mathrm{g}}), I_{\mathrm{p}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \mathbf{i}, I_{\mathrm{e}} + 1, \zeta, I_{\mathrm{w}}) & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[0] \leqslant \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \; \\ \quad &\wedge\; I_{\mathrm{e}} < 1024\\ \big(\boldsymbol{\sigma}, \boldsymbol{\mu}_{\mathrm{g}}, \varnothing\big) & \text{otherwise} \end{cases}$ \\
+&&&& $\hyperlink{salt}{\zeta} \equiv \varnothing$ \\
+&&&& $(\boldsymbol{\sigma}', \boldsymbol{\mu}'_{\mathrm{g}}, A^+, \mathbf{o}) \equiv \begin{cases}\hyperlink{lambda}{\Lambda}(\boldsymbol{\sigma}^*, I_{\mathrm{a}}, I_{\mathrm{o}}, L(\boldsymbol{\mu}_{\mathrm{g}}), I_{\mathrm{p}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \mathbf{i}, I_{\mathrm{e}} + 1, \zeta, I_{\mathrm{w}}) & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[0] \leqslant \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \; \\ \quad &\wedge\; I_{\mathrm{e}} < 1024\\ \big(\boldsymbol{\sigma}, \boldsymbol{\mu}_{\mathrm{g}}, \varnothing\big) & \text{otherwise} \end{cases}$ \\
 &&&& $\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except} \quad \boldsymbol{\sigma}^*[I_{\mathrm{a}}]_{\mathrm{n}} = \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{n}} + 1$ \\
 &&&& $A' \equiv A \Cup A^+$ which abbreviates: $A'_{\mathbf{s}} \equiv A_{\mathbf{s}} \cup A^+_{\mathbf{s}} \quad \wedge \quad A'_{\mathbf{l}} \equiv A_{\mathbf{l}} \cdot A^+_{\mathbf{l}} \quad \wedge$ \\
 &&&& $A'_{\mathbf{t}} \equiv A_{\mathbf{t}} \cup A^+_{\mathbf{t}} \wedge \quad A'_{\mathbf{r}} \equiv A_{\mathbf{r}} + A^+_{\mathbf{r}}$ \\
@@ -2336,7 +2409,7 @@ R_{sclear} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] = 0 \; \wedge \; \
 \midrule
 0xf1 & {\small CALL} & 7 & 1 & Message-call into an account. \\
 &&&& $\mathbf{i} \equiv \boldsymbol{\mu}_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[3] \dots (\boldsymbol{\mu}_{\mathbf{s}}[3] + \boldsymbol{\mu}_{\mathbf{s}}[4] - 1) ]$ \\
-&&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}, I_{\mathrm{a}}, I_{\mathrm{o}}, t, t, C_{\text{\tiny CALLGAS}}(\boldsymbol{\mu}),\\ \quad I_{\mathrm{p}}, \boldsymbol{\mu}_{\mathbf{s}}[2], \boldsymbol{\mu}_{\mathbf{s}}[2], \mathbf{i}, I_{\mathrm{e}} + 1, I_{\mathrm{w}})\end{array} & \begin{array}{l}\text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] \leqslant \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \;\wedge \\ \quad\quad I_{\mathrm{e}} < 1024\end{array}\\ (\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
+&&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\hyperlink{theta}{\Theta}(\boldsymbol{\sigma}, I_{\mathrm{a}}, I_{\mathrm{o}}, t, t, C_{\text{\tiny CALLGAS}}(\boldsymbol{\mu}),\\ \quad I_{\mathrm{p}}, \boldsymbol{\mu}_{\mathbf{s}}[2], \boldsymbol{\mu}_{\mathbf{s}}[2], \mathbf{i}, I_{\mathrm{e}} + 1, I_{\mathrm{w}})\end{array} & \begin{array}{l}\text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] \leqslant \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \;\wedge \\ \quad\quad I_{\mathrm{e}} < 1024\end{array}\\ (\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
 &&&& $n \equiv \min(\{ \boldsymbol{\mu}_{\mathbf{s}}[6], \lVert \mathbf{o} \rVert\})$ \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[5] \dots (\boldsymbol{\mu}_{\mathbf{s}}[5] + n - 1) ] = \mathbf{o}[0 \dots (n - 1)]$ \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{o}} = \mathbf{o}$ \\
@@ -2372,7 +2445,7 @@ G_{newaccount} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, \boldsymbol{
 0xf2 & {\small CALLCODE} & 7 & 1 & Message-call into this account with an alternative account's code. \\
 &&&& Exactly equivalent to {\small CALL} except: \\
 &&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}, I_{\mathrm{a}}, I_{\mathrm{o}}, I_{\mathrm{a}}, t, C_{\text{\tiny CALLGAS}}(\boldsymbol{\mu}), \\ \quad I_{\mathrm{p}}, \boldsymbol{\mu}_{\mathbf{s}}[2], \boldsymbol{\mu}_{\mathbf{s}}[2], \mathbf{i}, I_{\mathrm{e}} + 1, I_{\mathrm{w}})\end{array} & \begin{array}{l}\text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] \leqslant \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \;\wedge\\ \quad\quad{}I_{\mathrm{e}} < 1024\end{array} \\ (\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
-&&&& Note the change in the fourth parameter to the call $\Theta$ from the 2nd stack value \\
+&&&& Note the change in the fourth parameter to the call $\hyperlink{theta}{\Theta}$ from the 2nd stack value \\
 &&&& $\boldsymbol{\mu}_{\mathbf{s}}[1]$ (as in {\small CALL}) to the present address $I_{\mathrm{a}}$. This means that the recipient is in\\
 &&&& fact the same account as at present, simply that the code is overwritten.\\
 \midrule
@@ -2393,7 +2466,7 @@ G_{newaccount} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, \boldsymbol{
 &&&& $\boldsymbol{\mu}_{\mathbf{s}}[5]$. Otherwise it is equivalent to {\small CALL} except:\\
 &&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}, I_{\mathrm{s}}, I_{\mathrm{o}}, I_{\mathrm{a}}, t, C_{\text{\tiny CALLGAS}}(\boldsymbol{\mu}), \\\quad I_{\mathrm{p}}, 0, I_{\mathrm{v}}, \mathbf{i}, I_{\mathrm{e}} + 1, I_{\mathrm{w}})\end{array} & \text{if} \quad I_{\mathrm{e}} < 1024 \\(\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
 &&&& Note the changes (in addition to that of the fourth parameter) to the second \\
-&&&& and ninth parameters to the call $\Theta$.\\
+&&&& and ninth parameters to the call $\hyperlink{theta}{\Theta}$.\\
 &&&& This means that the recipient is in fact the same account as at present, simply\\
 &&&& that the code is overwritten {\it and} the context is almost entirely identical.\\
 \midrule
@@ -2406,7 +2479,7 @@ G_{newaccount} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, \boldsymbol{
 &&&& The argument $\boldsymbol{\mu}_{\mathbf{s}}[2]$ is replaced with $0$. \\
 &&&& The deeper argument $\boldsymbol{\mu}_{\mathbf{s}}[3]$, $\boldsymbol{\mu}_{\mathbf{s}}[4]$, $\boldsymbol{\mu}_{\mathbf{s}}[5]$ and $\boldsymbol{\mu}_{\mathbf{s}}[6]$ are respectively replaced \\
 &&&& with $\boldsymbol{\mu}_{\mathbf{s}}[2]$, $\boldsymbol{\mu}_{\mathbf{s}}[3]$, $\boldsymbol{\mu}_{\mathbf{s}}[4]$ and $\boldsymbol{\mu}_{\mathbf{s}}[5]$. \\
-&&&& The last argument of $\Theta$ is $\bot$. \\
+&&&& The last argument of $\hyperlink{theta}{\Theta}$ is $\bot$. \\
 \midrule
 0xfd & {\small REVERT} & 2 & 0 & Halt execution reverting state changes but returning data and remaining gas. \\
 &&&& The effect of this operation is described in (\ref{eq:X-def}). \\
@@ -2447,6 +2520,7 @@ The proof-of-concept series include a development premine, making the state root
 \subsection{Definitions}
 We employ the following definitions:
 
+\nopagebreak
 \begin{tabu*}{lcl}
 \toprule
 Name & Value & Description \\
