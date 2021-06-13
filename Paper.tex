@@ -1012,12 +1012,13 @@ Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv
 \boldsymbol{\mu}_g < C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \quad \vee \\
 \mathbf{\delta}_w = \varnothing \quad \vee \\
 \lVert\boldsymbol{\mu}_\mathbf{s}\rVert < \mathbf{\delta}_w \quad \vee \\
-( w = \text{\small JUMP} \quad \wedge \quad \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \\
-( w = \text{\small JUMPI} \quad \wedge \quad \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \quad \wedge \\
+( w = \text{\small JUMP} \; \wedge \; \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \\
+( w = \text{\small JUMPI} \; \wedge \; \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \; \wedge \\
 \quad \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \\
-( w = \text{\small RETURNDATACOPY} \wedge \\ \quad \boldsymbol{\mu}_{\mathbf{s}}[1] + \boldsymbol{\mu}_{\mathbf{s}}[2] > \lVert\boldsymbol{\mu}_{\mathbf{o}}\rVert) \quad \vee \\
-\lVert\boldsymbol{\mu}_\mathbf{s}\rVert - \mathbf{\delta}_w + \mathbf{\alpha}_w > 1024 \vee
- (\neg I_{\mathrm{w}} \wedge W(w, \boldsymbol{\mu}))
+( w = \text{\small RETURNDATACOPY} \; \wedge \\ \quad \boldsymbol{\mu}_{\mathbf{s}}[1] + \boldsymbol{\mu}_{\mathbf{s}}[2] > \lVert\boldsymbol{\mu}_{\mathbf{o}}\rVert) \quad \vee \\
+\lVert\boldsymbol{\mu}_\mathbf{s}\rVert - \mathbf{\delta}_w + \mathbf{\alpha}_w > 1024 \quad \vee \\
+( \neg I_{\mathrm{w}} \; \wedge \; W(w, \boldsymbol{\mu}) ) \quad \vee \\
+( w = \text{\small SSTORE} \; \wedge \; \boldsymbol{\mu}_g \leqslant G_{callstipend} )
 \end{array}
 \end{equation}
 where
@@ -1025,12 +1026,14 @@ where
 W(w, \boldsymbol{\mu}) \equiv \\
 \begin{array}[t]{l}
 w \in \{\text{\small CREATE}, \text{\small CREATE2}, \text{\small SSTORE},\\ \text{\small SELFDESTRUCT}\} \ \vee \\
-\text{\small LOG0} \le w \wedge w \le \text{\small LOG4} \quad \vee \\
-w = \text{\small CALL} \wedge \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0
+\text{\small LOG0} \le w \; \wedge \; w \le \text{\small LOG4} \quad \vee \\
+w = \text{\small CALL} \; \wedge \; \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0
 \end{array}
 \end{equation}
 
 This states that the execution is in an exceptional halting state if there is insufficient gas, if the instruction is invalid (and therefore its $\delta$ subscript is undefined), if there are insufficient stack items, if a {\small JUMP}/{\small JUMPI} destination is invalid, the new stack size would be larger than 1024 or state modification is attempted during a static call. The astute reader will realise that this implies that no instruction can, through its execution, cause an exceptional halt.
+Also, the execution is in an exceptional halting state if the gas left prior to executing an \hyperlink{sstore}{{\small SSTORE}} instruction is less than or equal to the call stipend $\hyperlink{G__callstipend}{G_{callstipend}}$.
+The last condition was introduced in EIP-2200 by \cite{EIP-2200}.
 
 \subsubsection{Jump Destination Validity}
 
