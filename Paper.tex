@@ -2252,12 +2252,12 @@ Here given are the various exceptions to the state transition rules given in sec
 \midrule
 0x51 & {\small MLOAD} & 1 & 1 & Load word from memory. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{\mu}_{\mathbf{m}}[\boldsymbol{\mu}_{\mathbf{s}}[0] \dots (\boldsymbol{\mu}_{\mathbf{s}}[0] + 31) ]$ \\
-&&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv \max(\boldsymbol{\mu}_{\mathrm{i}}, \ceil{ (\boldsymbol{\mu}_{\mathbf{s}}[0] + 32) \div 32 })$ \\
+&&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv \max(\boldsymbol{\mu}_{\mathrm{i}}, \ceil{ (\min(\boldsymbol{\mu}_{\mathbf{s}}[0] + 32, 2^{256}) \div 32 })$ \\
 &&&& The addition in the calculation of $\boldsymbol{\mu}'_{\mathrm{i}}$ is not subject to the $2^{256}$ modulo. \\
 \midrule
 0x52 & {\small MSTORE} & 2 & 0 & Save word to memory. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[0] \dots (\boldsymbol{\mu}_{\mathbf{s}}[0] + 31) ] \equiv \boldsymbol{\mu}_{\mathbf{s}}[1]$ \\
-&&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv \max(\boldsymbol{\mu}_{\mathrm{i}}, \ceil{ (\boldsymbol{\mu}_{\mathbf{s}}[0] + 32) \div 32 })$ \\
+&&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv \max(\boldsymbol{\mu}_{\mathrm{i}}, \ceil{ (\min(\boldsymbol{\mu}_{\mathbf{s}}[0] + 32, 2^{256}) \div 32 })$ \\
 &&&& The addition in the calculation of $\boldsymbol{\mu}'_{\mathrm{i}}$ is not subject to the $2^{256}$ modulo. \\
 \midrule
 0x53 & {\small MSTORE8} & 2 & 0 & Save byte to memory. \\
@@ -2310,7 +2310,7 @@ G_{sreset} - G_{sload} & \text{if} \quad v_0 = v' \; \wedge \; v_0 \neq 0 \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{\mu}_{\mathrm{pc}}$ \\
 \midrule
 0x59 & {\small MSIZE} & 0 & 1 & Get the size of active memory in bytes. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv 32\boldsymbol{\mu}_{i}$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \begin{cases} 32\boldsymbol{\mu}_{i} & \text{if} \quad \boldsymbol{\mu}_{i} < 2^{251} \\ 2^{256}-1 & \text{otherwise} \end{cases}$ \\
 \midrule
 0x5a & {\small GAS} & 0 & 1 & Get the amount of available gas, including the corresponding reduction \\
 &&&& for the cost of this instruction. \\
