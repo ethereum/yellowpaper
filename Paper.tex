@@ -2274,16 +2274,14 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& Let $v' = \boldsymbol{\mu}_{\mathbf{s}}[1]$ be the new value. \\
 &&&& Then: \\
 &&&&$C_{\text{\tiny SSTORE}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
-G_{sload} & \text{if} \quad v = v' \\
-G_{sset}  & \text{if} \quad v^0 = v \; \wedge \; v^0 = 0 \\
-G_{sreset}  & \text{if} \quad v^0 = v \; \wedge \; v^0 \neq 0 \\
-G_{sload} & \text{otherwise}
+G_{sload}  & \text{if} \quad v = v' \; \vee \; v^0 \neq v \\
+G_{sset}   & \text{if} \quad v \neq v' \; \wedge \; v^0 = v \; \wedge \; v^0 = 0 \\
+G_{sreset} & \text{if} \quad v \neq v' \; \wedge \; v^0 = v \; \wedge \; v^0 \neq 0 \\
 \end{cases}$ \\
 &&&&\linkdest{A r}{} $A'_{r} \equiv A_{r} + \begin{cases}
-0 & \text{if} \quad v = v' \\
-0 & \text{if} \quad v^0 = v \; \wedge \; v^0 = 0 \\
-R_{sclear} & \text{if} \quad v^0 = v \; \wedge \; v' = 0 \\
-r_{\text{dirtyclear}} + r_{\text{dirtyreset}} & \text{otherwise}
+R_{sclear} & \text{if} \quad v \neq v' \; \wedge \; v^0 = v \; \wedge \; v' = 0 \\
+r_{\text{dirtyclear}} + r_{\text{dirtyreset}} & \text{if} \quad v \neq v' \; \wedge \; v^0 \neq v \\
+0 & \text{otherwise} \\
 \end{cases}$ \\
 &&&&$r_{\text{dirtyclear}} \equiv \begin{cases}
 -R_{sclear} & \text{if} \quad v^0 \neq 0 \; \wedge \; v = 0 \\
