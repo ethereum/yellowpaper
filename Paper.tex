@@ -2215,8 +2215,8 @@ Here given are the various exceptions to the state transition rules given in sec
 0x40 & {\small BLOCKHASH} & 1 & 1 & Get the hash of one of the 256 most recent complete blocks. \\
 \linkdest{blockhash}{}&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv P(I_{\mathbf{H}_{\mathrm{p}}}, \boldsymbol{\mu}_{\mathbf{s}}[0], 0)$ \\
 &&&& where $P$ is the hash of a block of a particular number, up to a maximum\\
-&&&& age. 0 is left on the stack if the looked for block number is greater than\\
-&&&& the current block number or more than 256 blocks behind the current block.\\
+&&&& age. 0 is left on the stack if the looked for block number is greater than or\\
+&&&& equal to the current block number or more than 256 blocks behind the current block.\\
 &&&& $P(h, n, a) \equiv \begin{cases} 0 & \text{if} \quad n > H_{\mathrm{i}} \vee a = 256 \vee h = 0 \\ h & \text{if} \quad n = H_{\mathrm{i}} \\ P(H_{\mathrm{p}}, n, a + 1) & \text{otherwise} \end{cases}$ \\
 &&&& and we assert the header $H$ can be determined from its hash~$h$ unless $h$ is zero\\
 &&&& (as is the case for the parent hash of the genesis block).\\
