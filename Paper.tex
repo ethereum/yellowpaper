@@ -2267,13 +2267,33 @@ Here given are the various exceptions to the state transition rules given in sec
 \midrule
 \linkdest{SSTORE}{}0x55 & {\small SSTORE} & 2 & 0 & Save word to storage. \\
 &&&& $\boldsymbol{\sigma}'[I_{\mathrm{a}}]_{\mathbf{s}}[ \boldsymbol{\mu}_{\mathbf{s}}[0] ] \equiv \boldsymbol{\mu}_{\mathbf{s}}[1] $ \\
-&&&&\linkdest{C__SSTORE}{} $C_{\text{\tiny SSTORE}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
-G_{sset} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] \neq 0 \; \wedge \; \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathbf{s}}[\boldsymbol{\mu}_{\mathbf{s}}[0]] = 0 \\
-G_{sreset} & \text{otherwise}
+&&&&\linkdest{C__SSTORE}{}$C_{\text{\tiny SSTORE}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$ and \linkdest{A r}{}$A'_{r}$ are specified by EIP-2200 as follows. \\
+&&&& Let $\boldsymbol{\sigma}^0$ be the state if the current transaction were to revert (the ``original state''). \\
+&&&& Let $v^0 = \boldsymbol{\sigma}^0[I_{\mathrm{a}}]_{\mathbf{s}}[\boldsymbol{\mu}_{\mathbf{s}}[0]]$ be the original value of the storage slot. \\
+&&&& Let $v = \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathbf{s}}[\boldsymbol{\mu}_{\mathbf{s}}[0]]$ be the current value. \\
+&&&& Let $v' = \boldsymbol{\mu}_{\mathbf{s}}[1]$ be the new value. \\
+&&&& Then: \\
+&&&&$C_{\text{\tiny SSTORE}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
+G_{sload} & \text{if} \quad v = v' \\
+G_{sset}  & \text{if} \quad v^0 = v \; \wedge \; v^0 = 0 \\
+G_{sreset}  & \text{if} \quad v^0 = v \; \wedge \; v^0 \neq 0 \\
+G_{sload} & \text{otherwise}
 \end{cases}$ \\
 &&&&\linkdest{A r}{} $A'_{r} \equiv A_{r} + \begin{cases}
-R_{sclear} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] = 0 \; \wedge \; \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathbf{s}}[\boldsymbol{\mu}_{\mathbf{s}}[0]] \neq 0 \\
-0 & \text{otherwise}
+0 & \text{if} \quad v = v' \\
+0 & \text{if} \quad v^0 = v \; \wedge \; v^0 = 0 \\
+R_{sclear} & \text{if} \quad v^0 = v \; \wedge \; v' = 0 \\
+r_{\text{dirtyclear}} + r_{\text{dirtyreset}} & \text{otherwise}
+\end{cases}$ \\
+&&&&$r_{\text{dirtyclear}} \equiv \begin{cases}
+-R_{sclear} & \text{if} \quad v^0 \neq 0 \; \wedge \; v = 0 \\
+R_{sclear} & \text{if} \quad v^0 \neq 0 \; \wedge \; v' = 0 \\
+0 & \text{otherwise} \\
+\end{cases}$ \\
+&&&&$r_{\text{dirtyreset}} \equiv \begin{cases}
+G_{sset} - G_{sload}   & \text{if} \quad v^0 = v' \; \wedge \; v^0 = 0 \\
+G_{sreset} - G_{sload} & \text{if} \quad v^0 = v' \; \wedge \; v^0 \neq 0 \\
+0 & \text{otherwise} \\
 \end{cases}$ \\
 \midrule
 \linkdest{JUMP}{}0x56 & {\small JUMP} & 1 & 0 & Alter the program counter. \\
