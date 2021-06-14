@@ -281,7 +281,7 @@ An account is \textit{dead} when its account state is non-existent or empty:
 
 \subsection{The Transaction} \label{subsec:transaction}
 
-A transaction (formally, $T$) is a single cryptographically-signed instruction constructed by an actor externally to the scope of Ethereum. While it is assumed that the ultimate external actor will be human in nature, software tools will be used in its construction and dissemination\footnote{Notably, such `tools' could ultimately become so causally removed from their human-based initiation---or humans may become so causally-neutral---that there could be a point at which they rightly be considered autonomous agents. \eg contracts may offer bounties to humans for being sent transactions to initiate their execution.}. There are two types of transactions: those which result in message calls and those which result in the creation of new accounts with associated code (known informally as `contract creation'). Both types specify a number of common fields:
+A transaction (formally, $T$) is a single cryptographically-signed instruction constructed by an actor externally to the scope of Ethereum. The sender of a transaction can not be a contract. While it is assumed that the ultimate external actor will be human in nature, software tools will be used in its construction and dissemination\footnote{Notably, such `tools' could ultimately become so causally removed from their human-based initiation---or humans may become so causally-neutral---that there could be a point at which they rightly be considered autonomous agents. \eg contracts may offer bounties to humans for being sent transactions to initiate their execution.}. There are two types of transactions: those which result in message calls and those which result in the creation of new accounts with associated code (known informally as `contract creation'). Both types specify a number of common fields:
 
 \begin{description}
 \item[nonce]\linkdest{tx_nonce}{} A scalar value equal to the number of transactions sent by the sender; formally $T_{\mathrm{n}}$.
@@ -584,6 +584,7 @@ The execution of a transaction is the most complex part of the Ethereum protocol
 \item The transaction is well-formed RLP, with no additional trailing bytes;
 \item the transaction signature is valid;
 \item the \hyperlink{transaction_nonce}{transaction nonce} is valid (equivalent to the \hyperlink{account_nonce}{sender account's current nonce});
+\item the sender account has no contract code deployed ($\lVert I_{\mathbf{b}} \rVert = 0$).
 \item the gas limit is no smaller than the intrinsic gas, $g_0$, used by the transaction; and
 \item the sender account balance contains at least the cost, $v_0$, required in up-front payment.
 \end{enumerate}
