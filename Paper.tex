@@ -783,23 +783,26 @@ The gas remaining will be zero in any such exceptional condition, \ie if the cre
 If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persist. Thus formally, we may specify the resultant state, gas, accrued substate and status code as $(\boldsymbol{\sigma}', g', A, z)$ where:
 
 \begin{align}
-\quad g' &\equiv \begin{cases}
+\quad g' \equiv & \begin{cases}
 0 & \text{if} \quad F \\
 g^{**} - c & \text{otherwise} \\
 \end{cases} \\
-\quad \boldsymbol{\sigma}' &\equiv  \begin{cases}
+\quad \boldsymbol{\sigma}' \equiv & \begin{cases}
 \boldsymbol{\sigma} & \text{if} \quad F \\
 \boldsymbol{\sigma}^{**} \quad \text{except:} & \\
 \quad\boldsymbol{\sigma}'[a] = \varnothing & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}^{**}, a) \\
 \boldsymbol{\sigma}^{**} \quad \text{except:} & \\
 \quad\boldsymbol{\sigma}'[a]_{\mathrm{c}} = \texttt{KEC}(\mathbf{o}) & \text{otherwise}
 \end{cases} \\
-\quad z &\equiv \begin{cases}
+\quad z \equiv & \begin{cases}
 0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \lor g^{**} < c \\
 1 & \text{otherwise}
 \end{cases} \\
 \nonumber \text{where} \\
-F &\equiv \big((\boldsymbol{\sigma}^{**} = \varnothing \ \wedge\ \mathbf{o} = \varnothing) \vee\  g^{**} < c \ \vee\  \lVert \mathbf{o} \rVert > 24576\big)
+F \equiv  & \big( \boldsymbol{\sigma}[a] \neq \varnothing \ \wedge\ \big(\boldsymbol{\sigma}[a]_c \neq \texttt{\small KEC}\big(()\big) \vee \boldsymbol{\sigma}[a]_n \neq 0 \big) \big) \quad \vee \\
+\nonumber &(\boldsymbol{\sigma}^{**} = \varnothing \ \wedge\ \mathbf{o} = \varnothing) \quad \vee \\
+\nonumber &g^{**} < c \quad \vee \\
+\nonumber &\lVert \mathbf{o} \rVert > 24576
 \end{align}
 
 The exception in the determination of $\boldsymbol{\sigma}'$ dictates that $\mathbf{o}$, the resultant byte sequence from the execution of the initialisation code, specifies the final body code for the newly-created account.
