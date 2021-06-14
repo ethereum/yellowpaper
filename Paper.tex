@@ -788,14 +788,14 @@ If such an exception does not occur, then the remaining gas is refunded to the o
 g^{**} - c & \text{otherwise} \\
 \end{cases} \\
 \quad \boldsymbol{\sigma}' \equiv & \begin{cases}
-\boldsymbol{\sigma} & \text{if} \quad F \\
+\boldsymbol{\sigma} & \text{if} \quad F \ \lor\ \boldsymbol{\sigma}^{**} = \varnothing \\
 \boldsymbol{\sigma}^{**} \quad \text{except:} & \\
 \quad\boldsymbol{\sigma}'[a] = \varnothing & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}^{**}, a) \\
 \boldsymbol{\sigma}^{**} \quad \text{except:} & \\
 \quad\boldsymbol{\sigma}'[a]_{\mathrm{c}} = \texttt{KEC}(\mathbf{o}) & \text{otherwise}
 \end{cases} \\
 \quad z \equiv & \begin{cases}
-0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \lor g^{**} < c \\
+0 & \text{if} \quad F \ \lor\ \boldsymbol{\sigma}^{**} = \varnothing \\
 1 & \text{otherwise}
 \end{cases} \\
 \nonumber \text{where} \\
@@ -808,6 +808,7 @@ F \equiv  & \big( \boldsymbol{\sigma}[a] \neq \varnothing \ \wedge\ \big(\boldsy
 The exception in the determination of $\boldsymbol{\sigma}'$ dictates that $\mathbf{o}$, the resultant byte sequence from the execution of the initialisation code, specifies the final body code for the newly-created account.
 
 Note that intention is that the result is either a successfully created new contract with its endowment, or no new contract with no transfer of value.
+In addition, observe that if the execution of the initialising code \hyperlink{REVERT}{reverts} ($\boldsymbol{\sigma}^{**} = \varnothing \ \wedge\ \mathbf{o} \neq \varnothing$), the resultant gas $g'$ is not depleted (provided there was no other exception), but no new account is created.
 
 \subsection{Subtleties}
 Note that while the initialisation code is executing, the newly created address exists but with no intrinsic body code\footnote{During initialization code execution, \texttt{EXTCODESIZE} on the address should return zero, which is the length of the code of the account while \texttt{CODESIZE} should return the length of the initialization code (as defined in \ref{subsec:instruction-set}).}. Thus any message call received by it during this time causes no code to be executed. If the initialisation execution ends with a {\small SELFDESTRUCT} instruction, the matter is moot since the account will be deleted before the transaction is completed. For a normal {\small STOP} code, or if the code returned is otherwise empty, then the state is left with a zombie account, and any remaining balance will be locked into the account forever.
@@ -815,7 +816,7 @@ Note that while the initialisation code is executing, the newly created address 
 \section{Message Call} \label{ch:call}
 In the case of executing a message call, several parameters are required: sender ($s$), transaction originator ($o$), recipient ($r$), the account whose code is to be executed ($c$, usually the same as recipient), available gas ($g$), value ($v$) and gas price ($p$) together with an arbitrary length byte array, $\mathbf{d}$, the input data of the call, the present depth of the message-call/contract-creation stack ($e$) and finally the permission to make modifications to the state ($w$).
 
-Aside from evaluating to a new state and accrued transaction substate, message calls also have an extra component---the output data denoted by the byte array $\mathbf{o}$. This is ignored when executing transactions, however message calls can be initiated due to VM-code execution and in this case this information is used.
+Aside from evaluating to a new state and accrued transaction substate, message calls also have an extra component---the output data denoted by the byte array~$\mathbf{o}$. This is ignored when executing transactions, however message calls can be initiated due to VM-code execution and in this case this information is used.
 \begin{equation}
 (\boldsymbol{\sigma}', g', A, z, \mathbf{o}) \equiv \linkdest{theta}{\Theta}(\boldsymbol{\sigma}, s, o, r, c, g, p, v, \tilde{v}, \mathbf{d}, e, w)
 \end{equation}
@@ -2503,7 +2504,7 @@ G_{newaccount} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, \boldsymbol{
 &&&& with $\boldsymbol{\mu}_{\mathbf{s}}[2]$, $\boldsymbol{\mu}_{\mathbf{s}}[3]$, $\boldsymbol{\mu}_{\mathbf{s}}[4]$ and $\boldsymbol{\mu}_{\mathbf{s}}[5]$. \\
 &&&& The last argument of $\hyperlink{theta}{\Theta}$ is $\bot$. \\
 \midrule
-0xfd & {\small REVERT} & 2 & 0 & Halt execution reverting state changes but returning data and remaining gas. \\
+\linkdest{REVERT}{}0xfd & {\small REVERT} & 2 & 0 & Halt execution reverting state changes but returning data and remaining gas. \\
 &&&& The effect of this operation is described in (\ref{eq:X-def}). \\
 &&&& For the gas calculation, we use the memory expansion function, \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \boldsymbol{\mu}_{\mathbf{s}}[1])$ \\
