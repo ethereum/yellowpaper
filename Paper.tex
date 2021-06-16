@@ -173,8 +173,28 @@ The scheme we use in order to generate consensus is a simplified version of the 
 Sometimes, a path follows a new protocol from a particular height (block number).
 This document describes one version of the protocol, namely the \textit{Istanbul} version defined in EIP-1679 by \cite{EIP-1679}.
 In order to follow back the history of a path, one must reference multiple versions of this document.
+Here are the block numbers of protocol updates (forks) on the Ethereum main network:
+\par
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+Fork Name & First Block Number \\
+\midrule
+$F_{\mathrm{Homestead}}$         &  1150000 \\
+$F_{\mathrm{Tangerine Whistle}}$ &  2463000 \\
+$F_{\mathrm{Spurious Dragon}}$   &  2675000 \\
+$F_{\mathrm{Byzantium}}$         &  4370000 \\
+$F_{\mathrm{Constantinople}}$    &  7280000 \\
+$F_{\mathrm{Petersburg}}$        &  7280000 \\
+$F_{\mathrm{Istanbul}}$          &  9069000 \\
+$F_{\mathrm{Muir Glacier}}$      &  9200000 \\
+$F_{\mathrm{Berlin}}$            & 12244000 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\par
 
-Occasionally actors cannot agree on a protocol change, and a permanent fork occurs.
+Occasionally actors do not agree on a protocol change, and a permanent fork occurs.
 In order to distinguish between diverged blockchains, EIP-155 by \cite{EIP-155} introduced the concept of chain ID, which we denote by $\beta$.
 For the Ethereum main network
 \begin{equation}
@@ -512,9 +532,9 @@ y \equiv \begin{cases}
 \expdiffsymb &\equiv \left\lfloor 2^{ \left\lfloor H'_{\mathrm{i}} \div 100000 \right\rfloor - 2 } \right\rfloor \\
 H'_{\mathrm{i}} &\equiv \max(H_{\mathrm{i}} - \kappa, 0) \\
 \kappa &\equiv \begin{cases} 
-  3000000  & \text{if} \quad 4370000 \leqslant H_{\mathrm{i}} < 7280000 \\
-  5000000  & \text{if} \quad 7280000 \leqslant H_{\mathrm{i}} < 9200000 \\
-  9000000  & \text{if} \quad H_{\mathrm{i}} \geqslant 9200000 \\
+  3000000  & \text{if} \quad F_{\mathrm{Byzantium}} \leqslant H_{\mathrm{i}} < F_{\mathrm{Constantinople}} \\
+  5000000  & \text{if} \quad F_{\mathrm{Constantinople}} \leqslant H_{\mathrm{i}} < F_{\mathrm{Muir Glacier}} \\
+  9000000  & \text{if} \quad H_{\mathrm{i}} \geqslant F_{\mathrm{Muir Glacier}} \\
 \end{cases}
 \end{align}
 
@@ -1188,9 +1208,9 @@ If there are collisions of the beneficiary addresses between ommers and the bloc
 \hypertarget{block_reward_R__block}{}\linkdest{R__block}We define the block reward in Wei:
 \begin{equation}
 R_{\mathrm{block}} = 10^{18} \times \begin{cases}
-5 &\text{if}\ H_{\mathrm{i}} < 4370000 \\
-3 &\text{if}\ 4370000 \leqslant H_{\mathrm{i}} < 7280000 \\
-2 &\text{if}\ H_{\mathrm{i}} \geqslant 7280000 \\
+5 &\text{if}\ H_{\mathrm{i}} < F_{\mathrm{Byzantium}} \\
+3 &\text{if}\ F_{\mathrm{Byzantium}} \leqslant H_{\mathrm{i}} < F_{\mathrm{Constantinople}} \\
+2 &\text{if}\ H_{\mathrm{i}} \geqslant F_{\mathrm{Constantinople}} \\
 \end{cases} \\
 \end{equation}
 
