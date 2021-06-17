@@ -1576,12 +1576,9 @@ The fifth contract performs arbitrary-precision exponentiation under modulo. Her
 
 \begin{eqnarray}
 \Xi_{\mathtt{EXPMOD}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{except:} \\
-g_{\mathrm{r}} &=& \left\lfloor\frac{f\big(\max(\ell_{\mathrm{M}},\ell_{\mathrm{B}})\big)\max(\ell'_{\mathrm{E}},1)}{G_{\mathrm{quaddivisor}}}\right\rfloor \\
-f(x) &\equiv& \begin{cases}
-x^2 & \text{if}\ x \le 64 \\[0.5em]
-\left\lfloor\dfrac{x^2}{4}\right\rfloor + 96 x - 3072 & \text{if}\ 64 < x \le 1024 \\[1em]
-\left\lfloor\dfrac{x^2}{16}\right\rfloor + 480x - 199680 & \text{otherwise}
-\end{cases}\\
+g_{\mathrm{r}} &=& \max \left(200, \left\lfloor\frac{f\big(\max(\ell_{\mathrm{M}},\ell_{\mathrm{B}})\big)\max(\ell'_{\mathrm{E}},1)}{G_{\mathrm{quaddivisor}}}\right\rfloor \right) \\
+G_{\mathrm{quaddivisor}} &\equiv& 3 \\
+f(x) &\equiv& \left\lceil \frac{x}{8} \right\rceil ^2 \\
 \ell'_{\mathrm{E}} &=& \begin{cases}
 0 & \text{if}\ \ell_{\mathrm{E}}\le 32\wedge E=0 \\
 \lfloor \log_2(E)\rfloor &\text{if}\ \ell_{\mathrm{E}}\le 32 \wedge E \neq 0 \\
@@ -1900,8 +1897,6 @@ $G_{\mathrm{sha3}}$ & 30 & Paid for each {\small SHA3} operation. \\
 $G_{\mathrm{sha3word}}$ & 6 & Paid for each word (rounded up) for input data to a {\small SHA3} operation. \\
 $G_{\mathrm{copy}}$ & 3 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
 $G_{\mathrm{blockhash}}$ & 20 & Payment for {\small BLOCKHASH} operation. \\
-$G_{\mathrm{quaddivisor}}$ & 20 & The quadratic coefficient of the input sizes of the exponentiation-over-modulo precompiled\\
-&&contract. \\
 
 %extern u256 const c_{\mathrm{copyGas}};			///< Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
 \bottomrule
