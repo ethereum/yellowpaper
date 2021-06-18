@@ -715,14 +715,14 @@ We define the creation function formally as the function \linkdest{lambda}{$\Lam
 The address of the new account is defined as being the rightmost 160 bits of the Keccak hash of the \hyperlink{rlp}{RLP} encoding of the structure containing only the sender and the \hyperlink{account_nonce}{account nonce}.
 For {\small \hyperlink{create2}{CREATE2}} the rule is different and is described in EIP-1014 by \cite{EIP-1014}.
 Combining the two cases, we define the resultant address for the new account $a$:
-\begin{eqnarray}
-a & \equiv & A(s, \boldsymbol{\sigma}[s]_{\mathrm{n}} - 1, \zeta, \mathbf{i}) \\
-\label{eq:new-address} A(s, n, \zeta, \mathbf{i}) & \equiv & \mathcal{B}_{96..255}\Big(\mathtt{KEC}\big(B(s, n, \zeta, \mathbf{i})\big)\Big) \\
-B(s, n, \zeta, \mathbf{i}) & \equiv & \begin{cases}
+\begin{align}
+a & \equiv \mathtt{ADDR}(s, \boldsymbol{\sigma}[s]_{\mathrm{n}} - 1, \zeta, \mathbf{i}) \\
+\label{eq:new-address} \mathtt{ADDR}(s, n, \zeta, \mathbf{i}) & \equiv \mathcal{B}_{96..255}\Big(\mathtt{KEC}\big( L_{\mathrm{A}}(s, n, \zeta, \mathbf{i})\big) \Big) \\
+L_{\mathrm{A}}(s, n, \zeta, \mathbf{i}) & \equiv \begin{cases}
 \mathtt{RLP}\big(\;(s, n)\;\big) & \text{if}\ \zeta = \varnothing \\
 (255) \cdot s \cdot \zeta \cdot \mathtt{KEC}(\mathbf{i}) & \text{otherwise}
 \end{cases}
-\end{eqnarray}
+\end{align}
 
 where $\cdot$ is the concatenation of byte arrays, $\mathcal{B}_{a..b}(X)$ evaluates to a binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$, and $\boldsymbol{\sigma}[x]$ is the address state of $x$, or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
 
@@ -2424,7 +2424,7 @@ G_{\mathrm{sreset}} - G_{\mathrm{sload}} & \text{if} \quad v_0 = v' \; \wedge \;
 &&&& where $x=0$ if the code execution for this operation failed due to an\\
 &&&& \hyperlink{Exceptional_Halting_function_Z}{exceptional halting} (or for a \text{\small REVERT}) $\boldsymbol{\sigma}' = \varnothing$, or $I_{\mathrm{e}} = 1024$ \\
 &&&& (the maximum call depth limit is reached) or $\boldsymbol{\mu}_{\mathbf{s}}[0] > \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}}$ (balance of the caller\\
-&&&& is too low to fulfil the value transfer); and otherwise $x=A(I_{\mathrm{a}}, \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{n}}, \zeta, \mathbf{i} )$, the\\
+&&&& is too low to fulfil the value transfer); and otherwise $x=\mathtt{ADDR}(I_{\mathrm{a}}, \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{n}}, \zeta, \mathbf{i} )$, the\\
 &&&& address of the newly created account (\ref{eq:new-address}). \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[1], \boldsymbol{\mu}_{\mathbf{s}}[2])$ \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{o}} \equiv ()$ \\
