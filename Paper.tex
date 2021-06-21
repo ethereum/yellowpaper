@@ -715,14 +715,14 @@ We define the creation function formally as the function \linkdest{lambda}{$\Lam
 The address of the new account is defined as being the rightmost 160 bits of the Keccak hash of the \hyperlink{rlp}{RLP} encoding of the structure containing only the sender and the \hyperlink{account_nonce}{account nonce}.
 For {\small \hyperlink{create2}{CREATE2}} the rule is different and is described in EIP-1014 by \cite{EIP-1014}.
 Combining the two cases, we define the resultant address for the new account $a$:
-\begin{eqnarray}
-a & \equiv & A(s, \boldsymbol{\sigma}[s]_{\mathrm{n}} - 1, \zeta, \mathbf{i}) \\
-\label{eq:new-address} A(s, n, \zeta, \mathbf{i}) & \equiv & \mathcal{B}_{96..255}\Big(\mathtt{KEC}\big(B(s, n, \zeta, \mathbf{i})\big)\Big) \\
-B(s, n, \zeta, \mathbf{i}) & \equiv & \begin{cases}
+\begin{align}
+a & \equiv \mathtt{ADDR}(s, \boldsymbol{\sigma}[s]_{\mathrm{n}} - 1, \zeta, \mathbf{i}) \\
+\label{eq:new-address} \mathtt{ADDR}(s, n, \zeta, \mathbf{i}) & \equiv \mathcal{B}_{96..255}\Big(\mathtt{KEC}\big( L_{\mathrm{A}}(s, n, \zeta, \mathbf{i})\big) \Big) \\
+L_{\mathrm{A}}(s, n, \zeta, \mathbf{i}) & \equiv \begin{cases}
 \mathtt{RLP}\big(\;(s, n)\;\big) & \text{if}\ \zeta = \varnothing \\
 (255) \cdot s \cdot \zeta \cdot \mathtt{KEC}(\mathbf{i}) & \text{otherwise}
 \end{cases}
-\end{eqnarray}
+\end{align}
 
 where $\cdot$ is the concatenation of byte arrays, $\mathcal{B}_{a..b}(X)$ evaluates to a binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$, and $\boldsymbol{\sigma}[x]$ is the address state of $x$, or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
 
@@ -942,7 +942,7 @@ In addition to the system state $\boldsymbol{\sigma}$, and the remaining gas for
 \item\linkdest{the_address_of_the_account_which_caused_the_code_to_be_executing_I__s}{} $I_{\mathrm{s}}$, the address of the account which caused the code to be executing; if the execution agent is a transaction, this would be the transaction sender.
 \item\linkdest{Wei_value_exec_I__v}{}\linkdest{I__v}{} $I_{\mathrm{v}}$, the value, in Wei, passed to this account as part of the same procedure as execution; if the execution agent is a transaction, this would be the transaction value.
 \item\linkdest{exec_machine_code_I__b}{}\linkdest{I__b} $I_{\mathbf{b}}$, the byte array that is the machine code to be executed.
-\item\linkdest{exec_block_header_I__H}{}\linkdest{I__H} $I_{\mathbf{H}}$, the block header of the present block.
+\item\linkdest{exec_block_header_I__H}{}\linkdest{I__H} $I_{\mathrm{H}}$, the block header of the present block.
 \item\linkdest{exec_call_or_create_depth_I__e}{}\linkdest{I__e} $I_{\mathrm{e}}$, the depth of the present message-call or contract-creation (i.e. the number of {\small CALL}s or {\small CREATE(2)}s being executed at present).
 \item\linkdest{exec_permission_to_modify_state_I__w}{}\linkdest{I__w} $I_{\mathrm{w}}$, the permission to make modifications to the state.
 \end{itemize}
@@ -2027,7 +2027,7 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] = 0\\ \lfloor\boldsymbol{\mu}_{\mathbf{s}}[0] \div \boldsymbol{\mu}_{\mathbf{s}}[1]\rfloor & \text{otherwise}\end{cases}$  \\
 \midrule
 0x05 & {\small SDIV} & 2 & 1 & Signed integer division operation (truncated). \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \begin{cases}0 & \text{if} \> \boldsymbol{\mu}_{\mathbf{s}}[1] = 0\\ -2^{255} & \text{if} \> \boldsymbol{\mu}_{\mathbf{s}}[0] = -2^{255} \wedge \, \boldsymbol{\mu}_{\mathbf{s}}[1] = -1\\ \mathbf{sgn} (\boldsymbol{\mu}_{\mathbf{s}}[0] \div \boldsymbol{\mu}_{\mathbf{s}}[1]) \lfloor |\boldsymbol{\mu}_{\mathbf{s}}[0] \div \boldsymbol{\mu}_{\mathbf{s}}[1]| \rfloor & \text{otherwise}\end{cases}$  \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] = 0\\ -2^{255} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[0] = -2^{255} \wedge \, \boldsymbol{\mu}_{\mathbf{s}}[1] = -1\\ \mathbf{sgn} (\boldsymbol{\mu}_{\mathbf{s}}[0] \div \boldsymbol{\mu}_{\mathbf{s}}[1]) \lfloor |\boldsymbol{\mu}_{\mathbf{s}}[0] \div \boldsymbol{\mu}_{\mathbf{s}}[1]| \rfloor & \text{otherwise}\end{cases}$  \\
 &&&& Where all values are treated as two's complement signed 256-bit integers. \\
 &&&& Note the overflow semantic when $-2^{255}$ is negated.\\
 \midrule
@@ -2039,12 +2039,12 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& Where all values are treated as two's complement signed 256-bit integers. \\
 \midrule
 0x08 & {\small ADDMOD} & 3 & 1 & Modulo addition operation. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] = 0\\ (\boldsymbol{\mu}_{\mathbf{s}}[0] + \boldsymbol{\mu}_{\mathbf{s}}[1]) \mod \boldsymbol{\mu}_{\mathbf{s}}[2] & \text{otherwise}\end{cases}$  \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] = 0\\ (\boldsymbol{\mu}_{\mathbf{s}}[0] + \boldsymbol{\mu}_{\mathbf{s}}[1]) \bmod \boldsymbol{\mu}_{\mathbf{s}}[2] & \text{otherwise}\end{cases}$  \\
 &&&& All intermediate calculations of this operation are not subject to the $2^{256}$ \\
 &&&& modulo. \\
 \midrule
 0x09 & {\small MULMOD} & 3 & 1 & Modulo multiplication operation. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] = 0\\ (\boldsymbol{\mu}_{\mathbf{s}}[0] \times \boldsymbol{\mu}_{\mathbf{s}}[1]) \mod \boldsymbol{\mu}_{\mathbf{s}}[2] & \text{otherwise}\end{cases}$  \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \begin{cases}0 & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] = 0\\ (\boldsymbol{\mu}_{\mathbf{s}}[0] \times \boldsymbol{\mu}_{\mathbf{s}}[1]) \bmod \boldsymbol{\mu}_{\mathbf{s}}[2] & \text{otherwise}\end{cases}$  \\
 &&&& All intermediate calculations of this operation are not subject to the $2^{256}$ \\
 &&&& modulo. \\
 \midrule
@@ -2099,7 +2099,7 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& in big endian). \\
 \midrule
 0x1b & {\small SHL} & 2 & 1 & Left shift operation. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv (\boldsymbol{\mu}_{\mathbf{s}}[1] \times 2^{\boldsymbol{\mu}_{\mathbf{s}}[0]}) \mod 2^{256}$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv (\boldsymbol{\mu}_{\mathbf{s}}[1] \times 2^{\boldsymbol{\mu}_{\mathbf{s}}[0]}) \bmod 2^{256}$ \\
 \midrule
 0x1c & {\small SHR} & 2 & 1 & Logical right shift operation. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \lfloor \boldsymbol{\mu}_{\mathbf{s}}[1] \div 2^{\boldsymbol{\mu}_{\mathbf{s}}[0]} \rfloor$ \\
@@ -2129,7 +2129,7 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv I_{\mathrm{a}}$ \\
 \midrule
 0x31 & {\small BALANCE} & 1 & 1 & Get balance of the given account. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \begin{cases}\boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0]]_{\mathrm{b}}& \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \mod 2^{160}] \neq \varnothing\\0&\text{otherwise}\end{cases}$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \begin{cases}\boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160}]_{\mathrm{b}}& \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160}] \neq \varnothing\\0&\text{otherwise}\end{cases}$ \\
 \midrule
 0x32 & {\small ORIGIN} & 0 & 1 & Get execution origination address. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv I_{\mathrm{o}}$ \\
@@ -2178,22 +2178,27 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& This is gas price specified by the originating transaction.\\
 \midrule
 0x3b & {\small EXTCODESIZE} & 1 & 1 & Get size of an account's code. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \lVert \mathbf{b} \rVert$ \\
-&&&& where $\mathtt{KEC}(\mathbf{b}) \equiv \boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \mod 2^{160}]_{\mathrm{c}}$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv
+\begin{cases}
+\lVert \mathbf{b} \rVert & \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160}] \neq \varnothing \\
+0                        & \text{otherwise}
+\end{cases}$ \\
+&&&& where $\mathtt{KEC}(\mathbf{b}) \equiv \boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160}]_{\mathrm{c}}$ \\
 \midrule
 0x3c & {\small EXTCODECOPY} & 4 & 0 & Copy an account's code to memory. \\
 &&&& $\forall i \in \{ 0 \dots \boldsymbol{\mu}_{\mathbf{s}}[3] - 1\}: \boldsymbol{\mu}'_{\mathbf{m}}[\boldsymbol{\mu}_{\mathbf{s}}[1] + i ] \equiv
 \begin{cases} \mathbf{b}[\boldsymbol{\mu}_{\mathbf{s}}[2] + i] & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] + i < \lVert \mathbf{b} \rVert \\ \text{\small STOP} & \text{otherwise} \end{cases}$\\
-&&&& where $\mathtt{KEC}(\mathbf{b}) \equiv \boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \mod 2^{160}]_{\mathrm{c}}$ \\
+&&&& where $\mathtt{KEC}(\mathbf{b}) \equiv \boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160}]_{\mathrm{c}}$ \\
+&&&& We assume $\mathbf{b} \equiv ()$ if $\boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160}] = \varnothing$. \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[1], \boldsymbol{\mu}_{\mathbf{s}}[3])$ \\
 &&&& The additions in $\boldsymbol{\mu}_{\mathbf{s}}[2] + i$ are not subject to the $2^{256}$ modulo. \\
+\end{tabu}
+
+\begin{tabu}{\usetabu{opcodes}}
 \midrule
 0x3d & {\small RETURNDATASIZE} & 0 & 1 & Get size of output data from the previous call from the current\\
 &&&& environment. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \lVert \boldsymbol{\mu}_{\mathbf{o}} \rVert$ \\
-\end{tabu}
-
-\begin{tabu}{\usetabu{opcodes}}
 \midrule
 0x3e & {\small RETURNDATACOPY} & 3 & 0 & Copy output data from the previous call to memory. \\
 &&&& $\forall i \in \{ 0 \dots \boldsymbol{\mu}_{\mathbf{s}}[2] - 1\}: \boldsymbol{\mu}'_{\mathbf{m}}[\boldsymbol{\mu}_{\mathbf{s}}[0] + i ] \equiv
@@ -2203,7 +2208,7 @@ Here given are the various exceptions to the state transition rules given in sec
 \midrule
 \linkdest{extcodehash}{}0x3f & {\small EXTCODEHASH} & 1 & 1 & Get hash of an account's code. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv
-\begin{cases} 0 & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, \boldsymbol{\mu}_{\mathbf{s}}[0] \mod 2^{160}) \\ \boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \mod 2^{160}]_{\mathrm{c}} & \text{otherwise} \end{cases}$ \\
+\begin{cases} 0 & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, \boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160}) \\ \boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160}]_{\mathrm{c}} & \text{otherwise} \end{cases}$ \\
 \bottomrule
 \end{tabu}
 
@@ -2212,7 +2217,7 @@ Here given are the various exceptions to the state transition rules given in sec
 \multicolumn{5}{c}{\textbf{40s: Block Information}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
 0x40 & {\small BLOCKHASH} & 1 & 1 & Get the hash of one of the 256 most recent complete blocks. \\
-\linkdest{blockhash}{}&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv P(I_{\mathbf{H}_{\mathrm{p}}}, \boldsymbol{\mu}_{\mathbf{s}}[0], 0)$ \\
+\linkdest{blockhash}{}&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv P(I_{\mathrm{H}_{\mathrm{p}}}, \boldsymbol{\mu}_{\mathbf{s}}[0], 0)$ \\
 &&&& where $P$ is the hash of a block of a particular number, up to a maximum\\
 &&&& age. 0 is left on the stack if the looked for block number is greater than or\\
 &&&& equal to the current block number or more than 256 blocks behind the current block.\\
@@ -2419,7 +2424,7 @@ G_{\mathrm{sreset}} - G_{\mathrm{sload}} & \text{if} \quad v_0 = v' \; \wedge \;
 &&&& where $x=0$ if the code execution for this operation failed due to an\\
 &&&& \hyperlink{Exceptional_Halting_function_Z}{exceptional halting} (or for a \text{\small REVERT}) $\boldsymbol{\sigma}' = \varnothing$, or $I_{\mathrm{e}} = 1024$ \\
 &&&& (the maximum call depth limit is reached) or $\boldsymbol{\mu}_{\mathbf{s}}[0] > \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}}$ (balance of the caller\\
-&&&& is too low to fulfil the value transfer); and otherwise $x=A(I_{\mathrm{a}}, \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{n}}, \zeta, \mathbf{i} )$, the\\
+&&&& is too low to fulfil the value transfer); and otherwise $x=\mathtt{ADDR}(I_{\mathrm{a}}, \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{n}}, \zeta, \mathbf{i} )$, the\\
 &&&& address of the newly created account (\ref{eq:new-address}). \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[1], \boldsymbol{\mu}_{\mathbf{s}}[2])$ \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{o}} \equiv ()$ \\
@@ -2434,7 +2439,7 @@ G_{\mathrm{sreset}} - G_{\mathrm{sload}} & \text{if} \quad v_0 = v' \; \wedge \;
 &&&& $\boldsymbol{\mu}'_{\mathrm{g}} \equiv \boldsymbol{\mu}_{\mathrm{g}} + g'$ \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv x$ \\
 &&&& $A' \equiv A \Cup A^+$ \\
-&&&& $t \equiv \boldsymbol{\mu}_{\mathbf{s}}[1] \mod 2^{160}$ \\
+&&&& $t \equiv \boldsymbol{\mu}_{\mathbf{s}}[1] \bmod 2^{160}$ \\
 &&&& where $x=0$ if the code execution for this operation failed due to an\\
 &&&& \hyperlink{Exceptional_Halting_function_Z}{exceptional halting} (or for a \text{\small REVERT}) $\boldsymbol{\sigma}' = \varnothing$ or if \\
 &&&& $\boldsymbol{\mu}_{\mathbf{s}}[2] > \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}}$ (not enough funds) or $I_{\mathrm{e}} = 1024$ (call depth limit reached); $x=1$ \\
@@ -2456,7 +2461,7 @@ G_{\mathrm{callvalue}} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0
 0 & \text{otherwise}
 \end{cases}$ \\
 &&&& $C_{\text{\tiny NEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
-G_{\mathrm{newaccount}} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, \boldsymbol{\mu}_{\mathbf{s}}[1] \mod 2^{160}) \wedge \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0 \\
+G_{\mathrm{newaccount}} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, t) \wedge \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0 \\
 0 & \text{otherwise}
 \end{cases}$ \\
 \midrule
@@ -2519,7 +2524,7 @@ G_{\mathrm{newaccount}} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, \bo
 G_{\mathrm{newaccount}} & \text{if} \quad n \\
 0 & \text{otherwise}
 \end{cases}$ \\
-&&&& $n \equiv \mathtt{DEAD}(\boldsymbol{\sigma}, \boldsymbol{\mu}_{\mathbf{s}}[0] \mod 2^{160}) \wedge \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \neq 0$ \\
+&&&& $n \equiv \mathtt{DEAD}(\boldsymbol{\sigma}, \boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160}) \wedge \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \neq 0$ \\
 \bottomrule
 \end{tabu}
 
@@ -2625,7 +2630,7 @@ Where a single round modifies each subset of the cache as follows:
  E_\text{\tiny RMH}(\mathbf{x}) = \big( E_{\mathrm{rmh}}(\mathbf{x}, 0), E_{\mathrm{rmh}}(\mathbf{x}, 1), ... , E_{\mathrm{rmh}}(\mathbf{x}, n - 1) \big)\linkdest{E__cacherounds}{}
 \end{equation}
 \begin{multline}
-  E_{\mathrm{rmh}}(\mathbf{x}, i) = \texttt{KEC512}(\mathbf{x'}[(i - 1 + n) \mod n] \oplus \mathbf{x'}[\mathbf{x'}[i][0] \mod n]) \\
+  E_{\mathrm{rmh}}(\mathbf{x}, i) = \texttt{KEC512}(\mathbf{x'}[(i - 1 + n) \bmod n] \oplus \mathbf{x'}[\mathbf{x'}[i][0] \bmod n]) \\
   \text{with} \quad \mathbf{x'} = \mathbf{x} \quad \text{except} \quad \mathbf{x'}[j] = E_{\mathrm{rmh}}(\mathbf{x}, j) \quad \forall \quad j < i
 \end{multline}
 
@@ -2636,7 +2641,7 @@ Essentially, we combine data from $J_{\mathrm{parents}}$ pseudorandomly selected
 \end{equation}
 In order to calculate the single item we use an algorithm inspired by the FNV hash (\cite{FowlerNollVo1991FNVHash}) in some cases as a non-associative substitute for XOR.
 \begin{equation}
- E_\text{\tiny FNV}(\mathbf{x}, \mathbf{y}) = (\mathbf{x} \cdot (\mathrm{0x01000193} \oplus \mathbf{y})) \mod 2^{32}
+ E_\text{\tiny FNV}(\mathbf{x}, \mathbf{y}) = (\mathbf{x} \cdot (\mathrm{0x01000193} \oplus \mathbf{y})) \bmod 2^{32}
 \end{equation}
 The single item of the dataset can now be calculated as:
 \begin{equation}
@@ -2650,8 +2655,8 @@ E_{\mathrm{mix}}(\mathbf{m}, \mathbf{c}, i, p + 1) & \text{otherwise}
 \end{equation}
 \begin{equation}
  E_{\mathrm{mix}}(\mathbf{m}, \mathbf{c}, i, p) = \begin{cases}
-\texttt{KEC512}(\mathbf{c}[i \mod c_\mathrm{{size}}] \oplus i) & \text{if} \quad p = 0 \\
-E_\text{\tiny FNV}\big(\mathbf{m}, \mathbf{c}[E_\text{\tiny FNV}(i \oplus p, \mathbf{m}[p \mod \lfloor J_{\mathrm{hashbytes}} / J_{\mathrm{wordbytes}} \rfloor]) \mod c_{\mathrm{size}}] \big) & \text{otherwise}
+\texttt{KEC512}(\mathbf{c}[i \bmod c_\mathrm{{size}}] \oplus i) & \text{if} \quad p = 0 \\
+E_\text{\tiny FNV}\big(\mathbf{m}, \mathbf{c}[E_\text{\tiny FNV}(i \oplus p, \mathbf{m}[p \bmod \lfloor J_{\mathrm{hashbytes}} / J_{\mathrm{wordbytes}} \rfloor]) \bmod c_{\mathrm{size}}] \big) & \text{otherwise}
 \end{cases}
 \end{equation}
 
@@ -2697,7 +2702,7 @@ E_{\mathrm{accesses}}(E_{\mathrm{mixdataset}}(\mathbf{d}, \mathbf{m}, \mathbf{s}
 \end{equation}
 $E_{\mathrm{newdata}}$ returns an array with $n_{\mathrm{mix}}$ elements:
 \begin{equation}
- E_{\mathrm{newdata}}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i)[j] = \mathbf{d}[E_\text{\tiny FNV}(i \oplus \mathbf{s}[0], \mathbf{m}[i \mod \left\lfloor\frac{J_{\mathrm{mixbytes}}}{J_{\mathrm{wordbytes}}}\right\rfloor]) \mod \left\lfloor\frac{d_{\mathrm{size}} / J_{\mathrm{hashbytes}}}{n_{\mathrm{mix}}}\right\rfloor \cdot n_{\mathrm{mix}} + j] \quad \forall \quad j < n_{\mathrm{mix}}
+ E_{\mathrm{newdata}}(\mathbf{d}, \mathbf{m}, \mathbf{s}, i)[j] = \mathbf{d}[E_\text{\tiny FNV}(i \oplus \mathbf{s}[0], \mathbf{m}[i \bmod \left\lfloor\frac{J_{\mathrm{mixbytes}}}{J_{\mathrm{wordbytes}}}\right\rfloor]) \bmod \left\lfloor\frac{d_{\mathrm{size}} / J_{\mathrm{hashbytes}}}{n_{\mathrm{mix}}}\right\rfloor \cdot n_{\mathrm{mix}} + j] \quad \forall \quad j < n_{\mathrm{mix}}
 \end{equation}
 The mix is compressed as follows:
 \begin{equation}
