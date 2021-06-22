@@ -2466,7 +2466,7 @@ G_{\mathrm{callvalue}} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0
 0 & \text{otherwise}
 \end{cases}$ \\
 &&&& $C_{\text{\tiny NEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
-G_{\mathrm{newaccount}} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, t) \wedge \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0 \\
+G_{\mathrm{newaccount}} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, \boldsymbol{\mu}_{\mathbf{s}}[1] \bmod 2^{160}) \wedge \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0 \\
 0 & \text{otherwise}
 \end{cases}$ \\
 \midrule
