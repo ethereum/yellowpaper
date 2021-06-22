@@ -598,14 +598,18 @@ Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define \hyp
 \subsection{Substate}
 Throughout transaction execution, we accrue certain information that is acted upon immediately following the transaction. We call this the \textit{accrued transaction substate}, or \textit{accrued substate} for short, and represent it as $A$, which is a tuple:
 \begin{equation}
-A \equiv (A_{\mathbf{s}}, A_{\mathbf{l}}, A_{\mathbf{t}}, A_{\mathrm{r}})
+A \equiv (A_{\mathbf{s}}, A_{\mathbf{l}}, A_{\mathbf{t}}, A_{\mathrm{r}}, A_{\mathbf{a}}, A_{\mathbf{k}})
 \end{equation}
 
-\hypertarget{self_destruct_set_wordy_defn_A__s}{}The tuple contents include $A_{\mathbf{s}}$, the self-destruct set: a set of accounts that will be discarded following the transaction's completion.\hypertarget{tx_log_series_wordy_defn_A__l}{} $A_{\mathbf{l}}$ is the log series: this is a series of archived and indexable `checkpoints' in VM code execution that allow for contract-calls to be easily tracked by onlookers external to the Ethereum world (such as decentralised application front-ends).\hypertarget{tx_touched_accounts_wordy_defn_A__t}{} $A_{\mathbf{t}}$ is the set of touched accounts, of which the empty ones are deleted at the end of a transaction.\hypertarget{refund_balance_defn_words_A__r}{} Finally there is $A_{\mathrm{r}}$, the refund balance, increased through using the \hyperlink{SSTORE}{{\small SSTORE}} instruction in order to reset contract storage to zero from some non-zero value. Though not immediately refunded, it is allowed to partially offset the total execution costs.
+\hypertarget{self_destruct_set_wordy_defn_A__s}{}The tuple contents include $A_{\mathbf{s}}$, the self-destruct set: a set of accounts that will be discarded following the transaction's completion.
+\hypertarget{tx_log_series_wordy_defn_A__l}{} $A_{\mathbf{l}}$ is the log series: this is a series of archived and indexable `checkpoints' in VM code execution that allow for contract-calls to be easily tracked by onlookers external to the Ethereum world (such as decentralised application front-ends).
+\hypertarget{tx_touched_accounts_wordy_defn_A__t}{} $A_{\mathbf{t}}$ is the set of touched accounts, of which the empty ones are deleted at the end of a transaction.
+\hypertarget{refund_balance_defn_words_A__r}{}$A_{\mathrm{r}}$ is the refund balance, increased through using the \hyperlink{SSTORE}{{\small SSTORE}} instruction in order to reset contract storage to zero from some non-zero value. Though not immediately refunded, it is allowed to partially offset the total execution costs.
+Finally, EIP-2929 by \cite{EIP-2929} introduced \hypertarget{accessed_addresses_defn_words_A__a}{}$A_{\mathbf{a}}$, the set of accessed account addresses, and \hypertarget{accessed_storage_keys_defn_words_A__k}{}$A_{\mathbf{k}}$, the set of accessed storage keys.
 
-We define the empty accrued substate $A^0$ to have no self-destructs, no logs, no touched accounts and a zero refund balance:
+We define the empty accrued substate $A^0$ to have no self-destructs, no logs, no touched accounts, zero refund balance, all precompiled contracts in the accessed addresses, and no accessed storage:
 \begin{equation}
-A^0 \equiv (\varnothing,(), \varnothing, 0)
+A^0 \equiv (\varnothing, (), \varnothing, 0, \hyperlink{precompiled_set}{\pi}, \varnothing)
 \end{equation}
 
 \subsection{Execution}
@@ -648,31 +652,33 @@ We define the checkpoint state $\boldsymbol{\sigma}_0$:
 
 Evaluating $\boldsymbol{\sigma}_{\mathrm{P}}$ from $\boldsymbol{\sigma}_0$ depends on the transaction type; either contract creation or message call; we define the tuple of post-execution provisional state $\boldsymbol{\sigma}_{\mathrm{P}}$, remaining gas $g'$, accrued substate $A$ and status code $z$:
 \begin{equation}
-(\boldsymbol{\sigma}_{\mathrm{P}}, g', A, z) \equiv \begin{cases}
-\Lambda_{4}(\boldsymbol{\sigma}_0, S(T), T_{\mathrm{o}}, g, &\\ \quad\quad T_{\mathrm{p}}, T_{\mathrm{v}}, T_{\mathbf{i}}, 0, \varnothing, \top) & \text{if} \quad T_{\mathrm{t}} = \varnothing \\
-\Theta_{4}(\boldsymbol{\sigma}_0, S(T), T_{\mathrm{o}}, T_{\mathrm{t}}, T_{\mathrm{t}}, &\\ \quad\quad g, T_{\mathrm{p}}, T_{\mathrm{v}}, T_{\mathrm{v}}, T_{\mathbf{d}}, 0, \top) & \text{otherwise}
+(\boldsymbol{\sigma}_{\mathrm{P}}, g', A', z) \equiv \begin{cases}
+\hyperlink{lambda}{\Lambda}_{4}(\boldsymbol{\sigma}_0, A^+, S(T), S(T), g, &\\ \quad\; T_{\mathrm{p}}, T_{\mathrm{v}}, T_{\mathbf{i}}, 0, \varnothing, \top) & \text{if} \quad T_{\mathrm{t}} = \varnothing \\
+\hyperlink{theta}{\Theta}_{4}(\boldsymbol{\sigma}_0, A^+, S(T), S(T), T_{\mathrm{t}}, &\\ \quad\; T_{\mathrm{t}}, g, T_{\mathrm{p}}, T_{\mathrm{v}}, T_{\mathrm{v}}, T_{\mathbf{d}}, 0, \top) & \text{otherwise}
 \end{cases}
 \end{equation}
-
-where $g$ is the amount of gas remaining after deducting the basic amount required to pay for the existence of the transaction:
+where
+\begin{equation}
+A^+ \equiv A^0 \quad \text{except} \quad A^+_{\mathbf{a}} \equiv A^0_{\mathbf{a}} \cup \{S(T)\}
+\end{equation}
+and $g$ is the amount of gas remaining after deducting the basic amount required to pay for the existence of the transaction:
 \begin{equation}
 g \equiv T_{\mathrm{g}} - g_0
 \end{equation}
-and $T_{\mathrm{o}}$ is the original transactor, which can differ from the sender in the case of a message call or contract creation not directly triggered by a transaction but coming from the execution of EVM-code.
 
 Note we use $\hyperlink{theta}{\Theta}_{4}$ and $\hyperlink{lambda}{\Lambda}_{4}$ to denote the fact that only the first four components of the functions' values are taken; the final represents the message-call's output value (a byte array) and is unused in the context of transaction evaluation.
 
 After the message call or contract creation is processed, the refund counter has to be incremented for the accounts that were self-destructed throughout its invocation.
 \begin{equation}
-	A'_{\mathrm{r}} \equiv A_{\mathrm{r}} + \sum_{i \in A_{\mathbf{s}}} R_{\mathrm{selfdestruct}}
+A^*_{\mathrm{r}} \equiv A'_{\mathrm{r}} + \sum_{i \in A'_{\mathbf{s}}} R_{\mathrm{selfdestruct}}
 \end{equation}
 
 Then the state is finalised by determining the amount to be refunded, $g^*$ from the remaining gas, $g'$, plus some allowance from the refund counter, to the sender at the original rate.
 \begin{equation}
-g^* \equiv g' + \min \left\{ \Big\lfloor \dfrac{T_{\mathrm{g}} - g'}{2} \Big\rfloor, \hyperlink{refund_balance_defn_words_A__r}{A'_{\mathrm{r}}} \right\}
+g^* \equiv g' + \min \left\{ \Big\lfloor \dfrac{T_{\mathrm{g}} - g'}{2} \Big\rfloor, \hyperlink{refund_balance_defn_words_A__r}{A^*_{\mathrm{r}}} \right\}
 \end{equation}
 
-The total refundable amount is the legitimately remaining gas $g'$, added to \hyperlink{refund_balance_defn_words_A__r}{$A_{\mathrm{r}}$}, with the latter component being capped up to a maximum of half (rounded down) of the total amount used $T_{\mathrm{g}} - g'$. Therefore, $g^*$ is the total gas that remains after the transaction has been executed.
+The total refundable amount is the legitimately remaining gas $g'$, added to \hyperlink{refund_balance_defn_words_A__r}{$A'_{\mathrm{r}}$}, with the latter component being capped up to a maximum of half (rounded down) of the total amount used $T_{\mathrm{g}} - g'$. Therefore, $g^*$ is the total gas that remains after the transaction has been executed.
 
 The Ether for the gas is given to the miner, whose address is specified as the beneficiary of the present block $B$. So we define the pre-final state $\boldsymbol{\sigma}^*$ in terms of the provisional state $\boldsymbol{\sigma}_{\mathrm{P}}$:
 \begin{eqnarray}
@@ -685,14 +691,14 @@ m & \equiv & {B_{\mathrm{H}}}_{\mathrm{c}}
 The final state, $\boldsymbol{\sigma}'$, is reached after deleting all accounts that either appear in the self-destruct set or are touched and empty:
 \begin{eqnarray}
 \boldsymbol{\sigma}' & \equiv & \boldsymbol{\sigma}^* \quad \text{except} \\
-\linkdest{self_destruct_list_A__s}{}\forall i \in A_{\mathbf{s}}: \boldsymbol{\sigma}'[i] & = & \varnothing \\
-\linkdest{touched_A__t}{}\forall i \in A_{\mathbf{t}}: \boldsymbol{\sigma}'[i] & = & \varnothing \quad\text{if}\quad \mathtt{DEAD}(\boldsymbol{\sigma}^*\kern -2pt, i)
+\linkdest{self_destruct_list_A__s}{}\forall i \in A'_{\mathbf{s}}: \boldsymbol{\sigma}'[i] & = & \varnothing \\
+\linkdest{touched_A__t}{}\forall i \in A'_{\mathbf{t}}: \boldsymbol{\sigma}'[i] & = & \varnothing \quad\text{if}\quad \mathtt{DEAD}(\boldsymbol{\sigma}^*\kern -2pt, i)
 \end{eqnarray}
 
 \hypertarget{tx_total_gas_used_Upsilon_pow_g}{}\linkdest{Upsilon_pow_g}\hypertarget{tx_logs_Upsilon_pow_l}{}\linkdest{Upsilon_pow_l}\hypertarget{tx_status_Upsilon_pow_z}{}\linkdest{Upsilon_pow_z}And finally, we specify $\Upsilon^{\mathrm{g}}$, the total gas used in this transaction $\Upsilon^\mathbf{l}$, the logs created by this transaction and $\Upsilon^{\mathrm{z}}$, the status code of this transaction:
 \begin{eqnarray}
 \Upsilon^{\mathrm{g}}(\boldsymbol{\sigma}, T) & \equiv & T_{\mathrm{g}} - g^* \\
-\Upsilon^{\mathbf{l}}(\boldsymbol{\sigma}, T) & \equiv & \hyperlink{tx_log_series_wordy_defn_A__l}{A_{\mathbf{l}}} \\
+\Upsilon^{\mathbf{l}}(\boldsymbol{\sigma}, T) & \equiv & \hyperlink{tx_log_series_wordy_defn_A__l}{A'_{\mathbf{l}}} \\
 \Upsilon^{\mathrm{z}}(\boldsymbol{\sigma}, T) & \equiv & z
 \end{eqnarray}
 
@@ -700,16 +706,17 @@ These are used to help define the \hyperlink{Transaction_Receipt}{transaction re
 
 \section{Contract Creation}\label{ch:create}\hypertarget{endow}{}
 
-There are a number of intrinsic parameters used when creating an account: sender ($s$), original transactor ($o$), available gas ($g$), gas price ($p$), endowment ($v$) together with an arbitrary length byte array, $\mathbf{i}$, the initialisation EVM code, the present depth of the message-call/contract-creation stack ($e$), the salt for new account's address ($\zeta$) and finally the permission to make modifications to the state ($w$).
+There are a number of intrinsic parameters used when creating an account: sender ($s$), original transactor\footnote{which can differ from the sender in the case of a message call or contract creation not directly triggered by a transaction but coming from the execution of EVM-code} ($o$),
+available gas ($g$), gas price ($p$), endowment ($v$) together with an arbitrary length byte array, $\mathbf{i}$, the initialisation EVM code, the present depth of the message-call/contract-creation stack ($e$), the salt for new account's address ($\zeta$) and finally the permission to make modifications to the state ($w$).
 The salt \linkdest{salt}{$\zeta$} might be missing ($\zeta = \varnothing$); formally,
 \begin{equation}
 \zeta \in \mathbb{B}_{32} \cup \mathbb{B}_{0}
 \end{equation}
 If the creation was caused by {\small \hyperlink{create2}{CREATE2}}, then $\zeta \neq \varnothing$.
 
-We define the creation function formally as the function \linkdest{lambda}{$\Lambda$}, which evaluates from these values, together with the state $\boldsymbol{\sigma}$ to the tuple containing the new state, remaining gas, accrued transaction substate and an error message $(\boldsymbol{\sigma}', g', A, \mathbf{o})$, as in section \ref{ch:transactions}:
+We define the creation function formally as the function \linkdest{lambda}{$\Lambda$}, which evaluates from these values, together with the state $\boldsymbol{\sigma}$ and the accrued transaction substate $A$ to the tuple containing the new state, remaining gas, new accrued transaction substate and an error message $(\boldsymbol{\sigma}', g', A, \mathbf{o})$, as in section \ref{ch:transactions}:
 \begin{equation}
-(\boldsymbol{\sigma}', g', A, z, \mathbf{o}) \equiv \Lambda(\boldsymbol{\sigma}, s, o, g, p, v, \mathbf{i}, e, \zeta, w)
+(\boldsymbol{\sigma}', g', A', z, \mathbf{o}) \equiv \Lambda(\boldsymbol{\sigma}, A, s, o, g, p, v, \mathbf{i}, e, \zeta, w)
 \end{equation}
 
 The address of the new account is defined as being the rightmost 160 bits of the Keccak hash of the \hyperlink{rlp}{RLP} encoding of the structure containing only the sender and the \hyperlink{account_nonce}{account nonce}.
@@ -723,8 +730,12 @@ L_{\mathrm{A}}(s, n, \zeta, \mathbf{i}) & \equiv \begin{cases}
 (255) \cdot s \cdot \zeta \cdot \mathtt{KEC}(\mathbf{i}) & \text{otherwise}
 \end{cases}
 \end{align}
-
 where $\cdot$ is the concatenation of byte arrays, $\mathcal{B}_{a..b}(X)$ evaluates to a binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$, and $\boldsymbol{\sigma}[x]$ is the address state of $x$, or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
+
+The address of the new account is added to the set of accessed accounts:
+\begin{equation}
+A^+ \equiv A \quad \text{except} \quad A^+_{\mathbf{a}} \equiv A_{\mathbf{a}} \cup \{a\}
+\end{equation}
 
 The account's nonce is initially defined as one, the balance as the value passed, the storage as empty and the code hash as the Keccak 256-bit hash of the empty string; the sender's balance is also reduced by the value passed. Thus the mutated state becomes $\boldsymbol{\sigma}^*$:
 \begin{equation}
@@ -749,10 +760,12 @@ v' \equiv \begin{cases}
 
 %It is asserted that the state database will also change such that it defines the pair $(\mathtt{KEC}(\mathbf{b}), \mathbf{b})$.
 
-Finally, the account is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}). Code execution can effect several events that are not internal to the execution state: the account's storage can be altered, further accounts can be created and further message calls can be made. As such, the code execution function $\Xi$ evaluates to a tuple of the resultant state $\boldsymbol{\sigma}^{**}$, available gas remaining $g^{**}$, the accrued substate $A$ and the body code of the account $\mathbf{o}$.
+Finally, the account is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}).
+Code execution can effect several events that are not internal to the execution state: the account's storage can be altered, further accounts can be created and further message calls can be made.
+As such, the code execution function $\hyperlink{xi_def}{\Xi}$ evaluates to a tuple of the resultant state $\boldsymbol{\sigma}^{**}$, available gas remaining $g^{**}$, the new accrued substate $A'$ and the body code of the account $\mathbf{o}$.
 
 \begin{equation}
-(\boldsymbol{\sigma}^{**}, g^{**}, A, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}^*, g, I, \{s, a\}) \\
+(\boldsymbol{\sigma}^{**}, g^{**}, A', \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}^*, g, A^+, I) \\
 \end{equation}
 \pagebreak[1]where $I$ contains the parameters of the \hyperlink{exec_env}{execution environment}, that is:\pagebreak[1]
 \begin{eqnarray}
@@ -818,7 +831,7 @@ In the case of executing a message call, several parameters are required: sender
 
 Aside from evaluating to a new state and accrued transaction substate, message calls also have an extra component---the output data denoted by the byte array~$\mathbf{o}$. This is ignored when executing transactions, however message calls can be initiated due to VM-code execution and in this case this information is used.
 \begin{equation}
-(\boldsymbol{\sigma}', g', A, z, \mathbf{o}) \equiv \linkdest{theta}{\Theta}(\boldsymbol{\sigma}, s, o, r, c, g, p, v, \tilde{v}, \mathbf{d}, e, w)
+(\boldsymbol{\sigma}', g', A', z, \mathbf{o}) \equiv \linkdest{theta}{\Theta}(\boldsymbol{\sigma}, A, s, o, r, c, g, p, v, \tilde{v}, \mathbf{d}, e, w)
 \end{equation}
 Note that we need to differentiate between the value that is to be transferred, $v$, from the value apparent in the execution context, $\tilde{v}$, for the {\small DELEGATECALL} instruction.
 
@@ -871,7 +884,7 @@ z & \equiv & \begin{cases}
 0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
 1 & \text{otherwise}
 \end{cases} \\
-(\boldsymbol{\sigma}^{**}, g^{**},A, \mathbf{o}) & \equiv & \Xi\\
+(\boldsymbol{\sigma}^{**}, g^{**}, A', \mathbf{o}) & \equiv & \Xi\\
 I_{\mathrm{a}} & \equiv & r \\
 I_{\mathrm{o}} & \equiv & o \\
 I_{\mathrm{p}} & \equiv & p \\
@@ -879,34 +892,39 @@ I_{\mathbf{d}} & \equiv & \mathbf{d} \\
 I_{\mathrm{s}} & \equiv & s \\
 I_{\mathrm{v}} & \equiv & \tilde{v} \\
 I_{\mathrm{e}} & \equiv & e \\
-I_{\mathrm{w}} & \equiv & w \\
-\mathbf{t} & \equiv & \{s, r\}
+I_{\mathrm{w}} & \equiv & w
 \end{eqnarray}
 \nopagebreak[1]where
 \begin{equation}
 \Xi \equiv \begin{cases}
-\Xi_{\mathtt{ECREC}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 1 \\
-\Xi_{\mathtt{SHA256}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 2 \\
-\Xi_{\mathtt{RIP160}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 3 \\
-\Xi_{\mathtt{ID}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 4 \\
-\Xi_{\mathtt{EXPMOD}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 5 \\
-\Xi_{\mathtt{BN\_ADD}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 6 \\
-\Xi_{\mathtt{BN\_MUL}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 7 \\
-\Xi_{\mathtt{SNARKV}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 8 \\
-\Xi_{\mathtt{BLAKE2\_F}}(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{if} \quad r = 9 \\
-\Xi(\boldsymbol{\sigma}_1, g, I, \mathbf{t}) & \text{otherwise} \end{cases}
+\Xi_{\mathtt{ECREC}}    (\boldsymbol{\sigma}_1, g, A^+, I) & \text{if} \quad c = 1 \\
+\Xi_{\mathtt{SHA256}}   (\boldsymbol{\sigma}_1, g, A^+, I) & \text{if} \quad c = 2 \\
+\Xi_{\mathtt{RIP160}}   (\boldsymbol{\sigma}_1, g, A^+, I) & \text{if} \quad c = 3 \\
+\Xi_{\mathtt{ID}}       (\boldsymbol{\sigma}_1, g, A^+, I) & \text{if} \quad c = 4 \\
+\Xi_{\mathtt{EXPMOD}}   (\boldsymbol{\sigma}_1, g, A^+, I) & \text{if} \quad c = 5 \\
+\Xi_{\mathtt{BN\_ADD}}  (\boldsymbol{\sigma}_1, g, A^+, I) & \text{if} \quad c = 6 \\
+\Xi_{\mathtt{BN\_MUL}}  (\boldsymbol{\sigma}_1, g, A^+, I) & \text{if} \quad c = 7 \\
+\Xi_{\mathtt{SNARKV}}   (\boldsymbol{\sigma}_1, g, A^+, I) & \text{if} \quad c = 8 \\
+\Xi_{\mathtt{BLAKE2\_F}}(\boldsymbol{\sigma}_1, g, A^+, I) & \text{if} \quad c = 9 \\
+\Xi                     (\boldsymbol{\sigma}_1, g, A^+, I) & \text{otherwise} \end{cases}
 \end{equation}
-
 \begin{equation}
-\text{Let} \; \mathtt{KEC}(I_{\mathbf{b}}) = \boldsymbol{\sigma}[c]_{\mathrm{c}}
+A^+ \equiv A \quad \text{except} \quad A^+_{\mathbf{a}} \equiv A_{\mathbf{a}} \cup \{c\}
 \end{equation}
-
+and
+\begin{equation}
+\mathtt{KEC}(I_{\mathbf{b}}) = \boldsymbol{\sigma}[c]_{\mathrm{c}}
+\end{equation}
 It is assumed that the client will have stored the pair $(\mathtt{KEC}(I_{\mathbf{b}}), I_{\mathbf{b}})$ at some point prior in order to make the determination of $I_{\mathbf{b}}$ feasible.
 
 As can be seen, there are nine exceptions to the usage of the general execution framework $\Xi$ for evaluation of the message call: these are so-called `precompiled' contracts, meant as a preliminary piece of architecture that may later become \textit{native extensions}.
 The contracts in addresses 1 to 9 execute the elliptic curve public key recovery function, the SHA2 256-bit hash scheme, the RIPEMD 160-bit hash scheme, the identity function, arbitrary precision modular exponentiation, elliptic curve addition, elliptic curve scalar multiplication, an elliptic curve pairing check, and the BLAKE2 compression function $\mathtt{F}$ respectively.
-
 Their full formal definition is in Appendix \ref{app:precompiled}.
+
+We denote the set of the addresses of the precompiled contracts by $\pi$:
+\begin{equation}\hypertarget{precompiled_set}{}
+\pi \equiv \{1, 2, 3, 4, 5, 6, 7, 8, 9 \}
+\end{equation}
 
 \section{Execution Model} \label{ch:model}
 
@@ -959,12 +977,13 @@ A \equiv (A_{\mathbf{s}}, A_{\mathbf{l}}, A_{\mathbf{t}}, A_{\mathrm{r}})
 
 \subsection{Execution Overview}
 
+\linkdest{xi_def}
 We must now define the $\Xi$ function. In most practical implementations this will be modelled as an iterative progression of the pair comprising the full system state, $\boldsymbol{\sigma}$ and the machine state, $\boldsymbol{\mu}$. Formally, we define it recursively with a function $X$. This uses an iterator function $O$ (which defines the result of a single cycle of the state machine) together with functions \hyperlink{zhalt}{$Z$} which determines if the present state is an \hyperlink{zhalt}{exceptional halting} state of the machine and \hyperlink{hhalt}{$H$}, specifying the output data of the instruction if and only if the present state is a \hyperlink{hhalt}{normal halting} state of the machine.
 
 \hypertarget{empty_sequence_vs_empty_set}{}The empty sequence, denoted $()$, is not equal to the empty set, denoted $\varnothing$; this is important when interpreting the output of $H$, which evaluates to $\varnothing$ when execution is to continue but a series (potentially empty) when execution should halt.
 \begin{eqnarray}
-\Xi(\boldsymbol{\sigma}, g, I, T) & \equiv & (\boldsymbol{\sigma}'\!, \boldsymbol{\mu}'_{\mathrm{g}}, A, \mathbf{o}) \\
-(\boldsymbol{\sigma}', \boldsymbol{\mu}'\!, A, ..., \mathbf{o}) & \equiv & X\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A^0\!, I)\big) \\
+\Xi(\boldsymbol{\sigma}, g, A, I) & \equiv & (\boldsymbol{\sigma}'\!, \boldsymbol{\mu}'_{\mathrm{g}}, A', \mathbf{o}) \\
+(\boldsymbol{\sigma}', \boldsymbol{\mu}'\!, A', ..., \mathbf{o}) & \equiv & X\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A^0\!, I)\big) \\
 \boldsymbol{\mu}_{\mathrm{g}} & \equiv & g \\
 \boldsymbol{\mu}_{\mathrm{pc}} & \equiv & 0 \\
 \boldsymbol{\mu}_{\mathbf{m}} & \equiv & (0, 0, ...) \\
@@ -1522,9 +1541,9 @@ A reasonable implementation will maintain a database of nodes determined from th
 
 For each precompiled contract, we make use of a template function, $\Xi_{\mathtt{PRE}}$, which implements the out-of-gas checking.
 \begin{equation} \label{eq:pre}
-\Xi_{\mathtt{PRE}}(\boldsymbol{\sigma}, g, I, T) \equiv \begin{cases}
-(\varnothing, 0, A^0, ()) & \text{if} \quad g < g_{\mathrm{r}} \\
-(\boldsymbol\sigma, g - g_{\mathrm{r}}, A^0, \mathbf{o}) & \text{otherwise}\end{cases}
+\Xi_{\mathtt{PRE}}(\boldsymbol{\sigma}, g, A, I) \equiv \begin{cases}
+(\varnothing, 0, A, ()) & \text{if} \quad g < g_{\mathrm{r}} \\
+(\boldsymbol\sigma, g - g_{\mathrm{r}}, A, \mathbf{o}) & \text{otherwise}\end{cases}
 \end{equation}
 
 The precompiled contracts each use these definitions and provide specifications for the $\mathbf{o}$ (the output data) and $g_{\mathrm{r}}$, the gas requirements.
@@ -1867,11 +1886,11 @@ $G_{\mathrm{verylow}}$ & 3 & Amount of gas to pay for operations of the set {\sm
 $G_{\mathrm{low}}$ & 5 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{low}}$}. \\
 $G_{\mathrm{mid}}$ & 8 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{mid}}$}. \\
 $G_{\mathrm{high}}$ & 10 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{high}}$}. \\
-$G_{\mathrm{extcode}}$ & 700 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{extcode}}$}. \\
-$G_{\mathrm{balance}}$ & 700 & Amount of gas to pay for a {\small BALANCE} operation. \\
-$G_{\mathrm{sload}}$ & 800 & Paid for an {\small SLOAD} operation. \\
+$G_{\mathrm{warmaccess}}$ & 100 & Cost of a warm account or storage access. \\
+$G_{\mathrm{coldaccountaccess}}$ & 2600 & Cost of a cold account access. \\
+$G_{\mathrm{coldsload}}$ & 2100 & Cost of a cold storage access. \\
 $G_{\mathrm{sset}}$ & 20000 & Paid for an {\small SSTORE} operation when the storage value is set to non-zero from zero. \\
-$G_{\mathrm{sreset}}$ & 5000 & Paid for an {\small SSTORE} operation when the storage value's zeroness remains unchanged or\\
+$G_{\mathrm{sreset}}$ & 2900 & Paid for an {\small SSTORE} operation when the storage value's zeroness remains unchanged or\\
 &&is set to zero. \\
 $R_{\mathrm{sclear}}$ & 15000 & Refund given (added into refund counter) when the storage value is set to zero from\\
 &&non-zero.\\
@@ -1879,7 +1898,6 @@ $R_{\mathrm{sclear}}$ & 15000 & Refund given (added into refund counter) when th
 \linkdest{G__selfdestruct}{}$G_{\mathrm{selfdestruct}}$ & 5000 & Amount of gas to pay for a {\small SELFDESTRUCT} operation. \\
 $G_{\mathrm{create}}$ & 32000 & Paid for a {\small CREATE} operation. \\
 \linkdest{G__codedeposit}{}$G_{\mathrm{codedeposit}}$ & 200 & Paid per byte for a {\small CREATE} operation to succeed in placing code into state. \\
-$G_{\mathrm{call}}$ & 700 & Paid for a {\small CALL} operation. \\
 $G_{\mathrm{callvalue}}$ & 9000 & Paid for a non-zero value transfer as part of the {\small CALL} operation. \\
 \linkdest{G__callstipend}{}$G_{\mathrm{callstipend}}$ & 2300 & A stipend for the called contract subtracted from $G_{\mathrm{callvalue}}$ for a non-zero value transfer. \\
 \linkdest{G__newaccount}{}$G_{\mathrm{newaccount}}$ & 25000 & Paid for a {\small CALL} or {\small SELFDESTRUCT} operation which creates an account. \\
@@ -1914,33 +1932,32 @@ The general gas cost function, $C$, is defined as:
 
 \nopagebreak
 \begin{equation}
-C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv C_{\mathrm{mem}}(\boldsymbol{\mu}'_{\mathrm{i}})-C_{\mathrm{mem}}(\boldsymbol{\mu}_{\mathrm{i}}) + \begin{cases}
-C_\text{\tiny SSTORE}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SSTORE} \\
+C(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \equiv C_{\mathrm{mem}}(\boldsymbol{\mu}'_{\mathrm{i}})-C_{\mathrm{mem}}(\boldsymbol{\mu}_{\mathrm{i}}) + \begin{cases}
+C_\text{\tiny SSTORE}(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) & \text{if} \quad w = \text{\small SSTORE} \\
 G_{\mathrm{exp}} & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_{\mathbf{s}}[1] = 0 \\
 G_{\mathrm{exp}} + G_{\mathrm{expbyte}}\times(1+\lfloor\log_{256}(\boldsymbol{\mu}_{\mathbf{s}}[1])\rfloor) & \text{if} \quad w = \text{\small EXP} \wedge \boldsymbol{\mu}_{\mathbf{s}}[1] > 0 \\
 G_{\mathrm{verylow}} + G_{\mathrm{copy}}\times\lceil\boldsymbol{\mu}_{\mathbf{s}}[2] \div 32\rceil & \text{if} \quad w \in W_{\mathrm{copy}} \\
 
-G_{\mathrm{extcode}} + G_{\mathrm{copy}}\times\lceil\boldsymbol{\mu}_{\mathbf{s}}[3] \div 32\rceil & \text{if} \quad w = \text{\small EXTCODECOPY} \\
-G_{\mathrm{extcode}} & \text{if} \quad w \in W_{\mathrm{extcode}}\\
+C_{\mathrm{aaccess}}(\boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160}, A) + G_{\mathrm{copy}}\times\lceil\boldsymbol{\mu}_{\mathbf{s}}[3] \div 32\rceil & \text{if} \quad w = \text{\small EXTCODECOPY} \\
+C_{\mathrm{aaccess}}(\boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160}, A) & \text{if} \quad w \in W_{\mathrm{extaccount}}\\
 G_{\mathrm{log}}+G_{\mathrm{logdata}}\times\boldsymbol{\mu}_{\mathbf{s}}[1] & \text{if} \quad w = \text{\small LOG0} \\
 G_{\mathrm{log}}+G_{\mathrm{logdata}}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+G_{\mathrm{logtopic}} & \text{if} \quad w = \text{\small LOG1} \\
 G_{\mathrm{log}}+G_{\mathrm{logdata}}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+2G_{\mathrm{logtopic}} & \text{if} \quad w = \text{\small LOG2} \\
 G_{\mathrm{log}}+G_{\mathrm{logdata}}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+3G_{\mathrm{logtopic}} & \text{if} \quad w = \text{\small LOG3} \\
 G_{\mathrm{log}}+G_{\mathrm{logdata}}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+4G_{\mathrm{logtopic}} & \text{if} \quad w = \text{\small LOG4} \\
-C_\text{\tiny CALL}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w \in W_{\mathrm{call}} \\
+C_\text{\tiny CALL}(\boldsymbol{\sigma}, \boldsymbol{\mu}, A) & \text{if} \quad w \in W_{\mathrm{call}} \\
 C_\text{\tiny SELFDESTRUCT}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SELFDESTRUCT} \\
 G_{\mathrm{create}} & \text{if} \quad w = \text{\small CREATE}\\
 G_{\mathrm{create}}+G_{\mathrm{sha3word}} \times \lceil \boldsymbol{\mu}_{\mathbf{s}}[2] \div 32 \rceil & \text{if} \quad w = \text{\small \hyperlink{create2}{CREATE2}}\\
 G_{\mathrm{sha3}}+G_{\mathrm{sha3word}} \times \lceil \boldsymbol{\mu}_{\mathbf{s}}[1] \div 32 \rceil & \text{if} \quad w = \text{\small SHA3}\\
 G_{\mathrm{jumpdest}} & \text{if} \quad w = \text{\small JUMPDEST}\\
-G_{\mathrm{sload}} & \text{if} \quad w = \text{\small SLOAD}\\
+C_\text{\tiny SLOAD}(\boldsymbol{\mu}, A, I) & \text{if} \quad w = \text{\small SLOAD}\\
 G_{\mathrm{zero}} & \text{if} \quad w \in W_{\mathrm{zero}}\\
 G_{\mathrm{base}} & \text{if} \quad w \in W_{\mathrm{base}}\\
 G_{\mathrm{verylow}} & \text{if} \quad w \in W_{\mathrm{verylow}}\\
 G_{\mathrm{low}} & \text{if} \quad w \in W_{\mathrm{low}}\\
 G_{\mathrm{mid}} & \text{if} \quad w \in W_{\mathrm{mid}}\\
 G_{\mathrm{high}} & \text{if} \quad w \in W_{\mathrm{high}}\\
-G_{\mathrm{balance}} & \text{if} \quad w = \text{\small BALANCE}\\
 G_{\mathrm{blockhash}} & \text{if} \quad w = \text{\small \hyperlink{blockhash}{BLOCKHASH}}\\
 \end{cases}
 \end{equation}
@@ -1954,8 +1971,15 @@ where:
 \begin{equation}
 C_{\mathrm{mem}}(a) \equiv G_{\mathrm{memory}} \cdot a + \left\lfloor \dfrac{a^2}{512} \right\rfloor
 \end{equation}
+\begin{equation}
+C_{\mathrm{aaccess}}(x, A) \equiv
+\begin{cases}
+G_{\mathrm{warmaccess}}        & \text{if} \quad x \in \hyperlink{accessed_addresses_defn_words_A__a}{A_{\mathbf{a}}}\\
+G_{\mathrm{coldaccountaccess}} & \text{otherwise}
+\end{cases}
+\end{equation}
 
-with $C_\text{\tiny CALL}$, $C_\text{\tiny SELFDESTRUCT}$ and $C_\text{\tiny SSTORE}$ as specified in the appropriate section below. We define the following subsets of instructions:
+with $C_\text{\tiny CALL}$, $C_\text{\tiny SELFDESTRUCT}$, $C_\text{\tiny SLOAD}$ and $C_\text{\tiny SSTORE}$ as specified in the appropriate section below. We define the following subsets of instructions:
 
 $W_{\mathrm{zero}}$ = \{{\small STOP}, {\small RETURN}, {\small REVERT}\}
 
@@ -1973,7 +1997,7 @@ $W_{\mathrm{copy}}$ = \{{\small CALLDATACOPY}, {\small CODECOPY}, {\small RETURN
 
 $W_{\mathrm{call}}$ = \{{\small CALL}, {\small CALLCODE}, {\small DELEGATECALL}, {\small STATICCALL}\}
 
-$W_{\mathrm{extcode}}$ = \{{\small EXTCODESIZE}, {\small EXTCODEHASH}\}
+$W_{\mathrm{extaccount}}$ = \{{\small BALANCE}, {\small EXTCODESIZE}, {\small EXTCODEHASH}\}
 
 Note the memory cost component, given as the product of $G_{\mathrm{memory}}$ and the maximum of 0 \& the ceiling of the number of words in size that the memory must be over the current number of words, $\boldsymbol{\mu}_{\mathrm{i}}$ in order that all accesses reference valid memory whether for read or write. Such accesses must be for non-zero number of bytes.
 
@@ -2130,6 +2154,7 @@ Here given are the various exceptions to the state transition rules given in sec
 \midrule
 0x31 & {\small BALANCE} & 1 & 1 & Get balance of the given account. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \begin{cases}\boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160}]_{\mathrm{b}}& \text{if} \quad \boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160}] \neq \varnothing\\0&\text{otherwise}\end{cases}$ \\
+&&&& $A'_{\mathbf{a}} \equiv A_{\mathbf{a}} \cup \{ \boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160} \}$ \\
 \midrule
 0x32 & {\small ORIGIN} & 0 & 1 & Get execution origination address. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv I_{\mathrm{o}}$ \\
@@ -2184,6 +2209,7 @@ Here given are the various exceptions to the state transition rules given in sec
 0                        & \text{otherwise}
 \end{cases}$ \\
 &&&& where $\mathtt{KEC}(\mathbf{b}) \equiv \boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160}]_{\mathrm{c}}$ \\
+&&&& $A'_{\mathbf{a}} \equiv A_{\mathbf{a}} \cup \{ \boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160} \}$ \\
 \midrule
 0x3c & {\small EXTCODECOPY} & 4 & 0 & Copy an account's code to memory. \\
 &&&& $\forall i \in \{ 0 \dots \boldsymbol{\mu}_{\mathbf{s}}[3] - 1\}: \boldsymbol{\mu}'_{\mathbf{m}}[\boldsymbol{\mu}_{\mathbf{s}}[1] + i ] \equiv
@@ -2192,6 +2218,7 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& We assume $\mathbf{b} \equiv ()$ if $\boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160}] = \varnothing$. \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[1], \boldsymbol{\mu}_{\mathbf{s}}[3])$ \\
 &&&& The additions in $\boldsymbol{\mu}_{\mathbf{s}}[2] + i$ are not subject to the $2^{256}$ modulo. \\
+&&&& $A'_{\mathbf{a}} \equiv A_{\mathbf{a}} \cup \{ \boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160} \}$ \\
 \end{tabu}
 
 \begin{tabu}{\usetabu{opcodes}}
@@ -2209,6 +2236,7 @@ Here given are the various exceptions to the state transition rules given in sec
 \linkdest{extcodehash}{}0x3f & {\small EXTCODEHASH} & 1 & 1 & Get hash of an account's code. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv
 \begin{cases} 0 & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, \boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160}) \\ \boldsymbol{\sigma}[\boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160}]_{\mathrm{c}} & \text{otherwise} \end{cases}$ \\
+&&&& $A'_{\mathbf{a}} \equiv A_{\mathbf{a}} \cup \{ \boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160} \}$ \\
 \bottomrule
 \end{tabu}
 
@@ -2271,33 +2299,50 @@ Here given are the various exceptions to the state transition rules given in sec
 \midrule
 0x54 & {\small SLOAD} & 1 & 1 & Load word from storage. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathbf{s}}[\boldsymbol{\mu}_{\mathbf{s}}[0]]$ \\
+&&&& $A'_{\mathbf{k}} \equiv A_{\mathbf{k}} \cup \{(I_{\mathrm{a}}, \boldsymbol{\mu}_{\mathbf{s}}[0])\}$ \\
+&&&& $C_{\text{\tiny SLOAD}}(\boldsymbol{\mu}, A, I) \equiv
+\begin{cases}
+G_{\mathrm{warmaccess}} & \text{if} \quad (I_{\mathrm{a}}, \boldsymbol{\mu}_{\mathbf{s}}[0]) \in A_{\mathbf{k}} \\
+G_{\mathrm{coldsload}}  & \text{otherwise}
+\end{cases}$ \\
 \midrule
 \linkdest{SSTORE}{}0x55 & {\small SSTORE} & 2 & 0 & Save word to storage. \\
 &&&& $\boldsymbol{\sigma}'[I_{\mathrm{a}}]_{\mathbf{s}}[ \boldsymbol{\mu}_{\mathbf{s}}[0] ] \equiv \boldsymbol{\mu}_{\mathbf{s}}[1] $ \\
+&&&& $A'_{\mathbf{k}} \equiv A_{\mathbf{k}} \cup \{(I_{\mathrm{a}}, \boldsymbol{\mu}_{\mathbf{s}}[0])\}$ \\
 &&&&\linkdest{C__SSTORE}{}$C_{\text{\tiny SSTORE}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$ and \linkdest{A r}{}$A'_{\mathrm{r}}$ are specified by EIP-2200 as follows. \\
-&&&& The checkpoint (``original'') state $\hyperlink{sigma_0}{\boldsymbol{\sigma}_0}$ is the state if the current transaction were to revert. \\
+&&&& We remind the reader that the checkpoint (``original'') state $\hyperlink{sigma_0}{\boldsymbol{\sigma}_0}$ is the state \\
+&&&& if the current transaction were to revert. \\
 &&&& Let $v_0 = \boldsymbol{\sigma}_0[I_{\mathrm{a}}]_{\mathbf{s}}[\boldsymbol{\mu}_{\mathbf{s}}[0]]$ be the original value of the storage slot. \\
 &&&& Let $v = \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathbf{s}}[\boldsymbol{\mu}_{\mathbf{s}}[0]]$ be the current value. \\
 &&&& Let $v' = \boldsymbol{\mu}_{\mathbf{s}}[1]$ be the new value. \\
 &&&& Then: \\
-&&&&$C_{\text{\tiny SSTORE}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
-G_{\mathrm{sload}}  & \text{if} \quad v = v' \; \vee \; v_0 \neq v \\
+&&&& $\!\begin{aligned}
+C_{\text{\tiny SSTORE}}(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) &\equiv
+\begin{cases}
+0                      & \text{if} \quad (I_{\mathrm{a}}, \boldsymbol{\mu}_{\mathbf{s}}[0]) \in A_{\mathbf{k}} \\
+G_{\mathrm{coldsload}} & \text{otherwise} \\
+\end{cases} \\
+&+
+\begin{cases}
+G_{\mathrm{warmaccess}}  & \text{if} \quad v = v' \; \vee \; v_0 \neq v \\
 G_{\mathrm{sset}}   & \text{if} \quad v \neq v' \; \wedge \; v_0 = v \; \wedge \; v_0 = 0 \\
 G_{\mathrm{sreset}} & \text{if} \quad v \neq v' \; \wedge \; v_0 = v \; \wedge \; v_0 \neq 0 \\
-\end{cases}$ \\
-&&&&\linkdest{A r}{} $A'_{\mathrm{r}} \equiv A_{\mathrm{r}} + \begin{cases}
+\end{cases}
+\end{aligned}$ \\
+&&&& \linkdest{A r}{}$A'_{\mathrm{r}} \equiv A_{\mathrm{r}} + \begin{cases}
 R_{\mathrm{sclear}} & \text{if} \quad v \neq v' \; \wedge \; v_0 = v \; \wedge \; v' = 0 \\
 r_{\text{dirtyclear}} + r_{\text{dirtyreset}} & \text{if} \quad v \neq v' \; \wedge \; v_0 \neq v \\
 0 & \text{otherwise} \\
 \end{cases}$ \\
+&&&& where \\
 &&&&$r_{\text{dirtyclear}} \equiv \begin{cases}
 -R_{\mathrm{sclear}} & \text{if} \quad v_0 \neq 0 \; \wedge \; v = 0 \\
 R_{\mathrm{sclear}} & \text{if} \quad v_0 \neq 0 \; \wedge \; v' = 0 \\
 0 & \text{otherwise} \\
 \end{cases}$ \\
 &&&&$r_{\text{dirtyreset}} \equiv \begin{cases}
-G_{\mathrm{sset}} - G_{\mathrm{sload}}   & \text{if} \quad v_0 = v' \; \wedge \; v_0 = 0 \\
-G_{\mathrm{sreset}} - G_{\mathrm{sload}} & \text{if} \quad v_0 = v' \; \wedge \; v_0 \neq 0 \\
+G_{\mathrm{sset}} - G_{\mathrm{warmaccess}}   & \text{if} \quad v_0 = v' \; \wedge \; v_0 = 0 \\
+G_{\mathrm{sreset}} - G_{\mathrm{warmaccess}} & \text{if} \quad v_0 = v' \; \wedge \; v_0 \neq 0 \\
 0 & \text{otherwise} \\
 \end{cases}$ \\
 \midrule
@@ -2312,6 +2357,9 @@ G_{\mathrm{sreset}} - G_{\mathrm{sload}} & \text{if} \quad v_0 = v' \; \wedge \;
 0x58 & {\small PC} & 0 & 1 & Get the value of the program counter \textit{prior} to the increment \\
 &&&&  corresponding to this instruction. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{\mu}_{\mathrm{pc}}$ \\
+\end{tabu}
+
+\begin{tabu}{\usetabu{opcodes}}
 \midrule
 0x59 & {\small MSIZE} & 0 & 1 & Get the size of active memory in bytes. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv 32\boldsymbol{\mu}_{\mathrm{i}}$ \\
@@ -2416,10 +2464,10 @@ G_{\mathrm{sreset}} - G_{\mathrm{sload}} & \text{if} \quad v_0 = v' \; \wedge \;
 0xf0 & {\small CREATE} & 3 & 1 & Create a new account with associated code. \\
 &&&& $\mathbf{i} \equiv \boldsymbol{\mu}_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[1] \dots (\boldsymbol{\mu}_{\mathbf{s}}[1] + \boldsymbol{\mu}_{\mathbf{s}}[2] - 1) ]$ \\
 &&&& $\hyperlink{salt}{\zeta} \equiv \varnothing$ \\
-&&&& $(\boldsymbol{\sigma}', \boldsymbol{\mu}'_{\mathrm{g}}, A^+, \mathbf{o}) \equiv \begin{cases}\hyperlink{lambda}{\Lambda}(\boldsymbol{\sigma}^*, I_{\mathrm{a}}, I_{\mathrm{o}}, L(\boldsymbol{\mu}_{\mathrm{g}}), I_{\mathrm{p}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \mathbf{i}, I_{\mathrm{e}} + 1, \zeta, I_{\mathrm{w}}) & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[0] \leqslant \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \; \\ \quad &\wedge\; I_{\mathrm{e}} < 1024\\ \big(\boldsymbol{\sigma}, \boldsymbol{\mu}_{\mathrm{g}}, \varnothing\big) & \text{otherwise} \end{cases}$ \\
+&&&& $(\boldsymbol{\sigma}', \boldsymbol{\mu}'_{\mathrm{g}}, A', \mathbf{o}) \equiv \begin{cases}
+\hyperlink{lambda}{\Lambda}(\boldsymbol{\sigma}^*, A, I_{\mathrm{a}}, I_{\mathrm{o}}, L(\boldsymbol{\mu}_{\mathrm{g}}), I_{\mathrm{p}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \mathbf{i}, I_{\mathrm{e}} + 1, \zeta, I_{\mathrm{w}}) & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[0] \leqslant \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \; \\ \quad &\wedge\; I_{\mathrm{e}} < 1024\\
+\big(\boldsymbol{\sigma}, \boldsymbol{\mu}_{\mathrm{g}}, A, () \big) & \text{otherwise} \end{cases}$ \\
 &&&& $\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except} \quad \boldsymbol{\sigma}^*[I_{\mathrm{a}}]_{\mathrm{n}} = \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{n}} + 1$ \\
-&&&& $A' \equiv A \Cup A^+$ which abbreviates: $A'_{\mathbf{s}} \equiv A_{\mathbf{s}} \cup A^+_{\mathbf{s}} \quad \wedge \quad A'_{\mathbf{l}} \equiv A_{\mathbf{l}} \cdot A^+_{\mathbf{l}} \quad \wedge$ \\
-&&&& $A'_{\mathbf{t}} \equiv A_{\mathbf{t}} \cup A^+_{\mathbf{t}} \wedge \quad A'_{\mathbf{r}} \equiv A_{\mathbf{r}} + A^+_{\mathbf{r}}$ \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv x$ \\
 &&&& where $x=0$ if the code execution for this operation failed due to an\\
 &&&& \hyperlink{Exceptional_Halting_function_Z}{exceptional halting} (or for a \text{\small REVERT}) $\boldsymbol{\sigma}' = \varnothing$, or $I_{\mathrm{e}} = 1024$ \\
@@ -2432,13 +2480,15 @@ G_{\mathrm{sreset}} - G_{\mathrm{sload}} & \text{if} \quad v_0 = v' \; \wedge \;
 \midrule
 0xf1 & {\small CALL} & 7 & 1 & Message-call into an account. \\
 &&&& $\mathbf{i} \equiv \boldsymbol{\mu}_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[3] \dots (\boldsymbol{\mu}_{\mathbf{s}}[3] + \boldsymbol{\mu}_{\mathbf{s}}[4] - 1) ]$ \\
-&&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\hyperlink{theta}{\Theta}(\boldsymbol{\sigma}, I_{\mathrm{a}}, I_{\mathrm{o}}, t, t, C_{\text{\tiny CALLGAS}}(\boldsymbol{\mu}),\\ \quad I_{\mathrm{p}}, \boldsymbol{\mu}_{\mathbf{s}}[2], \boldsymbol{\mu}_{\mathbf{s}}[2], \mathbf{i}, I_{\mathrm{e}} + 1, I_{\mathrm{w}})\end{array} & \begin{array}{l}\text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] \leqslant \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \;\wedge \\ \quad\quad I_{\mathrm{e}} < 1024\end{array}\\ (\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
+&&&& $(\boldsymbol{\sigma}', g', A', \mathbf{o}) \equiv \begin{cases}
+\begin{array}{l}\hyperlink{theta}{\Theta}(\boldsymbol{\sigma}, A, I_{\mathrm{a}}, I_{\mathrm{o}}, t, t, C_{\text{\tiny CALLGAS}}(\boldsymbol{\sigma},\boldsymbol{\mu},A),\\ \quad I_{\mathrm{p}}, \boldsymbol{\mu}_{\mathbf{s}}[2], \boldsymbol{\mu}_{\mathbf{s}}[2], \mathbf{i}, I_{\mathrm{e}} + 1, I_{\mathrm{w}})\end{array}
+& \begin{array}{l}\text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] \leqslant \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \;\wedge \\ \quad\quad I_{\mathrm{e}} < 1024\end{array}\\
+(\boldsymbol{\sigma}, g, A, ()) & \text{otherwise} \end{cases}$ \\
 &&&& $n \equiv \min(\{ \boldsymbol{\mu}_{\mathbf{s}}[6], \lVert \mathbf{o} \rVert\})$ \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[5] \dots (\boldsymbol{\mu}_{\mathbf{s}}[5] + n - 1) ] = \mathbf{o}[0 \dots (n - 1)]$ \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{o}} = \mathbf{o}$ \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{g}} \equiv \boldsymbol{\mu}_{\mathrm{g}} + g'$ \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv x$ \\
-&&&& $A' \equiv A \Cup A^+$ \\
 &&&& $t \equiv \boldsymbol{\mu}_{\mathbf{s}}[1] \bmod 2^{160}$ \\
 &&&& where $x=0$ if the code execution for this operation failed due to an\\
 &&&& \hyperlink{Exceptional_Halting_function_Z}{exceptional halting} (or for a \text{\small REVERT}) $\boldsymbol{\sigma}' = \varnothing$ or if \\
@@ -2446,16 +2496,20 @@ G_{\mathrm{sreset}} - G_{\mathrm{sload}} & \text{if} \quad v_0 = v' \; \wedge \;
 &&&& otherwise. \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[3], \boldsymbol{\mu}_{\mathbf{s}}[4]), \boldsymbol{\mu}_{\mathbf{s}}[5], \boldsymbol{\mu}_{\mathbf{s}}[6])$ \\
 &&&& Thus the operand order is: gas, to, value, in offset, in size, out offset, out size. \\
-&&&&\linkdest{tiny CALL}{} $C_{\text{\tiny CALL}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) + C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$ \\
-&&&& $C_{\text{\tiny CALLGAS}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv  \begin{cases}
-C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) + G_{\mathrm{callstipend}} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0 \\
-C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{otherwise}
+&&&& \linkdest{tiny CALL}{}$C_{\text{\tiny CALL}}(\boldsymbol{\sigma}, \boldsymbol{\mu}, A) \equiv C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}, A) + C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu}, A)$ \\
+&&&& $C_{\text{\tiny CALLGAS}}(\boldsymbol{\sigma}, \boldsymbol{\mu}, A) \equiv  \begin{cases}
+C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}, A) + G_{\mathrm{callstipend}} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0 \\
+C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}, A) & \text{otherwise}
 \end{cases}$ \\
-&&&& $C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
-\min\{ L(\boldsymbol{\mu}_{\mathrm{g}} - C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})), \boldsymbol{\mu}_{\mathbf{s}}[0] \} & \text{if} \quad \boldsymbol{\mu}_{\mathrm{g}} \ge C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu})\\
+&&&& $C_{\text{\tiny GASCAP}}(\boldsymbol{\sigma}, \boldsymbol{\mu}, A) \equiv \begin{cases}
+\min\{ L(\boldsymbol{\mu}_{\mathrm{g}} - C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu}, A)), \boldsymbol{\mu}_{\mathbf{s}}[0] \} & \text{if} \quad \boldsymbol{\mu}_{\mathrm{g}} \ge C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu}, A)\\
 \boldsymbol{\mu}_{\mathbf{s}}[0] & \text{otherwise}
 \end{cases}$\\
-&&&& $C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv G_{\mathrm{call}} + C_{\text{\tiny XFER}}(\boldsymbol{\mu}) + C_{\text{\tiny NEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$\\
+&&&& $C_{\text{\tiny EXTRA}}(\boldsymbol{\sigma}, \boldsymbol{\mu}, A) \equiv C_{\text{\tiny ACCESS}}(\boldsymbol{\mu}, A) + C_{\text{\tiny XFER}}(\boldsymbol{\mu}) + C_{\text{\tiny NEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$\\
+&&&& $C_{\text{\tiny ACCESS}}(\boldsymbol{\mu}, A) \equiv \begin{cases}
+G_{\mathrm{warmaccess}}        & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[1] \bmod 2^{160} \in A_{\mathbf{a}} \\
+G_{\mathrm{coldaccountaccess}} & \text{otherwise}
+\end{cases}$ \\
 &&&& $C_{\text{\tiny XFER}}(\boldsymbol{\mu}) \equiv \begin{cases}
 G_{\mathrm{callvalue}} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0 \\
 0 & \text{otherwise}
