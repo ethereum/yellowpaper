@@ -584,7 +584,7 @@ The execution of a transaction is the most complex part of the Ethereum protocol
 \item The transaction is well-formed RLP, with no additional trailing bytes;
 \item the transaction signature is valid;
 \item the \hyperlink{transaction_nonce}{transaction nonce} is valid (equivalent to the \hyperlink{account_nonce}{sender account's current nonce});
-\item the sender account has no contract code deployed ($\lVert I_{\mathbf{b}} \rVert = 0$).
+\item the sender account has no contract code deployed ($\boldsymbol{\sigma}[S(T)]_{\mathrm{c}} = \texttt{KEC}\big( () \big)$).
 \item the gas limit is no smaller than the intrinsic gas, $g_0$, used by the transaction; and
 \item the sender account balance contains at least the cost, $v_0$, required in up-front payment.
 \end{enumerate}
@@ -629,6 +629,7 @@ The validity is determined as:
 \begin{array}[t]{rcl}
 S(T) & \neq & \varnothing \quad \wedge \\
 \boldsymbol{\sigma}[S(T)] & \neq & \varnothing \quad \wedge \\
+\boldsymbol{\sigma}[S(T)]_{\mathrm{c}} & = & \texttt{KEC}\big( () \big) \quad \wedge \\
 \linkdest{transaction_nonce}{}T_{\mathrm{n}} & = & \boldsymbol{\sigma}[S(T)]_{\mathrm{n}} \quad \wedge \\
 g_0 & \leqslant & T_{\mathrm{g}} \quad \wedge \\
 v_0 & \leqslant & \boldsymbol{\sigma}[S(T)]_{\mathrm{b}} \quad \wedge \\
