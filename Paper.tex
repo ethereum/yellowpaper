@@ -1499,15 +1499,15 @@ y(\mathfrak{I}) & = & \{ (\mathbf{k}_0' \in \mathbb{Y}, \mathbf{v}_0 \in \mathbb
 
 We define the function $\texttt{TRIE}$, which evaluates to the root of the trie that represents this set when encoded in this structure:
 \begin{equation}
-\texttt{TRIE}(\mathfrak{I}) \equiv \texttt{KEC}(c(\mathfrak{I}, 0))
+\texttt{TRIE}(\mathfrak{I}) \equiv \texttt{KEC}\big(\texttt{RLP} (c(\mathfrak{I}, 0))\big)
 \end{equation}
 
-We also assume a function $n$, the trie's node cap function. When composing a node, we use RLP to encode the structure. As a means of reducing storage complexity, for nodes whose composed RLP is fewer than 32 bytes, we store the RLP directly; for those larger we assert prescience of the byte array whose Keccak hash evaluates to our reference. Thus we define in terms of $c$, the node composition function:
+We also assume a function $n$, the trie's node cap function. When composing a node, we use RLP to encode the structure. As a means of reducing storage complexity, we store nodes whose composed RLP is fewer than 32 bytes directly; for those larger we assert prescience of the byte array whose Keccak hash evaluates to our reference. Thus we define in terms of $c$, the node composition function:
 \begin{equation}
 n(\mathfrak{I}, i) \equiv \begin{cases}
 () & \text{if} \quad \mathfrak{I} = \varnothing \\
-c(\mathfrak{I}, i) & \text{if} \quad \lVert c(\mathfrak{I}, i)\rVert < 32 \\
-\texttt{KEC}(c(\mathfrak{I}, i)) & \text{otherwise}
+c(\mathfrak{I}, i) & \text{if} \quad \lVert \, \texttt{RLP} \big( c(\mathfrak{I}, i) \big) \rVert < 32 \\
+\texttt{KEC}\big(\texttt{RLP}( c(\mathfrak{I}, i)) \big) & \text{otherwise}
 \end{cases}
 \end{equation}
 
@@ -1521,9 +1521,9 @@ In a manner similar to a radix tree, when the trie is traversed from root to lea
 A branch is then only used when necessary; no branch nodes may exist that contain only a single non-zero entry. We may formally define this structure with the structural composition function $c$:
 \begin{equation}
 c(\mathfrak{I}, i) \equiv \begin{cases}
-\texttt{RLP}\Big( \big(\texttt{HP}(I_0[i .. (\lVert I_0\rVert - 1)], 1), I_1 \big) \Big) & \text{if} \quad \lVert \mathfrak{I} \rVert = 1 \quad \text{where} \; \exists I: I \in \mathfrak{I} \\
-\texttt{RLP}\Big( \big(\texttt{HP}(I_0[i .. (j - 1)], 0), n(\mathfrak{I}, j) \big) \Big) & \text{if} \quad i \ne j \quad \text{where} \; j = \max \{ x : \exists \mathbf{l}: \lVert \mathbf{l} \rVert = x \wedge \forall I \in \mathfrak{I}: I_0[0 .. (x - 1)] = \mathbf{l} \} \\
-\texttt{RLP}\Big( (u(0), u(1), ..., u(15), v) \Big) & \text{otherwise} \quad \text{where} \begin{array}[t]{rcl}
+ \big(\texttt{HP}(I_0[i .. (\lVert I_0\rVert - 1)], 1), I_1 \big) & \text{if} \quad \lVert \mathfrak{I} \rVert = 1 \quad \text{where} \; \exists I: I \in \mathfrak{I} \\
+\big(\texttt{HP}(I_0[i .. (j - 1)], 0), n(\mathfrak{I}, j) \big) & \text{if} \quad i \ne j \quad \text{where} \; j = \max \{ x : \exists \mathbf{l}: \lVert \mathbf{l} \rVert = x \wedge \forall I \in \mathfrak{I}: I_0[0 .. (x - 1)] = \mathbf{l} \} \\
+(u(0), u(1), ..., u(15), v) & \text{otherwise} \quad \text{where} \begin{array}[t]{rcl}
 u(j) & \equiv & n(\{ I : I \in \mathfrak{I} \wedge I_0[i] = j \}, i + 1) \\
 v & = & \begin{cases}
 I_1 & \text{if} \quad \exists I: I \in \mathfrak{I} \wedge \lVert I_0 \rVert = i \\
