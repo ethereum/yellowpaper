@@ -2119,7 +2119,7 @@ Here given are the various exceptions to the state transition rules given in sec
 &&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_{\mathbf{s}}[0]_{\mathrm{i}} \equiv \begin{cases} 1 & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[0]_{\mathrm{i}} = 0 \\ 0 & \text{otherwise} \end{cases}$ \\
 \midrule
 0x1a & {\small BYTE} & 2 & 1 & Retrieve single byte from word. \\
-&&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_{\mathbf{s}}[0]_{\mathrm{i}} \equiv \begin{cases} \boldsymbol{\mu}_{\mathbf{s}}[1]_{(i + 8\boldsymbol{\mu}_{\mathbf{s}}[0])} & \text{if} \quad i < 8 \wedge \boldsymbol{\mu}_{\mathbf{s}}[0] < 32 \\ 0 & \text{otherwise} \end{cases} $\\
+&&&& $\forall i \in [0..255]: \boldsymbol{\mu}'_{\mathbf{s}}[0]_{\mathrm{i}} \equiv \begin{cases} \boldsymbol{\mu}_{\mathbf{s}}[1]_{(i - 248 + 8\boldsymbol{\mu}_{\mathbf{s}}[0])} & \text{if} \quad i \geq 248 \wedge \boldsymbol{\mu}_{\mathbf{s}}[0] < 32 \\ 0 & \text{otherwise} \end{cases} $\\
 &&&& For the Nth byte, we count from the left (i.e. N=0 would be the most significant\\
 &&&& in big endian). \\
 \midrule
