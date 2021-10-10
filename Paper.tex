@@ -171,7 +171,7 @@ This would mean that past a given point in time (block), multiple states of the 
 The scheme we use in order to generate consensus is a simplified version of the GHOST protocol introduced by \cite{cryptoeprint:2013:881}. This process is described in detail in section \ref{ch:ghost}.
 
 Sometimes, a path follows a new protocol from a particular height (block number).
-This document describes one version of the protocol, namely the \textit{Berlin} version defined by \cite{BeikoLondon}.
+This document describes one version of the protocol, namely the \textit{Berlin} version defined by \cite{BeikoBerlin}.
 In order to follow back the history of a path, one must reference multiple versions of this document.
 Here are the block numbers of protocol updates on the Ethereum main network:
 \par
@@ -189,6 +189,7 @@ $F_{\mathrm{Petersburg}}$        &  7280000 \\
 $F_{\mathrm{Istanbul}}$          &  9069000 \\
 $F_{\mathrm{Muir Glacier}}$      &  9200000 \\
 $F_{\mathrm{Berlin}}$            & 12244000 \\
+$F_{\mathrm{London}}$            & 12965000 \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -534,7 +535,8 @@ H'_{\mathrm{i}} &\equiv \max(H_{\mathrm{i}} - \kappa, 0) \\
 \kappa &\equiv \begin{cases} 
   3000000  & \text{if} \quad F_{\mathrm{Byzantium}} \leqslant H_{\mathrm{i}} < F_{\mathrm{Constantinople}} \\
   5000000  & \text{if} \quad F_{\mathrm{Constantinople}} \leqslant H_{\mathrm{i}} < F_{\mathrm{Muir Glacier}} \\
-  9000000  & \text{if} \quad H_{\mathrm{i}} \geqslant F_{\mathrm{Muir Glacier}} \\
+  9000000  & \text{if} \quad F_{\mathrm{Muir Glacier}} \leqslant H_{\mathrm{i}} < F_{\mathrm{London}} \\
+  9700000  & \text{if} \quad H_{\mathrm{i}} \geqslant F_{\mathrm{London}} \\
 \end{cases}
 \end{align}
 
