@@ -618,7 +618,7 @@ Formally, we consider the function \hyperlink{Upsilon_state_transition}{$\Upsilo
 
 Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define \hyperlink{tx_total_gas_used_Upsilon_pow_g}{$\Upsilon^{\mathrm{g}}$} to evaluate to the amount of gas used in the execution of a transaction, \hyperlink{tx_logs_Upsilon_pow_l}{$\Upsilon^{\mathbf{l}}$} to evaluate to the transaction's accrued log items and \hyperlink{tx_status_Upsilon_pow_z}{$\Upsilon^{\mathrm{z}}$} to evaluate to the status code resulting from the transaction. These will be formally defined later.
 
-\subsection{Substate}
+\subsection{Substate} \label{ch:substate}
 Throughout transaction execution, we accrue certain information that is acted upon immediately following the transaction. We call this the \textit{accrued transaction substate}, or \textit{accrued substate} for short, and represent it as $A$, which is a tuple:
 \begin{equation}
 A \equiv (A_{\mathbf{s}}, A_{\mathbf{l}}, A_{\mathbf{t}}, A_{\mathrm{r}}, A_{\mathbf{a}}, A_{\mathbf{k}})
@@ -950,7 +950,6 @@ It is assumed that the client will have stored the pair $(\mathtt{KEC}(I_{\mathb
 As can be seen, there are nine exceptions to the usage of the general execution framework $\Xi$ for evaluation of the message call: these are so-called `precompiled' contracts, meant as a preliminary piece of architecture that may later become \textit{native extensions}.
 The contracts in addresses 1 to 9 execute the elliptic curve public key recovery function, the SHA2 256-bit hash scheme, the RIPEMD 160-bit hash scheme, the identity function, arbitrary precision modular exponentiation, elliptic curve addition, elliptic curve scalar multiplication, an elliptic curve pairing check, and the BLAKE2 compression function $\mathtt{F}$ respectively.
 Their full formal definition is in Appendix \ref{app:precompiled}.
-
 We denote the set of the addresses of the precompiled contracts by $\pi$:
 \begin{equation}\hypertarget{precompiled_set}{}
 \pi \equiv \{1, 2, 3, 4, 5, 6, 7, 8, 9 \}
@@ -980,7 +979,8 @@ See Appendix \ref{app:vm} for a rigorous definition of the EVM gas cost.
 
 \subsection{Execution Environment}\linkdest{exec_env}
 
-In addition to the system state $\boldsymbol{\sigma}$, and the remaining gas for computation $g$, there are several pieces of important information used in the execution environment that the execution agent must provide; these are contained in the tuple $I$:
+In addition to the system state $\boldsymbol{\sigma}$, the remaining gas for computation $g$, and the accrued substate $A$,
+there are several pieces of important information used in the execution environment that the execution agent must provide; these are contained in the tuple $I$:
 
 \begin{itemize}
 \item\linkdest{address_of_account_which_owns_code_I__a_def_words}{}\linkdest{I__a} $I_{\mathrm{a}}$, the address of the account which owns the code that is executing.
@@ -995,15 +995,12 @@ In addition to the system state $\boldsymbol{\sigma}$, and the remaining gas for
 \item\linkdest{exec_permission_to_modify_state_I__w}{}\linkdest{I__w} $I_{\mathrm{w}}$, the permission to make modifications to the state.
 \end{itemize}
 
-The execution model defines the function $\Xi$, which can compute the resultant state $\boldsymbol{\sigma}'$, the remaining gas $g'$, the accrued substate $A$ and the resultant output, $\mathbf{o}$, given these definitions. For the present context, we will define it as:
+The execution model defines the function $\Xi$, which can compute the resultant state $\boldsymbol{\sigma}'$, the remaining gas $g'$, the resultant accrued substate $A'$ and the resultant output, $\mathbf{o}$, given these definitions.
+For the present context, we will define it as:
 \begin{equation}
-(\boldsymbol{\sigma}', g', A, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}, g, I)
+(\boldsymbol{\sigma}', g', A', \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}, g, A, I)
 \end{equation}
-
-where we will remember that $A$, the accrued substate, is defined as the tuple of the self-destructs set $A_{\mathbf{s}}$, the log series $A_{\mathbf{l}}$, the touched accounts $A_{\mathbf{t}}$ and the refund balance $A_{\mathrm{r}}$:
-\begin{equation}
-A \equiv (A_{\mathbf{s}}, A_{\mathbf{l}}, A_{\mathbf{t}}, A_{\mathrm{r}})
-\end{equation}
+where we will remember that $A$, the accrued substate, is defined in section \ref{ch:substate}.
 
 \subsection{Execution Overview}
 
@@ -1013,7 +1010,7 @@ We must now define the $\Xi$ function. In most practical implementations this wi
 \hypertarget{empty_sequence_vs_empty_set}{}The empty sequence, denoted $()$, is not equal to the empty set, denoted $\varnothing$; this is important when interpreting the output of $H$, which evaluates to $\varnothing$ when execution is to continue but a series (potentially empty) when execution should halt.
 \begin{eqnarray}
 \Xi(\boldsymbol{\sigma}, g, A, I) & \equiv & (\boldsymbol{\sigma}'\!, \boldsymbol{\mu}'_{\mathrm{g}}, A', \mathbf{o}) \\
-(\boldsymbol{\sigma}', \boldsymbol{\mu}'\!, A', ..., \mathbf{o}) & \equiv & X\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A^0\!, I)\big) \\
+(\boldsymbol{\sigma}', \boldsymbol{\mu}'\!, A', ..., \mathbf{o}) & \equiv & X\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I)\big) \\
 \boldsymbol{\mu}_{\mathrm{g}} & \equiv & g \\
 \boldsymbol{\mu}_{\mathrm{pc}} & \equiv & 0 \\
 \boldsymbol{\mu}_{\mathbf{m}} & \equiv & (0, 0, ...) \\
@@ -1023,8 +1020,8 @@ We must now define the $\Xi$ function. In most practical implementations this wi
 \end{eqnarray}
 \begin{equation} \label{eq:X-def}
 X\big( (\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \big) \equiv \begin{cases}
-\big(\varnothing, \boldsymbol{\mu}, A^0, I, \varnothing\big) & \text{if} \quad Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \\
-\big(\varnothing, \boldsymbol{\mu}', A^0, I, \mathbf{o}\big) & \text{if} \quad w = \text{\small REVERT} \\
+\big(\varnothing, \boldsymbol{\mu}, A, I, \varnothing\big) & \text{if} \quad Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \\
+\big(\varnothing, \boldsymbol{\mu}', A, I, \mathbf{o}\big) & \text{if} \quad w = \text{\small REVERT} \\
 O(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \cdot \mathbf{o} & \text{if} \quad \mathbf{o} \neq \varnothing \\
 X\big(O(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I)\big) & \text{otherwise} \\
 \end{cases}
@@ -1035,7 +1032,7 @@ where
 \mathbf{o} & \equiv & H(\boldsymbol{\mu}, I) \\
 (a, b, c, d) \cdot e & \equiv & (a, b, c, d, e) \\
 \boldsymbol{\mu}' & \equiv & \boldsymbol{\mu}\ \text{except:} \\
-\boldsymbol{\mu}'_{\mathrm{g}} & \equiv & \boldsymbol{\mu}_{\mathrm{g}} - C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I)
+\boldsymbol{\mu}'_{\mathrm{g}} & \equiv & \boldsymbol{\mu}_{\mathrm{g}} - C(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I)
 \end{eqnarray}
 
 Note that, when we evaluate $\Xi$, we drop the fourth element $I'$ and extract the remaining gas $\boldsymbol{\mu}'_{\mathrm{g}}$ from the resultant machine state $\boldsymbol{\mu}'$.
@@ -1060,9 +1057,9 @@ We also assume the fixed amounts of $\mathbf{\delta}$ and $\mathbf{\alpha}$, spe
 
 The exceptional halting function $Z$ is defined as:
 \begin{equation}
-Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \equiv
+Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \equiv
 \begin{array}[t]{l}
-\boldsymbol{\mu}_g < C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \quad \vee \\
+\boldsymbol{\mu}_g < C(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \quad \vee \\
 \mathbf{\delta}_w = \varnothing \quad \vee \\
 \lVert\boldsymbol{\mu}_\mathbf{s}\rVert < \mathbf{\delta}_w \quad \vee \\
 ( w = \text{\small JUMP} \; \wedge \; \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \\
@@ -1142,7 +1139,7 @@ O\big((\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I)\big) & \equiv & (\boldsymbol
 
 The gas is reduced by the instruction's gas cost and for most instructions, the program counter increments on each cycle, for the three exceptions, we assume a function $J$, subscripted by one of two instructions, which evaluates to the according value:
 \begin{eqnarray}
-\quad \boldsymbol{\mu}'_{\mathrm{g}} & \equiv & \boldsymbol{\mu}_{\mathrm{g}} - C(\boldsymbol{\sigma}, \boldsymbol{\mu}, I) \label{eq:mu_pc}\\
+\quad \boldsymbol{\mu}'_{\mathrm{g}} & \equiv & \boldsymbol{\mu}_{\mathrm{g}} - C(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \label{eq:mu_pc}\\
 \quad \boldsymbol{\mu}'_{\mathrm{pc}} & \equiv & \begin{cases}
 \hyperlink{JUMP}{J_{\text{JUMP}}}(\boldsymbol{\mu}) & \text{if} \quad w = \text{\small JUMP} \\
 \hyperlink{JUMPI}{J_{\text{JUMPI}}}(\boldsymbol{\mu}) & \text{if} \quad w = \text{\small JUMPI} \\
@@ -1150,7 +1147,7 @@ N(\boldsymbol{\mu}_{\mathrm{pc}}, w) & \text{otherwise}
 \end{cases}
 \end{eqnarray}
 
-In general, we assume the memory, self-destruct set and system state don't change:
+In general, we assume the memory, accrued substate and system state do not change:
 \begin{eqnarray}
 \boldsymbol{\mu}'_{\mathbf{m}} & \equiv & \boldsymbol{\mu}_{\mathbf{m}} \\
 \boldsymbol{\mu}'_{\mathrm{i}} & \equiv & \boldsymbol{\mu}_{\mathrm{i}} \\
@@ -1751,7 +1748,7 @@ We define $\Xi_{\mathtt{SNARKV}}$ as a precompiled contract which checks if (\re
 
 \begin{eqnarray}
 \Xi_{\mathtt{SNARKV}}&\equiv&\Xi_{\mathtt{PRE}}\quad\text{except:}\\
-\qquad\Xi_{\mathtt{SNARKV}}(\boldsymbol\sigma,g,I)&=&\left(\varnothing,0,A^0,()\right)\quad\text{if}\ F\\
+\qquad\Xi_{\mathtt{SNARKV}}(\boldsymbol\sigma,g,A,I)&=&\left(\varnothing,0,A,()\right)\quad\text{if}\ F\\
 F&\equiv&(\lVert I_{\mathbf{d}} \rVert\bmod 192\neq 0\vee(\exists j.\ a_{\mathrm{j}}=\varnothing\vee b_{\mathrm{j}}=\varnothing))\\
 k &=& \dfrac{\lVert I_{\mathbf{d}} \rVert}{192} \\
 g_{\mathrm{r}}&=& 34000k + 45000 \\
@@ -1771,7 +1768,7 @@ We define a precompiled contract for addition on $G_1$.
 
 \begin{eqnarray}
 \Xi_{\mathtt{BN\_ADD}}&\equiv&\Xi_{\mathtt{BN\_PRE}}\quad\text{except:}\\
-\Xi_{\mathtt{BN\_ADD}}(\boldsymbol\sigma,g,I)&=&\left(\varnothing,0,A^0,()\right)\quad\text{if}\ x=\varnothing\vee y=\varnothing\\
+\Xi_{\mathtt{BN\_ADD}}(\boldsymbol\sigma,g,A,I)&=&\left(\varnothing,0,A,()\right)\quad\text{if}\ x=\varnothing\vee y=\varnothing\\
 g_{\mathrm{r}} &=& 150\\
 \mathbf{o}&\equiv&\delta_1^{-1}(x+y)\quad\text{where $+$ is the group operation in $G_1$}\\
 x&\equiv&\delta_1\left(\bar I_{\mathbf{d}}[0..63]\right)\\
@@ -1785,7 +1782,7 @@ I_{\mathbf{d}}[x]&\text{if}\ x < \lVert I_{\mathbf{d}} \rVert\\
 We define a precompiled contract for scalar multiplication on $G_1$, where $\bar I_{\mathbf{d}}$ is defined in (\ref{eq:complemented_input}).
 \begin{eqnarray}
 \Xi_{\mathtt{BN\_MUL}}&\equiv&\Xi_{\mathtt{PRE}}\quad\text{except:}\\
-\Xi_{\mathtt{BN\_MUL}}(\boldsymbol\sigma,g,I)&=&\left(\varnothing,0,A^0,()\right)\quad\text{if}\ x=\varnothing\\
+\Xi_{\mathtt{BN\_MUL}}(\boldsymbol\sigma,g,A,I)&=&\left(\varnothing,0,A,()\right)\quad\text{if}\ x=\varnothing\\
 g_{\mathrm{r}} &=& 6000\\
 \mathbf{o}&\equiv&\delta_1^{-1}(n\cdot x)\quad\text{where $\cdot$ is the scalar multiplication in $G_1$}\\
 x&\equiv&\delta_1\left(\bar I_{\mathbf{d}}[0..63]\right)\\
@@ -1798,7 +1795,7 @@ EIP-152 by \cite{EIP-152} defines $\Xi_{\mathtt{BLAKE2\_F}}$ as a precompiled co
 The $\mathtt{F}$ compression function is specified in RFC 7693 by \cite{RFC-7693}.
 \begin{eqnarray}
   \Xi_{\mathtt{BLAKE2\_F}}&\equiv&\Xi_{\mathtt{PRE}}\quad\text{except:}\\
-  \Xi_{\mathtt{BLAKE2\_F}}(\boldsymbol\sigma,g,I)&=&\left(\varnothing,0,A^0,()\right)\quad\text{if}\ \lVert I_{\mathbf{d}}\rVert \neq 213 \vee f \notin \{0, 1\} \\
+  \Xi_{\mathtt{BLAKE2\_F}}(\boldsymbol\sigma,g,A,I)&=&\left(\varnothing,0,A,()\right)\quad\text{if}\ \lVert I_{\mathbf{d}}\rVert \neq 213 \vee f \notin \{0, 1\} \\
   g_{\mathrm{r}} &=& r\\
   \mathbf{o} &\equiv& \mathtt{LE}_8(h'_0)\cdot ... \cdot \mathtt{LE}_8(h'_7) \\
   (h'_0,\dots,h'_7) &\equiv& \mathtt{F}(h, m, t_\mathrm{low}, t_\mathrm{high}, f) \quad\text{with } r \text{ rounds and } w = 64 \\
