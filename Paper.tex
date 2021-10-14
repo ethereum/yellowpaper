@@ -632,8 +632,9 @@ Finally, EIP-2929 by \cite{EIP-2929} introduced \hypertarget{accessed_addresses_
 
 We define the empty accrued substate $A^0$ to have no self-destructs, no logs, no touched accounts, zero refund balance, all precompiled contracts in the accessed addresses, and no accessed storage:
 \begin{equation}
-A^0 \equiv (\varnothing, (), \varnothing, 0, \hyperlink{precompiled_set}{\pi}, \varnothing)
+A^0 \equiv (\varnothing, (), \varnothing, 0, \pi, \varnothing)
 \end{equation}
+where $\hyperlink{precompiled_set}{\pi}$ is the set of all precompiled addresses.
 
 \subsection{Execution}
 \hypertarget{intrinsic_gas_g_0}{}We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
@@ -676,14 +677,14 @@ We define the checkpoint state $\boldsymbol{\sigma}_0$:
 
 Evaluating $\boldsymbol{\sigma}_{\mathrm{P}}$ from $\boldsymbol{\sigma}_0$ depends on the transaction type; either contract creation or message call; we define the tuple of post-execution provisional state $\boldsymbol{\sigma}_{\mathrm{P}}$, remaining gas $g'$, accrued substate $A$ and status code $z$:
 \begin{equation}
-(\boldsymbol{\sigma}_{\mathrm{P}}, g', A', z) \equiv \begin{cases}
-\hyperlink{lambda}{\Lambda}_{4}(\boldsymbol{\sigma}_0, A^+, S(T), S(T), g, &\\ \quad\; T_{\mathrm{p}}, T_{\mathrm{v}}, T_{\mathbf{i}}, 0, \varnothing, \top) & \text{if} \quad T_{\mathrm{t}} = \varnothing \\
-\hyperlink{theta}{\Theta}_{4}(\boldsymbol{\sigma}_0, A^+, S(T), S(T), T_{\mathrm{t}}, &\\ \quad\; T_{\mathrm{t}}, g, T_{\mathrm{p}}, T_{\mathrm{v}}, T_{\mathrm{v}}, T_{\mathbf{d}}, 0, \top) & \text{otherwise}
+(\boldsymbol{\sigma}_{\mathrm{P}}, g', A, z) \equiv \begin{cases}
+\hyperlink{lambda}{\Lambda}_{4}(\boldsymbol{\sigma}_0, A^*, S(T), S(T), g, &\\ \quad\; T_{\mathrm{p}}, T_{\mathrm{v}}, T_{\mathbf{i}}, 0, \varnothing, \top) & \text{if} \quad T_{\mathrm{t}} = \varnothing \\
+\hyperlink{theta}{\Theta}_{4}(\boldsymbol{\sigma}_0, A^*, S(T), S(T), T_{\mathrm{t}}, &\\ \quad\; T_{\mathrm{t}}, g, T_{\mathrm{p}}, T_{\mathrm{v}}, T_{\mathrm{v}}, T_{\mathbf{d}}, 0, \top) & \text{otherwise}
 \end{cases}
 \end{equation}
 where
 \begin{equation}
-A^+ \equiv A^0 \quad \text{except} \quad A^+_{\mathbf{a}} \equiv A^0_{\mathbf{a}} \cup \{S(T)\}
+A^* \equiv A^0 \quad \text{except} \quad A^*_{\mathbf{a}} \equiv A^0_{\mathbf{a}} \cup \{S(T)\}
 \end{equation}
 and $g$ is the amount of gas remaining after deducting the basic amount required to pay for the existence of the transaction:
 \begin{equation}
@@ -694,15 +695,15 @@ Note we use $\hyperlink{theta}{\Theta}_{4}$ and $\hyperlink{lambda}{\Lambda}_{4}
 
 After the message call or contract creation is processed, the refund counter has to be incremented for the accounts that were self-destructed throughout its invocation.
 \begin{equation}
-A^*_{\mathrm{r}} \equiv A'_{\mathrm{r}} + \sum_{i \in A'_{\mathbf{s}}} R_{\mathrm{selfdestruct}}
+	A'_{\mathrm{r}} \equiv A_{\mathrm{r}} + \sum_{i \in A_{\mathbf{s}}} R_{\mathrm{selfdestruct}}
 \end{equation}
 
 Then the state is finalised by determining the amount to be refunded, $g^*$ from the remaining gas, $g'$, plus some allowance from the refund counter, to the sender at the original rate.
 \begin{equation}
-g^* \equiv g' + \min \left\{ \Big\lfloor \dfrac{T_{\mathrm{g}} - g'}{2} \Big\rfloor, \hyperlink{refund_balance_defn_words_A__r}{A^*_{\mathrm{r}}} \right\}
+g^* \equiv g' + \min \left\{ \Big\lfloor \dfrac{T_{\mathrm{g}} - g'}{2} \Big\rfloor, \hyperlink{refund_balance_defn_words_A__r}{A'_{\mathrm{r}}} \right\}
 \end{equation}
 
-The total refundable amount is the legitimately remaining gas $g'$, added to \hyperlink{refund_balance_defn_words_A__r}{$A'_{\mathrm{r}}$}, with the latter component being capped up to a maximum of half (rounded down) of the total amount used $T_{\mathrm{g}} - g'$. Therefore, $g^*$ is the total gas that remains after the transaction has been executed.
+The total refundable amount is the legitimately remaining gas $g'$, added to \hyperlink{refund_balance_defn_words_A__r}{$A_{\mathrm{r}}$}, with the latter component being capped up to a maximum of half (rounded down) of the total amount used $T_{\mathrm{g}} - g'$. Therefore, $g^*$ is the total gas that remains after the transaction has been executed.
 
 The Ether for the gas is given to the miner, whose address is specified as the beneficiary of the present block $B$. So we define the pre-final state $\boldsymbol{\sigma}^*$ in terms of the provisional state $\boldsymbol{\sigma}_{\mathrm{P}}$:
 \begin{eqnarray}
@@ -715,14 +716,14 @@ m & \equiv & {B_{\mathrm{H}}}_{\mathrm{c}}
 The final state, $\boldsymbol{\sigma}'$, is reached after deleting all accounts that either appear in the self-destruct set or are touched and empty:
 \begin{eqnarray}
 \boldsymbol{\sigma}' & \equiv & \boldsymbol{\sigma}^* \quad \text{except} \\
-\linkdest{self_destruct_list_A__s}{}\forall i \in A'_{\mathbf{s}}: \boldsymbol{\sigma}'[i] & = & \varnothing \\
-\linkdest{touched_A__t}{}\forall i \in A'_{\mathbf{t}}: \boldsymbol{\sigma}'[i] & = & \varnothing \quad\text{if}\quad \mathtt{DEAD}(\boldsymbol{\sigma}^*\kern -2pt, i)
+\linkdest{self_destruct_list_A__s}{}\forall i \in A_{\mathbf{s}}: \boldsymbol{\sigma}'[i] & = & \varnothing \\
+\linkdest{touched_A__t}{}\forall i \in A_{\mathbf{t}}: \boldsymbol{\sigma}'[i] & = & \varnothing \quad\text{if}\quad \mathtt{DEAD}(\boldsymbol{\sigma}^*\kern -2pt, i)
 \end{eqnarray}
 
 \hypertarget{tx_total_gas_used_Upsilon_pow_g}{}\linkdest{Upsilon_pow_g}\hypertarget{tx_logs_Upsilon_pow_l}{}\linkdest{Upsilon_pow_l}\hypertarget{tx_status_Upsilon_pow_z}{}\linkdest{Upsilon_pow_z}And finally, we specify $\Upsilon^{\mathrm{g}}$, the total gas used in this transaction $\Upsilon^\mathbf{l}$, the logs created by this transaction and $\Upsilon^{\mathrm{z}}$, the status code of this transaction:
 \begin{eqnarray}
 \Upsilon^{\mathrm{g}}(\boldsymbol{\sigma}, T) & \equiv & T_{\mathrm{g}} - g^* \\
-\Upsilon^{\mathbf{l}}(\boldsymbol{\sigma}, T) & \equiv & \hyperlink{tx_log_series_wordy_defn_A__l}{A'_{\mathbf{l}}} \\
+\Upsilon^{\mathbf{l}}(\boldsymbol{\sigma}, T) & \equiv & \hyperlink{tx_log_series_wordy_defn_A__l}{A_{\mathbf{l}}} \\
 \Upsilon^{\mathrm{z}}(\boldsymbol{\sigma}, T) & \equiv & z
 \end{eqnarray}
 
@@ -738,7 +739,7 @@ The salt \linkdest{salt}{$\zeta$} might be missing ($\zeta = \varnothing$); form
 \end{equation}
 If the creation was caused by {\small \hyperlink{create2}{CREATE2}}, then $\zeta \neq \varnothing$.
 
-We define the creation function formally as the function \linkdest{lambda}{$\Lambda$}, which evaluates from these values, together with the state $\boldsymbol{\sigma}$ and the accrued transaction substate $A$ to the tuple containing the new state, remaining gas, new accrued transaction substate and an error message $(\boldsymbol{\sigma}', g', A, \mathbf{o})$, as in section \ref{ch:transactions}:
+We define the creation function formally as the function \linkdest{lambda}{$\Lambda$}, which evaluates from these values, together with the state $\boldsymbol{\sigma}$ and the accrued transaction substate $A$ to the tuple containing the new state, remaining gas, new accrued transaction substate, status code and output $(\boldsymbol{\sigma}', g', A', z, \mathbf{o})$:
 \begin{equation}
 (\boldsymbol{\sigma}', g', A', z, \mathbf{o}) \equiv \Lambda(\boldsymbol{\sigma}, A, s, o, g, p, v, \mathbf{i}, e, \zeta, w)
 \end{equation}
@@ -758,7 +759,7 @@ where $\cdot$ is the concatenation of byte arrays, $\mathcal{B}_{a..b}(X)$ evalu
 
 The address of the new account is added to the set of accessed accounts:
 \begin{equation}
-A^+ \equiv A \quad \text{except} \quad A^+_{\mathbf{a}} \equiv A_{\mathbf{a}} \cup \{a\}
+A^* \equiv A \quad \text{except} \quad A^*_{\mathbf{a}} \equiv A_{\mathbf{a}} \cup \{a\}
 \end{equation}
 
 The account's nonce is initially defined as one, the balance as the value passed, the storage as empty and the code hash as the Keccak 256-bit hash of the empty string; the sender's balance is also reduced by the value passed. Thus the mutated state becomes $\boldsymbol{\sigma}^*$:
@@ -786,10 +787,10 @@ v' \equiv \begin{cases}
 
 Finally, the account is initialised through the execution of the initialising EVM code $\mathbf{i}$ according to the execution model (see section \ref{ch:model}).
 Code execution can effect several events that are not internal to the execution state: the account's storage can be altered, further accounts can be created and further message calls can be made.
-As such, the code execution function $\hyperlink{xi_def}{\Xi}$ evaluates to a tuple of the resultant state $\boldsymbol{\sigma}^{**}$, available gas remaining $g^{**}$, the new accrued substate $A'$ and the body code of the account $\mathbf{o}$.
+As such, the code execution function $\hyperlink{xi_def}{\Xi}$ evaluates to a tuple of the resultant state $\boldsymbol{\sigma}^{**}$, available gas remaining $g^{**}$, the resultant accrued substate $A^{**}$ and the body code of the account $\mathbf{o}$.
 
 \begin{equation}
-(\boldsymbol{\sigma}^{**}, g^{**}, A', \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}^*, g, A^+, I) \\
+(\boldsymbol{\sigma}^{**}, g^{**}, A^{**}, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}^*, g, A^*, I) \\
 \end{equation}
 \pagebreak[1]where $I$ contains the parameters of the \hyperlink{exec_env}{execution environment}, that is:\pagebreak[1]
 \begin{eqnarray}
@@ -817,7 +818,7 @@ If there is not enough gas remaining to pay this, \ie $g^{**} < c$, then we also
 
 The gas remaining will be zero in any such exceptional condition, \ie if the creation was conducted as the reception of a transaction, then this doesn't affect payment of the intrinsic cost of contract creation; it is paid regardless. However, the value of the transaction is not transferred to the aborted contract's address when we are out-of-gas.
 
-If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persist. Thus formally, we may specify the resultant state, gas, accrued substate and status code as $(\boldsymbol{\sigma}', g', A, z)$ where:
+If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persist. Thus formally, we may specify the resultant state, gas, accrued substate and status code as $(\boldsymbol{\sigma}', g', A', z)$ where:
 
 \begin{align}
 \quad g' \equiv & \begin{cases}
@@ -830,6 +831,10 @@ g^{**} - c & \text{otherwise} \\
 \quad\boldsymbol{\sigma}'[a] = \varnothing & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}^{**}, a) \\
 \boldsymbol{\sigma}^{**} \quad \text{except:} & \\
 \quad\boldsymbol{\sigma}'[a]_{\mathrm{c}} = \texttt{KEC}(\mathbf{o}) & \text{otherwise}
+\end{cases} \\
+\quad A' \equiv & \begin{cases}
+A^* & \text{if} \quad F \ \lor\ \boldsymbol{\sigma}^{**} = \varnothing \\
+A^{**} & \text{otherwise} \\
 \end{cases} \\
 \quad z \equiv & \begin{cases}
 0 & \text{if} \quad F \ \lor\ \boldsymbol{\sigma}^{**} = \varnothing \\
@@ -903,12 +908,16 @@ g' & \equiv & \begin{cases}
 0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \ \wedge \\
 &\quad \mathbf{o} = \varnothing \\
 g^{**} & \text{otherwise}
-\end{cases} \\ \nonumber
+\end{cases} \\
+A' & \equiv & \begin{cases}
+A & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
+A^{**} & \text{otherwise}
+\end{cases} \\
 z & \equiv & \begin{cases}
 0 & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \\
 1 & \text{otherwise}
 \end{cases} \\
-(\boldsymbol{\sigma}^{**}, g^{**}, A', \mathbf{o}) & \equiv & \Xi\\
+(\boldsymbol{\sigma}^{**}, g^{**}, A^{**}, \mathbf{o}) & \equiv & \Xi\\
 I_{\mathrm{a}} & \equiv & r \\
 I_{\mathrm{o}} & \equiv & o \\
 I_{\mathrm{p}} & \equiv & p \\
@@ -921,19 +930,16 @@ I_{\mathrm{w}} & \equiv & w
 \nopagebreak[1]where
 \begin{equation}
 \Xi \equiv \begin{cases}
-\Xi_{\mathtt{ECREC}}    (\boldsymbol{\sigma}_1, g, A^+, I) & \text{if} \quad c = 1 \\
-\Xi_{\mathtt{SHA256}}   (\boldsymbol{\sigma}_1, g, A^+, I) & \text{if} \quad c = 2 \\
-\Xi_{\mathtt{RIP160}}   (\boldsymbol{\sigma}_1, g, A^+, I) & \text{if} \quad c = 3 \\
-\Xi_{\mathtt{ID}}       (\boldsymbol{\sigma}_1, g, A^+, I) & \text{if} \quad c = 4 \\
-\Xi_{\mathtt{EXPMOD}}   (\boldsymbol{\sigma}_1, g, A^+, I) & \text{if} \quad c = 5 \\
-\Xi_{\mathtt{BN\_ADD}}  (\boldsymbol{\sigma}_1, g, A^+, I) & \text{if} \quad c = 6 \\
-\Xi_{\mathtt{BN\_MUL}}  (\boldsymbol{\sigma}_1, g, A^+, I) & \text{if} \quad c = 7 \\
-\Xi_{\mathtt{SNARKV}}   (\boldsymbol{\sigma}_1, g, A^+, I) & \text{if} \quad c = 8 \\
-\Xi_{\mathtt{BLAKE2\_F}}(\boldsymbol{\sigma}_1, g, A^+, I) & \text{if} \quad c = 9 \\
-\Xi                     (\boldsymbol{\sigma}_1, g, A^+, I) & \text{otherwise} \end{cases}
-\end{equation}
-\begin{equation}
-A^+ \equiv A \quad \text{except} \quad A^+_{\mathbf{a}} \equiv A_{\mathbf{a}} \cup \{c\}
+\Xi_{\mathtt{ECREC}}    (\boldsymbol{\sigma}_1, g, A, I) & \text{if} \quad c = 1 \\
+\Xi_{\mathtt{SHA256}}   (\boldsymbol{\sigma}_1, g, A, I) & \text{if} \quad c = 2 \\
+\Xi_{\mathtt{RIP160}}   (\boldsymbol{\sigma}_1, g, A, I) & \text{if} \quad c = 3 \\
+\Xi_{\mathtt{ID}}       (\boldsymbol{\sigma}_1, g, A, I) & \text{if} \quad c = 4 \\
+\Xi_{\mathtt{EXPMOD}}   (\boldsymbol{\sigma}_1, g, A, I) & \text{if} \quad c = 5 \\
+\Xi_{\mathtt{BN\_ADD}}  (\boldsymbol{\sigma}_1, g, A, I) & \text{if} \quad c = 6 \\
+\Xi_{\mathtt{BN\_MUL}}  (\boldsymbol{\sigma}_1, g, A, I) & \text{if} \quad c = 7 \\
+\Xi_{\mathtt{SNARKV}}   (\boldsymbol{\sigma}_1, g, A, I) & \text{if} \quad c = 8 \\
+\Xi_{\mathtt{BLAKE2\_F}}(\boldsymbol{\sigma}_1, g, A, I) & \text{if} \quad c = 9 \\
+\Xi                     (\boldsymbol{\sigma}_1, g, A, I) & \text{otherwise} \end{cases}
 \end{equation}
 and
 \begin{equation}
@@ -2543,7 +2549,7 @@ G_{\mathrm{newaccount}} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, t) 
 \midrule
 0xf2 & {\small CALLCODE} & 7 & 1 & Message-call into this account with an alternative account's code. \\
 &&&& Exactly equivalent to {\small CALL} except: \\
-&&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}, I_{\mathrm{a}}, I_{\mathrm{o}}, I_{\mathrm{a}}, t, C_{\text{\tiny CALLGAS}}(\boldsymbol{\mu}), \\ \quad I_{\mathrm{p}}, \boldsymbol{\mu}_{\mathbf{s}}[2], \boldsymbol{\mu}_{\mathbf{s}}[2], \mathbf{i}, I_{\mathrm{e}} + 1, I_{\mathrm{w}})\end{array} & \begin{array}{l}\text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] \leqslant \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \;\wedge\\ \quad\quad{}I_{\mathrm{e}} < 1024\end{array} \\ (\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
+&&&& $(\boldsymbol{\sigma}', g', A', \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}, A^*, I_{\mathrm{a}}, I_{\mathrm{o}}, I_{\mathrm{a}}, t, C_{\text{\tiny CALLGAS}}(\boldsymbol{\mu}), \\ \quad I_{\mathrm{p}}, \boldsymbol{\mu}_{\mathbf{s}}[2], \boldsymbol{\mu}_{\mathbf{s}}[2], \mathbf{i}, I_{\mathrm{e}} + 1, I_{\mathrm{w}})\end{array} & \begin{array}{l}\text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] \leqslant \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \;\wedge\\ \quad\quad{}I_{\mathrm{e}} < 1024\end{array} \\ (\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
 &&&& Note the change in the fourth parameter to the call $\hyperlink{theta}{\Theta}$ from the 2nd stack value \\
 &&&& $\boldsymbol{\mu}_{\mathbf{s}}[1]$ (as in {\small CALL}) to the present address $I_{\mathrm{a}}$. This means that the recipient is in\\
 &&&& fact the same account as at present, simply that the code is overwritten.\\
@@ -2563,7 +2569,7 @@ G_{\mathrm{newaccount}} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, t) 
 &&&& omitted argument is $\boldsymbol{\mu}_{\mathbf{s}}[2]$. As a result, $\boldsymbol{\mu}_{\mathbf{s}}[3]$, $\boldsymbol{\mu}_{\mathbf{s}}[4]$, $\boldsymbol{\mu}_{\mathbf{s}}[5]$ and $\boldsymbol{\mu}_{\mathbf{s}}[6]$ in the\\
 &&&& definition of {\small CALL} should respectively be replaced with $\boldsymbol{\mu}_{\mathbf{s}}[2]$, $\boldsymbol{\mu}_{\mathbf{s}}[3]$, $\boldsymbol{\mu}_{\mathbf{s}}[4]$ and\\
 &&&& $\boldsymbol{\mu}_{\mathbf{s}}[5]$. Otherwise it is equivalent to {\small CALL} except:\\
-&&&& $(\boldsymbol{\sigma}', g', A^+, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}, I_{\mathrm{s}}, I_{\mathrm{o}}, I_{\mathrm{a}}, t, C_{\text{\tiny CALLGAS}}(\boldsymbol{\mu}), \\\quad I_{\mathrm{p}}, 0, I_{\mathrm{v}}, \mathbf{i}, I_{\mathrm{e}} + 1, I_{\mathrm{w}})\end{array} & \text{if} \quad I_{\mathrm{e}} < 1024 \\(\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
+&&&& $(\boldsymbol{\sigma}', g', A', \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}, A^*, I_{\mathrm{s}}, I_{\mathrm{o}}, I_{\mathrm{a}}, t, C_{\text{\tiny CALLGAS}}(\boldsymbol{\mu}), \\\quad I_{\mathrm{p}}, 0, I_{\mathrm{v}}, \mathbf{i}, I_{\mathrm{e}} + 1, I_{\mathrm{w}})\end{array} & \text{if} \quad I_{\mathrm{e}} < 1024 \\(\boldsymbol{\sigma}, g, \varnothing, ()) & \text{otherwise} \end{cases}$ \\
 &&&& Note the changes (in addition to that of the fourth parameter) to the second \\
 &&&& and ninth parameters to the call $\hyperlink{theta}{\Theta}$.\\
 &&&& This means that the recipient is in fact the same account as at present, simply\\
