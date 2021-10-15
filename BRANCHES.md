@@ -3,10 +3,11 @@
 Each protocol version is specified in `Paper.tex` found in a branch of this repository.
 
 | Branch            | Version                                                           | Applicable Block Numbers        |
-|-------------------|-------------------------------------------------------------------------------------------------------------------|---------------------------------|
-| TBD               | [Berlin](https://github.com/ethereum/eth1.0-specs/blob/master/network-upgrades/mainnet-upgrades/berlin.md)        | Since 12,244,000 and onwards     |
-| master            | [Muir Glacier](https://eips.ethereum.org/EIPS/eip-2387) <br> [Istanbul](https://eips.ethereum.org/EIPS/eip-1679)  | Since 9,200,000 until 12,243,999 <br> Since 9,069,000 until 9,199,999 |
-| petersburg        | [Constantinople](https://eips.ethereum.org/EIPS/eip-1013) + [Petersburg](https://eips.ethereum.org/EIPS/eip-1716) | Since 7,280,000 until 9,068,999 |
+|-------------------|-------------------------------------------------------------------------------------------------------------------|-----------------------------------|
+| TBD               | [London](https://github.com/ethereum/eth1.0-specs/blob/master/network-upgrades/mainnet-upgrades/london.md)        | Since 12,965,000 and onwards      |
+| master            | [Berlin](https://github.com/ethereum/eth1.0-specs/blob/master/network-upgrades/mainnet-upgrades/berlin.md)        | Since 12,244,000 until 12,964,999 |
+| istanbul          | [Muir Glacier](https://eips.ethereum.org/EIPS/eip-2387) <br> [Istanbul](https://eips.ethereum.org/EIPS/eip-1679)  | Since 9,200,000 until 12,243,999 <br> Since 9,069,000 until 9,199,999 |
+| petersburg        | [Constantinople](https://eips.ethereum.org/EIPS/eip-1013) + [Petersburg](https://eips.ethereum.org/EIPS/eip-1716) | Since 7,280,000 until 9,068,999   |
 | byzantium         | [Byzantium](https://eips.ethereum.org/EIPS/eip-609)               | Since 4,370,000 until 7,279,999 |
 | spurious-dragon   | [Spurious Dragon](https://eips.ethereum.org/EIPS/eip-607)         | Since 2,675,000 until 4,369,999 |
 | tangerine-whistle | [Tangerine Whistle](https://eips.ethereum.org/EIPS/eip-608)       | Since 2,463,000 until 2,674,999 |
