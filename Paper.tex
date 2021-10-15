@@ -426,7 +426,7 @@ where $M_{3:2048}$ is a specialised Bloom filter that sets three bits out of 204
 M_{3:2048}(\mathbf{x}: \mathbf{x} \in \mathbb{B}) & \equiv & \mathbf{y}: \mathbf{y} \in \mathbb{B}_{256} \quad \text{where:}\\
 \mathbf{y} & = & (0, 0, ..., 0) \quad \text{except:}\\
 \forall i \in \{0, 2, 4\}&:&\mathcal{B}_{m(\mathbf{x}, i)}(\mathbf{y}) = 1\\
-m(\mathbf{x}, i) &\equiv& \mathtt{KEC}(\mathbf{x})[i, i + 1] \bmod 2048
+m(\mathbf{x}, i) &\equiv& 2047 - (\mathtt{KEC}(\mathbf{x})[i, i + 1] \bmod 2048)
 \end{eqnarray}
 
 where $\mathcal{B}$ is the bit reference function such that $\mathcal{B}_{\mathrm{j}}(\mathbf{x})$ equals the bit of index $j$ (indexed from 0) in the byte array $\mathbf{x}$.
