@@ -4,7 +4,7 @@ Each protocol version is specified in `Paper.tex` found in a branch of this repo
 
 | Branch            | Version                                                           | Applicable Block Numbers        |
 |-------------------|-------------------------------------------------------------------------------------------------------------------|-----------------------------------|
-| TBD               | [London](https://github.com/ethereum/eth1.0-specs/blob/master/network-upgrades/mainnet-upgrades/london.md)        | Since 12,965,000 and onwards      |
+| TBD               | [Arrow Glacier](https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/arrow-glacier.md) <br> [London](https://github.com/ethereum/eth1.0-specs/blob/master/network-upgrades/mainnet-upgrades/london.md)        | Since 13,773,000 and onwards <br> Since 12,965,000 until 13,772,999 |
 | master            | [Berlin](https://github.com/ethereum/eth1.0-specs/blob/master/network-upgrades/mainnet-upgrades/berlin.md)        | Since 12,244,000 until 12,964,999 |
 | istanbul          | [Muir Glacier](https://eips.ethereum.org/EIPS/eip-2387) <br> [Istanbul](https://eips.ethereum.org/EIPS/eip-1679)  | Since 9,200,000 until 12,243,999 <br> Since 9,069,000 until 9,199,999 |
 | petersburg        | [Constantinople](https://eips.ethereum.org/EIPS/eip-1013) + [Petersburg](https://eips.ethereum.org/EIPS/eip-1716) | Since 7,280,000 until 9,068,999   |
