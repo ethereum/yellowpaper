@@ -1938,8 +1938,8 @@ $G_{\mathrm{memory}}$ & 3 & Paid for every additional word when expanding memory
 $G_{\mathrm{log}}$ & 375 & Partial payment for a {\small LOG} operation. \\
 $G_{\mathrm{logdata}}$ & 8 & Paid for each byte in a {\small LOG} operation's data. \\
 $G_{\mathrm{logtopic}}$ & 375 & Paid for each topic of a {\small LOG} operation. \\
-$G_{\mathrm{sha3}}$ & 30 & Paid for each {\small SHA3} operation. \\
-$G_{\mathrm{sha3word}}$ & 6 & Paid for each word (rounded up) for input data to a {\small SHA3} operation. \\
+$G_{\mathrm{keccak256}}$ & 30 & Paid for each {\small KECCAK256} operation. \\
+$G_{\mathrm{keccak256word}}$ & 6 & Paid for each word (rounded up) for input data to a {\small KECCAK256} operation. \\
 $G_{\mathrm{copy}}$ & 3 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
 $G_{\mathrm{blockhash}}$ & 20 & Payment for {\small BLOCKHASH} operation. \\
 
@@ -1975,8 +1975,8 @@ G_{\mathrm{log}}+G_{\mathrm{logdata}}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+4G_{
 C_\text{\tiny CALL}(\boldsymbol{\sigma}, \boldsymbol{\mu}, A) & \text{if} \quad w \in W_{\mathrm{call}} \\
 C_\text{\tiny SELFDESTRUCT}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SELFDESTRUCT} \\
 G_{\mathrm{create}} & \text{if} \quad w = \text{\small CREATE}\\
-G_{\mathrm{create}}+G_{\mathrm{sha3word}} \times \lceil \boldsymbol{\mu}_{\mathbf{s}}[2] \div 32 \rceil & \text{if} \quad w = \text{\small \hyperlink{create2}{CREATE2}}\\
-G_{\mathrm{sha3}}+G_{\mathrm{sha3word}} \times \lceil \boldsymbol{\mu}_{\mathbf{s}}[1] \div 32 \rceil & \text{if} \quad w = \text{\small SHA3}\\
+G_{\mathrm{create}}+G_{\mathrm{keccak256word}} \times \lceil \boldsymbol{\mu}_{\mathbf{s}}[2] \div 32 \rceil & \text{if} \quad w = \text{\small \hyperlink{create2}{CREATE2}}\\
+G_{\mathrm{keccak256}}+G_{\mathrm{keccak256word}} \times \lceil \boldsymbol{\mu}_{\mathbf{s}}[1] \div 32 \rceil & \text{if} \quad w = \text{\small KECCAK256}\\
 G_{\mathrm{jumpdest}} & \text{if} \quad w = \text{\small JUMPDEST}\\
 C_\text{\tiny SLOAD}(\boldsymbol{\mu}, A, I) & \text{if} \quad w = \text{\small SLOAD}\\
 G_{\mathrm{zero}} & \text{if} \quad w \in W_{\mathrm{zero}}\\
@@ -2165,9 +2165,9 @@ Here given are the various exceptions to the state transition rules given in sec
 
 \begin{tabu}{\usetabu{opcodes}}
 \toprule
-\multicolumn{5}{c}{\textbf{20s: SHA3}} \vspace{5pt} \\
+\multicolumn{5}{c}{\textbf{20s: KECCAK256}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
-0x20 & {\small SHA3} & 2 & 1 & Compute Keccak-256 hash. \\
+0x20 & {\small KECCAK256} & 2 & 1 & Compute Keccak-256 hash. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \mathtt{KEC}(\boldsymbol{\mu}_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[0] \dots (\boldsymbol{\mu}_{\mathbf{s}}[0] + \boldsymbol{\mu}_{\mathbf{s}}[1] - 1) ])$ \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \boldsymbol{\mu}_{\mathbf{s}}[1])$ \\
 \bottomrule
