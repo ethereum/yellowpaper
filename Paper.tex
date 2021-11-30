@@ -347,7 +347,7 @@ T_{\mathrm{s}} \in \mathbb{N}_{256} & \wedge & T_{\mathbf{d}} \in \mathbb{B} & \
 \end{equation}
 where
 \begin{equation}
-\mathbb{N}_{\mathrm{n}} = \{ P: P \in \mathbb{N} \wedge P < 2^n \}
+\mathbb{N}_{\mathrm{n}} = \{ P: P \in \mathbb{N} \wedge P < (2^3)^n \}
 \end{equation}
 
 The address hash $T_{\mathbf{t}}$ is slightly different: it is either a 20-byte address hash or, in the case of being a contract-creation transaction (and thus formally equal to $\varnothing$), it is the RLP empty byte sequence and thus the member of $\mathbb{B}_0$:
