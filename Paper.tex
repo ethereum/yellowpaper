@@ -514,32 +514,26 @@ D(H) \equiv \begin{dcases}
 \end{dcases}
 \end{equation}
 where:
-\begin{equation}
-\mindifficulty \equiv 2^{17}
-\end{equation}
-\begin{equation}
-\diffadjustment \equiv \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{d}}}{2048}\right\rfloor
-\end{equation}
-\begin{equation}
-\homesteadmod \equiv \text{max}\left( y - \left\lfloor\frac{H_{\mathrm{s}} - {P(H)_{\mathrm{H}}}_{\mathrm{s}}}{9}\right\rfloor, -99 \right)
-\end{equation}
-\begin{equation*}
-y \equiv \begin{cases}
+\begin{align}
+\mindifficulty &\equiv 2^{17} \\
+\diffadjustment &\equiv \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{d}}}{2048}\right\rfloor \\
+\homesteadmod &\equiv \text{max}\left( y - \left\lfloor\frac{H_{\mathrm{s}} - {P(H)_{\mathrm{H}}}_{\mathrm{s}}}{9}\right\rfloor, -99 \right) \\
+y &\equiv \begin{cases}
 1 & \text{if} \, \lVert P(H)_{\mathbf{U}}\rVert = 0 \\
 2 & \text{otherwise}
-\end{cases}
-\end{equation*}
-\begin{align}
+\end{cases} \\
 \expdiffsymb &\equiv \left\lfloor 2^{ \left\lfloor H'_{\mathrm{i}} \div 100000 \right\rfloor - 2 } \right\rfloor \\
-H'_{\mathrm{i}} &\equiv \max(H_{\mathrm{i}} - \kappa, 0) \\
-\kappa &\equiv \begin{cases} 
+H'_{\mathrm{i}} &\equiv \max(H_{\mathrm{i}} - \kappa, 0)
+\end{align}
+\begin{equation}
+\kappa \equiv \begin{cases} 
   3000000  & \text{if} \quad F_{\mathrm{Byzantium}} \leqslant H_{\mathrm{i}} < F_{\mathrm{Constantinople}} \\
   5000000  & \text{if} \quad F_{\mathrm{Constantinople}} \leqslant H_{\mathrm{i}} < F_{\mathrm{Muir Glacier}} \\
   9000000  & \text{if} \quad F_{\mathrm{Muir Glacier}} \leqslant H_{\mathrm{i}} < F_{\mathrm{London}} \\
   9700000  & \text{if} \quad F_{\mathrm{London}} \leqslant H_{\mathrm{i}} < F_{\mathrm{Arrow Glacier}} \\
  10700000  & \text{if} \quad H_{\mathrm{i}} \geqslant F_{\mathrm{Arrow Glacier}} \\
 \end{cases}
-\end{align}
+\end{equation}
 
 The \textit{Homestead} difficulty parameter, $\homesteadmod$, is used to affect a dynamic homeostasis of time between blocks, as the time between blocks varies, as discussed below, as implemented in EIP-2 by \cite{EIP-2}.
 In the Homestead release, the exponential difficulty symbol, $\expdiffsymb$ causes the difficulty to slowly increase (every 100,000 blocks) at an exponential rate, and thus increasing the block time difference, and putting time pressure on transitioning to proof-of-stake.
