@@ -501,7 +501,7 @@ P(H) \equiv B': \mathtt{KEC}(\mathtt{RLP}(B'_{\mathrm{H}})) = \hyperlink{parent_
 H_{\mathrm{i}} \equiv {{P(H)_{\mathrm{H}}}_{\mathrm{i}}} + 1
 \end{equation}
 
-\newcommand{\mindifficulty}{D_0}
+\newcommand{\mindifficulty}{D_\mathrm{min}}
 \newcommand{\homesteadmod}{\ensuremath{\varsigma_2}}
 \newcommand{\expdiffsymb}{\ensuremath{\epsilon}}
 \newcommand{\diffadjustment}{x}
@@ -509,39 +509,33 @@ H_{\mathrm{i}} \equiv {{P(H)_{\mathrm{H}}}_{\mathrm{i}}} + 1
 \hypertarget{block_difficulty_H__d}{}\linkdest{H__d}The canonical difficulty of a block of header $H$ is defined as $D(H)$:
 \begin{equation}
 D(H) \equiv \begin{dcases}
-\mindifficulty & \text{if} \quad H_{\mathrm{i}} = 0\\
+2^{34} & \text{if} \quad H_{\mathrm{i}} = 0\\
 \text{max}\!\left(\mindifficulty, {P(H)_{\mathrm{H}}}_{\mathrm{d}} + \diffadjustment\times\homesteadmod + \expdiffsymb \right) & \text{otherwise}\\
 \end{dcases}
 \end{equation}
 where:
-\begin{equation}
-\mindifficulty \equiv 131072
-\end{equation}
-\begin{equation}
-\diffadjustment \equiv \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{d}}}{2048}\right\rfloor
-\end{equation}
-\begin{equation}
-\homesteadmod \equiv \text{max}\left( y - \left\lfloor\frac{H_{\mathrm{s}} - {P(H)_{\mathrm{H}}}_{\mathrm{s}}}{9}\right\rfloor, -99 \right)
-\end{equation}
-\begin{equation*}
-y \equiv \begin{cases}
-1 & \text{if} \, \lVert P(H)_{\mathbf{U}}\rVert = 0 \\
-2 & \text{otherwise}
-\end{cases}
-\end{equation*}
 \begin{align}
+\mindifficulty &\equiv 2^{17} \\
+\diffadjustment &\equiv \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{d}}}{2048}\right\rfloor \\
+\homesteadmod &\equiv \text{max}\left( y - \left\lfloor\frac{H_{\mathrm{s}} - {P(H)_{\mathrm{H}}}_{\mathrm{s}}}{9}\right\rfloor, -99 \right) \\
+y &\equiv \begin{cases}
+1 & \text{if} \quad \lVert P(H)_{\mathbf{U}}\rVert = 0 \\
+2 & \text{otherwise}
+\end{cases} \\
 \expdiffsymb &\equiv \left\lfloor 2^{ \left\lfloor H'_{\mathrm{i}} \div 100000 \right\rfloor - 2 } \right\rfloor \\
-H'_{\mathrm{i}} &\equiv \max(H_{\mathrm{i}} - \kappa, 0) \\
-\kappa &\equiv \begin{cases} 
+H'_{\mathrm{i}} &\equiv \max(H_{\mathrm{i}} - \kappa, 0)
+\end{align}
+\begin{equation}
+\kappa \equiv \begin{cases} 
   3000000  & \text{if} \quad F_{\mathrm{Byzantium}} \leqslant H_{\mathrm{i}} < F_{\mathrm{Constantinople}} \\
   5000000  & \text{if} \quad F_{\mathrm{Constantinople}} \leqslant H_{\mathrm{i}} < F_{\mathrm{Muir Glacier}} \\
   9000000  & \text{if} \quad F_{\mathrm{Muir Glacier}} \leqslant H_{\mathrm{i}} < F_{\mathrm{London}} \\
   9700000  & \text{if} \quad F_{\mathrm{London}} \leqslant H_{\mathrm{i}} < F_{\mathrm{Arrow Glacier}} \\
  10700000  & \text{if} \quad H_{\mathrm{i}} \geqslant F_{\mathrm{Arrow Glacier}} \\
 \end{cases}
-\end{align}
+\end{equation}
 
-Note that $\mindifficulty$ is the difficulty of the genesis block. The \textit{Homestead} difficulty parameter, $\homesteadmod$, is used to affect a dynamic homeostasis of time between blocks, as the time between blocks varies, as discussed below, as implemented in EIP-2 by \cite{EIP-2}.
+The \textit{Homestead} difficulty parameter, $\homesteadmod$, is used to affect a dynamic homeostasis of time between blocks, as the time between blocks varies, as discussed below, as implemented in EIP-2 by \cite{EIP-2}.
 In the Homestead release, the exponential difficulty symbol, $\expdiffsymb$ causes the difficulty to slowly increase (every 100,000 blocks) at an exponential rate, and thus increasing the block time difference, and putting time pressure on transitioning to proof-of-stake.
 This effect, known as the "difficulty bomb", or "ice age", was explained in EIP-649 by \cite{EIP-649} and delayed and implemented earlier in EIP-2.
 $\homesteadmod$ was also modified in EIP-100 with the use of $x$, the adjustment factor above, and the denominator 9, in order to target the mean block time including uncle blocks by \cite{EIP-100}.
@@ -2618,10 +2612,10 @@ G_{\mathrm{newaccount}} & \text{if}\quad \mathtt{DEAD}(\boldsymbol{\sigma}, r) \
 
 The genesis block is 15 items, and is specified thus:
 \begin{equation}
-\big( \big( 0_{256}, \mathtt{KEC}\big(\mathtt{RLP}\big( () \big)\big), 0_{160}, stateRoot, 0, 0, 0_{2048}, 2^{17}, 0, 0, 3141592, time, 0, 0_{256},  \mathtt{KEC}\big( (42) \big) \big), (), () \big)
+\big( \big( 0_{256}, \mathtt{KEC}\big(\mathtt{RLP}\big( () \big)\big), 0_{160}, stateRoot, 0, 0, 0_{2048}, 2^{34}, 0, 0, 3141592, time, 0, 0_{256},  \mathtt{KEC}\big( (42) \big) \big), (), () \big)
 \end{equation}
 
-Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $0_{160}$ refers to the beneficiary address, a 160-bit hash which is all zeroes; $0_{2048}$ refers to the log bloom, 2048-bit of all zeros; $2^{17}$ refers to the difficulty; the transaction trie root, receipt trie root, gas used, block number and extradata are both $0$, being equivalent to the empty byte array. The sequences of both ommers and transactions are empty and represented by $()$. $\mathtt{KEC}\big( (42) \big)$ refers to the Keccak-256 hash of a byte array of length one whose first and only byte is of value 42, used for the nonce. $\mathtt{KEC}\big(\mathtt{RLP}\big( () \big)\big)$ value refers to the hash of the ommer list in RLP, both empty lists.
+Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $0_{160}$ refers to the beneficiary address, a 160-bit hash which is all zeroes; $0_{2048}$ refers to the log bloom, 2048-bit of all zeros; $2^{34}$ refers to the difficulty; the transaction trie root, receipt trie root, gas used, block number and extradata are both $0$, being equivalent to the empty byte array. The sequences of both ommers and transactions are empty and represented by $()$. $\mathtt{KEC}\big( (42) \big)$ refers to the Keccak-256 hash of a byte array of length one whose first and only byte is of value 42, used for the nonce. $\mathtt{KEC}\big(\mathtt{RLP}\big( () \big)\big)$ value refers to the hash of the ommer list in RLP, both empty lists.
 
 The proof-of-concept series include a development premine, making the state root hash some value $stateRoot$. Also $time$ will be set to the initial timestamp of the genesis block. The latest documentation should be consulted for those values.
 
