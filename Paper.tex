@@ -247,7 +247,7 @@ The world state (\textit{state}), is a mapping between addresses (160-bit identi
 The account state, $\boldsymbol{\sigma}[a]$, comprises the following four fields:
 
 \begin{description}
-\item[nonce] \linkdest{account_nonce}A scalar value equal to the number of transactions sent from this address or, in the case of accounts with associated code, the number of contract-creations made by this account. For account of address $a$ in state $\boldsymbol{\sigma}$, this would be formally denoted $\boldsymbol{\sigma}[a]_{\mathrm{n}}$.
+\item[nonce] \linkdest{account_nonce}A 64-bit scalar value equal to the number of transactions sent from this address or, in the case of accounts with associated code, the number of contract-creations made by this account. For account of address $a$ in state $\boldsymbol{\sigma}$, this would be formally denoted $\boldsymbol{\sigma}[a]_{\mathrm{n}}$.
 \item[balance] A scalar value equal to the number of Wei owned by this address. Formally denoted $\boldsymbol{\sigma}[a]_{\mathrm{b}}$.
 \item[storageRoot] A 256-bit hash of the root node of a Merkle Patricia tree that encodes the storage contents of the account (a mapping between 256-bit integer values), encoded into the trie as a mapping from the Keccak 256-bit hash of the  256-bit integer keys to the RLP-encoded 256-bit integer values. The hash is formally denoted $\boldsymbol{\sigma}[a]_{\mathrm{s}}$.
 \item[codeHash] The hash of the EVM code of this account---this is the code that gets executed should this address receive a message call; it is immutable and thus, unlike all other fields, cannot be changed after construction. All such code fragments are contained in the state database under their corresponding hashes for later retrieval. This hash is formally denoted $\boldsymbol{\sigma}[a]_{\mathrm{c}}$, and thus the code may be denoted as $\mathbf{b}$, given that $\texttt{KEC}(\mathbf{b}) = \boldsymbol{\sigma}[a]_{\mathrm{c}}$.
@@ -306,7 +306,7 @@ An account is \textit{dead} when its account state is non-existent or empty:
 A transaction (formally, $T$) is a single cryptographically-signed instruction constructed by an actor externally to the scope of Ethereum. The sender of a transaction can not be a contract. While it is assumed that the ultimate external actor will be human in nature, software tools will be used in its construction and dissemination\footnote{Notably, such `tools' could ultimately become so causally removed from their human-based initiation---or humans may become so causally-neutral---that there could be a point at which they rightly be considered autonomous agents. \eg contracts may offer bounties to humans for being sent transactions to initiate their execution.}. There are two types of transactions: those which result in message calls and those which result in the creation of new accounts with associated code (known informally as `contract creation'). Both types specify a number of common fields:
 
 \begin{description}
-\item[nonce]\linkdest{tx_nonce}{} A scalar value equal to the number of transactions sent by the sender; formally $T_{\mathrm{n}}$.
+\item[nonce]\linkdest{tx_nonce}{} A 64-bit scalar value equal to the number of transactions sent by the sender; formally $T_{\mathrm{n}}$.
 \item[gasPrice]\linkdest{tx_gas_price_T__p}{} A scalar value equal to the number of Wei to be paid per unit of \textit{gas} for all computation costs incurred as a result of the execution of this transaction; formally $T_{\mathrm{p}}$.
 \item[gasLimit]\linkdest{tx_gas_limit_T__g}{} A scalar value equal to the maximum amount of gas that should be used in executing this transaction. This is paid up-front, before any computation is done and may not be increased later; formally $T_{\mathrm{g}}$.
 \item[to]\linkdest{tx_to_address_T__t}{} The 160-bit address of the message call's recipient or, for a contract creation transaction, $\varnothing$, used here to denote the only member of $\mathbb{B}_0$ ; formally $T_{\mathrm{t}}$.
@@ -600,6 +600,7 @@ The execution of a transaction is the most complex part of the Ethereum protocol
 \begin{enumerate}
 \item The transaction is well-formed RLP, with no additional trailing bytes;
 \item the transaction signature is valid;
+\item the \hyperlink{transaction_nonce}{transaction nonce} does not equal or exceed $2^64-1$ (see EIP-2681 by \cite{EIP-2681});
 \item the \hyperlink{transaction_nonce}{transaction nonce} is valid (equivalent to the \hyperlink{account_nonce}{sender account's current nonce});
 \item the sender account has no contract code deployed (see EIP-3607 by \cite{EIP-3607});
 \item the gas limit is no smaller than the intrinsic gas, $g_0$, used by the transaction; and
