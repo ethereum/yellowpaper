@@ -303,15 +303,37 @@ An account is \textit{dead} when its account state is non-existent or empty:
 
 \subsection{The Transaction} \label{subsec:transaction}
 
-A transaction (formally, $T$) is a single cryptographically-signed instruction constructed by an actor externally to the scope of Ethereum. The sender of a transaction can not be a contract. While it is assumed that the ultimate external actor will be human in nature, software tools will be used in its construction and dissemination\footnote{Notably, such `tools' could ultimately become so causally removed from their human-based initiation---or humans may become so causally-neutral---that there could be a point at which they rightly be considered autonomous agents. \eg contracts may offer bounties to humans for being sent transactions to initiate their execution.}. There are two types of transactions: those which result in message calls and those which result in the creation of new accounts with associated code (known informally as `contract creation'). Both types specify a number of common fields:
+A transaction (formally, $T$) is a single cryptographically-signed instruction constructed by an actor externally to the scope of Ethereum.
+The sender of a transaction cannot be a contract.
+While it is assumed that the ultimate external actor will be human in nature, software tools will be used in its construction and dissemination\footnote{Notably,
+such `tools' could ultimately become so causally removed from their human-based initiation---or humans may become so causally-neutral---that there could be a point at which they rightly be considered autonomous agents.
+\eg contracts may offer bounties to humans for being sent transactions to initiate their execution.}.
+EIP-2718 by \cite{EIP-2718} introduced the notion of different transaction types.
+As of the Berlin version of the protocol, there are two transaction types: 0 (legacy) and 1 (EIP-2930 by \cite{EIP-2930}).
+Further, there are two subtypes of transactions: those which result in message calls and those which result in the creation of new accounts with associated code (known informally as `contract creation').
+All transaction types specify a number of common fields:
 
 \begin{description}
+\item[type]\linkdest{tx_type}{} EIP-2718 transaction type; formally $T_{\mathrm{x}}$.
 \item[nonce]\linkdest{tx_nonce}{} A scalar value equal to the number of transactions sent by the sender; formally $T_{\mathrm{n}}$.
 \item[gasPrice]\linkdest{tx_gas_price_T__p}{} A scalar value equal to the number of Wei to be paid per unit of \textit{gas} for all computation costs incurred as a result of the execution of this transaction; formally $T_{\mathrm{p}}$.
 \item[gasLimit]\linkdest{tx_gas_limit_T__g}{} A scalar value equal to the maximum amount of gas that should be used in executing this transaction. This is paid up-front, before any computation is done and may not be increased later; formally $T_{\mathrm{g}}$.
 \item[to]\linkdest{tx_to_address_T__t}{} The 160-bit address of the message call's recipient or, for a contract creation transaction, $\varnothing$, used here to denote the only member of $\mathbb{B}_0$ ; formally $T_{\mathrm{t}}$.
 \item[value]\linkdest{tx_value_T__v}{} A scalar value equal to the number of Wei to be transferred to the message call's recipient or, in the case of contract creation, as an endowment to the newly created account; formally $T_{\mathrm{v}}$.
-\item[v, r, s] Values corresponding to the signature of the transaction and used to determine the sender of the transaction; formally \linkdest{T__w_T__r_T__s}{$T_{\mathrm{w}}$, $T_{\mathrm{r}}$ and $T_{\mathrm{s}}$}. This is expanded in Appendix \ref{app:signing}.
+\item[r, s] Values corresponding to the signature of the transaction and used to determine the sender of the transaction; formally {$T_{\mathrm{r}}$ and $T_{\mathrm{s}}$}. This is expanded in Appendix \ref{app:signing}.
+\end{description}
+
+EIP-2930 (type 1) transactions also have:
+\begin{description}
+\item[accessList]\linkdest{tx_access_list}{} TODO; formally $T_{\mathbf{a}}$.
+\item[chainId]\linkdest{tx_chain_id}{} Chain ID; formally $T_{\mathrm{c}}$. Must be equal to the network chain ID \hyperlink{chain_id}{$\beta$}.
+\item[yParity]\linkdest{tx_y_parity}{} Signature Y parity; formally $T_{\mathrm{y}}$.
+\end{description}
+
+Legacy transactions do not have an \textbf{accessList}, while \textbf{chainId} and \textbf{yParity} for legacy transactions are combined into a single value:
+\begin{description}
+\item[w] A scalar value encoding Y parity and possibly chain ID; \linkdest{T__w_T__r_T__s}formally $T_{\mathrm{w}}$.
+$T_{\mathrm{w}} = 27 + T_{\mathrm{y}}$ or $T_{\mathrm{w}} = 2\beta + 35 + T_{\mathrm{y}}$ (see EIP-155 by \cite{EIP-155}).
 \end{description}
 
 Additionally, a contract creation transaction contains:
@@ -331,18 +353,26 @@ In contrast, a message call transaction contains:
 Appendix \ref{app:signing} specifies the function, $S$, which maps transactions to the sender, and happens through the ECDSA of the SECP-256k1 curve, using the hash of the transaction (excepting the latter three signature fields) as the datum to sign. For the present we simply assert that the sender of a given transaction $T$ can be represented with $S(T)$.
 
 \begin{equation}
-L_{\mathrm{T}}(T) \equiv \begin{cases}
-(T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, T_{\mathbf{i}}, T_{\mathrm{w}}, T_{\mathrm{r}}, T_{\mathrm{s}}) & \text{if} \; T_{\mathrm{t}} = \varnothing\\
-(T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, T_{\mathbf{d}}, T_{\mathrm{w}}, T_{\mathrm{r}}, T_{\mathrm{s}}) & \text{otherwise}
+\linkdest{L_transaction} L_{\mathrm{T}}(T) \equiv \begin{cases}
+(T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, T_{\mathrm{w}}, T_{\mathrm{r}}, T_{\mathrm{s}}) & \text{if} \; T_{\mathrm{x}} = 0 \\
+(T_{\mathrm{c}}, T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, T_{\mathbf{a}}, T_{\mathrm{y}}, T_{\mathrm{r}}, T_{\mathrm{s}}) & \text{if} \; T_{\mathrm{x}} = 1 \\
+\end{cases}
+\end{equation}
+where
+\begin{equation}
+\mathbf{p} \equiv \begin{cases}
+T_{\mathbf{i}} & \text{if}\ T_{\mathrm{t}} = \varnothing \\
+T_{\mathbf{d}} & \text{otherwise}
 \end{cases}
 \end{equation}
 
-Here, we assume all components are interpreted by the RLP as integer values, with the exception of the arbitrary length byte arrays $T_{\mathbf{i}}$ and $T_{\mathbf{d}}$.
+Here, we assume all components are interpreted by the RLP as integer values, with the exception of the access list $T_{\mathbf{a}}$ and the arbitrary length byte arrays $T_{\mathbf{i}}$ and $T_{\mathbf{d}}$.
 \begin{equation}
 \begin{array}[t]{lclclc}
-T_{\mathrm{n}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{v}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{p}} \in \mathbb{N}_{256} & \wedge \\
-T_{\mathrm{g}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{w}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{r}} \in \mathbb{N}_{256} & \wedge \\
-T_{\mathrm{s}} \in \mathbb{N}_{256} & \wedge & T_{\mathbf{d}} \in \mathbb{B} & \wedge & T_{\mathbf{i}} \in \mathbb{B}
+T_{\mathrm{x}} \in \{0, 1\} & \wedge & T_{\mathrm{c}} = \beta & \wedge & T_{\mathrm{n}} \in \mathbb{N}_{256} & \wedge \\
+T_{\mathrm{p}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{g}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{v}} \in \mathbb{N}_{256} & \wedge \\
+T_{\mathrm{w}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{r}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{s}} \in \mathbb{N}_{256} & \wedge \\
+T_{\mathrm{y}} \in \mathbb{N}_{1} & \wedge & T_{\mathbf{d}} \in \mathbb{B} & \wedge & T_{\mathbf{i}} \in \mathbb{B}
 \end{array}
 \end{equation}
 where
@@ -438,7 +468,7 @@ Notably, it treats $\mathbf{x}$ as big-endian (more significant bits will have s
 \begin{array}[t]{lclc}
 \linkdest{new_state_H__r}{}H_{\mathrm{r}} &\equiv& \mathtt{TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) & \wedge \\
 \linkdest{Ommer_block_hash_H__o}{}H_{\mathrm{o}} &\equiv& \mathtt{KEC}(\mathtt{RLP}(L_H^*(B_{\mathbf{U}}))) & \wedge \\
-\linkdest{tx_block_hash_H__t}{}H_{\mathrm{t}} &\equiv& \mathtt{TRIE}(\{\forall i < \lVert B_{\mathbf{T}} \rVert, i \in \mathbb{N}: &\\&& \quad\quad p (i, L_{\mathrm{T}}(B_{\mathbf{T}}[i]))\}) & \wedge \\
+\linkdest{tx_block_hash_H__t}{}H_{\mathrm{t}} &\equiv& \mathtt{TRIE}(\{\forall i < \lVert B_{\mathbf{T}} \rVert, i \in \mathbb{N}: &\\&& \quad\quad p'(i, B_{\mathbf{T}}[i])\}) & \wedge \\
 \linkdest{Receipts_Root_H__e}{}H_{\mathrm{e}} &\equiv& \mathtt{TRIE}(\{\forall i < \lVert B_{\mathbf{R}} \rVert, i \in \mathbb{N}: &\\&& \quad\quad p(i, B_{\mathbf{R}}[i])\}) & \wedge \\
 \linkdest{logs_Bloom_filter_H__b}{}H_{\mathrm{b}} &\equiv& \bigvee_{\mathbf{r} \in B_{\mathbf{R}}} \big( \mathbf{r}_{\mathrm{b}} \big)
 \end{array}
@@ -447,6 +477,15 @@ where $p(k, v)$ is simply the pairwise RLP transformation, in this case, the fir
 \begin{equation}
 p(k, v) \equiv \big( \mathtt{RLP}(k), \mathtt{RLP}(v) \big)
 \end{equation}
+and $p'(k, T)$ is similar, but has a special treatment for EIP-2718 transactions:
+\begin{equation}
+p'(k, T) \equiv \left( \mathtt{RLP}(k), \begin{cases}
+\mathtt{RLP}(L_{\mathrm{T}}(T)) & \text{if} \quad T_{\mathrm{x}} = 0 \\
+T_{\mathrm{x}} \cdot \mathtt{RLP}(L_{\mathrm{T}}(T)) & \text{otherwise}
+\end{cases}
+\right)
+\end{equation}
+($\cdot$ is the concatenation of byte arrays).
 
 Furthermore:
 \begin{equation}
@@ -463,12 +502,18 @@ The values stemming from the computation of transactions, specifically the \hype
 We assert the types and order of the structure for when the RLP transformation is required:
 \begin{eqnarray}
 \quad L_{\mathrm{H}}(H) & \equiv & (\begin{array}[t]{l}H_{\mathrm{p}}, H_{\mathrm{o}}, H_{\mathrm{c}}, H_{\mathrm{r}}, H_{\mathrm{t}}, H_{\mathrm{e}}, H_{\mathrm{b}}, H_{\mathrm{d}},\\ H_{\mathrm{i}}, H_{\mathrm{l}}, H_{\mathrm{g}}, H_{\mathrm{s}}, H_{\mathrm{x}}, H_{\mathrm{m}}, H_{\mathrm{n}} \; )\end{array} \\
-\quad L_{\mathrm{B}}(B) & \equiv & \big( L_{\mathrm{H}}(B_{\mathrm{H}}), L_{\mathrm{T}}^*(B_{\mathbf{T}}), L_{\mathrm{H}}^*(\hyperlink{ommer_block_headers_B__U}{B_{\mathbf{U}}}) \big)
+\quad L_{\mathrm{B}}(B) & \equiv & \big( L_{\mathrm{H}}(B_{\mathrm{H}}), \widetilde{L}_{\mathrm{T}}^*(B_{\mathbf{T}}), L_{\mathrm{H}}^*(\hyperlink{ommer_block_headers_B__U}{B_{\mathbf{U}}}) \big)
 \end{eqnarray}
-
-\hypertarget{general_element_wise_sequence_transformation_f_pow_asterisk}{}With $L_T^*$ and $L_H^*$ being element-wise sequence transformations, thus:
+where $\widetilde{L}_{\mathrm{T}}$ takes a special care of EIP-2718 transactions:
 \begin{equation}
-\hyperlink{general_element_wise_sequence_transformation_f_pow_asterisk}{f^*}\big( (x_0, x_1, ...) \big) \equiv \big( f(x_0), f(x_1), ... \big) \quad \text{for any function} \; f
+\widetilde{L}_{\mathrm{T}}(T) = \begin{cases}
+\hyperlink{L_transaction}{L_{\mathrm{T}}}(T) & \text{if} \quad T_{\mathrm{x}} = 0 \\
+T_{\mathrm{x}} \cdot \mathtt{RLP}(L_{\mathrm{T}}(T)) & \text{otherwise}
+\end{cases}
+\end{equation}
+\hypertarget{general_element_wise_sequence_transformation_f_pow_asterisk}{}with $\widetilde{L}_{\mathrm{T}}^*$ and $L_{\mathrm{H}}^*$ being element-wise sequence transformations, thus:
+\begin{equation}
+f^*\big( (x_0, x_1, ...) \big) \equiv \big( f(x_0), f(x_1), ... \big) \quad \text{for any function} \; f
 \end{equation}
 
 The component types are defined thus:
@@ -635,10 +680,9 @@ where $\hyperlink{precompiled_set}{\pi}$ is the set of all precompiled addresses
 \hypertarget{intrinsic_gas_g_0}{}We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
 \begin{align}
 g_0 \equiv {} & \sum_{i \in T_{\mathbf{i}}, T_{\mathbf{d}}} \begin{cases} \hyperlink{G__txdatazero}{G_{\mathrm{txdatazero}}} & \text{if} \quad i = 0 \\ \hyperlink{G__txdatanonzero}{G_{\mathrm{txdatanonzero}}} & \text{otherwise} \end{cases} \\
-{} & + \begin{cases} \hyperlink{G__txcreate}{G_{\mathrm{txcreate}}} & \text{if} \quad T_{\mathrm{t}} = \varnothing \\ 0 & \text{otherwise} \end{cases} \\
-{} & + \hyperlink{G__transaction}{G_{\mathrm{transaction}}}
+\nonumber {} & + \begin{cases} \hyperlink{G__txcreate}{G_{\mathrm{txcreate}}} & \text{if} \quad T_{\mathrm{t}} = \varnothing \\ 0 & \text{otherwise} \end{cases} \\
+\nonumber {} & + \hyperlink{G__transaction}{G_{\mathrm{transaction}}}
 \end{align}
-
 where $T_{\mathbf{i}},T_{\mathbf{d}}$ means the series of bytes of the transaction's associated data and initialisation EVM-code, depending on whether the transaction is for contract-creation or message-call. $G_{\mathrm{txcreate}}$ is added if the transaction is contract-creating, but not if a result of EVM-code. $G$ is fully defined in Appendix \ref{app:fees}.
 
 The up-front cost $v_0$ is calculated as:
@@ -1828,15 +1872,19 @@ We assume the existence of functions $\mathtt{ECDSAPUBKEY}$, $\mathtt{ECDSASIGN}
 \mathtt{ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_{\mathrm{u}} \in \mathbb{B}_{64}
 \end{eqnarray}
 
-Where $p_{\mathrm{u}}$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$), $p_{\mathrm{r}}$ is the private key, a byte array of size 32 (or a single positive integer in the aforementioned range) and $e$ is the hash of the transaction, \hyperlink{h_of_T}{$h(T)$}. It is assumed that \hypertarget{v}{}$v$ is the `recovery identifier'. The recovery identifier is a 1 byte value specifying the parity and finiteness of the coordinates of the curve point for which $r$ is the x-value; this value is in the range of $[27, 30]$, however we declare the upper two possibilities, representing infinite values, invalid. The value 27 represents an even $y$ value and 28 represents an odd $y$ value.
+Where $p_{\mathrm{u}}$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$),
+$p_{\mathrm{r}}$ is the private key, a byte array of size 32 (or a single positive integer in the aforementioned range) and $e$ is the hash of the transaction, \hyperlink{h_of_T}{$h(T)$}.
+It is assumed that \hypertarget{v}{}$v$ is the `recovery identifier'.
+The recovery identifier is a 1 byte value specifying the parity and finiteness of the coordinates of the curve point for which $r$ is the x-value; this value is in the range of $[0, 3]$, however we declare the upper two possibilities, representing infinite values, invalid.
+The value 0 represents an even $y$ value and 1 represents an odd $y$ value.
 
 \newcommand{\slimit}{\ensuremath{\text{s-limit}}}
 
-\linkdest{invalidsig}We declare that an ECDSA signature is invalid unless all the following conditions are true\footnote{A signature of a transaction can be valid not only with a recovery identifier but with some other numbers.  See \hyperlink{T__w}{how the component $T_w$ of a transaction is interpreted.}}:
+\linkdest{invalidsig}We declare that an ECDSA signature is invalid unless all the following conditions are true:
 \begin{align}
 0 < \linkdest{r}{r} &< \mathtt{secp256k1n} \\
 0 < \linkdest{s}{s} &< \mathtt{secp256k1n} \div 2 + 1 \\
-\hyperlink{v}{v} &\in \{27,28\}
+\hyperlink{v}{v} &\in \{0,1\}
 \end{align}
 where:
 \begin{align}
@@ -1849,24 +1897,28 @@ For a given private key, $p_{\mathrm{r}}$, the Ethereum address $A(p_{\mathrm{r}
 A(p_{\mathrm{r}}) = \mathcal{B}_{96..255}\big(\mathtt{KEC}\big( \mathtt{ECDSAPUBKEY}(p_{\mathrm{r}}) \big) \big)
 \end{equation}
 
-\hypertarget{h_of_T}{}The message hash, $h(T)$, to be signed is the Keccak-256 hash of the transaction. Two different flavors of signing schemes are available. One operates without the latter three signature components, formally described as $T_{\mathrm{r}}$, $T_{\mathrm{s}}$ and $T_{\mathrm{w}}$. The other operates on nine elements:
+\hypertarget{h_of_T}{}The message hash, $h(T)$, to be signed is the Keccak-256 hash of the transaction. Three different flavours of signing schemes are available:
 \begin{eqnarray}
-L_{\mathrm{S}}(T) & \equiv & \begin{cases}
-(T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}) & \text{if} \; v \in \{27, 28\} \\
-(T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, \beta, (), ()) & \text{otherwise} \\
+L_{\mathrm{X}}(T) & \equiv & \begin{cases}
+(T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}) & \text{if} \; T_{\mathrm{x}} = 0 \land T_{\mathrm{w}} \in \{27, 28\} \\
+(T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, \beta, (), ()) & \text{if} \; T_{\mathrm{x}} = 0 \land T_{\mathrm{w}} \in \{2\beta + 35, 2\beta + 36\} \\
+(T_{\mathrm{c}}, T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, T_{\mathbf{a}}) & \text{if} \; T_{\mathrm{x}} = 1
 \end{cases} \\
 \nonumber \text{where} \\
 \nonumber \mathbf{p} & \equiv & \begin{cases}
-T_{\mathbf{i}} & \text{if}\ T_{\mathrm{t}} = 0 \\
+T_{\mathbf{i}} & \text{if}\ T_{\mathrm{t}} = \varnothing \\
 T_{\mathbf{d}} & \text{otherwise}
 \end{cases} \\
-h(T) & \equiv & \mathtt{KEC}( L_{\mathrm{S}}(T) )
+h(T) & \equiv & \begin{cases}
+\mathtt{KEC}( \mathtt{RLP}(L_{\mathrm{X}}(T)) ) & \text{if} \; T_{\mathrm{x}} = 0 \\
+\mathtt{KEC}( T_{\mathrm{x}} \cdot \mathtt{RLP}(L_{\mathrm{X}}(T)) ) & \text{otherwise}
+\end{cases}
 \end{eqnarray}
 
 The signed transaction $G(T, p_{\mathrm{r}})$ is defined as:
 \begin{eqnarray}
 G(T, p_{\mathrm{r}}) \equiv T \quad \text{except:} \\
-(T_{\mathrm{w}}, T_{\mathrm{r}}, T_{\mathrm{s}}) = \mathtt{ECDSASIGN}(h(T), p_{\mathrm{r}})
+(T_{\mathrm{y}}, T_{\mathrm{r}}, T_{\mathrm{s}}) = \mathtt{ECDSASIGN}(h(T), p_{\mathrm{r}})
 \end{eqnarray}
 
 \hyperlink{T__w_T__r_T__s}{Reiterating from previously}:
@@ -1874,14 +1926,15 @@ G(T, p_{\mathrm{r}}) \equiv T \quad \text{except:} \\
 \linkdest{T__r}{T_{\mathrm{r}}} = \hyperlink{r}{r}\\
 \linkdest{T__s}{T_{\mathrm{s}}} = \hyperlink{s}{s}
 \end{eqnarray}
-$\linkdest{T__w}{T_{\mathrm{w}}}$ is either the recovery identifier or `chain identifier \hyperlink{chain_id}{$\beta$} doubled plus 35 or 36'.  In the second case, where \hypertarget{v}{}$v$ is the chain identifier $\beta$ doubled plus 35 or 36, the values 35 and 36 assume the role of the `recovery identifier' by specifying the parity of $y$, with the value 35 representing an even value and 36 representing an odd value.
+and $\linkdest{T__w}{T_{\mathrm{w}}}$ of legacy transcations is either $27 + T_{\mathrm{y}}$ or $2\hyperlink{chain_id}{\beta} + 35 + T_{\mathrm{y}}$.
 
 We may then define the sender function $S$ of the transaction as:
 \begin{eqnarray}
-S(T) &\equiv& \mathcal{B}_{96..255}\big(\mathtt{KEC}\big( \mathtt{ECDSARECOVER}(h(T), v_0, T_{\mathrm{r}}, T_{\mathrm{s}}) \big) \big) \\
-v_0 &\equiv& \begin{cases}
-T_{\mathrm{w}} &\text{if}\ T_{\mathrm{w}}\in\{27, 28\} \\
-28 - (T_{\mathrm{w}} \bmod 2) &\text{otherwise}
+S(T) &\equiv& \mathcal{B}_{96..255}\big(\mathtt{KEC}\big( \mathtt{ECDSARECOVER}(h(T), v, T_{\mathrm{r}}, T_{\mathrm{s}}) \big) \big) \\
+v &\equiv& \begin{cases}
+T_{\mathrm{w}} - 27 & \text{if} \; T_{\mathrm{x}} = 0 \land T_{\mathrm{w}} \in \{27, 28\} \\
+(T_{\mathrm{w}}-35) \bmod 2 & \text{if} \ T_{\mathrm{x}} = 0 \land T_{\mathrm{w}} \in \{2\beta + 35, 2\beta + 36\} \\
+T_{\mathrm{y}} & \text{if} \ T_{\mathrm{x}} = 1
 \end{cases}
 \end{eqnarray}
 
