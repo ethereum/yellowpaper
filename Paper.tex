@@ -325,12 +325,13 @@ All transaction types specify a number of common fields:
 
 EIP-2930 (type 1) transactions also have:
 \begin{description}
-\item[accessList]\linkdest{tx_access_list}{} TODO; formally $T_{\mathbf{a}}$.
+\item[accessList]\linkdest{tx_access_list}{} List of access entries to warm up; formally $T_{\mathbf{A}}$.
+Each access list entry $A$ is a tuple of an account address and a list of storage keys: $A \equiv (A_{\mathrm{a}}, A_{\mathbf{s}})$. 
 \item[chainId]\linkdest{tx_chain_id}{} Chain ID; formally $T_{\mathrm{c}}$. Must be equal to the network chain ID \hyperlink{chain_id}{$\beta$}.
 \item[yParity]\linkdest{tx_y_parity}{} Signature Y parity; formally $T_{\mathrm{y}}$.
 \end{description}
 
-Legacy transactions do not have an \textbf{accessList}, while \textbf{chainId} and \textbf{yParity} for legacy transactions are combined into a single value:
+Legacy transactions do not have an \textbf{accessList} ($T_{\mathbf{A}}=()$), while \textbf{chainId} and \textbf{yParity} for legacy transactions are combined into a single value:
 \begin{description}
 \item[w]\linkdest{T__w}{} A scalar value encoding Y parity and possibly chain ID; formally $T_{\mathrm{w}}$.
 $T_{\mathrm{w}} = 27 + T_{\mathrm{y}}$ or $T_{\mathrm{w}} = 2\beta + 35 + T_{\mathrm{y}}$ (see EIP-155 by \cite{EIP-155}).
@@ -355,7 +356,7 @@ Appendix \ref{app:signing} specifies the function, $S$, which maps transactions 
 \begin{equation}
 \linkdest{L_transaction} L_{\mathrm{T}}(T) \equiv \begin{cases}
 (T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, T_{\mathrm{w}}, T_{\mathrm{r}}, T_{\mathrm{s}}) & \text{if} \; T_{\mathrm{x}} = 0 \\
-(T_{\mathrm{c}}, T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, T_{\mathbf{a}}, T_{\mathrm{y}}, T_{\mathrm{r}}, T_{\mathrm{s}}) & \text{if} \; T_{\mathrm{x}} = 1 \\
+(T_{\mathrm{c}}, T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, T_{\mathbf{A}}, T_{\mathrm{y}}, T_{\mathrm{r}}, T_{\mathrm{s}}) & \text{if} \; T_{\mathrm{x}} = 1 \\
 \end{cases}
 \end{equation}
 where
@@ -366,7 +367,7 @@ T_{\mathbf{d}} & \text{otherwise}
 \end{cases}
 \end{equation}
 
-Here, we assume all components are interpreted by the RLP as integer values, with the exception of the access list $T_{\mathbf{a}}$ and the arbitrary length byte arrays $T_{\mathbf{i}}$ and $T_{\mathbf{d}}$.
+Here, we assume all components are interpreted by the RLP as integer values, with the exception of the access list $T_{\mathbf{A}}$ and the arbitrary length byte arrays $T_{\mathbf{i}}$ and $T_{\mathbf{d}}$.
 \begin{equation}
 \begin{array}[t]{lclclc}
 T_{\mathrm{x}} \in \{0, 1\} & \wedge & T_{\mathrm{c}} = \beta & \wedge & T_{\mathrm{n}} \in \mathbb{N}_{256} & \wedge \\
@@ -673,14 +674,15 @@ Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define \hyp
 \subsection{Substate} \label{ch:substate}
 Throughout transaction execution, we accrue certain information that is acted upon immediately following the transaction. We call this the \textit{accrued transaction substate}, or \textit{accrued substate} for short, and represent it as $A$, which is a tuple:
 \begin{equation}
-A \equiv (A_{\mathbf{s}}, A_{\mathbf{l}}, A_{\mathbf{t}}, A_{\mathrm{r}}, A_{\mathbf{a}}, A_{\mathbf{k}})
+A \equiv (A_{\mathbf{s}}, A_{\mathbf{l}}, A_{\mathbf{t}}, A_{\mathrm{r}}, A_{\mathbf{a}}, A_{\mathbf{K}})
 \end{equation}
 
 \hypertarget{self_destruct_set_wordy_defn_A__s}{}The tuple contents include $A_{\mathbf{s}}$, the self-destruct set: a set of accounts that will be discarded following the transaction's completion.
 \hypertarget{tx_log_series_wordy_defn_A__l}{} $A_{\mathbf{l}}$ is the log series: this is a series of archived and indexable `checkpoints' in VM code execution that allow for contract-calls to be easily tracked by onlookers external to the Ethereum world (such as decentralised application front-ends).
 \hypertarget{tx_touched_accounts_wordy_defn_A__t}{} $A_{\mathbf{t}}$ is the set of touched accounts, of which the empty ones are deleted at the end of a transaction.
 \hypertarget{refund_balance_defn_words_A__r}{}$A_{\mathrm{r}}$ is the refund balance, increased through using the \hyperlink{SSTORE}{{\small SSTORE}} instruction in order to reset contract storage to zero from some non-zero value. Though not immediately refunded, it is allowed to partially offset the total execution costs.
-Finally, EIP-2929 by \cite{EIP-2929} introduced \hypertarget{accessed_addresses_defn_words_A__a}{}$A_{\mathbf{a}}$, the set of accessed account addresses, and \hypertarget{accessed_storage_keys_defn_words_A__k}{}$A_{\mathbf{k}}$, the set of accessed storage keys.
+Finally, EIP-2929 by \cite{EIP-2929} introduced \hypertarget{accessed_addresses_defn_words_A__a}{}$A_{\mathbf{a}}$, the set of accessed account addresses, and \hypertarget{accessed_storage_keys_defn_words_A__k}{}$A_{\mathbf{K}}$, the set of accessed storage keys
+(more accurately, each element of $A_{\mathbf{K}}$ is a tuple of a 20-byte account address and a 32-byte storage slot).
 
 We define the empty accrued substate $A^0$ to have no self-destructs, no logs, no touched accounts, zero refund balance, all precompiled contracts in the accessed addresses, and no accessed storage:
 \begin{equation}
@@ -693,9 +695,13 @@ where $\hyperlink{precompiled_set}{\pi}$ is the set of all precompiled addresses
 \begin{align}
 g_0 \equiv {} & \sum_{i \in T_{\mathbf{i}}, T_{\mathbf{d}}} \begin{cases} \hyperlink{G__txdatazero}{G_{\mathrm{txdatazero}}} & \text{if} \quad i = 0 \\ \hyperlink{G__txdatanonzero}{G_{\mathrm{txdatanonzero}}} & \text{otherwise} \end{cases} \\
 \nonumber {} & + \begin{cases} \hyperlink{G__txcreate}{G_{\mathrm{txcreate}}} & \text{if} \quad T_{\mathrm{t}} = \varnothing \\ 0 & \text{otherwise} \end{cases} \\
-\nonumber {} & + \hyperlink{G__transaction}{G_{\mathrm{transaction}}}
+\nonumber {} & + \hyperlink{G__transaction}{G_{\mathrm{transaction}}} \\
+\nonumber {} & + \sum_{j = 0}^{\lVert T_{\mathbf{A}} \rVert - 1} \big( G_{\mathrm{accesslistaddress}} + \lVert T_{\mathbf{A}}[j]_{\mathbf{s}} \rVert G_{\mathrm{accessliststorage}} \big)
 \end{align}
-where $T_{\mathbf{i}},T_{\mathbf{d}}$ means the series of bytes of the transaction's associated data and initialisation EVM-code, depending on whether the transaction is for contract-creation or message-call. $G_{\mathrm{txcreate}}$ is added if the transaction is contract-creating, but not if a result of EVM-code. $G$ is fully defined in Appendix \ref{app:fees}.
+where $T_{\mathbf{i}},T_{\mathbf{d}}$ means the series of bytes of the transaction's associated data and initialisation EVM-code, depending on whether the transaction is for contract-creation or message-call.
+$G_{\mathrm{txcreate}}$ is added if the transaction is contract-creating, but not if a result of EVM-code.
+$\hyperlink{G__accesslistaddress}{G_{\mathrm{accesslistaddress}}}$ and $\hyperlink{G__accessliststorage}{G_{\mathrm{accessliststorage}}}$ are the costs of warming up account and storage access, respectively.
+$G$ is fully defined in Appendix \ref{app:fees}.
 
 The up-front cost $v_0$ is calculated as:
 \begin{equation}
@@ -733,9 +739,11 @@ Evaluating $\boldsymbol{\sigma}_{\mathrm{P}}$ from $\boldsymbol{\sigma}_0$ depen
 \end{cases}
 \end{equation}
 where
-\begin{equation}
-A^* \equiv A^0 \quad \text{except} \quad A^*_{\mathbf{a}} \equiv A^0_{\mathbf{a}} \cup \{S(T)\}
-\end{equation}
+\begin{align}
+A^* & \equiv A^0 \quad \text{except} \\
+A^*_{\mathbf{a}} & \equiv A^0_{\mathbf{a}} \cup \{S(T)\} \cup \{ T_{\mathbf{A}}[i]_{\mathrm{a}}, \; i < \lVert T_{\mathbf{A}} \rVert \} \\
+A^*_{\mathbf{K}} & \equiv A^0_{\mathbf{K}} \bigcup_{i = 0}^{\lVert T_{\mathbf{A}} \rVert - 1} \{ (T_{\mathbf{A}}[i]_{\mathrm{a}}, T_{\mathbf{A}}[i]_{\mathbf{s}}[j]), \; j < \lVert T_{\mathbf{A}}[i]_{\mathbf{s}} \rVert \}
+\end{align}
 and $g$ is the amount of gas remaining after deducting the basic amount required to pay for the existence of the transaction:
 \begin{equation}
 g \equiv T_{\mathrm{g}} - g_0
@@ -1914,7 +1922,7 @@ A(p_{\mathrm{r}}) = \mathcal{B}_{96..255}\big(\mathtt{KEC}\big( \mathtt{ECDSAPUB
 L_{\mathrm{X}}(T) & \equiv & \begin{cases}
 (T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}) & \text{if} \; T_{\mathrm{x}} = 0 \land T_{\mathrm{w}} \in \{27, 28\} \\
 (T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, \beta, (), ()) & \text{if} \; T_{\mathrm{x}} = 0 \land T_{\mathrm{w}} \in \{2\beta + 35, 2\beta + 36\} \\
-(T_{\mathrm{c}}, T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, T_{\mathbf{a}}) & \text{if} \; T_{\mathrm{x}} = 1
+(T_{\mathrm{c}}, T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, T_{\mathbf{A}}) & \text{if} \; T_{\mathrm{x}} = 1
 \end{cases} \\
 \nonumber \text{where} \\
 \nonumber \mathbf{p} & \equiv & \begin{cases}
@@ -1973,8 +1981,8 @@ $G_{\mathrm{low}}$ & 5 & Amount of gas to pay for operations of the set {\small 
 $G_{\mathrm{mid}}$ & 8 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{mid}}$}. \\
 $G_{\mathrm{high}}$ & 10 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{high}}$}. \\
 $G_{\mathrm{warmaccess}}$ & 100 & Cost of a warm account or storage access. \\
-$G_{\mathrm{accesslistaddress}}$ & 2400 & Cost of warming up an account with the access list. \\
-$G_{\mathrm{accessliststorage}}$ & 1900 & Cost of warming up a storage with the access list. \\
+\linkdest{G__accesslistaddress}{}$G_{\mathrm{accesslistaddress}}$ & 2400 & Cost of warming up an account with the access list. \\
+\linkdest{G__accessliststorage}{}$G_{\mathrm{accessliststorage}}$ & 1900 & Cost of warming up a storage with the access list. \\
 $G_{\mathrm{coldaccountaccess}}$ & 2600 & Cost of a cold account access. \\
 $G_{\mathrm{coldsload}}$ & 2100 & Cost of a cold storage access. \\
 $G_{\mathrm{sset}}$ & 20000 & Paid for an {\small SSTORE} operation when the storage value is set to non-zero from zero. \\
@@ -2388,16 +2396,16 @@ Here given are the various exceptions to the state transition rules given in sec
 \midrule
 0x54 & {\small SLOAD} & 1 & 1 & Load word from storage. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathbf{s}}[\boldsymbol{\mu}_{\mathbf{s}}[0]]$ \\
-&&&& $A'_{\mathbf{k}} \equiv A_{\mathbf{k}} \cup \{(I_{\mathrm{a}}, \boldsymbol{\mu}_{\mathbf{s}}[0])\}$ \\
+&&&& $A'_{\mathbf{K}} \equiv A_{\mathbf{K}} \cup \{(I_{\mathrm{a}}, \boldsymbol{\mu}_{\mathbf{s}}[0])\}$ \\
 &&&& $C_{\text{\tiny SLOAD}}(\boldsymbol{\mu}, A, I) \equiv
 \begin{cases}
-G_{\mathrm{warmaccess}} & \text{if} \quad (I_{\mathrm{a}}, \boldsymbol{\mu}_{\mathbf{s}}[0]) \in A_{\mathbf{k}} \\
+G_{\mathrm{warmaccess}} & \text{if} \quad (I_{\mathrm{a}}, \boldsymbol{\mu}_{\mathbf{s}}[0]) \in A_{\mathbf{K}} \\
 G_{\mathrm{coldsload}}  & \text{otherwise}
 \end{cases}$ \\
 \midrule
 \linkdest{SSTORE}{}0x55 & {\small SSTORE} & 2 & 0 & Save word to storage. \\
 &&&& $\boldsymbol{\sigma}'[I_{\mathrm{a}}]_{\mathbf{s}}[ \boldsymbol{\mu}_{\mathbf{s}}[0] ] \equiv \boldsymbol{\mu}_{\mathbf{s}}[1] $ \\
-&&&& $A'_{\mathbf{k}} \equiv A_{\mathbf{k}} \cup \{(I_{\mathrm{a}}, \boldsymbol{\mu}_{\mathbf{s}}[0])\}$ \\
+&&&& $A'_{\mathbf{K}} \equiv A_{\mathbf{K}} \cup \{(I_{\mathrm{a}}, \boldsymbol{\mu}_{\mathbf{s}}[0])\}$ \\
 &&&&\linkdest{C__SSTORE}{}$C_{\text{\tiny SSTORE}}(\boldsymbol{\sigma}, \boldsymbol{\mu})$ and \linkdest{A r}{}$A'_{\mathrm{r}}$ are specified by EIP-2200 as follows. \\
 &&&& We remind the reader that the checkpoint (``original'') state $\hyperlink{sigma_0}{\boldsymbol{\sigma}_0}$ is the state \\
 &&&& if the current transaction were to revert. \\
@@ -2408,7 +2416,7 @@ G_{\mathrm{coldsload}}  & \text{otherwise}
 &&&& $\!\begin{aligned}
 C_{\text{\tiny SSTORE}}(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) &\equiv
 \begin{cases}
-0                      & \text{if} \quad (I_{\mathrm{a}}, \boldsymbol{\mu}_{\mathbf{s}}[0]) \in A_{\mathbf{k}} \\
+0                      & \text{if} \quad (I_{\mathrm{a}}, \boldsymbol{\mu}_{\mathbf{s}}[0]) \in A_{\mathbf{K}} \\
 G_{\mathrm{coldsload}} & \text{otherwise} \\
 \end{cases} \\
 &+
