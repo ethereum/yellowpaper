@@ -419,12 +419,20 @@ B \equiv (B_{\mathrm{H}}, B_{\mathbf{T}}, B_{\mathbf{U}})
 In order to encode information about a transaction concerning which it may be useful to form a zero-knowledge proof, or index and search, we encode a receipt of each transaction containing certain information from its execution.
 Each receipt, denoted $B_{\mathbf{R}}[i]$ for the $i$th transaction, is placed in an index-keyed \hyperlink{trie}{trie} and the root recorded in the header as \hyperlink{Receipts_Root_H__e}{$H_{\mathrm{e}}$}.
 
-\linkdest{transaction_receipt_R}{}\linkdest{tx_receipt_gas_used_R__u}{}\linkdest{R__u}The transaction receipt, $R$, is a tuple of four items comprising:
+\linkdest{transaction_receipt_R}{}\linkdest{tx_receipt_gas_used_R__u}{}\linkdest{R__u}The transaction receipt, $R$, is a tuple of five items comprising:
+the type of the transaction, $R_{\mathrm{x}}$,
 the status code of the transaction, $R_{\mathrm{z}}$,
 the cumulative gas used in the block containing the transaction receipt as of immediately after the transaction has happened, $R_{\mathrm{u}}$,
 the set of logs created through execution of the transaction, \hyperlink{RLP_serialisation_of_a_sequence_of_other_items_R__l_math_def}{$R_\mathbf{l}$} and the Bloom filter composed from information in those logs, \hyperlink{RLP_serialisation_of_a_byte_array_R__b_math_def}{$R_{\mathrm{b}}$}:
 \begin{equation}
-R \equiv (R_{\mathrm{z}}, R_{\mathrm{u}}, R_{\mathrm{b}}, R_{\mathbf{l}})
+R \equiv (R_{\mathrm{x}}, R_{\mathrm{z}}, R_{\mathrm{u}}, R_{\mathrm{b}}, R_{\mathbf{l}})
+\end{equation}
+
+$R_{\mathrm{x}}$ is equal to the \hyperlink{tx_type}{type} of the corresponding transaction.
+
+\linkdest{L__R}The function $L_{\mathrm{R}}$ prepares a transaction receipt for being transformed into an RLP-serialised byte array:
+\begin{equation}
+L_{\mathrm{R}}(R) \equiv (R_{\mathrm{z}}, R_{\mathrm{u}}, R_{\mathrm{b}}, R_{\mathbf{l}})
 \end{equation}
 
 \linkdest{R__z_assert}We assert that the status code $R_{\mathrm{z}}$ is a non-negative integer:
@@ -468,20 +476,24 @@ Notably, it treats $\mathbf{x}$ as big-endian (more significant bits will have s
 \begin{array}[t]{lclc}
 \linkdest{new_state_H__r}{}H_{\mathrm{r}} &\equiv& \mathtt{TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) & \wedge \\
 \linkdest{Ommer_block_hash_H__o}{}H_{\mathrm{o}} &\equiv& \mathtt{KEC}(\mathtt{RLP}(L_H^*(B_{\mathbf{U}}))) & \wedge \\
-\linkdest{tx_block_hash_H__t}{}H_{\mathrm{t}} &\equiv& \mathtt{TRIE}(\{\forall i < \lVert B_{\mathbf{T}} \rVert, i \in \mathbb{N}: &\\&& \quad\quad p'(i, B_{\mathbf{T}}[i])\}) & \wedge \\
-\linkdest{Receipts_Root_H__e}{}H_{\mathrm{e}} &\equiv& \mathtt{TRIE}(\{\forall i < \lVert B_{\mathbf{R}} \rVert, i \in \mathbb{N}: &\\&& \quad\quad p(i, B_{\mathbf{R}}[i])\}) & \wedge \\
+\linkdest{tx_block_hash_H__t}{}H_{\mathrm{t}} &\equiv& \mathtt{TRIE}(\{\forall i < \lVert B_{\mathbf{T}} \rVert, i \in \mathbb{N}: &\\&& \quad\quad p_{\mathrm{T}}(i, B_{\mathbf{T}}[i])\}) & \wedge \\
+\linkdest{Receipts_Root_H__e}{}H_{\mathrm{e}} &\equiv& \mathtt{TRIE}(\{\forall i < \lVert B_{\mathbf{R}} \rVert, i \in \mathbb{N}: &\\&& \quad\quad p_{\mathrm{R}}(i, B_{\mathbf{R}}[i])\}) & \wedge \\
 \linkdest{logs_Bloom_filter_H__b}{}H_{\mathrm{b}} &\equiv& \bigvee_{\mathbf{r} \in B_{\mathbf{R}}} \big( \mathbf{r}_{\mathrm{b}} \big)
 \end{array}
 \end{equation}
-where $p(k, v)$ is simply the pairwise RLP transformation, in this case, the first being the index of the transaction in the block and the second being the transaction receipt:
+where $p_{\mathrm{T}}(k, v)$ and $p_{\mathrm{R}}(k, v)$ are pairwise RLP transformations, but with a special treatment for EIP-2718 transactions:
 \begin{equation}
-p(k, v) \equiv \big( \mathtt{RLP}(k), \mathtt{RLP}(v) \big)
-\end{equation}
-and $p'(k, T)$ is similar, but has a special treatment for EIP-2718 transactions:
-\begin{equation}
-p'(k, T) \equiv \left( \mathtt{RLP}(k), \begin{cases}
-\mathtt{RLP}(L_{\mathrm{T}}(T)) & \text{if} \quad T_{\mathrm{x}} = 0 \\
+p_{\mathrm{T}}(k, T) \equiv \left( \mathtt{RLP}(k), \begin{cases}
+\mathtt{RLP}(\hyperlink{L_transaction}{L_{\mathrm{T}}}(T)) & \text{if} \quad T_{\mathrm{x}} = 0 \\
 T_{\mathrm{x}} \cdot \mathtt{RLP}(L_{\mathrm{T}}(T)) & \text{otherwise}
+\end{cases}
+\right)
+\end{equation}
+and
+\begin{equation}
+p_{\mathrm{R}}(k, R) \equiv \left( \mathtt{RLP}(k), \begin{cases}
+\mathtt{RLP}(\hyperlink{L__R}{L_{\mathrm{R}}}(R)) & \text{if} \quad R_{\mathrm{x}} = 0 \\
+R_{\mathrm{x}} \cdot \mathtt{RLP}(L_{\mathrm{R}}(R)) & \text{otherwise}
 \end{cases}
 \right)
 \end{equation}
