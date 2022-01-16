@@ -320,7 +320,7 @@ All transaction types specify a number of common fields:
 \item[gasLimit]\linkdest{tx_gas_limit_T__g}{} A scalar value equal to the maximum amount of gas that should be used in executing this transaction. This is paid up-front, before any computation is done and may not be increased later; formally $T_{\mathrm{g}}$.
 \item[to]\linkdest{tx_to_address_T__t}{} The 160-bit address of the message call's recipient or, for a contract creation transaction, $\varnothing$, used here to denote the only member of $\mathbb{B}_0$ ; formally $T_{\mathrm{t}}$.
 \item[value]\linkdest{tx_value_T__v}{} A scalar value equal to the number of Wei to be transferred to the message call's recipient or, in the case of contract creation, as an endowment to the newly created account; formally $T_{\mathrm{v}}$.
-\item[r, s] Values corresponding to the signature of the transaction and used to determine the sender of the transaction; formally {$T_{\mathrm{r}}$ and $T_{\mathrm{s}}$}. This is expanded in Appendix \ref{app:signing}.
+\item[r, s]\linkdest{T__r_T__s}{} Values corresponding to the signature of the transaction and used to determine the sender of the transaction; formally {$T_{\mathrm{r}}$ and $T_{\mathrm{s}}$}. This is expanded in Appendix \ref{app:signing}.
 \end{description}
 
 EIP-2930 (type 1) transactions also have:
@@ -332,7 +332,7 @@ EIP-2930 (type 1) transactions also have:
 
 Legacy transactions do not have an \textbf{accessList}, while \textbf{chainId} and \textbf{yParity} for legacy transactions are combined into a single value:
 \begin{description}
-\item[w] A scalar value encoding Y parity and possibly chain ID; \linkdest{T__w_T__r_T__s}formally $T_{\mathrm{w}}$.
+\item[w]\linkdest{T__w}{} A scalar value encoding Y parity and possibly chain ID; formally $T_{\mathrm{w}}$.
 $T_{\mathrm{w}} = 27 + T_{\mathrm{y}}$ or $T_{\mathrm{w}} = 2\beta + 35 + T_{\mathrm{y}}$ (see EIP-155 by \cite{EIP-155}).
 \end{description}
 
@@ -1933,12 +1933,12 @@ G(T, p_{\mathrm{r}}) \equiv T \quad \text{except:} \\
 (T_{\mathrm{y}}, T_{\mathrm{r}}, T_{\mathrm{s}}) = \mathtt{ECDSASIGN}(h(T), p_{\mathrm{r}})
 \end{eqnarray}
 
-\hyperlink{T__w_T__r_T__s}{Reiterating from previously}:
+\hyperlink{T__r_T__s}{Reiterating from previously}:
 \begin{eqnarray}
 \linkdest{T__r}{T_{\mathrm{r}}} = \hyperlink{r}{r}\\
 \linkdest{T__s}{T_{\mathrm{s}}} = \hyperlink{s}{s}
 \end{eqnarray}
-and $\linkdest{T__w}{T_{\mathrm{w}}}$ of legacy transcations is either $27 + T_{\mathrm{y}}$ or $2\hyperlink{chain_id}{\beta} + 35 + T_{\mathrm{y}}$.
+and $\hyperlink{T__w}{T_{\mathrm{w}}}$ of legacy transcations is either $27 + T_{\mathrm{y}}$ or $2\hyperlink{chain_id}{\beta} + 35 + T_{\mathrm{y}}$.
 
 We may then define the sender function $S$ of the transaction as:
 \begin{eqnarray}
