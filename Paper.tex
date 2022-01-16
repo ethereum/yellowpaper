@@ -486,7 +486,7 @@ where $p_{\mathrm{T}}(k, v)$ and $p_{\mathrm{R}}(k, v)$ are pairwise RLP transfo
 \begin{equation}
 p_{\mathrm{T}}(k, T) \equiv \left( \mathtt{RLP}(k), \begin{cases}
 \mathtt{RLP}(\hyperlink{L_transaction}{L_{\mathrm{T}}}(T)) & \text{if} \quad T_{\mathrm{x}} = 0 \\
-T_{\mathrm{x}} \cdot \mathtt{RLP}(L_{\mathrm{T}}(T)) & \text{otherwise}
+(T_{\mathrm{x}}) \cdot \mathtt{RLP}(L_{\mathrm{T}}(T)) & \text{otherwise}
 \end{cases}
 \right)
 \end{equation}
@@ -494,7 +494,7 @@ and
 \begin{equation}
 p_{\mathrm{R}}(k, R) \equiv \left( \mathtt{RLP}(k), \begin{cases}
 \mathtt{RLP}(\hyperlink{L__R}{L_{\mathrm{R}}}(R)) & \text{if} \quad R_{\mathrm{x}} = 0 \\
-R_{\mathrm{x}} \cdot \mathtt{RLP}(L_{\mathrm{R}}(R)) & \text{otherwise}
+(R_{\mathrm{x}}) \cdot \mathtt{RLP}(L_{\mathrm{R}}(R)) & \text{otherwise}
 \end{cases}
 \right)
 \end{equation}
@@ -521,7 +521,7 @@ where $\widetilde{L}_{\mathrm{T}}$ takes a special care of EIP-2718 transactions
 \begin{equation}
 \widetilde{L}_{\mathrm{T}}(T) = \begin{cases}
 \hyperlink{L_transaction}{L_{\mathrm{T}}}(T) & \text{if} \quad T_{\mathrm{x}} = 0 \\
-T_{\mathrm{x}} \cdot \mathtt{RLP}(L_{\mathrm{T}}(T)) & \text{otherwise}
+(T_{\mathrm{x}}) \cdot \mathtt{RLP}(L_{\mathrm{T}}(T)) & \text{otherwise}
 \end{cases}
 \end{equation}
 \hypertarget{general_element_wise_sequence_transformation_f_pow_asterisk}{}with $\widetilde{L}_{\mathrm{T}}^*$ and $L_{\mathrm{H}}^*$ being element-wise sequence transformations, thus:
@@ -1008,8 +1008,8 @@ It is assumed that the client will have stored the pair $(\mathtt{KEC}(I_{\mathb
 As can be seen, there are nine exceptions to the usage of the general execution framework $\Xi$ for evaluation of the message call: these are so-called `precompiled' contracts, meant as a preliminary piece of architecture that may later become \textit{native extensions}.
 The contracts in addresses 1 to 9 execute the elliptic curve public key recovery function, the SHA2 256-bit hash scheme, the RIPEMD 160-bit hash scheme, the identity function, arbitrary precision modular exponentiation, elliptic curve addition, elliptic curve scalar multiplication, an elliptic curve pairing check, and the BLAKE2 compression function $\mathtt{F}$ respectively.
 Their full formal definition is in Appendix \ref{app:precompiled}.
-We denote the set of the addresses of the precompiled contracts by $\pi$:
-\begin{equation}\hypertarget{precompiled_set}{}
+\hypertarget{precompiled_set}{}We denote the set of the addresses of the precompiled contracts by $\pi$:
+\begin{equation}
 \pi \equiv \{1, 2, 3, 4, 5, 6, 7, 8, 9 \}
 \end{equation}
 
