@@ -742,7 +742,7 @@ where
 \begin{align}
 A^* & \equiv A^0 \quad \text{except} \\
 A^*_{\mathbf{a}} & \equiv A^0_{\mathbf{a}} \cup \{S(T)\} \cup \{ T_{\mathbf{A}}[i]_{\mathrm{a}}, \; i < \lVert T_{\mathbf{A}} \rVert \} \\
-A^*_{\mathbf{K}} & \equiv A^0_{\mathbf{K}} \bigcup_{i = 0}^{\lVert T_{\mathbf{A}} \rVert - 1} \{ (T_{\mathbf{A}}[i]_{\mathrm{a}}, T_{\mathbf{A}}[i]_{\mathbf{s}}[j]), \; j < \lVert T_{\mathbf{A}}[i]_{\mathbf{s}} \rVert \}
+A^*_{\mathbf{K}} & \equiv \bigcup_{i = 0}^{\lVert T_{\mathbf{A}} \rVert - 1} \{ (T_{\mathbf{A}}[i]_{\mathrm{a}}, T_{\mathbf{A}}[i]_{\mathbf{s}}[j]), \; j < \lVert T_{\mathbf{A}}[i]_{\mathbf{s}} \rVert \}
 \end{align}
 and $g$ is the amount of gas remaining after deducting the basic amount required to pay for the existence of the transaction:
 \begin{equation}
@@ -758,7 +758,7 @@ After the message call or contract creation is processed, the refund counter has
 
 Then the state is finalised by determining the amount to be refunded, $g^*$ from the remaining gas, $g'$, plus some allowance from the refund counter, to the sender at the original rate.
 \begin{equation}
-g^* \equiv g' + \min \left\{ \Big\lfloor \dfrac{T_{\mathrm{g}} - g'}{2} \Big\rfloor, \hyperlink{refund_balance_defn_words_A__r}{A'_{\mathrm{r}}} \right\}
+g^* \equiv g' + \min \left\{ \Big\lfloor \dfrac{T_{\mathrm{g}} - g'}{2} \Big\rfloor, A'_{\mathrm{r}} \right\}
 \end{equation}
 
 The total refundable amount is the legitimately remaining gas $g'$, added to \hyperlink{refund_balance_defn_words_A__r}{$A_{\mathrm{r}}$}, with the latter component being capped up to a maximum of half (rounded down) of the total amount used $T_{\mathrm{g}} - g'$. Therefore, $g^*$ is the total gas that remains after the transaction has been executed.
