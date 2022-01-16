@@ -1961,6 +1961,8 @@ $G_{\mathrm{low}}$ & 5 & Amount of gas to pay for operations of the set {\small 
 $G_{\mathrm{mid}}$ & 8 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{mid}}$}. \\
 $G_{\mathrm{high}}$ & 10 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{high}}$}. \\
 $G_{\mathrm{warmaccess}}$ & 100 & Cost of a warm account or storage access. \\
+$G_{\mathrm{accesslistaddress}}$ & 2400 & Cost of warming up an account with the access list. \\
+$G_{\mathrm{accessliststorage}}$ & 1900 & Cost of warming up a storage with the access list. \\
 $G_{\mathrm{coldaccountaccess}}$ & 2600 & Cost of a cold account access. \\
 $G_{\mathrm{coldsload}}$ & 2100 & Cost of a cold storage access. \\
 $G_{\mathrm{sset}}$ & 20000 & Paid for an {\small SSTORE} operation when the storage value is set to non-zero from zero. \\
@@ -1988,7 +1990,7 @@ $G_{\mathrm{logtopic}}$ & 375 & Paid for each topic of a {\small LOG} operation.
 $G_{\mathrm{keccak256}}$ & 30 & Paid for each {\small KECCAK256} operation. \\
 $G_{\mathrm{keccak256word}}$ & 6 & Paid for each word (rounded up) for input data to a {\small KECCAK256} operation. \\
 $G_{\mathrm{copy}}$ & 3 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
-$G_{\mathrm{blockhash}}$ & 20 & Payment for {\small BLOCKHASH} operation. \\
+$G_{\mathrm{blockhash}}$ & 20 & Payment for each {\small BLOCKHASH} operation. \\
 
 %extern u256 const c_{\mathrm{copyGas}};			///< Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
 \bottomrule
