@@ -326,7 +326,7 @@ All transaction types specify a number of common fields:
 EIP-2930 (type 1) transactions also have:
 \begin{description}
 \item[accessList]\linkdest{tx_access_list}{} List of access entries to warm up; formally $T_{\mathbf{A}}$.
-Each access list entry $A$ is a tuple of an account address and a list of storage keys: $A \equiv (A_{\mathrm{a}}, A_{\mathbf{s}})$. 
+\linkdest{access_list_entry}{}Each access list entry $E$ is a tuple of an account address and a list of storage keys: $E \equiv (E_{\mathrm{a}}, E_{\mathbf{s}})$. 
 \item[chainId]\linkdest{tx_chain_id}{} Chain ID; formally $T_{\mathrm{c}}$. Must be equal to the network chain ID \hyperlink{chain_id}{$\beta$}.
 \item[yParity]\linkdest{tx_y_parity}{} Signature Y parity; formally $T_{\mathrm{y}}$.
 \end{description}
@@ -741,8 +741,8 @@ Evaluating $\boldsymbol{\sigma}_{\mathrm{P}}$ from $\boldsymbol{\sigma}_0$ depen
 where
 \begin{align}
 A^* & \equiv A^0 \quad \text{except} \\
-A^*_{\mathbf{a}} & \equiv A^0_{\mathbf{a}} \cup \{S(T)\} \cup \{ T_{\mathbf{A}}[i]_{\mathrm{a}}, \; i < \lVert T_{\mathbf{A}} \rVert \} \\
-A^*_{\mathbf{K}} & \equiv \bigcup_{i = 0}^{\lVert T_{\mathbf{A}} \rVert - 1} \{ (T_{\mathbf{A}}[i]_{\mathrm{a}}, T_{\mathbf{A}}[i]_{\mathbf{s}}[j]), \; j < \lVert T_{\mathbf{A}}[i]_{\mathbf{s}} \rVert \}
+A^*_{\mathbf{a}} & \equiv A^0_{\mathbf{a}} \cup \{S(T)\} \cup_{E \in T_{\mathbf{A}}} \{ \hyperlink{access_list_entry}{E}_{\mathrm{a}} \} \\
+A^*_{\mathbf{K}} & \equiv \bigcup_{E \in T_{\mathbf{A}}} \big\{ \forall i < \lVert E_{\mathbf{s}} \rVert, i \in \mathbb{N}: \; (E_{\mathrm{a}}, E_{\mathbf{s}}[i]) \big\}
 \end{align}
 and $g$ is the amount of gas remaining after deducting the basic amount required to pay for the existence of the transaction:
 \begin{equation}
