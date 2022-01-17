@@ -337,7 +337,7 @@ Legacy transactions do not have an \textbf{accessList} ($T_{\mathbf{A}}=()$), wh
 $T_{\mathrm{w}} = 27 + T_{\mathrm{y}}$ or $T_{\mathrm{w}} = 2\beta + 35 + T_{\mathrm{y}}$ (see EIP-155 by \cite{EIP-155}).
 \end{description}
 
-Additionally, a contract creation transaction contains:
+Additionally, a contract creation transaction (regardless whether legacy or EIP-2930) contains:
 
 \begin{description}
 \item[init] An unlimited size byte array specifying the EVM-code for the account initialisation procedure, formally $T_{\mathbf{i}}$.
