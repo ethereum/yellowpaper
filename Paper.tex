@@ -1145,32 +1145,9 @@ The last condition was introduced in EIP-1706 by \cite{EIP-1706} (part of EIP-22
 
 \subsubsection{Jump Destination Validity}
 
-We previously used $D$ as the function to determine the set of valid jump destinations given the code that is being run. We define this as any position in the code occupied by a {\small JUMPDEST} instruction.
+We define this as any position in the code occupied by a {\small JUMPDEST} instruction.
 
-All such positions must be on valid instruction boundaries, rather than sitting in the data portion of {\small PUSH} operations and must appear within the explicitly defined portion of the code (rather than in the implicitly defined \hyperlink{stop}{{\small STOP}} operations that trail it).
-
-Formally:
-\begin{equation}
-D(\mathbf{c}) \equiv D_{\mathrm{J}}(\mathbf{c}, 0)
-\end{equation}
-
-where:
-\begin{equation}
-D_{\mathrm{J}}(\mathbf{c}, i) \equiv \begin{cases}
-\{\} & \text{if} \quad i \geqslant \lVert \mathbf{c} \rVert  \\
-\{ i \} \cup D_{\mathrm{J}}(\mathbf{c}, N(i, \mathbf{c}[i])) & \\
-\quad\quad\text{if} \quad \mathbf{c}[i] = \text{\small JUMPDEST} \\
-D_{\mathrm{J}}(\mathbf{c}, N(i, \mathbf{c}[i])) & \text{otherwise} \\
-\end{cases}
-\end{equation}
-
-where $N$ is the next valid instruction position in the code, skipping the data of a {\small PUSH} instruction, if any:
-\begin{equation}
-N(i, w) \equiv \begin{cases}
-i + w - \text{\small PUSH1} + 2 & \\
-\quad\quad\text{if} \quad w \in [\text{\small PUSH1}, \text{\small PUSH32}] \\
-i + 1 & \text{otherwise} \end{cases}
-\end{equation}
+All such positions must appear within the explicitly defined portion of the code (rather than in the implicitly defined \hyperlink{stop}{{\small STOP}} operations that trail it).
 
 \subsubsection{Normal Halting}\hypertarget{normal_halting_function_H}{}\linkdest{hhalt}
 
