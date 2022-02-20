@@ -2563,10 +2563,11 @@ G_{\mathrm{sreset}} - G_{\mathrm{warmaccess}} & \text{if} \quad v_0 = v' \; \wed
 0xf0 & {\small CREATE} & 3 & 1 & Create a new account with associated code. \\
 &&&& $\mathbf{i} \equiv \boldsymbol{\mu}_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[1] \dots (\boldsymbol{\mu}_{\mathbf{s}}[1] + \boldsymbol{\mu}_{\mathbf{s}}[2] - 1) ]$ \\
 &&&& $\hyperlink{salt}{\zeta} \equiv \varnothing$ \\
-&&&& $(\boldsymbol{\sigma}', \boldsymbol{\mu}'_{\mathrm{g}}, A', z, \mathbf{o}) \equiv \begin{cases}
+&&&& $(\boldsymbol{\sigma}', g', A', z, \mathbf{o}) \equiv \begin{cases}
 \hyperlink{lambda}{\Lambda}(\boldsymbol{\sigma}^*, A, I_{\mathrm{a}}, I_{\mathrm{o}}, L(\boldsymbol{\mu}_{\mathrm{g}}), I_{\mathrm{p}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \mathbf{i}, I_{\mathrm{e}} + 1, \zeta, I_{\mathrm{w}}) & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[0] \leqslant \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \; \\ \quad &\wedge\; I_{\mathrm{e}} < 1024\\
-\big(\boldsymbol{\sigma}, \boldsymbol{\mu}_{\mathrm{g}}, A, 0, () \big) & \text{otherwise} \end{cases}$ \\
+\big(\boldsymbol{\sigma}, L(\boldsymbol{\mu}_{\mathrm{g}}), A, 0, () \big) & \text{otherwise} \end{cases}$ \\
 &&&& $\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except} \quad \boldsymbol{\sigma}^*[I_{\mathrm{a}}]_{\mathrm{n}} = \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{n}} + 1$ \\
+&&&& $\boldsymbol{\mu}'_{\mathrm{g}} \equiv \boldsymbol{\mu}_{\mathrm{g}} - \hyperlink{L_but_64}{L}(\boldsymbol{\mu}_{\mathrm{g}}) + g'$ \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv x$ \\
 &&&& where $x=0$ if $z = 0$, i.e., the \hyperlink{contract_creation_result}{contract creation process failed}, or $I_{\mathrm{e}} = 1024$ \\
 &&&& (the maximum call depth limit is reached) or $\boldsymbol{\mu}_{\mathbf{s}}[0] > \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}}$ (balance of the caller\\
