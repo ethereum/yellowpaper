@@ -1142,8 +1142,8 @@ w = \text{\small CALL} \; \wedge \; \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0
 \end{equation}
 
 This states that the execution is in an exceptional halting state if there is insufficient gas, if the instruction is invalid (and therefore its $\delta$ subscript is undefined), if there are insufficient stack items, if a {\small JUMP}/{\small JUMPI} destination is invalid, the new stack size would be larger than 1024 or state modification is attempted during a static call. The astute reader will realise that this implies that no instruction can, through its execution, cause an exceptional halt.
-Also, the execution is in an exceptional halting state if the gas left prior to executing an \hyperlink{SSTORE}{{\small SSTORE}} instruction is less than or equal to the call stipend $\hyperlink{G__callstipend}{G_{\mathrm{callstipend}}}$.
-The last condition was introduced in EIP-1706 by \cite{EIP-1706} (part of EIP-2200 by \cite{EIP-2200}).
+Also, the execution is in an exceptional halting state if the gas left prior to executing an \hyperlink{SSTORE}{{\small SSTORE}} instruction is less than or equal to the call stipend $\hyperlink{G__callstipend}{G_{\mathrm{callstipend}}}$
+-- see EIP-2200 by \cite{EIP-2200} for more information.
 
 \subsubsection{Jump Destination Validity}
 
