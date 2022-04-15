@@ -768,14 +768,15 @@ The Ether for the gas is given to the miner, whose address is specified as the b
 \boldsymbol{\sigma}^* & \equiv & \boldsymbol{\sigma}_{\mathrm{P}} \quad \text{except} \\
 \boldsymbol{\sigma}^*[S(T)]_{\mathrm{b}} & \equiv & \boldsymbol{\sigma}_{\mathrm{P}}[S(T)]_{\mathrm{b}} + g^* T_{\mathrm{p}} \\
 \boldsymbol{\sigma}^*[m]_{\mathrm{b}} & \equiv & \boldsymbol{\sigma}_{\mathrm{P}}[m]_{\mathrm{b}} + (T_{\mathrm{g}} - g^*) T_{\mathrm{p}} \\
-m & \equiv & {B_{\mathrm{H}}}_{\mathrm{c}}
+m & \equiv & {B_{\mathrm{H}}}_{\mathrm{c}} \\
+A'_{\mathbf{t}} & \equiv & A_{\mathbf{t}} \cup \{ m, S(T) \}
 \end{eqnarray}
 
 The final state, $\boldsymbol{\sigma}'$, is reached after deleting all accounts that either appear in the self-destruct set or are touched and empty:
 \begin{eqnarray}
 \boldsymbol{\sigma}' & \equiv & \boldsymbol{\sigma}^* \quad \text{except} \\
 \linkdest{self_destruct_list_A__s}{}\forall i \in A_{\mathbf{s}}: \boldsymbol{\sigma}'[i] & = & \varnothing \\
-\linkdest{touched_A__t}{}\forall i \in A_{\mathbf{t}}: \boldsymbol{\sigma}'[i] & = & \varnothing \quad\text{if}\quad \mathtt{DEAD}(\boldsymbol{\sigma}^*\kern -2pt, i)
+\linkdest{touched_A__t}{}\forall i \in A'_{\mathbf{t}}: \boldsymbol{\sigma}'[i] & = & \varnothing \quad\text{if}\quad \mathtt{DEAD}(\boldsymbol{\sigma}^*\kern -2pt, i)
 \end{eqnarray}
 
 \hypertarget{tx_total_gas_used_Upsilon_pow_g}{}\linkdest{Upsilon_pow_g}\hypertarget{tx_logs_Upsilon_pow_l}{}\linkdest{Upsilon_pow_l}\hypertarget{tx_status_Upsilon_pow_z}{}\linkdest{Upsilon_pow_z}And finally, we specify $\Upsilon^{\mathrm{g}}$, the total gas used in this transaction $\Upsilon^\mathbf{l}$, the logs created by this transaction and $\Upsilon^{\mathrm{z}}$, the status code of this transaction:
@@ -816,9 +817,11 @@ L_{\mathrm{A}}(s, n, \zeta, \mathbf{i}) & \equiv \begin{cases}
 where $\cdot$ is the concatenation of byte arrays, $\mathcal{B}_{a..b}(X)$ evaluates to a binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$, and $\boldsymbol{\sigma}[x]$ is the address state of $x$, or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
 
 The address of the new account is added to the set of accessed accounts:
-\begin{equation}
-A^* \equiv A \quad \text{except} \quad A^*_{\mathbf{a}} \equiv A_{\mathbf{a}} \cup \{a\}
-\end{equation}
+\begin{eqnarray}
+A^* & \equiv & A \quad \text{except:} \\
+A^*_{\mathbf{a}} & \equiv & A_{\mathbf{a}} \cup \{ a \} \\
+A^*_{\mathbf{t}} & \equiv & A_{\mathbf{t}} \cup \{ a, s \} \\
+\end{eqnarray}
 
 The account's nonce is initially defined as one, the balance as the value passed, the storage as empty and the code hash as the Keccak 256-bit hash of the empty string; the sender's balance is also reduced by the value passed. Thus the mutated state becomes $\boldsymbol{\sigma}^*$:
 \begin{equation}
@@ -832,7 +835,6 @@ The account's nonce is initially defined as one, the balance as the value passed
 \end{cases} \\
 \mathbf{a}^* &\equiv& (\boldsymbol{\sigma}[s]_{\mathrm{n}}, \boldsymbol{\sigma}[s]_{\mathrm{b}} - v, \boldsymbol{\sigma}[s]_{\mathbf{s}}, \boldsymbol{\sigma}[s]_{\mathrm{c}})
 \end{eqnarray}
-
 where $v'$ is the account's pre-existing value, in the event it was previously in existence:
 \begin{equation}
 v' \equiv \begin{cases}
@@ -2588,7 +2590,7 @@ G_{\mathrm{sreset}} - G_{\mathrm{warmaccess}} & \text{if} \quad v_0 = v' \; \wed
 &&&& $\boldsymbol{\mu}'_{\mathbf{o}} = \mathbf{o}$ \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{g}} \equiv \boldsymbol{\mu}_{\mathrm{g}} - C_{\text{\tiny CALLGAS}}(\boldsymbol{\sigma},\boldsymbol{\mu},A) + g'$ \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv x$ \\
-&&&& $A^* \equiv A \quad \text{except} \quad A^*_{\mathbf{a}} \equiv A_{\mathbf{a}} \cup \{t\}$ \\
+&&&& $A^* \equiv A \quad \text{except} \quad A^*_{\mathbf{a}} \equiv A_{\mathbf{a}} \cup \{t\} \quad \text{and} \quad A^*_{\mathbf{t}} \equiv A_{\mathbf{t}} \cup \{  I_{\mathrm{a}}, t \}$ \\
 &&&& $t \equiv \boldsymbol{\mu}_{\mathbf{s}}[1] \bmod 2^{160}$ \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[3], \boldsymbol{\mu}_{\mathbf{s}}[4]), \boldsymbol{\mu}_{\mathbf{s}}[5], \boldsymbol{\mu}_{\mathbf{s}}[6])$ \\
 &&&& where $x=0$ if the \hyperlink{code_execution_result}{code execution for this operation failed}, or if \\
@@ -2619,18 +2621,21 @@ G_{\mathrm{newaccount}} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, t) 
 &&&& $(\boldsymbol{\sigma}', g', A', x, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}, A^*, I_{\mathrm{a}}, I_{\mathrm{o}}, I_{\mathrm{a}}, t, C_{\text{\tiny CALLGAS}}(\boldsymbol{\sigma},\boldsymbol{\mu},A), \\ \quad I_{\mathrm{p}}, \boldsymbol{\mu}_{\mathbf{s}}[2], \boldsymbol{\mu}_{\mathbf{s}}[2], \mathbf{i}, I_{\mathrm{e}} + 1, I_{\mathrm{w}})\end{array}
   & \begin{array}{l}\text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] \leqslant \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \;\wedge\\ \quad\quad{}I_{\mathrm{e}} < 1024\end{array} \\
   (\boldsymbol{\sigma}, C_{\text{\tiny CALLGAS}}(\boldsymbol{\sigma},\boldsymbol{\mu},A), A, 0, ()) & \text{otherwise} \end{cases}$ \\
+&&&& $A^*_{\mathbf{t}} \equiv A_{\mathbf{t}}$ \\
 &&&& Note the change in the fourth parameter to the call $\hyperlink{theta}{\Theta}$ from the 2nd stack value \\
 &&&& $\boldsymbol{\mu}_{\mathbf{s}}[1]$ (as in {\small CALL}) to the present address $I_{\mathrm{a}}$. This means that the recipient is in\\
 &&&& fact the same account as at present, simply that the code is overwritten.\\
+&&&& Also note that, on itself, {\small CALLCODE} does not update the set of touched accounts $\hyperlink{tx_touched_accounts_wordy_defn_A__t}{A_{\mathbf{t}}}$\\
+&&&& (unlike {\small CALL}).\\
+\end{tabu}
+
+\begin{tabu}{\usetabu{opcodes}}
 \midrule
 \linkdest{RETURN}{}0xf3 & {\small RETURN} & 2 & 0 & Halt execution returning output data. \\
 &&&& $H_{\text{\tiny RETURN}}(\boldsymbol{\mu}) \equiv \boldsymbol{\mu}_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[0] \dots ( \boldsymbol{\mu}_{\mathbf{s}}[0] + \boldsymbol{\mu}_{\mathbf{s}}[1] - 1 ) ]$ \\
 &&&& This has the effect of halting the execution at this point with output defined.\\
 &&&& See section \ref{ch:model}. \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \boldsymbol{\mu}_{\mathbf{s}}[1])$ \\
-\end{tabu}
-
-\begin{tabu}{\usetabu{opcodes}}
 \midrule
 0xf4 & {\small DELEGATECALL} & 6 & 1 & Message-call into this account with an alternative account's code, but\\
 &&&& persisting the current values for {\it sender} and {\it value}. \\
@@ -2641,10 +2646,13 @@ G_{\mathrm{newaccount}} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, t) 
 &&&& $(\boldsymbol{\sigma}', g', A', x, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}, A^*, I_{\mathrm{s}}, I_{\mathrm{o}}, I_{\mathrm{a}}, t, C_{\text{\tiny CALLGAS}}(\boldsymbol{\sigma},\boldsymbol{\mu},A), \\\quad I_{\mathrm{p}}, 0, I_{\mathrm{v}}, \mathbf{i}, I_{\mathrm{e}} + 1, I_{\mathrm{w}})\end{array}
   & \text{if} \quad I_{\mathrm{e}} < 1024 \\
   (\boldsymbol{\sigma}, C_{\text{\tiny CALLGAS}}(\boldsymbol{\sigma},\boldsymbol{\mu},A), A, 0, ()) & \text{otherwise} \end{cases}$ \\
+&&&& $A^*_{\mathbf{t}} \equiv A_{\mathbf{t}}$ \\
 &&&& Note the changes (in addition to that of the fourth parameter) to the second \\
 &&&& and ninth parameters to the call $\hyperlink{theta}{\Theta}$.\\
 &&&& This means that the recipient is in fact the same account as at present, simply\\
 &&&& that the code is overwritten {\it and} the context is almost entirely identical.\\
+&&&& Also note that, on itself, {\small DELEGATECALL} does not update the set of touched\\
+&&&& accounts $\hyperlink{tx_touched_accounts_wordy_defn_A__t}{A_{\mathbf{t}}}$ (unlike {\small CALL}).\\
 \midrule
 \linkdest{create2}{} 0xf5 & {\small CREATE2} & 4 & 1 & Create a new account with associated code. \\
 &&&& Exactly equivalent to {\small CREATE} except: \\
@@ -2667,6 +2675,7 @@ G_{\mathrm{newaccount}} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, t) 
 \linkdest{selfdestruct}{}0xff & {\small SELFDESTRUCT} & 1 & 0 & Halt execution and register account for later deletion. \\
 &&&& $A'_{\mathbf{s}} \equiv A_{\mathbf{s}} \cup \{ I_{\mathrm{a}} \}$ \\
 &&&& $A'_{\mathbf{a}} \equiv A_{\mathbf{a}} \cup \{ r \}$ \\
+&&&& $A'_{\mathbf{t}} \equiv A_{\mathbf{t}} \cup \{ r \}$ \\
 &&&& $\boldsymbol{\sigma}'[r] \equiv \begin{cases}
 \varnothing &\text{if}\quad \boldsymbol{\sigma}[r] = \varnothing\ \wedge\ \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} = 0\\
 (\boldsymbol{\sigma}[r]_{\mathrm{n}}, \boldsymbol{\sigma}[r]_{\mathrm{b}} + \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}}, \boldsymbol{\sigma}[r]_{\mathbf{s}}, \boldsymbol{\sigma}[r]_{\mathrm{c}}) & \text{if}\quad r \neq I_{\mathrm{a}} \\
