@@ -874,7 +874,7 @@ c \equiv G_{\mathrm{codedeposit}} \times \lVert \mathbf{o} \rVert
 
 If there is not enough gas remaining to pay this, \ie $g^{**} < c$, then we also declare an out-of-gas exception.
 
-The gas remaining will be zero in any such exceptional condition, \ie if the creation was conducted as the reception of a transaction, then this doesn't affect payment of the intrinsic cost of contract creation; it is paid regardless. However, the value of the transaction is not transferred to the aborted contract's address when we are out-of-gas.
+The gas remaining will be zero in any such exceptional condition, \ie if the creation was conducted as the reception of a transaction, then this doesn't affect payment of the intrinsic cost of contract creation; it is paid regardless. However, the contract's code is not stored, and the value of the transaction is not transferred to the aborted contract's address when we are out-of-gas.
 
 If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persist. Thus formally, we may specify the resultant state, gas, accrued substate and status code as $(\boldsymbol{\sigma}', g', A', z)$ where:
 
