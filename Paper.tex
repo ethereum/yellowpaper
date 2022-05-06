@@ -2658,6 +2658,7 @@ G_{\mathrm{newaccount}} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, t) 
 &&&& The last argument of $\hyperlink{theta}{\Theta}$ is $\bot$. \\
 \midrule
 \linkdest{REVERT}{}0xfd & {\small REVERT} & 2 & 0 & Halt execution reverting state changes but returning data and remaining gas. \\
+&&&& $H_{\text{\tiny RETURN}}(\boldsymbol{\mu}) \equiv \boldsymbol{\mu}_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[0] \dots ( \boldsymbol{\mu}_{\mathbf{s}}[0] + \boldsymbol{\mu}_{\mathbf{s}}[1] - 1 ) ]$ \\
 &&&& The effect of this operation is described in (\ref{eq:X-def}). \\
 &&&& For the gas calculation, we use the memory expansion function, \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \boldsymbol{\mu}_{\mathbf{s}}[1])$ \\
