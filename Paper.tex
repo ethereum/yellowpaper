@@ -1898,7 +1898,7 @@ We assume the existence of functions $\mathtt{ECDSAPUBKEY}$, $\mathtt{ECDSASIGN}
 \begin{eqnarray}
 \mathtt{ECDSAPUBKEY}(p_{\mathrm{r}} \in \mathbb{B}_{32}) & \equiv & p_{\mathrm{u}} \in \mathbb{B}_{64} \\
 \linkdest{ECDSASIGN}\mathtt{ECDSASIGN}(e \in \mathbb{B}_{32}, p_{\mathrm{r}} \in \mathbb{B}_{32}) & \equiv & (v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) \\
-\mathtt{ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{2}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_{\mathrm{u}} \in \mathbb{B}_{64}
+\mathtt{ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_{\mathrm{u}} \in \mathbb{B}_{64}
 \end{eqnarray}
 
 Where $p_{\mathrm{u}}$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$),
