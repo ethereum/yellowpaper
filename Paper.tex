@@ -1643,7 +1643,7 @@ In the case of an invalid signature, we return no output.
 \begin{eqnarray}
 \Xi_{\mathtt{ECREC}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
 g_{\mathrm{r}} &=& 3000\\
-\lVert \mathbf{o} \rVert &=& \begin{cases}
+\lVert \mathbf{o} \rVert &=& \begin{cases} \label{eq:ECDSARECOVER_precompile_validity}
   0 & \text{if} \quad v \notin \{27, 28\} \,\vee\, r = 0 \,\vee\, r \ge \mathtt{secp256k1n} \,\vee\, s = 0 \,\vee\, s \ge \mathtt{secp256k1n} \\
   0 & \text{if} \quad \mathtt{ECDSARECOVER}(h, v - 27, r, s) = \varnothing\\
   32 & \text{otherwise}
@@ -1898,7 +1898,7 @@ We assume the existence of functions $\mathtt{ECDSAPUBKEY}$, $\mathtt{ECDSASIGN}
 \begin{eqnarray}
 \mathtt{ECDSAPUBKEY}(p_{\mathrm{r}} \in \mathbb{B}_{32}) & \equiv & p_{\mathrm{u}} \in \mathbb{B}_{64} \\
 \linkdest{ECDSASIGN}\mathtt{ECDSASIGN}(e \in \mathbb{B}_{32}, p_{\mathrm{r}} \in \mathbb{B}_{32}) & \equiv & (v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) \\
-\mathtt{ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{1}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_{\mathrm{u}} \in \mathbb{B}_{64}
+\mathtt{ECDSARECOVER}(e \in \mathbb{B}_{32}, v \in \mathbb{B}_{2}, r \in \mathbb{B}_{32}, s \in \mathbb{B}_{32}) & \equiv & p_{\mathrm{u}} \in \mathbb{B}_{64}
 \end{eqnarray}
 
 Where $p_{\mathrm{u}}$ is the public key, assumed to be a byte array of size 64 (formed from the concatenation of two positive integers each $< 2^{256}$),
@@ -1920,6 +1920,7 @@ where:
 \mathtt{secp256k1n} &= 115792089237316195423570985008687907852837564279074904382605163141518161494337
 %\mathtt{secp256k1p} &= 2^{256} - 2^{32} - 977\\
 \end{align}
+Note that this restriction on $s$ is more stringent than restriction \ref{eq:ECDSARECOVER_precompile_validity} in the ECREC precompile; see EIP-2 by \cite{EIP-2} for more detail.
 
 For a given private key, $p_{\mathrm{r}}$, the Ethereum address $A(p_{\mathrm{r}})$ (a 160-bit value) to which it corresponds is defined as the rightmost 160-bits of the Keccak-256 hash of the corresponding ECDSA public key:
 \begin{equation}
