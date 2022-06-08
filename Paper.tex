@@ -1640,7 +1640,7 @@ We define $\Xi_{\mathtt{ECREC}}$ as a precompiled contract for the elliptic curv
 \begin{eqnarray}
 \Xi_{\mathtt{ECREC}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
 g_{\mathrm{r}} &=& 3000\\
-\lVert \mathbf{o} \rVert &=& \begin{cases} 0 & \text{if} \quad \mathtt{v} \neq 27 \wedge \mathtt{v} \neq 28 \\ 0 & \text{if} \quad \mathtt{ECDSARECOVER}(h, v, r, s) = \varnothing\\ 32 & \text{otherwise} \end{cases}\\
+\lVert \mathbf{o} \rVert &=& \begin{cases} 0 & \text{if} \quad \mathtt{v} \neq 27 \wedge \mathtt{v} \neq 28 \\ 0 & \text{if} \quad \mathtt{ECDSARECOVER}(h, v - 27, r, s) = \varnothing\\ 32 & \text{otherwise} \end{cases}\\
 \text{if} \quad \lVert \mathbf{o} \rVert = 32: &&\\
 \mathbf{o}[0..11] &=& 0 \\
 \mathbf{o}[12..31] &=& \mathtt{KEC}\big(\mathtt{ECDSARECOVER}(h, v - 27, r, s)\big)[12..31] \quad \text{where:}\\
