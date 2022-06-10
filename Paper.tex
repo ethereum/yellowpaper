@@ -1635,12 +1635,19 @@ For each precompiled contract, we make use of a template function, $\Xi_{\mathtt
 
 The precompiled contracts each use these definitions and provide specifications for the $\mathbf{o}$ (the output data) and $g_{\mathrm{r}}$, the gas requirements.
 
-We define $\Xi_{\mathtt{ECREC}}$ as a precompiled contract for the elliptic curve digital signature algorithm (ECDSA) public key recovery function (ecrecover). See Appendix \ref{app:signing} for the definition of the function $\mathtt{ECDSARECOVER}$. We also define $\mathbf{d}$ to be the input data, well-defined for an infinite length by appending zeroes as required. In the case of an invalid signature ($\mathtt{ECDSARECOVER}(h, v, r, s) = \varnothing$), we return no output.
+We define $\Xi_{\mathtt{ECREC}}$ as a precompiled contract for the elliptic curve digital signature algorithm (ECDSA) public key recovery function (ecrecover).
+See Appendix \ref{app:signing} for the definition of the function $\mathtt{ECDSARECOVER}$ and the constant $\mathtt{secp256k1n}$.
+We also define $\mathbf{d}$ to be the input data, well-defined for an infinite length by appending zeroes as required.
+In the case of an invalid signature, we return no output.
 
 \begin{eqnarray}
 \Xi_{\mathtt{ECREC}} &\equiv& \Xi_{\mathtt{PRE}} \quad \text{where:} \\
 g_{\mathrm{r}} &=& 3000\\
-\lVert \mathbf{o} \rVert &=& \begin{cases} 0 & \text{if} \quad \mathtt{v} \neq 27 \wedge \mathtt{v} \neq 28 \\ 0 & \text{if} \quad \mathtt{ECDSARECOVER}(h, v - 27, r, s) = \varnothing\\ 32 & \text{otherwise} \end{cases}\\
+\lVert \mathbf{o} \rVert &=& \begin{cases} \label{eq:ecrec_precompile_validity}
+  0 & \text{if} \quad v \notin \{27, 28\} \,\vee\, r = 0 \,\vee\, r \ge \mathtt{secp256k1n} \,\vee\, s = 0 \,\vee\, s \ge \mathtt{secp256k1n} \\
+  0 & \text{if} \quad \mathtt{ECDSARECOVER}(h, v - 27, r, s) = \varnothing\\
+  32 & \text{otherwise}
+\end{cases}\\
 \text{if} \quad \lVert \mathbf{o} \rVert = 32: &&\\
 \mathbf{o}[0..11] &=& 0 \\
 \mathbf{o}[12..31] &=& \mathtt{KEC}\big(\mathtt{ECDSARECOVER}(h, v - 27, r, s)\big)[12..31] \quad \text{where:}\\
@@ -1913,6 +1920,7 @@ where:
 \mathtt{secp256k1n} &= 115792089237316195423570985008687907852837564279074904382605163141518161494337
 %\mathtt{secp256k1p} &= 2^{256} - 2^{32} - 977\\
 \end{align}
+Note that this restriction on $s$ is more stringent than restriction \ref{eq:ecrec_precompile_validity} in the $\Xi_{\mathtt{ECREC}}$ precompile; see EIP-2 by \cite{EIP-2} for more detail.
 
 For a given private key, $p_{\mathrm{r}}$, the Ethereum address $A(p_{\mathrm{r}})$ (a 160-bit value) to which it corresponds is defined as the rightmost 160-bits of the Keccak-256 hash of the corresponding ECDSA public key:
 \begin{equation}
