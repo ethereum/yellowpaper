@@ -2582,7 +2582,10 @@ G_{\mathrm{sreset}} - G_{\mathrm{warmaccess}} & \text{if} \quad v_0 = v' \; \wed
 &&&& is too low to fulfil the value transfer); and otherwise $x=\mathtt{ADDR}(I_{\mathrm{a}}, \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{n}}, \zeta, \mathbf{i} )$, the\\
 &&&& address of the newly created account (\ref{eq:new-address}). \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[1], \boldsymbol{\mu}_{\mathbf{s}}[2])$ \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{o}} \equiv ()$ \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{o}} \equiv \begin{cases}
+() & \text{if} \quad z = 1 \\
+\mathbf{o} & \text{otherwise}
+\end{cases}$ \\
 &&&& Thus the operand order is: value, input offset, input size. \\
 \midrule
 0xf1 & {\small CALL} & 7 & 1 & Message-call into an account. \\
