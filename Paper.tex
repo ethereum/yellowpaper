@@ -1546,7 +1546,7 @@ There is no specific canonical encoding format for signed or floating-point valu
 \section{Hex-Prefix Encoding}\label{app:hexprefix}
 Hex-prefix encoding is an efficient method of encoding an arbitrary number of nibbles as a byte array. It is able to store an additional flag which, when used in the context of the trie (the only context in which it is used), disambiguates between node types.
 
-It is defined as the function $\mathtt{HP}$ which maps from a sequence of nibbles (represented by the set $\mathbb{Y}$) together with a boolean value to a sequence of bytes (represented by the set $\mathbb{B}$):
+It is defined as the function $\mathtt{HP}$ which maps from a sequence of nibbles (represented by the set \linkdest{set_of_sequence_of_nibbles}$\mathbb{Y}$) together with a boolean value to a sequence of bytes (represented by the set $\mathbb{B}$):
 
 \begin{eqnarray}
 \mathtt{HP}(\mathbf{x}, t): \mathbf{x} \in \mathbb{Y} & \equiv & \begin{cases}
@@ -1575,7 +1575,7 @@ When considering such a sequence, we use the common numeric subscript notation t
 
 Any series of bytes may also trivially be viewed as a series of nibbles, given an endian-specific notation; here we assume big-endian. Thus:
 \begin{eqnarray}
-y(\mathfrak{I}) & = & \{ (\mathbf{k}_0' \in \mathbb{Y}, \mathbf{v}_0 \in \mathbb{B}), (\mathbf{k}_1' \in \mathbb{Y}, \mathbf{v}_1 \in \mathbb{B}), ... \} \\
+y(\mathfrak{I}) & = & \{ (\mathbf{k}_0' \in \hyperlink{set_of_sequence_of_nibbles}{\mathbb{Y}}, \mathbf{v}_0 \in \mathbb{B}), (\mathbf{k}_1' \in \mathbb{Y}, \mathbf{v}_1 \in \mathbb{B}), ... \} \\
 \forall n: \quad \forall i < 2\lVert\mathbf{k}_{n}\rVert: \quad \mathbf{k}_{n}'[i] & \equiv &
 \begin{cases}
 \lfloor \mathbf{k}_{n}[i \div 2] \div 16 \rfloor & \text{if} \; i \; \text{is even} \\
