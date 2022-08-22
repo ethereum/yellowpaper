@@ -6,7 +6,7 @@
 
 The Yellow Paper is a formal definition of the Ethereum protocol, originally by Gavin Wood, currently maintained by Nick Savers and with contributions from many people around the world.
 
-It is a free culture work, licensed under Creative Commons Attribution Share-Alike (CC-BY-SA) version 4.0.
+It is a free culture work, licensed under Creative Commons Attribution Share-Alike (CC-BY-SA) Version 4.0.
 
 ## Usage
 
