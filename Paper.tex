@@ -341,7 +341,7 @@ There are differences in how one's acceptable gas price is specified in type 2 t
 
 \begin{description}
   \item[maxFeePerGas]\linkdest{max_fee_per_gas}{} A scalar value equal to the maximum number of Wei to be paid per unit of \textit{gas} for all computation costs incurred as a result of the execution of this transaction; formally $T_{\mathrm{m}}$.
-  \item[maxPriorityFeePerGas]\linkdest{max_priority_fee_per_gas}{} A scalar value equal to the maximum number of Wei to be paid to the block's fee recicipient as an incentive to include the transaction; formally $T_{\mathrm{f}}$.
+  \item[maxPriorityFeePerGas]\linkdest{max_priority_fee_per_gas}{} A scalar value equal to the maximum number of Wei to be paid to the block's fee recipient as an incentive to include the transaction; formally $T_{\mathrm{f}}$.
 \end{description}
 
 In contrast, type 0 and type 1 transactions specify gas price as a single value:
@@ -834,7 +834,7 @@ Then the state is finalised by determining the amount to be refunded, $g^*$ from
 g^* \equiv g' + \min \left\{ \Big\lfloor \dfrac{T_{\mathrm{g}} - g'}{5} \Big\rfloor, A_{\mathrm{r}} \right\}
 \end{equation}
 
-The total refundable amount is the legitimately remaining gas $g'$, added to \hyperlink{refund_balance_defn_words_A__r}{$A_{\mathrm{r}}$}, with the latter component being capped up to a maximum of one fifth\footnote{The max refundable proportion of gas was changed by EIP-3529 by \cite{EIP-3529}} (rounded down) of the total amount used $T_{\mathrm{g}} - g'$. Therefore, $g^*$ is the total gas that remains after the transaction has been executed.
+The total refundable amount is the legitimately remaining gas $g'$, added to \hyperlink{refund_balance_defn_words_A__r}{$A_{\mathrm{r}}$}, with the latter component being capped up to a maximum of one fifth\footnote{The max refundable proportion of gas was reduced from one half to one fifth by EIP-3529 by \cite{EIP-3529} in the \textit{London} release} (rounded down) of the total amount used $T_{\mathrm{g}} - g'$. Therefore, $g^*$ is the total gas that remains after the transaction has been executed.
 
 The miner, whose address is specified as the beneficiary of the present block $B$, receives the gas consumed multiplied by the transaction's \textit{priority fee per gas}, defined as \hyperlink{priority_fee_f}{$f$} in this section. The ether that is paid by the transactor that goes toward the base fee is debited from the transactor's account but credited to no other account, so it is burned.
 
@@ -981,6 +981,8 @@ F \equiv  & \big( \boldsymbol{\sigma}[a] \neq \varnothing \ \wedge\ \big(\boldsy
 \nonumber &\mathbf{o}[0] = \texttt{0xef}
 \end{align}
 \hypertarget{contract_creation_result}{}
+
+Note the last condition of $F$ indicates that contract code cannot begin with the byte \texttt{0xef} (refer to EIP-3541 by \cite{EIP-3541}),
 
 The exception in the determination of $\boldsymbol{\sigma}'$ dictates that $\mathbf{o}$, the resultant byte sequence from the execution of the initialisation code, specifies the final body code for the newly-created account.
 
