@@ -337,7 +337,7 @@ Legacy transactions do not have an \textbf{accessList} ($T_{\mathbf{A}}=()$), wh
 $T_{\mathrm{w}} = 27 + T_{\mathrm{y}}$ or $T_{\mathrm{w}} = 2\beta + 35 + T_{\mathrm{y}}$ (see EIP-155 by \cite{EIP-155}).
 \end{description}
 
-There are differences in how one's acceptable gas price is specified in type 2 transactions versus type 0 and type 1 transactions. Type 2 transactions take advantage of the gas market improvements introduced in EIP-1559 and thus have the following fields related to gas price:
+There are differences in how one's acceptable gas price is specified in type 2 transactions versus type 0 and type 1 transactions. Type 2 transactions take better advantage of the gas market improvements introduced in EIP-1559 by explicitly limiting the \textit{priority fee} that is paid. Type two transactions have the following two fields related to gas:
 
 \begin{description}
   \item[maxFeePerGas]\linkdest{max_fee_per_gas}{} A scalar value equal to the maximum number of Wei to be paid per unit of \textit{gas} for all computation costs incurred as a result of the execution of this transaction; formally $T_{\mathrm{m}}$.
@@ -629,7 +629,7 @@ Subsequently, EIP-1234 by \cite{EIP-1234}, EIP-2384 by \cite{EIP-2384}, EIP-3554
 
 \linkdest{H__f}The \textit{London} release introduced the block attribute \textit{base fee per gas} \hyperlink{block_baseFeePerGas_H__f}{$H_{\mathrm{f}}$} (see EIP-1559 by \cite{EIP-1559}).
 The base fee is the amount of wei burned per unit of gas consumed while executing transactions within the block.
-The value of the base fee is a function of the difference between the gas used by the parent block and the parent block's gas target.
+The value of the base fee is a function of the difference between the gas used by the parent block and the parent block's \textit{gas target}.
 
 The expected base fee per gas is defined as $F(H)$:
 
@@ -697,7 +697,7 @@ Note additionally that \textbf{extraData} must be at most 32 bytes.
 
 In order to avoid issues of network abuse and to sidestep the inevitable questions stemming from Turing completeness, all programmable computation in Ethereum is subject to fees. The fee schedule is specified in units of \textit{gas} (see Appendix \ref{app:fees} for the fees associated with various computation). Thus any given fragment of programmable computation (this includes creating contracts, making message calls, utilising and accessing account storage and executing operations on the virtual machine) has a universally agreed cost in terms of gas.
 
-Every transaction has a specific amount of gas associated with it: \textbf{gasLimit}. This is the amount of gas which is implicitly purchased from the sender's account balance. The purchase happens at the according to the \textit{effective gas price} defined in section \ref{ch:transactions}. The transaction is considered invalid if the account balance cannot support such a purchase. It is named \textbf{gasLimit} since any unused gas at the end of the transaction is refunded (at the same rate of purchase) to the sender's account. Gas does not exist outside of the execution of a transaction. Thus for accounts with trusted code associated, a relatively high gas limit may be set and left alone.
+Every transaction has a specific amount of gas associated with it: \textbf{gasLimit}. This is the amount of gas which is implicitly purchased from the sender's account balance. The purchase happens at the \textit{effective gas price} defined in section \ref{ch:transactions}. The transaction is considered invalid if the account balance cannot support such a purchase. It is named \textbf{gasLimit} since any unused gas at the end of the transaction is refunded (at the same rate of purchase) to the sender's account. Gas does not exist outside of the execution of a transaction. Thus for accounts with trusted code associated, a relatively high gas limit may be set and left alone.
 
 Since the introduction of EIP-1559 by \cite{EIP-1559} in the \textit{London} hard fork, every transaction included in a block must pay a \textit{base fee}, which is specified as wei per unit of gas consumed and is constant for each transaction within a block. The ether that is paid to meet the base fee is burned (taken out of circulation). The base fee adjusts dynamically as a function of the previous block's gas consumption relative to its \textit{gas target} (a value that is currently half the block's gas limit, which can be adjusted by miners). If the previous block's total gas consumption exceeds the gas target, this indicates excess demand for block space at the current base fee, and the base fee is increased. Conversely, if the gas consumed in the previous block is lower than the gas target, demand for block space is lower than the gas target at the current base fee, and thus the base fee is decreased. This process of adjusting the base fee should bring the average block's gas consumption in line with the gas target. Refer to section \ref{subsec:The_Block} for greater detail on how the base fee is set.
 
@@ -762,7 +762,7 @@ $G_{\mathrm{txcreate}}$ is added if the transaction is contract-creating, but no
 $\hyperlink{G__accesslistaddress}{G_{\mathrm{accesslistaddress}}}$ and $\hyperlink{G__accessliststorage}{G_{\mathrm{accessliststorage}}}$ are the costs of warming up account and storage access, respectively.
 $G$ is fully defined in Appendix \ref{app:fees}.
 
-We define the \textit{effective gas price}, formally $p$, as the amount of wei the transaction signer will pay per unit of gas consumed during the transaction's execution. It is calculated as follows:
+\hypertarget{effective_gas_price_p}{}We define the \textit{effective gas price}, formally $p$, as the amount of wei the transaction signer will pay per unit of gas consumed during the transaction's execution. It is calculated as follows:
 
 \begin{equation}
   p \equiv \begin{cases}
@@ -771,7 +771,7 @@ We define the \textit{effective gas price}, formally $p$, as the amount of wei t
   \end{cases}
 \end{equation}
 
-where $f$ is the \textit{priority fee}---the amount of wei the block's beneficiary address will receive per unit of gas consumed during the transaction's execution. It is calculated as:
+\hypertarget{priority_fee_f}{}where $f$ is the \textit{priority fee}---the amount of wei the block's beneficiary address will receive per unit of gas consumed during the transaction's execution. It is calculated as:
 
 \begin{equation}
   f \equiv \begin{cases}
@@ -805,15 +805,15 @@ The execution of a valid transaction begins with an irrevocable change made to t
 We define the checkpoint state $\boldsymbol{\sigma}_0$:
 \begin{eqnarray}
 \linkdest{sigma_0}{}\boldsymbol{\sigma}_0 & \equiv & \boldsymbol{\sigma} \quad \text{except:} \\
-\boldsymbol{\sigma}_0[S(T)]_{\mathrm{b}} & \equiv & \boldsymbol{\sigma}[S(T)]_{\mathrm{b}} - T_{\mathrm{g}} T_{\mathrm{e}} \\
+\boldsymbol{\sigma}_0[S(T)]_{\mathrm{b}} & \equiv & \boldsymbol{\sigma}[S(T)]_{\mathrm{b}} - T_{\mathrm{g}} p \\
 \boldsymbol{\sigma}_0[S(T)]_{\mathrm{n}} & \equiv & \boldsymbol{\sigma}[S(T)]_{\mathrm{n}} + 1
 \end{eqnarray}
 
 Evaluating $\boldsymbol{\sigma}_{\mathrm{P}}$ from $\boldsymbol{\sigma}_0$ depends on the transaction type; either contract creation or message call; we define the tuple of post-execution provisional state $\boldsymbol{\sigma}_{\mathrm{P}}$, remaining gas $g'$, accrued substate $A$ and status code $z$:
 \begin{equation}
 (\boldsymbol{\sigma}_{\mathrm{P}}, g', A, z) \equiv \begin{cases}
-\hyperlink{lambda}{\Lambda}_{4}(\boldsymbol{\sigma}_0, A^*, S(T), S(T), g, &\\ \quad\; T_{\mathrm{e}}, T_{\mathrm{v}}, T_{\mathbf{i}}, 0, \varnothing, \top) & \text{if} \quad T_{\mathrm{t}} = \varnothing \\
-\hyperlink{theta}{\Theta}_{4}(\boldsymbol{\sigma}_0, A^*, S(T), S(T), T_{\mathrm{t}}, &\\ \quad\; T_{\mathrm{t}}, g, T_{\mathrm{e}}, T_{\mathrm{v}}, T_{\mathrm{v}}, T_{\mathbf{d}}, 0, \top) & \text{otherwise}
+\hyperlink{lambda}{\Lambda}_{4}(\boldsymbol{\sigma}_0, A^*, S(T), S(T), g, &\\ \quad\; p, T_{\mathrm{v}}, T_{\mathbf{i}}, 0, \varnothing, \top) & \text{if} \quad T_{\mathrm{t}} = \varnothing \\
+\hyperlink{theta}{\Theta}_{4}(\boldsymbol{\sigma}_0, A^*, S(T), S(T), T_{\mathrm{t}}, &\\ \quad\; T_{\mathrm{t}}, g, p, T_{\mathrm{v}}, T_{\mathrm{v}}, T_{\mathbf{d}}, 0, \top) & \text{otherwise}
 \end{cases}
 \end{equation}
 where
@@ -836,7 +836,7 @@ g^* \equiv g' + \min \left\{ \Big\lfloor \dfrac{T_{\mathrm{g}} - g'}{5} \Big\rfl
 
 The total refundable amount is the legitimately remaining gas $g'$, added to \hyperlink{refund_balance_defn_words_A__r}{$A_{\mathrm{r}}$}, with the latter component being capped up to a maximum of one fifth\footnote{The max refundable proportion of gas was changed by EIP-3529 by \cite{EIP-3529}} (rounded down) of the total amount used $T_{\mathrm{g}} - g'$. Therefore, $g^*$ is the total gas that remains after the transaction has been executed.
 
-The miner, whose address is specified as the beneficiary of the present block $B$, receives the gas consumed multiplied by the transaction's \textit{priority fee per gas}, defined as $f$ defined in this section. The ether that is paid by the transactor that goes toward the base fee is debited from the transactor's account but credited to no other account, so it is burned.
+The miner, whose address is specified as the beneficiary of the present block $B$, receives the gas consumed multiplied by the transaction's \textit{priority fee per gas}, defined as \hyperlink{priority_fee_f}{$f$} in this section. The ether that is paid by the transactor that goes toward the base fee is debited from the transactor's account but credited to no other account, so it is burned.
 
 We define the pre-final state $\boldsymbol{\sigma}^*$ in terms of the provisional state $\boldsymbol{\sigma}_{\mathrm{P}}$:
 \begin{eqnarray}
@@ -915,7 +915,6 @@ v' \equiv \begin{cases}
 \boldsymbol{\sigma}[a]_{\mathrm{b}} & \text{otherwise}
 \end{cases}
 \end{equation}
-
 
 %It is asserted that the state database will also change such that it defines the pair $(\mathtt{KEC}(\mathbf{b}), \mathbf{b})$.
 
@@ -1122,7 +1121,7 @@ there are several pieces of important information used in the execution environm
 \begin{itemize}
 \item\linkdest{address_of_account_which_owns_code_I__a_def_words}{}\linkdest{I__a} $I_{\mathrm{a}}$, the address of the account which owns the code that is executing.
 \item\linkdest{address_of_sender_of_tx_that_originated_execution_I__o}{}\linkdest{I__o} $I_{\mathrm{o}}$, the sender address of the transaction that originated this execution.
-\item\linkdest{gas_price_in_tx_that_originated_execution_I__p}{}\linkdest{I__p} $I_{\mathrm{p}}$, the price of gas paid by the signer of the transaction that originated this execution. This is defined as the effective gas price $p$ in section \ref{ch:transactions}.
+\item\linkdest{gas_price_in_tx_that_originated_execution_I__p}{}\linkdest{I__p} $I_{\mathrm{p}}$, the price of gas paid by the signer of the transaction that originated this execution. This is defined as the effective gas price \hyperlink{effective_gas_price_p}{$p$} in section \ref{ch:transactions}.
 \item\linkdest{execution_input_data_I__d}{}\linkdest{I__d} $I_{\mathbf{d}}$, the byte array that is the input data to this execution; if the execution agent is a transaction, this would be the transaction data.
 \item\linkdest{the_address_of_the_account_which_caused_the_code_to_be_executing_I__s}{} $I_{\mathrm{s}}$, the address of the account which caused the code to be executing; if the execution agent is a transaction, this would be the transaction sender.
 \item\linkdest{Wei_value_exec_I__v}{}\linkdest{I__v}{} $I_{\mathrm{v}}$, the value, in Wei, passed to this account as part of the same procedure as execution; if the execution agent is a transaction, this would be the transaction value.
