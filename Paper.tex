@@ -171,7 +171,8 @@ This would mean that past a given point in time (block), multiple states of the 
 The scheme we use in order to generate consensus is a simplified version of the GHOST protocol introduced by \cite{cryptoeprint:2013:881}. This process is described in detail in section \ref{ch:ghost}.
 
 Sometimes, a path follows a new protocol from a particular height (block number).
-This document describes one version of the protocol, namely the \textit{London} version defined by \cite{BeikoLondon}.
+This document describes the \textit{London}, \textit{Arrow Glacier}, and \textit{Gray Glacier} versions of the protocol.\footnote{Note that the \textit{Arrow Glacier} and \textit{Gray Glacier} forks only affected the \hyperlink{difficulty_bomb}{"difficulty bomb"} described in section \ref{subsec:The_Block}.}
+Note that this document also covers the  and  versions of Ethereum, .
 In order to follow back the history of a path, one must reference multiple versions of this document.
 Here are the block numbers of protocol updates on the Ethereum main network:
 \par
@@ -612,7 +613,7 @@ H'_{\mathrm{i}} &\equiv \max(H_{\mathrm{i}} - \kappa, 0)
 \end{cases}
 \end{equation}
 
-The \textit{Homestead} difficulty parameter, $\homesteadmod$, is used to affect a dynamic homeostasis of time between blocks, as the time between blocks varies, as discussed below, as implemented in EIP-2 by \cite{EIP-2}.
+\hypertarget{difficulty_bomb}{}The \textit{Homestead} difficulty parameter, $\homesteadmod$, is used to affect a dynamic homeostasis of time between blocks, as the time between blocks varies, as discussed below, as implemented in EIP-2 by \cite{EIP-2}.
 In the Homestead release, the exponential difficulty symbol, $\expdiffsymb$ causes the difficulty to slowly increase (every 100,000 blocks) at an exponential rate, and thus increasing the block time difference, and putting time pressure on transitioning to proof-of-stake.
 This effect, known as the "difficulty bomb", or "ice age", was explained in EIP-649 by \cite{EIP-649} and delayed and implemented earlier in EIP-2.
 $\homesteadmod$ was also modified in EIP-100 with the use of $x$, the adjustment factor above, and the denominator 9, in order to target the mean block time including uncle blocks by \cite{EIP-100}.
