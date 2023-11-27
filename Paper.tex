@@ -644,7 +644,7 @@ The expected base fee per gas is defined as $F(H)$:
 
 where:
   \begin{align}
-    \tau &\equiv \frac{{P(H)_{\mathrm{H}}}_{\mathrm{l}}}{\rho} \\
+    \tau &\equiv \lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{l}}}{\rho} \rfloor \\
     \rho &\equiv 2 \\
     \nu^* &\equiv \begin{cases}
       \lfloor \frac{{P(H)_{\mathrm{H}}}_{\mathrm{f}} \times ({\tau - P(H)_{\mathrm{H}}}_{\mathrm{g}})}{\tau} \rfloor &  \text{if} \quad {P(H)_{\mathrm{H}}}_{\mathrm{g}} < \tau \\
