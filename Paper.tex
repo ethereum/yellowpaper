@@ -620,13 +620,6 @@ In the \textit{Byzantium} release, with EIP-649, the ice age was delayed by crea
 which in other words reduced $\expdiffsymb$ and the time difference between blocks, in order to allow more time to develop proof-of-stake and preventing the network from "freezing" up.
 Subsequently, EIP-1234 by \cite{EIP-1234}, EIP-2384 by \cite{EIP-2384}, EIP-3554 by \cite{EIP-3554}, EIP-4345 by \cite{EIP-4345}, and EIP-5133 by \cite{EIP-5133} increased the subtrahend $\kappa$.
 
-\hypertarget{block_gas_limit_H__l}{}The canonical gas limit $H_{\mathrm{l}}$ of a block of header $H$ must fulfil the relation:
-\begin{eqnarray}
-& & H_{\mathrm{l}} < {P(H)_{\mathrm{H}}}_{\mathrm{l}} + \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{l}}}{1024}\right\rfloor \quad \wedge \\
-\nonumber& & H_{\mathrm{l}} > {P(H)_{\mathrm{H}}}_{\mathrm{l}} - \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{l}}}{1024}\right\rfloor \quad \wedge \\
-\nonumber& & H_{\mathrm{l}} \geqslant 5000
-\end{eqnarray}
-
 \linkdest{H__f}The \textit{London} release introduced the block attribute \textit{base fee per gas} \hyperlink{block_baseFeePerGas_H__f}{$H_{\mathrm{f}}$} (see EIP-1559 by \cite{EIP-1559}).
 The base fee is the amount of wei burned per unit of gas consumed while executing transactions within the block.
 The value of the base fee is a function of the difference between the gas used by the parent block and the parent block's \textit{gas target}.
@@ -663,6 +656,23 @@ The magnitude of the increase or decrease in the base fee, defined as $\nu$, is 
 The effect on the base fee is dampened by a global constant called the \textit{base fee max change denominator}, formally $\xi$, set to 8.
 A value of 8 entails that the base fee can increase or decrease by at most 12.5\% from one block to the next.
 
+\hypertarget{block_gas_limit_H__l}{}The canonical gas limit $H_{\mathrm{l}}$ of a block of header $H$ must fulfil the relation:
+\begin{eqnarray}
+& & H_{\mathrm{l}} < {P(H)_{\mathrm{H}}}_{\mathrm{l}'} + \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{l}'}}{1024}\right\rfloor \quad \wedge \\
+\nonumber& & H_{\mathrm{l}} > {P(H)_{\mathrm{H}}}_{\mathrm{l}'} - \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{l}'}}{1024}\right\rfloor \quad \wedge \\
+\nonumber& & H_{\mathrm{l}} \geqslant 5000
+\end{eqnarray}
+
+where:
+  \begin{align}
+    {P(H)_{\mathrm{H}}}_{\mathrm{l}'} &\equiv \begin{cases}
+      {P(H)_{\mathrm{H}}}_{\mathrm{l}} \times \rho &  \text{if} \quad H_{\mathrm{i}} = F_{\mathrm{London}} \\
+      {P(H)_{\mathrm{H}}}_{\mathrm{l}} &  \text{if} \quad H_{\mathrm{i}} > F_{\mathrm{London}} \\
+  \end{cases}
+\end{align}
+
+To avoid a discontinuity in gas usage, the value of the parent block gas limit for the purpose of validating the current block's gas limit is modified at the \textit{London} fork block by multiplying it by the \textit{elasticity multiplier}, $\rho$. We call this modified value ${P(H)_{\mathrm{H}}}_{\mathrm{l}'}$. This ensures that the gas target for post-\textit{London} blocks can be set roughly in line with the gas limit of pre-\textit{London} blocks.
+
 \hypertarget{block_timestamp_H__s}{}$H_{\mathrm{s}}$ is the timestamp (in Unix's time()) of block $H$ and must fulfil the relation:
 \begin{equation}
 H_{\mathrm{s}} > {P(H)_{\mathrm{H}}}_{\mathrm{s}}
@@ -685,8 +695,8 @@ This is the foundation of the security of the blockchain and is the fundamental 
 V(H) & \equiv &  n \leqslant \frac{2^{256}}{H_{\mathrm{d}}} \wedge m = H_{\mathrm{m}} \quad \wedge \\
 \nonumber & & H_{\mathrm{d}} = D(H) \quad \wedge \\
 \nonumber& & H_{\mathrm{g}} \le H_{\mathrm{l}}  \quad \wedge \\
-\nonumber& & H_{\mathrm{l}} < {P(H)_{\mathrm{H}}}_{\mathrm{l}} + \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{l}}}{1024}\right\rfloor  \quad \wedge \\
-\nonumber& & H_{\mathrm{l}} > {P(H)_{\mathrm{H}}}_{\mathrm{l}} - \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{l}}}{1024}\right\rfloor  \quad \wedge \\
+\nonumber& & H_{\mathrm{l}} < {P(H)_{\mathrm{H}}}_{\mathrm{l}'} + \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{l}'}}{1024}\right\rfloor  \quad \wedge \\
+\nonumber& & H_{\mathrm{l'}} > {P(H)_{\mathrm{H}}}_{\mathrm{l}'} - \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{l}'}}{1024}\right\rfloor  \quad \wedge \\
 \nonumber& & H_{\mathrm{l}} \geqslant 5000  \quad \wedge \\
 \nonumber& & H_{\mathrm{s}} > {P(H)_{\mathrm{H}}}_{\mathrm{s}} \quad \wedge \\
 \nonumber& & H_{\mathrm{i}} = {P(H)_{\mathrm{H}}}_{\mathrm{i}} +1 \quad \wedge \\
