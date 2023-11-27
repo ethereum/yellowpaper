@@ -638,7 +638,7 @@ The expected base fee per gas is defined as $F(H)$:
     1000000000  & \text{if} \quad H_{\mathrm{i}} = F_{\mathrm{London}} \\
     {P(H)_{\mathrm{H}}}_{\mathrm{f}}  & \text{if} \quad {P(H)_{\mathrm{H}}}_{\mathrm{g}} = \tau \\
     {P(H)_{\mathrm{H}}}_{\mathrm{f}} - \nu & \text{if} \quad {P(H)_{\mathrm{H}}}_{\mathrm{g}} < \tau \\
-    {P(H)_{\mathrm{H}}}_{\mathrm{f}} + \nu & \text{if} \quad {P(H)_{\mathrm{H}}}_{\mathrm{g}} > \tau \\
+    {P(H)_{\mathrm{H}}}_{\mathrm{f}} + \nu & \text{if} \quad {P(H)_{\mathrm{H}}}_{\mathrm{g}} > \tau
   \end{cases}
   \end{equation}
 
@@ -646,11 +646,15 @@ where:
   \begin{align}
     \tau &\equiv \frac{{P(H)_{\mathrm{H}}}_{\mathrm{l}}}{\rho} \\
     \rho &\equiv 2 \\
-    \nu &\equiv \begin{cases}
-      \frac{{P(H)_{\mathrm{H}}}_{\mathrm{f}} \times ({\tau - P(H)_{\mathrm{H}}}_{\mathrm{g}})}{\tau \times \xi} &  \text{if} \quad {P(H)_{\mathrm{H}}}_{\mathrm{g}} < \tau \\
-      \max(\frac{{P(H)_{\mathrm{H}}}_{\mathrm{f}} \times ({P(H)_{\mathrm{H}}}_{\mathrm{g}} - \tau)}{\tau \times \xi},1) &  \text{if} \quad {P(H)_{\mathrm{H}}}_{\mathrm{g}} > \tau \\
+    \nu^* &\equiv \begin{cases}
+      \lfloor \frac{{P(H)_{\mathrm{H}}}_{\mathrm{f}} \times ({\tau - P(H)_{\mathrm{H}}}_{\mathrm{g}})}{\tau} \rfloor &  \text{if} \quad {P(H)_{\mathrm{H}}}_{\mathrm{g}} < \tau \\
+      \lfloor \frac{{P(H)_{\mathrm{H}}}_{\mathrm{f}} \times ({P(H)_{\mathrm{H}}}_{\mathrm{g}} - \tau)}{\tau} \rfloor &  \text{if} \quad {P(H)_{\mathrm{H}}}_{\mathrm{g}} > \tau \\
   \end{cases} \\
-    \xi &\equiv 8
+  \nu &\equiv \begin{cases}
+    \lfloor \frac{\nu^*}{\xi} \rfloor &  \text{if} \quad {P(H)_{\mathrm{H}}}_{\mathrm{g}} < \tau \\
+    max(\lfloor \frac{\nu^*}{\xi} \rfloor, 1) &  \text{if} \quad {P(H)_{\mathrm{H}}}_{\mathrm{g}} > \tau \\
+  \end{cases} \\
+  \xi &\equiv 8
 \end{align}
 
 The \textit{gas target}, $\tau$, is defined as the gas limit $H_{\mathrm{l}}$ divided by the \textit{elasticity multiplier}, $\rho$, a global constant set to 2. So while blocks can consume as much gas as the gas limit, the base fee is adjusted so that on average, blocks consume as much gas as the gas target. The base fee is increased in the current block when the parent block's gas usage exceeds the gas target, and, conversely, the base fee is decreased in the current block when the parent block's gas usage is less than the gas target.
