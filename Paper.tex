@@ -347,7 +347,7 @@ There are differences in how one's acceptable gas price is specified in type 2 t
 In contrast, type 0 and type 1 transactions specify gas price as a single value:
 
 \begin{description}
-  \item[gasPrice]\linkdest{tx_gas_price_T__p}{} A scalar value equal to the number of Wei to be paid per unit of \textit{gas} for all computation costs incurred as a result of the execution of this transaction; formally $T_{\mathrm{p}}$.
+  \item[gasPrice]\linkdest{tx_gas_price_T__p}{} A scalar value equal to the number of Wei to be paid per unit of \textit{gas} for all computation costs incurred as a result of the execution of this transaction; formally $T_{\mathrm{p}}$.\footnote{Type 0 and type 1 transactions will get the same gas price behavior as a type 2 transaction with $T_{\mathrm{m}}$ and $T_{\mathrm{f}}$ set to the value of $T_{\mathrm{p}}$.}
 \end{description}
 
 Additionally, a contract creation transaction (regardless of transaction type) contains:
