@@ -796,7 +796,10 @@ $G$ is fully defined in Appendix \ref{app:fees}.
 
 The up-front cost $v_0$ is calculated as:
 \begin{equation}
-v_0 \equiv \hyperlink{tx_gas_limit_T__g}{T_{\mathrm{g}}} p + \hyperlink{tx_value_T__v}{T_{\mathrm{v}}}
+  v_0 \equiv \begin{cases}
+  \hyperlink{tx_gas_limit_T__g}{T_{\mathrm{g}}}T_{\mathrm{p}} + \hyperlink{tx_value_T__v}{T_{\mathrm{v}}} & \text{if} \; T_{\mathrm{x}} = 0 \lor T_{\mathrm{x}} = 1 \\
+  \hyperlink{tx_gas_limit_T__g}{T_{\mathrm{g}}}T_{\mathrm{m}} + \hyperlink{tx_value_T__v}{T_{\mathrm{v}}} & \text{if} \; T_{\mathrm{x}} = 2 \\
+  \end{cases}
 \end{equation}
 
 The validity is determined as:
@@ -807,12 +810,25 @@ S(T) & \neq & \varnothing \quad \wedge \\
 \linkdest{transaction_nonce}{}T_{\mathrm{n}} & = & \boldsymbol{\sigma}[S(T)]_{\mathrm{n}} \quad \wedge \\
 g_0 & \leqslant & T_{\mathrm{g}} \quad \wedge \\
 v_0 & \leqslant & \boldsymbol{\sigma}[S(T)]_{\mathrm{b}} \quad \wedge \\
-p & \geqslant & H_{\mathrm{f}} \quad \wedge \\
+m & \geqslant & H_{\mathrm{f}} \quad \wedge \\
 T_{\mathrm{g}} & \leqslant & {B_{\mathrm{H}}}_{\mathrm{l}} - \hyperlink{ell}{\ell}(B_{\mathbf{R}})_{\mathrm{u}}
 \end{array}
 \end{equation}
+where
+\begin{equation}
+  m \equiv \begin{cases}
+  T_{\mathrm{p}} & \text{if} \; T_{\mathrm{x}} = 0 \lor T_{\mathrm{x}} = 1 \\
+  T_{\mathrm{m}} & \text{if} \; T_{\mathrm{x}} = 2 \\
+  \end{cases}
+\end{equation}
+
 Note the final condition; the sum of the transaction's gas limit, $T_{\mathrm{g}}$, and the gas utilised in this block prior, given by $\hyperlink{ell}{\ell}(B_{\mathbf{R}})_{\mathrm{u}}$, must be no greater than the block's \textbf{gasLimit}, ${B_{\mathrm{H}}}_{\mathrm{l}}$.
 Also, with a slight abuse of notation, we assume that $\boldsymbol{\sigma}[S(T)]_{\mathrm{c}} = \texttt{KEC}\big( () \big)$, $\boldsymbol{\sigma}[S(T)]_{\mathrm{n}} = 0$, and $\boldsymbol{\sigma}[S(T)]_{\mathrm{b}} = 0$ if $\boldsymbol{\sigma}[S(T)] = \varnothing$.
+
+For type 2 transactions, we add an additional check that \textbf{maxPriorityFeePerGas} is no larger than \textbf{maxFeePerGas}:
+\begin{equation}
+  T_{\mathrm{m}} \geqslant T_{\mathrm{f}}
+\end{equation}
 
 The execution of a valid transaction begins with an irrevocable change made to the state: the \hyperlink{account_nonce}{nonce of the account of the sender}, $S(T)$, is incremented by one and the balance is reduced by part of the up-front cost, $T_{\mathrm{g}} p$. The gas available for the proceeding computation, $g$, is defined as $T_{\mathrm{g}} - g_0$. The computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
 
