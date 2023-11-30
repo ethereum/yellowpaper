@@ -10,9 +10,9 @@ It is a free culture work, licensed under Creative Commons Attribution Share-Ali
 
 ## Repository Currently Outdated
 
-The Yellow Paper is out of date. It reflects the Ethereum specification up to the [Berlin](https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/berlin.md) network upgrade, activated on the Ethereum mainnet at block `12_244_000` (April 2021). 
+The Yellow Paper is out of date. It reflects the Ethereum specification up to the [Gray Glacier](https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/gray-glacier.md) network upgrade, activated on the Ethereum mainnet at block `15_050_000` (June 2022). 
 
-It does **not** contain changes introduced in following network upgrades, including [London](https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/london.md), [Paris](https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/london.md), or any post-merge upgrade. 
+It does **not** contain changes introduced in [Paris](https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/paris.md), or any post-merge upgrade. 
 
 An alternative [Python Execution Layer specification](https://ethereum.github.io/execution-specs/) is actively maintained and up to date. 
 
