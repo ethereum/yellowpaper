@@ -733,8 +733,9 @@ The execution of a transaction is the most complex part of the Ethereum protocol
 \item the \hyperlink{transaction_nonce}{transaction nonce} is valid (equivalent to the \hyperlink{account_nonce}{sender account's current nonce});
 \item the sender account has no contract code deployed (see EIP-3607 by \cite{EIP-3607});
 \item the gas limit is no smaller than the intrinsic gas, $g_0$, used by the transaction;
-\item the sender account balance contains at least the cost, $v_0$, required in up-front payment; and
-\item the \textbf{maxFeePerGas}, $T_m$, in the case of type 2 transactions, or \textbf{gasPrice}, $T_p$, in the case of type 0 and type 1 transactions, is greater than or equal to the block's base fee, $H_{\mathrm{f}}$.
+\item the sender account balance contains at least the cost, $v_0$, required in up-front payment;
+\item the \textbf{maxFeePerGas}, $T_m$, in the case of type 2 transactions, or \textbf{gasPrice}, $T_p$, in the case of type 0 and type 1 transactions, is greater than or equal to the block's base fee, $H_{\mathrm{f}}$; and
+\item for type 2 transactions, \textbf{maxPriorityFeePerGas}, $T_f$, must be no larger than \textbf{maxFeePerGas}, $T_m$.
 \end{enumerate}
 
 Formally, we consider the function \hyperlink{Upsilon_state_transition}{$\Upsilon$}, with $T$ being a transaction and $\boldsymbol{\sigma}$ the state:
