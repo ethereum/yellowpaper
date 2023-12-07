@@ -734,7 +734,7 @@ The execution of a transaction is the most complex part of the Ethereum protocol
 \item the sender account has no contract code deployed (see EIP-3607 by \cite{EIP-3607});
 \item the gas limit is no smaller than the intrinsic gas, $g_0$, used by the transaction;
 \item the sender account balance contains at least the cost, $v_0$, required in up-front payment; and
-\item the effective gas price of the transaction is greater than or equal to the block's base fee $H_{\mathrm{f}}$.
+\item the \textbf{maxFeePerGas}, $T_m$, in the case of type 2 transactions, or \textbf{gasPrice}, $T_p$, in the case of type 0 and type 1 transactions, is greater than or equal to the block's base fee, $H_{\mathrm{f}}$.
 \end{enumerate}
 
 Formally, we consider the function \hyperlink{Upsilon_state_transition}{$\Upsilon$}, with $T$ being a transaction and $\boldsymbol{\sigma}$ the state:
@@ -872,8 +872,7 @@ We define the pre-final state $\boldsymbol{\sigma}^*$ in terms of the provisiona
 \begin{eqnarray}
 \boldsymbol{\sigma}^* & \equiv & \boldsymbol{\sigma}_{\mathrm{P}} \quad \text{except} \\
 \boldsymbol{\sigma}^*[S(T)]_{\mathrm{b}} & \equiv & \boldsymbol{\sigma}_{\mathrm{P}}[S(T)]_{\mathrm{b}} + g^* p \\
-\boldsymbol{\sigma}^*[m]_{\mathrm{b}} & \equiv & \boldsymbol{\sigma}_{\mathrm{P}}[m]_{\mathrm{b}} + (T_{\mathrm{g}} - g^*) f \\
-m & \equiv & {B_{\mathrm{H}}}_{\mathrm{c}}
+\boldsymbol{\sigma}^*[{B_{\mathrm{H}}}_{\mathrm{c}}]_{\mathrm{b}} & \equiv & \boldsymbol{\sigma}_{\mathrm{P}}[{B_{\mathrm{H}}}_{\mathrm{c}}]_{\mathrm{b}} + (T_{\mathrm{g}} - g^*) f
 \end{eqnarray}
 
 The final state, $\boldsymbol{\sigma}'$, is reached after deleting all accounts that either appear in the self-destruct set or are touched and empty:
