@@ -64,7 +64,7 @@
 \newcommand*\ie{i.e.\@\xspace}
 %\renewcommand{\itemhook}{\setlength{\topsep}{0pt}  \setlength{\itemsep}{0pt}\setlength{\leftmargin}{15pt}}
 
-\title[Ethereum: A Secure Decentralised Generalised Transaction Ledger\\ \smaller \textbf{{London version}}]{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ \smaller \textbf{{London version \YellowPaperVersionNumber}}}
+\title[Ethereum: A Secure Decentralised Generalised Transaction Ledger\\ \smaller \textbf{{Paris version}}]{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ \smaller \textbf{{Paris version \YellowPaperVersionNumber}}}
 \author{
     Dr. Gavin Wood\\
     Founder, Ethereum \& Parity\\
@@ -127,18 +127,16 @@ Ethereum, taken as a whole, can be viewed as a transaction-based state machine: 
 
 where $\Upsilon$ is the Ethereum state transition function. In Ethereum, $\Upsilon$, together with $\boldsymbol{\sigma}$ are considerably more powerful than any existing comparable system; $\Upsilon$ allows components to carry out arbitrary computation, while $\boldsymbol{\sigma}$ allows components to store arbitrary state between transactions.
 
-Transactions are collated into blocks; blocks are chained together using a cryptographic hash as a means of reference. Blocks function as a journal, recording a series of transactions together with the previous block and an identifier for the final state (though do not store the final state itself---that would be far too big). They also punctuate the transaction series with incentives for nodes to \textit{mine}. This incentivisation takes place as a state-transition function, adding value to a nominated account.
-
-Mining is the process of dedicating effort (working) to bolster one series of transactions (a block) over any other potential competitor block. It is achieved thanks to a cryptographically secure proof. This scheme is known as a proof-of-work and is discussed in detail in section \ref{ch:pow}.
+Transactions are collated into blocks; blocks are chained together using a cryptographic hash as a means of reference. Blocks function as a journal, recording a series of transactions together with the previous block and an identifier for the final state (though do not store the final state itself---that would be far too big).
 
 Formally, we expand to:
 \begin{eqnarray}
 \boldsymbol{\sigma}_{t+1} & \equiv & \hyperlink{Pi}{\Pi}(\boldsymbol{\sigma}_{t}, B) \\
 B & \equiv & (..., (T_0, T_1, ...), ...) \\
-\Pi(\boldsymbol{\sigma}, B) & \equiv & \hyperlink{Omega}{\Omega}(B, \hyperlink{Upsilon}{\Upsilon}(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...)
+\Pi(\boldsymbol{\sigma}, B) & \equiv & \hyperlink{Upsilon}{\Upsilon}(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...
 \end{eqnarray}
 
-Where \hyperlink{Omega}{$\Omega$} is the block-finalisation state transition function (a function that rewards a nominated party); \hyperlink{block}{$B$} is this block, which includes a series of transactions amongst some other components; and $\hyperlink{Pi}{\Pi}$ is the block-level state-transition function.
+Where \hyperlink{block}{$B$} is this block, which includes a series of transactions amongst some other components and $\hyperlink{Pi}{\Pi}$ is the block-level state-transition function.
 
 This is the basis of the blockchain paradigm, a model that forms the backbone of not only Ethereum, but all decentralised consensus-based transaction systems to date.
 
@@ -168,12 +166,18 @@ Since the system is decentralised and all parties have an opportunity to create 
 
 This would mean that past a given point in time (block), multiple states of the system may coexist: some nodes believing one block to contain the canonical transactions, other nodes believing some other block to be canonical, potentially containing radically different or incompatible transactions. This is to be avoided at all costs as the uncertainty that would ensue would likely kill all confidence in the entire system.
 
-The scheme we use in order to generate consensus is a simplified version of the GHOST protocol introduced by \cite{cryptoeprint:2013:881}. This process is described in detail in section \ref{ch:ghost}.
+Since the \textit{Paris} hard fork, reaching consensus on new blocks is managed by a protocol called the \textit{Beacon Chain}.
+It is known as the \textit{consensus layer} of Ethereum, and it defines the rules for determining the canonical history of Ethereum blocks.
+This document describes the \textit{execution layer} of Ethereum.
+The execution layer defines the rules for interacting with and updating the state of the Ethereum virtual machine.
+The consensus layer is described in greater detail in the \href{https://github.com/ethereum/consensus-specs}{consensus specifications}.
+How the consensus layer is used to determine the canonical state of Ethereum is discussed in section \ref{ch:blocktree_to_blockchain}.
 
 Sometimes, a path follows a new protocol from a particular height (block number).
-This document describes the \textit{London}, \textit{Arrow Glacier}, and \textit{Gray Glacier} versions of the protocol.\footnote{Note that the \textit{Arrow Glacier} and \textit{Gray Glacier} forks only affected the \hyperlink{difficulty_bomb}{"difficulty bomb"} described in section \ref{subsec:The_Block}.}
+This document describes the \textit{Paris} version.
+
 In order to follow back the history of a path, one must reference multiple versions of this document.
-Here are the block numbers of protocol updates on the Ethereum main network:
+Here are the block numbers of protocol updates on the Ethereum main network:\footnote{Note that while the Paris fork activated at block 15,537,393, the trigger was not the block number, but rather reaching a specified \textit{total difficulty}. The trigger for the \textit{Paris} hard fork is discussed in greater detail in section \ref{ch:pos_transition}.}
 \par
 \begin{center}
 \begin{tabular}{lr}
@@ -192,6 +196,7 @@ $F_{\mathrm{Berlin}}$            & 12244000 \\
 $F_{\mathrm{London}}$            & 12965000 \\
 $F_{\mathrm{Arrow Glacier}}$     & 13773000 \\
 $F_{\mathrm{Gray Glacier}}$      & 15050000 \\
+$F_{\mathrm{Paris}}$      & 15537393 \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -404,29 +409,29 @@ T_{\mathbf{t}} \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_{\mathrm{t}
 
 \subsection{The Block}\linkdest{block}\label{subsec:The_Block}
 
-The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$,\hypertarget{ommerheaders}{} and a set of other block headers $\mathbf{U}$ that are known to have a parent equal to the present block's parent's parent (such blocks are known as \textit{ommers}\footnote{\textit{ommer} is a gender-neutral term to mean ``sibling of parent''; see \url{https://nonbinary.miraheze.org/wiki/Gender_neutral_language_in_English\#Aunt/Uncle}}). The block header contains several pieces of information:
+The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$,\hypertarget{ommerheaders}{} and a now deprecated property $\mathbf{U}$ that prior to the \textit{Paris} hard fork contained headers equal to the present block's parent's parent (such blocks are known as \textit{ommers}\footnote{\textit{ommer} is a gender-neutral term to mean ``sibling of parent''; see \url{https://nonbinary.miraheze.org/wiki/Gender_neutral_language_in_English\#Aunt/Uncle}}). The block header contains several pieces of information:
 
 %\textit{TODO: Introduce logs}
 
 \begin{description}
 \item[parentHash]\linkdest{parent_Hash_H__p_def_words}{} The Keccak 256-bit hash of the parent block's header, in its entirety; formally $H_{\mathrm{p}}$.
-\item[ommersHash] The Keccak 256-bit hash of the ommers list portion of this block; formally $H_{\mathrm{o}}$.
-\item[beneficiary]\linkdest{beneficiary_H__c}{}\linkdest{H__c} The 160-bit address to which all fees collected from the successful mining of this block be transferred; formally $H_{\mathrm{c}}$.
+\item[ommersHash] A 256-bit hash field that is now deprecated due the replacement of proof of work consensus. It is now to a constant, \texttt{Keccak256(RLP([]))}; formally $H_{\mathrm{o}}$.
+\item[beneficiary]\linkdest{beneficiary_H__c}{}\linkdest{H__c} The 160-bit address to which priority fees from this block are transferred; formally $H_{\mathrm{c}}$.
 \item[stateRoot] The Keccak 256-bit hash of the root node of the state trie, after all transactions are executed and finalisations applied; formally $H_{\mathrm{r}}$.
 \item[transactionsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with each transaction in the transactions list portion of the block; formally $H_{\mathrm{t}}$.
 \item[receiptsRoot]\linkdest{receipts_Root_def_words}{} The Keccak 256-bit hash of the root node of the trie structure populated with the receipts of each transaction in the transactions list portion of the block; formally $H_{\mathrm{e}}$.
 \item[logsBloom]\linkdest{logs_Bloom_def_words}{} The Bloom filter composed from indexable information (logger address and log topics) contained in each log entry from the receipt of each transaction in the transactions list; formally $H_{\mathrm{b}}$.
-\item[difficulty] A scalar value corresponding to the difficulty level of this block. This can be calculated from the previous block's difficulty level and the timestamp; formally $H_{\mathrm{d}}$.
+\item[difficulty] A scalar field that is now deprecated due to the replacement of proof of work consensus. It is set to 0; formally $H_{\mathrm{d}}$.
 \item[number]\linkdest{block_number_word_def_H_i}{} A scalar value equal to the number of ancestor blocks. The genesis block has a number of zero; formally \hyperlink{block_number_H__i}{$H_{\mathrm{i}}$}.
 \item[gasLimit] A scalar value equal to the current limit of gas expenditure per block; formally $H_{\mathrm{l}}$.
 \item[gasUsed]\linkdest{block_gas_used_H__g}{}\linkdest{H__g} A scalar value equal to the total gas used in transactions in this block; formally $H_{\mathrm{g}}$.
 \item[timestamp]\linkdest{block_timestamp_word_def_H__s}{} A scalar value equal to the reasonable output of Unix's time() at this block's inception; formally \hyperlink{block_timestamp_H__s}{$H_{\mathrm{s}}$}.
 \item[extraData]\linkdest{block_extraData_H__x}{} An arbitrary byte array containing data relevant to this block. This must be 32 bytes or fewer; formally $H_{\mathrm{x}}$.
-\item[mixHash]\linkdest{mixHash_H__m}{}\linkdest{H__m} A 256-bit hash which, combined with the nonce, proves that a sufficient amount of computation has been carried out on this block; formally $H_{\mathrm{m}}$.
-\item[nonce]\linkdest{block_nonce_H__n}{}\linkdest{block_nonce} A 64-bit value which, combined with the mix-hash, proves that a sufficient amount of computation has been carried out on this block; formally \hyperlink{H__n}{$H_{\mathrm{n}}$}.
+\item[prevRandao]\linkdest{prevRandao_H__a}{}\linkdest{H__a} the latest RANDAO mix\footnote{RANDAO is a pseudorandom value generated by validators on the Ethereum consensus layer. Refer to the consensus layer specs (\url{https://github.com/ethereum/consensus-specs}) for more detail on RANDAO.} of the post beacon state of the previous block; formally $H_{\mathrm{a}}$.
+\item[nonce]\linkdest{block_nonce_H__n}{}\linkdest{block_nonce} A 64-bit value that is now deprecated due to the replacment of proof of work consensus. It is set to \texttt{0x0000000000000000}; formally \hyperlink{H__n}{$H_{\mathrm{n}}$}.
 \item[baseFeePerGas]\linkdest{block_baseFeePerGas_H__f}{} A scalar value equal to the amount of wei that is burned for each unit of gas consumed; formally \hyperlink{H__f}{$H_{\mathrm{f}}$}.
 \end{description}
-\linkdest{ommer_block_headers_B__U}{}\linkdest{block_B}{}The other two components in the block are simply a list of ommer block headers (of the same format as above), $B_{\mathbf{U}}$ and a series of the transactions, $B_{\mathbf{T}}$. Formally, we can refer to a block $B$:
+\linkdest{ommer_block_headers_B__U}{}\linkdest{block_B}{}The other two components in the block are a series of transactions, $B_{\mathbf{T}}$, and an empty array which was previously reserved for ommer block headers, $B_{\mathbf{U}}$. Formally, we can refer to a block $B$:
 \begin{equation}
 B \equiv (B_{\mathrm{H}}, B_{\mathbf{T}}, B_{\mathbf{U}})
 \end{equation}
@@ -488,11 +493,11 @@ Notably, it treats $\mathbf{x}$ as big-endian (more significant bits will have s
 
 \subsubsection{Holistic Validity}
 
-\linkdest{block_validity}{}We can assert a block's validity if and only if it satisfies several conditions: it must be internally consistent with the ommer and transaction block hashes and the given transactions $B_{\mathbf{T}}$ (as specified in sec \ref{ch:finalisation}), when executed in order on the base state $\boldsymbol{\sigma}$ (derived from the final state of the parent block), result in a new state of the identity $H_{\mathrm{r}}$:
+\linkdest{block_validity}{}We can assert a block's validity if and only if it satisfies several conditions: its ommers field $B_{\mathbf{U}}$ must be an empty array and it must be internally consistent with the given transactions $B_{\mathbf{T}}$ (as specified in sec \ref{ch:finalisation}), when executed in order on the base state $\boldsymbol{\sigma}$ (derived from the final state of the parent block), result in a new state of the identity $H_{\mathrm{r}}$:
 \begin{equation}
 \begin{array}[t]{lclc}
+B_{\mathbf{U}} &\equiv& [] & \wedge \\
 \linkdest{new_state_H__r}{}H_{\mathrm{r}} &\equiv& \mathtt{TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) & \wedge \\
-\linkdest{Ommer_block_hash_H__o}{}H_{\mathrm{o}} &\equiv& \mathtt{KEC}(\mathtt{RLP}(L_H^*(B_{\mathbf{U}}))) & \wedge \\
 \linkdest{tx_block_hash_H__t}{}H_{\mathrm{t}} &\equiv& \mathtt{TRIE}(\{\forall i < \lVert B_{\mathbf{T}} \rVert, i \in \mathbb{N}: &\\&& \quad\quad p_{\mathrm{T}}(i, B_{\mathbf{T}}[i])\}) & \wedge \\
 \linkdest{Receipts_Root_H__e}{}H_{\mathrm{e}} &\equiv& \mathtt{TRIE}(\{\forall i < \lVert B_{\mathbf{R}} \rVert, i \in \mathbb{N}: &\\&& \quad\quad p_{\mathrm{R}}(i, B_{\mathbf{R}}[i])\}) & \wedge \\
 \linkdest{logs_Bloom_filter_H__b}{}H_{\mathrm{b}} &\equiv& \bigvee_{\mathbf{r} \in B_{\mathbf{R}}} \big( \mathbf{r}_{\mathrm{b}} \big)
@@ -530,7 +535,7 @@ The values stemming from the computation of transactions, specifically the \hype
 \hypertarget{block_preparation_function_for_RLP_serialization_L__B}{}\linkdest{L__B}\hypertarget{block_preparation_function_for_RLP_serialization_L__H}{}\linkdest{L__B}The function $L_{\mathrm{B}}$ and $L_{\mathrm{H}}$ are the preparation functions for a block and block header respectively.
 We assert the types and order of the structure for when the RLP transformation is required:
 \begin{eqnarray}
-\quad L_{\mathrm{H}}(H) & \equiv & (\begin{array}[t]{l}H_{\mathrm{p}}, H_{\mathrm{o}}, H_{\mathrm{c}}, H_{\mathrm{r}}, H_{\mathrm{t}}, H_{\mathrm{e}}, H_{\mathrm{b}}, H_{\mathrm{d}},\\ H_{\mathrm{i}}, H_{\mathrm{l}}, H_{\mathrm{g}}, H_{\mathrm{s}}, H_{\mathrm{x}}, H_{\mathrm{m}}, H_{\mathrm{n}}, H_{\mathrm{f}} \; )\end{array} \\
+\quad L_{\mathrm{H}}(H) & \equiv & (\begin{array}[t]{l}H_{\mathrm{p}}, H_{\mathrm{o}}, H_{\mathrm{c}}, H_{\mathrm{r}}, H_{\mathrm{t}}, H_{\mathrm{e}}, H_{\mathrm{b}}, H_{\mathrm{d}},\\ H_{\mathrm{i}}, H_{\mathrm{l}}, H_{\mathrm{g}}, H_{\mathrm{s}}, H_{\mathrm{x}}, H_{\mathrm{a}}, H_{\mathrm{n}}, H_{\mathrm{f}} \; )\end{array} \\
 \quad L_{\mathrm{B}}(B) & \equiv & \big( L_{\mathrm{H}}(B_{\mathrm{H}}), \widetilde{L}_{\mathrm{T}}^*(B_{\mathbf{T}}), L_{\mathrm{H}}^*(\hyperlink{ommer_block_headers_B__U}{B_{\mathbf{U}}}) \big)
 \end{eqnarray}
 where $\widetilde{L}_{\mathrm{T}}$ takes a special care of EIP-2718 transactions:
@@ -552,7 +557,7 @@ The component types are defined thus:
 \hyperlink{new_state_H__r}{H_{\mathrm{r}}} \in \mathbb{B}_{32} & \wedge & H_{\mathrm{t}} \in \mathbb{B}_{32} & \wedge & \hyperlink{Receipts_Root_H__e}{H_{\mathrm{e}}} \in \mathbb{B}_{32} & \wedge \\
 \hyperlink{logs_Bloom_filter_H__b}{H_{\mathrm{b}}} \in \mathbb{B}_{256} & \wedge & H_{\mathrm{d}} \in \mathbb{N} & \wedge & \hyperlink{block_number_H__i}{H_{\mathrm{i}}} \in \mathbb{N} & \wedge \\
 \hyperlink{block_gas_limit_H__l}{H_{\mathrm{l}}} \in \mathbb{N} & \wedge & H_{\mathrm{g}} \in \mathbb{N} & \wedge & \hyperlink{block_timestamp_H__s}{H_{\mathrm{s}}} \in \mathbb{N}_{256} & \wedge \\
-\hyperlink{block_extraData_H__x}{H_{\mathrm{x}}} \in \mathbb{B} & \wedge & H_{\mathrm{m}} \in \mathbb{B}_{32} & \wedge & \hyperlink{block_nonce_H__n}{H_{\mathrm{n}}} \in \mathbb{B}_{8} & \wedge \\
+\hyperlink{block_extraData_H__x}{H_{\mathrm{x}}} \in \mathbb{B} & \wedge & H_{\mathrm{a}} \in \mathbb{B}_{32} & \wedge & \hyperlink{block_nonce_H__n}{H_{\mathrm{n}}} \in \mathbb{B}_{8} & \wedge \\
 \hyperlink{block_baseFeePerGas_H__f}{H_{\mathrm{f}}} \in \mathbb{N}
 
 \end{array}
@@ -581,44 +586,6 @@ H_{\mathrm{i}} \equiv {{P(H)_{\mathrm{H}}}_{\mathrm{i}}} + 1
 \newcommand{\homesteadmod}{\ensuremath{\varsigma_2}}
 \newcommand{\expdiffsymb}{\ensuremath{\epsilon}}
 \newcommand{\diffadjustment}{x}
-
-\hypertarget{block_difficulty_H__d}{}\linkdest{H__d}The canonical difficulty of a block of header $H$ is defined as $D(H)$:
-\begin{equation}
-D(H) \equiv \begin{dcases}
-2^{34} & \text{if} \quad H_{\mathrm{i}} = 0\\
-\text{max}\!\left(\mindifficulty, {P(H)_{\mathrm{H}}}_{\mathrm{d}} + \diffadjustment\times\homesteadmod + \expdiffsymb \right) & \text{otherwise}\\
-\end{dcases}
-\end{equation}
-where:
-\begin{align}
-\mindifficulty &\equiv 2^{17} \\
-\diffadjustment &\equiv \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{d}}}{2048}\right\rfloor \\
-\homesteadmod &\equiv \text{max}\left( y - \left\lfloor\frac{H_{\mathrm{s}} - {P(H)_{\mathrm{H}}}_{\mathrm{s}}}{9}\right\rfloor, -99 \right) \\
-y &\equiv \begin{cases}
-1 & \text{if} \quad \lVert P(H)_{\mathbf{U}}\rVert = 0 \\
-2 & \text{otherwise}
-\end{cases} \\
-\expdiffsymb &\equiv \left\lfloor 2^{ \left\lfloor H'_{\mathrm{i}} \div 100000 \right\rfloor - 2 } \right\rfloor \\
-H'_{\mathrm{i}} &\equiv \max(H_{\mathrm{i}} - \kappa, 0)
-\end{align}
-\begin{equation}
-\kappa \equiv \begin{cases} 
-  3000000  & \text{if} \quad F_{\mathrm{Byzantium}} \leqslant H_{\mathrm{i}} < F_{\mathrm{Constantinople}} \\
-  5000000  & \text{if} \quad F_{\mathrm{Constantinople}} \leqslant H_{\mathrm{i}} < F_{\mathrm{Muir Glacier}} \\
-  9000000  & \text{if} \quad F_{\mathrm{Muir Glacier}} \leqslant H_{\mathrm{i}} < F_{\mathrm{London}} \\
-  9700000  & \text{if} \quad F_{\mathrm{London}} \leqslant H_{\mathrm{i}} < F_{\mathrm{Arrow Glacier}} \\
- 10700000  & \text{if} \quad F_{\mathrm{Arrow Glacier}} \leqslant H_{\mathrm{i}} < F_{\mathrm{Gray Glacier}} \\
- 11400000  & \text{if} \quad H_{\mathrm{i}} \geqslant F_{\mathrm{Gray Glacier}} \\
-\end{cases}
-\end{equation}
-
-\hypertarget{difficulty_bomb}{}The \textit{Homestead} difficulty parameter, $\homesteadmod$, is used to affect a dynamic homeostasis of time between blocks, as the time between blocks varies, as discussed below, as implemented in EIP-2 by \cite{EIP-2}.
-In the Homestead release, the exponential difficulty symbol, $\expdiffsymb$ causes the difficulty to slowly increase (every 100,000 blocks) at an exponential rate, and thus increasing the block time difference, and putting time pressure on transitioning to proof-of-stake.
-This effect, known as the "difficulty bomb", or "ice age", was explained in EIP-649 by \cite{EIP-649} and delayed and implemented earlier in EIP-2.
-$\homesteadmod$ was also modified in EIP-100 with the use of $x$, the adjustment factor above, and the denominator 9, in order to target the mean block time including uncle blocks by \cite{EIP-100}.
-In the \textit{Byzantium} release, with EIP-649, the ice age was delayed by creating a fake block number, $H'_{\mathrm{i}}$, which is obtained by subtracting three million from the actual block number,
-which in other words reduced $\expdiffsymb$ and the time difference between blocks, in order to allow more time to develop proof-of-stake and preventing the network from "freezing" up.
-Subsequently, EIP-1234 by \cite{EIP-1234}, EIP-2384 by \cite{EIP-2384}, EIP-3554 by \cite{EIP-3554}, EIP-4345 by \cite{EIP-4345}, and EIP-5133 by \cite{EIP-5133} increased the subtrahend $\kappa$.
 
 \linkdest{H__f}The \textit{London} release introduced the block attribute \textit{base fee per gas} \hyperlink{block_baseFeePerGas_H__f}{$H_{\mathrm{f}}$} (see EIP-1559 by \cite{EIP-1559}).
 The base fee is the amount of wei burned per unit of gas consumed while executing transactions within the block.
@@ -678,32 +645,34 @@ To avoid a discontinuity in gas usage, the value of the parent block gas limit f
 H_{\mathrm{s}} > {P(H)_{\mathrm{H}}}_{\mathrm{s}}
 \end{equation}
 
-This mechanism enforces a homeostasis in terms of the time between blocks; a smaller period between the last two blocks results in an increase in the difficulty level and thus additional computation required, lengthening the likely next period. Conversely, if the period is too large, the difficulty, and expected time to the next block, is reduced.
+The \textit{Paris} hard fork changed Ethereum's consensus from proof of work to proof of stake, and thus deprecated many block header properties related to proof of work. These deprecated properties include \textbf{nonce} ($H_{\mathbf{n}}$), \textbf{ommersHash} ($H_{\mathbf{o}}$), \textbf{difficulty} ($H_{\mathbf{d}}$), and \textbf{mixHash} ($H_{\mathbf{m}}$).
 
-The nonce, \linkdest{H__n}\hyperlink{block_nonce_H__n}{$H_{\mathrm{n}}$}, must satisfy the relations:
-\begin{equation}
-n \leqslant \frac{2^{256}}{H_{\mathrm{d}}} \quad \wedge \quad m = H_{\mathrm{m}}
-\end{equation}
-with $(n, m) = \mathtt{PoW}(H_{\hcancel{n}}, H_{\mathrm{n}}, \mathbf{d})$.
+\textbf{mixHash} has been replaced with a new field \textbf{prevRandao} ($H_{\mathbf{a}}$). The other header fields related to proof of work have been replaced with constants:
 
-\hypertarget{block_header_without_nonce_and_mixmash_h__cancel_n}{}\linkdest{H_cancel_n}Where $H_{\hcancel{n}}$ is the new block's header $H$, but \textit{without} the nonce and mix-hash components, $\mathbf{d}$ being the current DAG, a large data set needed to compute the mix-hash, and $\mathtt{PoW}$ is the proof-of-work function (see section \ref{ch:pow}): this evaluates to an array with the first item being the mix-hash, to prove that a correct DAG has been used, and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. Given an approximately uniform distribution in the range $[0, 2^{64})$, the expected time to find a solution is proportional to the difficulty, $H_{\mathrm{d}}$.
+\begin{eqnarray}
+  H_{\mathrm{o}} & \equiv & \mathtt{KEC}( \mathtt{RLP}([])) \\
+  H_{\mathrm{d}} & \equiv  & 0 \\
+  H_{\mathrm{n}}  & \equiv & \texttt{0x0000000000000000}
+\end{eqnarray}
 
-This is the foundation of the security of the blockchain and is the fundamental reason why a malicious node cannot propagate newly created blocks that would otherwise overwrite (``rewrite'') history. Because the nonce must satisfy this requirement, and because its satisfaction depends on the contents of the block and in turn its composed transactions, creating new, valid, blocks is difficult and, over time, requires approximately the total compute power of the trustworthy portion of the mining peers.
+The value of \textbf{prevRandao} must be determined using information from the Beacon Chain.
+While the details of generating the \textit{RANDAO} value on the Beacon Chain is beyond the scope of this paper, we refer to the expected \textit{RANDAO} value for the previous block as $\mathtt{PREVRANDAO}()$.
 
 \hypertarget{block_header_validity_function}{}Thus we are able to define the block header validity function $V(H)$:
 \begin{eqnarray}
-V(H) & \equiv &  n \leqslant \frac{2^{256}}{H_{\mathrm{d}}} \wedge m = H_{\mathrm{m}} \quad \wedge \\
-\nonumber & & H_{\mathrm{d}} = D(H) \quad \wedge \\
-\nonumber& & H_{\mathrm{g}} \le H_{\mathrm{l}}  \quad \wedge \\
+V(H) & \equiv & H_{\mathrm{g}} \le H_{\mathrm{l}}  \quad \wedge \\
 \nonumber& & H_{\mathrm{l}} < {P(H)_{\mathrm{H}}}_{\mathrm{l}'} + \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{l}'}}{1024}\right\rfloor  \quad \wedge \\
 \nonumber& & H_{\mathrm{l}} > {P(H)_{\mathrm{H}}}_{\mathrm{l}'} - \left\lfloor\frac{{P(H)_{\mathrm{H}}}_{\mathrm{l}'}}{1024}\right\rfloor  \quad \wedge \\
 \nonumber& & H_{\mathrm{l}} \geqslant 5000  \quad \wedge \\
 \nonumber& & H_{\mathrm{s}} > {P(H)_{\mathrm{H}}}_{\mathrm{s}} \quad \wedge \\
 \nonumber& & H_{\mathrm{i}} = {P(H)_{\mathrm{H}}}_{\mathrm{i}} +1 \quad \wedge \\
 \nonumber& & \lVert H_{\mathrm{x}} \rVert \le 32 \quad \wedge \\
-\nonumber& & H_{\mathrm{f}} = F(H)
+\nonumber& & H_{\mathrm{f}} = F(H) \wedge \\
+\nonumber& & H_{\mathrm{o}} = \mathtt{KEC}( \mathtt{RLP}([]) ) \quad \wedge \\
+\nonumber& & H_{\mathrm{d}} = 0 \quad \wedge \\
+\nonumber& & H_{\mathrm{n}} = \texttt{0x0000000000000000} \quad \wedge \\
+\nonumber& & H_{\mathrm{a}} = \mathtt{PREVRANDAO}() \\
 \end{eqnarray}
-where $(n, m) = \mathtt{PoW}(H_{\hcancel{n}}, H_{\mathrm{n}}, \mathbf{d})$
 
 Note additionally that \textbf{extraData} must be at most 32 bytes.
 
@@ -713,13 +682,13 @@ In order to avoid issues of network abuse and to sidestep the inevitable questio
 
 Every transaction has a specific amount of gas associated with it: \textbf{gasLimit}. This is the amount of gas which is implicitly purchased from the sender's account balance. The purchase happens at the \textit{effective gas price} defined in section \ref{ch:transactions}. The transaction is considered invalid if the account balance cannot support such a purchase. It is named \textbf{gasLimit} since any unused gas at the end of the transaction is refunded (at the same rate of purchase) to the sender's account. Gas does not exist outside of the execution of a transaction. Thus for accounts with trusted code associated, a relatively high gas limit may be set and left alone.
 
-Since the introduction of EIP-1559 by \cite{EIP-1559} in the \textit{London} hard fork, every transaction included in a block must pay a \textit{base fee}, which is specified as wei per unit of gas consumed and is constant for each transaction within a block. The ether that is paid to meet the base fee is burned (taken out of circulation). The base fee adjusts dynamically as a function of the previous block's gas consumption relative to its \textit{gas target} (a value that is currently half the block's gas limit, which can be adjusted by miners). If the previous block's total gas consumption exceeds the gas target, this indicates excess demand for block space at the current base fee, and the base fee is increased. Conversely, if the gas consumed in the previous block is lower than the gas target, demand for block space is lower than the gas target at the current base fee, and thus the base fee is decreased. This process of adjusting the base fee should bring the average block's gas consumption in line with the gas target. Refer to section \ref{subsec:The_Block} for greater detail on how the base fee is set.
+Since the introduction of EIP-1559 by \cite{EIP-1559} in the \textit{London} hard fork, every transaction included in a block must pay a \textit{base fee}, which is specified as wei per unit of gas consumed and is constant for each transaction within a block. The ether that is paid to meet the base fee is burned (taken out of circulation). The base fee adjusts dynamically as a function of the previous block's gas consumption relative to its \textit{gas target} (a value that is currently half the block's gas limit, which can be adjusted by validators). If the previous block's total gas consumption exceeds the gas target, this indicates excess demand for block space at the current base fee, and the base fee is increased. Conversely, if the gas consumed in the previous block is lower than the gas target, demand for block space is lower than the gas target at the current base fee, and thus the base fee is decreased. This process of adjusting the base fee should bring the average block's gas consumption in line with the gas target. Refer to section \ref{subsec:The_Block} for greater detail on how the base fee is set.
 
-To incentivize miners to include transactions, there is an additional fee known as a \textit{priority fee}, which is also specified as wei per unit of gas consumed. The total fee fee paid by the transactor therefore is the sum of the base fee per gas and the priority fee per gas multiplied by the total gas consumed. Ether used to satisfy the priority fee is delivered to the \textit{beneficiary} address, the address of an account typically under the control of the miner.
+To incentivize validators to include transactions, there is an additional fee known as a \textit{priority fee}, which is also specified as wei per unit of gas consumed. The total fee fee paid by the transactor therefore is the sum of the base fee per gas and the priority fee per gas multiplied by the total gas consumed. Ether used to satisfy the priority fee is delivered to the \textit{beneficiary} address, the address of an account typically under the control of the validator.
 
 Transactors using type 2 transactions can specify the maximum priority fee they are willing to pay (\textbf{maxPriorityFeePerGas}) as well as the max total fee they are willing to pay (\textbf{maxFeePerGas}), inclusive of both the priority fee and the base fee. \textbf{maxFeePerGas} must at least as high as the base fee for the transaction to be included in a block. Type 0 and type 1 transactions have only one field for specifiying a gas price--\textbf{gasPrice}--which also must be at least as high as the base fee for inclusion in a block. The amount by which \textbf{gasPrice} is higher than the base fee constitutes the priority fee in the case of a type 0 or type 1 transaction.
 
-Transactors are free to select any priority fee that they wish, however miners are free to ignore transactions as they choose. A higher priority fee on a transaction will therefore cost the sender more in terms of Ether and deliver a greater value to the miner and thus will more likely be selected for inclusion. Since there will be a (weighted) distribution of minimum acceptable priority fees, transactors will necessarily have a trade-off to make between lowering the priority fee and maximising the chance that their transaction will be mined in a timely manner.
+Transactors are free to select any priority fee that they wish, however validators are free to ignore transactions as they choose. A higher priority fee on a transaction will therefore cost the sender more in terms of Ether and deliver a greater value to the validator and thus will more likely be selected for inclusion. Since there will be a (weighted) distribution of minimum acceptable priority fees, transactors will necessarily have a trade-off to make between lowering the priority fee and maximising the chance that their transaction will be included in a block in a timely manner.
 
 %\subsubsection{Determining Computation Costs}
 
@@ -866,7 +835,7 @@ g^* \equiv g' + \min \left\{ \Big\lfloor \dfrac{T_{\mathrm{g}} - g'}{5} \Big\rfl
 
 The total refundable amount is the legitimately remaining gas $g'$, added to \hyperlink{refund_balance_defn_words_A__r}{$A_{\mathrm{r}}$}, with the latter component being capped up to a maximum of one fifth\footnote{The max refundable proportion of gas was reduced from one half to one fifth by EIP-3529 by \cite{EIP-3529} in the \textit{London} release} (rounded down) of the total amount used $T_{\mathrm{g}} - g'$. Therefore, $g^*$ is the total gas that remains after the transaction has been executed.
 
-The miner, whose address is specified as the beneficiary of the present block $B$, receives the gas consumed multiplied by the transaction's \textit{priority fee per gas}, defined as \hyperlink{priority_fee_f}{$f$} in this section. The ether that is paid by the transactor that goes toward the base fee is debited from the transactor's account but credited to no other account, so it is burned.
+The validator, whose address is specified as the beneficiary of the present block $B$, receives the gas consumed multiplied by the transaction's \textit{priority fee per gas}, defined as \hyperlink{priority_fee_f}{$f$} in this section. The ether that is paid by the transactor that goes toward the base fee is debited from the transactor's account but credited to no other account, so it is burned.
 
 We define the pre-final state $\boldsymbol{\sigma}^*$ in terms of the provisional state $\boldsymbol{\sigma}_{\mathrm{P}}$:
 \begin{eqnarray}
@@ -890,7 +859,7 @@ The final state, $\boldsymbol{\sigma}'$, is reached after deleting all accounts 
 \Upsilon^{\mathrm{z}}(\boldsymbol{\sigma}, T) & \equiv & z
 \end{eqnarray}
 
-These are used to help define the \hyperlink{Transaction_Receipt}{transaction receipt} and are also used \hyperlink{sigma_n}{later} for state and nonce validation.
+These are used to help define the \hyperlink{Transaction_Receipt}{transaction receipt} and are also used \hyperlink{sigma_n}{later} for state validation.
 
 \section{Contract Creation}\label{ch:create}\hypertarget{endow}{}
 
@@ -1325,51 +1294,55 @@ A' & \equiv & A \\
 
 However, instructions do typically alter one or several components of these values. Altered components listed by instruction are noted in Appendix \ref{app:vm}, alongside values for $\alpha$ and $\delta$ and a formal description of the gas requirements.
 
-\section{Blocktree to Blockchain} \label{ch:ghost}
+\section{Transition to Proof of Stake} \label{ch:pos_transition}
+The \textit{Paris} hard fork changed the underlying consensus mechanism of Ethereum from proof of work to proof of stake.
 
-The canonical blockchain is a path from root to leaf through the entire block tree. In order to have consensus over which path it is, conceptually we identify the path that has had the most computation done upon it, or, the \textit{heaviest} path. Clearly one factor that helps determine the heaviest path is the block number of the leaf, equivalent to the number of blocks, not counting the unmined \hyperlink{Genesis_Block}{genesis block}, in the path. The longer the path, the greater the total mining effort that must have been done in order to arrive at the leaf. This is akin to existing schemes, such as that employed in Bitcoin-derived protocols.
+Unlike all previous hard forks of Ethereum, \textit{Paris} was not defined to occur at a particular block height, but rather at a \textit{terminal total difficulty}.
+Total difficulty was used to avoid a scenario in which a minority of hash power could create a malicious fork that could race to satisfy the block height requirement and claim the first proof of stake block.
 
-Since a block header includes the difficulty, the header alone is enough to validate the computation done. Any block contributes toward the total computation or \textit{total difficulty} of a chain.
-
-Thus we define the total difficulty of block $B$ recursively as:
+Thus the \textit{terminal block}, the last proof of work block before the \textit{Paris} fork takes effect, is defined as having:
 \begin{eqnarray}
-B_{\mathrm{t}} & \equiv & B'_{\mathrm{t}} + B_{\mathrm{d}} \\
-B' & \equiv & P(B_{\mathrm{H}})
+  B_{\mathrm{t}} & \geqslant & 58750000000000000000000 \\
+  P(B_{\mathrm{H}})_{\mathrm{t}} & < & 58750000000000000000000
 \end{eqnarray}
 
-As such given a block $B$, $B_{\mathrm{t}}$ is its total difficulty, $B'$ is its parent block and $B_{\mathrm{d}}$ is its difficulty.
+where $B_{\mathrm{t}}$ is the total difficulty of block $B$ and $P(B_{\mathrm{H}})_{\mathrm{t}}$ is the total difficulty of its parent.
+
+Total difficulty for a proof of work (pre-\textit{Paris}) block $B$ is defined recursively as:
+\begin{eqnarray}
+B_{\mathrm{t}} & \equiv & P(B_{\mathrm{H}})_{\mathrm{t}} + H_{\mathrm{d}}
+\end{eqnarray}
+
+where $H_{\mathrm{d}}$ is the difficulty of the current block $B$.
+
+Upon reaching the terminal block, new blocks are processed by the Beacon Chain.
+
+\section{Blocktree to Blockchain} \label{ch:blocktree_to_blockchain}
+
+Prior to the transition to proof of stake at the \textit{Paris} hard fork, the canonical blockchain was defined as the block path with the greatest \textit{total difficulty}, defined in section \ref{ch:pos_transition} as $B_{\mathrm{t}}$.
+
+After reaching the \textit{terminal block} described in section \ref{ch:pos_transition}, the greatest \textit{total difficulty} rule must be removed in favor of a rule known as \textit{LMD Ghost}\footnote{\textit{LMD GHOST} comprises two acronyms, "Latest Message Driven", and "Greedy Heaviest-Observed Sub-Tree".}.
+
+Note that in order to determine what blocks comprise the canonical Ethereum blockchain after \textit{Paris}, one must have additional information from the beacon chain, which is not described herein. We denote events emitted by the beacon chain with the prefix $\mathtt{POS\_}$.
+
+On each occurence of a $\mathtt{POS\_FORKCHOICE\_UPDATED}$ event, starting with the first at the \textit{transition block} described in section \ref{ch:pos_transition}, the canonical chain is defined as the chain beginning with the genesis block and ending at the block nominated by the event as the head of the chain.
+
+The head of the chain should be updated if and only if a $\mathtt{POS\_FORKCHOICE\_UPDATED}$ is emitted, in which case the head should set to the block specified by the event.
+No optimistic updates to the head of the chain should be made.
+
+The $\mathtt{POS\_FORKCHOICE\_UPDATED}$ event additionally references a finalized block.
+The most recent finalized block should be set to this block.
+
+The canonical blockchain must also contain a block with the hash and number of the \textit{terminal block} defined in section \ref{ch:pos_transition}.
 
 \section{Block Finalisation} \label{ch:finalisation}
 
-The process of finalising a block involves four stages:
+The process of finalising a block involves two stages:
 
 \begin{enumerate}
-\item Validate (or, if mining, determine) ommers;
-\item validate (or, if mining, determine) transactions;
-\item apply rewards;
-\item verify (or, if mining, compute a valid) state and \hyperlink{block_nonce}{block nonce}.
+\item validate transactions;
+\item verify state.
 \end{enumerate}
-
-\subsection{Ommer Validation}
-
-The validation of \hyperlink{ommer_block_headers_B__U}{ommer headers} means nothing more than verifying that each ommer header is both a valid header and satisfies the relation of $N$th-generation ommer to the present block where $N \leq 6$. The maximum of ommer headers is two. Formally:
-\begin{equation}
-\lVert B_{\mathbf{U}} \rVert \leqslant 2 \bigwedge_{\mathbf{U} \in B_{\mathbf{U}}} \hyperlink{block_header_validity_function}{V({\mathbf{U}}})\; \wedge \; k({\mathbf{U}}, P(\mathbf{B}_{\mathbf{H}})_{\mathbf{H}}, 6)
-\end{equation}
-
-where $k$ denotes the ``is-kin'' property:
-\begin{equation}
-k(U, H, n) \equiv \begin{cases} \mathit{false} & \text{if} \quad n = 0 \\
-s(U, H) &\\
-\quad \vee \; k(U, P(H)_{\mathrm{H}}, n - 1) & \text{otherwise}
-\end{cases}
-\end{equation}
-
-and $s$ denotes the ``is-sibling'' property:
-\begin{equation}
-s(U, H) \equiv (P(H) = P(U)\; \wedge \; H \neq U \; \wedge \; U \notin B(H)_{\mathbf{U}})
-\end{equation}
-where $B(H)$ and $P(H)$ are the block and the parent block of the corresponding header $H$ respectively.
 
 \subsection{Transaction Validation}
 
@@ -1380,35 +1353,7 @@ The given \textbf{gasUsed} must correspond faithfully to the transactions listed
 \hyperlink{H__g}{B_{\mathrm{H}}}_{\mathrm{g}} = \hyperlink{ell}{\ell}(\hyperlink{R__u}{\mathbf{R})_{\mathrm{u}}}
 \end{equation}
 
-\subsection{Reward Application}
-
-The application of rewards to a block involves raising the balance of the accounts of the beneficiary address of the block and each ommer by a certain amount. We raise the block's beneficiary account by \hyperlink{R__block}{$R_{\mathrm{block}}$}; for each ommer, we raise the block's beneficiary by an additional $\frac{1}{32}$ of the block reward and the beneficiary of the ommer gets rewarded depending on the block number.\hypertarget{Omega}{} Formally we define the function $\Omega$:
-\begin{eqnarray}
-\\ \nonumber
-\Omega(B, \boldsymbol{\sigma}) & \equiv & \boldsymbol{\sigma}': \boldsymbol{\sigma}' = \boldsymbol{\sigma} \quad \text{except:} \\
-\qquad\boldsymbol{\sigma}'[{\mathbf{B}_{\mathrm{H}}}_{\mathrm{c}}]_{\mathrm{b}} & = & \boldsymbol{\sigma}[{\mathbf{B}_{\mathrm{H}}}_{\mathrm{c}}]_{\mathrm{b}} + \left(1 + \frac{\lVert \mathbf{B}_{\mathbf{U}}\rVert}{32}\right)R_{\mathrm{block}} \\
-\\ \nonumber
-\forall \mathbf{U} \in \mathbf{B}_{\mathbf{U}}: \\ \nonumber
-\boldsymbol{\sigma}'[\mathbf{U}_{\mathrm{c}}] & = & \begin{cases}
-\varnothing &\text{if}\ \boldsymbol{\sigma}[\mathbf{U}_{\mathrm{c}}] = \varnothing\ \wedge\ R = 0 \\
-\mathbf{a}' &\text{otherwise}
-\end{cases} \\
-\mathbf{a}' &\equiv& (\boldsymbol{\sigma}[U_{\mathrm{c}}]_{\mathrm{n}}, \boldsymbol{\sigma}[U_{\mathrm{c}}]_{\mathrm{b}} + R, \boldsymbol{\sigma}[U_{\mathrm{c}}]_{\mathbf{s}}, \boldsymbol{\sigma}[U_{\mathrm{c}}]_{\mathrm{c}}) \\
-R & \equiv & \left(1 + \frac{1}{8} (U_{\mathrm{i}} - {B_{\mathrm{H}}}_{\mathrm{i}})\right) R_{\mathrm{block}}
-\end{eqnarray}
-
-If there are collisions of the beneficiary addresses between ommers and the block (i.e. two ommers with the same beneficiary address or an ommer with the same beneficiary address as the present block), additions are applied cumulatively.
-
-\hypertarget{block_reward_R__block}{}\linkdest{R__block}We define the block reward in Wei:
-\begin{equation}
-R_{\mathrm{block}} = 10^{18} \times \begin{cases}
-5 &\text{if}\ H_{\mathrm{i}} < F_{\mathrm{Byzantium}} \\
-3 &\text{if}\ F_{\mathrm{Byzantium}} \leqslant H_{\mathrm{i}} < F_{\mathrm{Constantinople}} \\
-2 &\text{if}\ H_{\mathrm{i}} \geqslant F_{\mathrm{Constantinople}} \\
-\end{cases} \\
-\end{equation}
-
-\subsection{State \& Nonce Validation}\label{sec:statenoncevalidation}
+\subsection{State Validation}\label{sec:statenoncevalidation}
 
 \hypertarget{Gamma}{}We may now define the function, $\Gamma$, that maps a block $B$ to its initiation state:
 \begin{equation}
@@ -1422,15 +1367,11 @@ Here, $\mathtt{TRIE}(L_{\mathrm{S}}(\boldsymbol{\sigma}_{\mathrm{i}}))$ means th
 
 \hypertarget{Phi}{}And finally we define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
 \begin{eqnarray}
-\Phi(B) & \equiv & B': \quad B' = B^* \quad \text{except:} \\
-B'_{\mathrm{n}} & = & n: \quad x \leqslant \frac{2^{256}}{\hyperlink{H__d}{H_{\mathrm{d}}}} \\
-B'_{\mathrm{m}} & = & m \quad \text{with } (x, m) = \mathtt{PoW}(B^*_{\hyperlink{H_cancel_n}{\hcancel{n}}}, n, \mathbf{d}) \\
-B^* & \equiv & B \quad \text{except:} \quad {\hyperlink{Transaction_Receipt}{B^*_{\mathrm{r}}}} = \hyperlink{r}{r}(\hyperlink{Pi}{\Pi}(\Gamma(B), B))
+\Phi(B) & \equiv & B': \quad B' = B \quad \text{except:} \\
+{\hyperlink{Transaction_Receipt}{{B'_{\mathrm{H}}}_{\mathrm{r}}}} & = & \hyperlink{r}{r}(\hyperlink{Pi}{\Pi}(\Gamma(B), B))
 \end{eqnarray}
 
-With $\mathbf{d}$ being a dataset as specified in Appendix \ref{app:ethash}.
-
-As specified at the beginning of the present work, \hyperlink{Pi}{$\Pi$} is the state-transition function, which is defined in terms of \hyperlink{Omega}{$\Omega$}, the block finalisation function and \hyperlink{Upsilon_state_transition}{$\Upsilon$}, the transaction-evaluation function, both now well-defined.
+As specified at the beginning of the present work, \hyperlink{Pi}{$\Pi$} is the state-transition function, which is defined in terms of \hyperlink{Upsilon_state_transition}{$\Upsilon$}, the transaction-evaluation function.
 
 As previously detailed, $\mathbf{R}[n]_{\mathrm{z}}$, $\mathbf{R}[n]_{\mathbf{l}}$ and $\mathbf{R}[n]_{\mathrm{u}}$ are the $n$th corresponding status code, logs and cumulative gas used after each transaction ($\mathbf{R}[n]_{\mathrm{b}}$, the fourth component in the tuple, has already been defined in terms of the logs). We also define the $n$th state $\boldsymbol{\sigma}[n]$, which is defined simply as the state resulting from applying the corresponding transaction to the state resulting from the previous transaction (or the block's initial state in the case of the first such transaction):
 \begin{equation}\linkdest{sigma_n}{}
@@ -1458,37 +1399,12 @@ We define \hyperlink{Upsilon_pow_z}{$\mathbf{R}[n]_{\mathrm{z}}$} in a similar m
 \Upsilon^{\mathrm{z}}(\boldsymbol{\sigma}[n - 1], B_{\mathbf{T}}[n])
 \end{equation}
 
-\hypertarget{Pi}{}Finally, we define $\Pi$ as the new state given the block reward function $\hyperlink{Omega}{\Omega}$ applied to the final transaction's resultant state, $\hyperlink{ell}{\ell}(\boldsymbol{\sigma})$:
+\hypertarget{Pi}{}Finally, we define $\Pi$ as the final transaction's resultant state, $\hyperlink{ell}{\ell}(\boldsymbol{\sigma})$:
 \begin{equation}
-\Pi(\boldsymbol{\sigma}, B) \equiv \hyperlink{Omega}{\Omega}(B, \ell(\boldsymbol{\sigma}))
+\Pi(\boldsymbol{\sigma}, B) \equiv \ell(\boldsymbol{\sigma})
 \end{equation}
 
-Thus the complete block-transition mechanism is defined, except for $\mathtt{PoW}$, the proof-of-work function.
-
-\subsection{Mining Proof-of-Work} \label{ch:pow}
-
-The mining proof-of-work (PoW) exists as a cryptographically secure nonce that proves beyond reasonable doubt that a particular amount of computation has been expended in the determination of some token value $n$. It is utilised to enforce the blockchain security by giving meaning and credence to the notion of difficulty (and, by extension, total difficulty). However, since mining new blocks comes with an attached reward, the proof-of-work not only functions as a method of securing confidence that the blockchain will remain canonical into the future, but also as a wealth distribution mechanism.
-
-For both reasons, there are two important goals of the proof-of-work function; firstly, it should be as accessible as possible to as many people as possible. The requirement of, or reward from, specialised and uncommon hardware should be minimised. This makes the distribution model as open as possible, and, ideally, makes the act of mining a simple swap from electricity to Ether at roughly the same rate for anyone around the world.
-
-Secondly, it should not be possible to make super-linear profits, and especially not so with a high initial barrier. Such a mechanism allows a well-funded adversary to gain a troublesome amount of the network's total mining power and as such gives them a super-linear reward (thus skewing distribution in their favour) as well as reducing the network security.
-
-One plague of the Bitcoin world is ASICs. These are specialised pieces of compute hardware that exist only to do a single task (\cite{ASICSmithMJS}). In Bitcoin's case the task is the SHA256 hash function (\cite{Courtois2014}). While ASICs exist for a proof-of-work function, both goals are placed in jeopardy. Because of this, a proof-of-work function that is ASIC-resistant (i.e. difficult or economically inefficient to implement in specialised compute hardware) has been identified as the proverbial silver bullet.
-
-Two directions exist for ASIC resistance; firstly make it sequential memory-hard, i.e. engineer the function such that the determination of the \hyperlink{block_nonce}{nonce} requires a lot of memory and bandwidth such that the memory cannot be used in parallel to discover multiple nonces simultaneously. The second is to make the type of computation it would need to do general-purpose; the meaning of ``specialised hardware''  for a general-purpose task set is, naturally, general purpose hardware and as such commodity desktop computers are likely to be pretty close to ``specialised hardware'' for the task. For Ethereum 1.0 we have chosen the first path.
-
-More formally, the proof-of-work function takes the form of $\mathtt{PoW}$:
-\begin{equation}
-m = \hyperlink{H__m}{H_{\mathrm{m}}} \quad \wedge \quad n \leqslant \frac{2^{256}}{\hyperlink{H__d}{H_{\mathrm{d}}}} \quad \text{with} \quad (m, n) = \mathtt{PoW}(\hyperlink{H_cancel_n}{H_{\hcancel{n}}}, H_{\mathrm{n}}, \mathbf{d})
-\end{equation}
-
-Where $H_{\hcancel{n}}$ is the new block's header but \textit{without} the nonce and mix-hash components; $H_{\mathrm{n}}$ is the nonce of the header; $\mathbf{d}$ is a large data set needed to compute the mixHash and $H_{\mathrm{d}}$ is the new block's difficulty value (i.e. the block difficulty from section \ref{ch:ghost}). $\mathtt{PoW}$ is the proof-of-work function which evaluates to an array with the first item being the mixHash and the second item being a pseudo-random number cryptographically dependent on $H$ and $\mathbf{d}$. The underlying algorithm is called Ethash and is described below.
-\subsubsection{Ethash}
-Ethash is the PoW algorithm for Ethereum 1.0. It is the latest version of Dagger-Hashimoto, introduced by \cite{dagger} and \cite{hashimoto}, although it can no longer appropriately be called that since many of the original features of both algorithms were drastically changed with R\&D from February 2015 until May 4 2015 (\cite{commitdateforEthash}). The general route that the algorithm takes is as follows:
-
-There exists a seed which can be computed for each block by scanning through the block headers up until that point. From the seed, one can compute a pseudorandom cache, $\hyperlink{J__cacheinit}{J_{\mathrm{cacheinit}}}$ bytes in initial size. Light clients store the cache. From the cache, we can generate a dataset, $\hyperlink{J__datasetinit}{J_{\mathrm{datasetinit}}}$ bytes in initial size, with the property that each item in the dataset depends on only a small number of items from the cache. Full clients and miners store the dataset. The dataset grows linearly with time.
-
-Mining involves grabbing random slices of the dataset and hashing them together. Verification can be done with low memory by using the cache to regenerate the specific pieces of the dataset that you need, so you only need to store the cache. The large dataset is updated once every $\hyperlink{J__epoch}{J_{\mathrm{epoch}}}$ blocks, so the vast majority of a miner's effort will be reading the dataset, not making changes to it. The mentioned parameters as well as the algorithm is explained in detail in Appendix \ref{app:ethash}.
+Thus the complete block-transition mechanism (before consensus) is defined.
 
 \section{Implementing Contracts}
 
@@ -1500,23 +1416,15 @@ A data feed contract is one which provides a single service: it gives access to 
 The general pattern involves a single contract within Ethereum which, when given a message call, replies with some timely information concerning an external phenomenon. An example might be the local temperature of New York City. This would be implemented as a contract that returned that value of some known point in storage. Of course this point in storage must be maintained with the correct such temperature, and thus the second part of the pattern would be for an external server to run an Ethereum node, and immediately on discovery of a new block, creates a new valid transaction, sent to the contract, updating said value in storage. The contract's code would accept such updates only from the identity contained on said server.
 
 \subsection{Random Numbers}
-Providing random numbers within a deterministic system is, naturally, an impossible task. However, we can approximate with pseudo-random numbers by utilising data which is generally unknowable at the time of transacting. Such data might include the block's hash, the block's timestamp and the block's beneficiary address. In order to make it hard for malicious miners to control those values, one should use the {\small \hyperlink{blockhash}{BLOCKHASH}} operation in order to use hashes of the previous 256 blocks as pseudo-random numbers. For a series of such numbers, a trivial solution would be to add some constant amount and hashing the result.
+Providing random numbers within a deterministic system is, naturally, an impossible task. However, we can approximate with pseudo-random numbers by utilising data which is generally unknowable at the time of transacting. Such data might include the block's hash, the block's timestamp and the block's beneficiary address. In order to make it hard for malicious validators to control those values, one should use the {\small \hyperlink{blockhash}{BLOCKHASH}} operation in order to use hashes of the previous 256 blocks as pseudo-random numbers. For a series of such numbers, a trivial solution would be to add some constant amount and hashing the result.
 
 \section{Future Directions} \label{ch:future}
 
 The state database won't be forced to maintain all past state \hyperlink{trie}{trie} structures into the future. It should maintain an age for each node and eventually discard nodes that are neither recent enough nor checkpoints. Checkpoints, or a set of nodes in the database that allow a particular block's state trie to be traversed, could be used to place a maximum limit on the amount of computation needed in order to retrieve any state throughout the blockchain.
 
-Blockchain consolidation could be used in order to reduce the amount of blocks a client would need to download to act as a full, mining, node. A compressed archive of the trie structure at given points in time (perhaps one in every 10,000th block) could be maintained by the peer network, effectively recasting the \hyperlink{Genesis_Block}{genesis block}. This would reduce the amount to be downloaded to a single archive plus a hard maximum limit  of blocks.
+Blockchain consolidation could be used in order to reduce the amount of blocks a client would need to download to act as a full node. A compressed archive of the trie structure at given points in time (perhaps one in every 10,000th block) could be maintained by the peer network, effectively recasting the \hyperlink{Genesis_Block}{genesis block}. This would reduce the amount to be downloaded to a single archive plus a hard maximum limit  of blocks.
 
 Finally, blockchain compression could perhaps be conducted: nodes in state trie that haven't sent/received a transaction in some constant amount of blocks could be thrown out, reducing both Ether-leakage and the growth of the state database.
-
-\subsection{Scalability}
-
-Scalability remains an eternal concern. With a generalised state transition function, it becomes difficult to partition and parallelise transactions to apply the divide-and-conquer strategy. Unaddressed, the dynamic value-range of the system remains essentially fixed and as the average transaction value increases, the less valuable of them become ignored, being economically pointless to include in the main ledger. However, several strategies exist that may potentially be exploited to provide a considerably more scalable protocol.
-
-Some form of hierarchical structure, achieved by either consolidating smaller lighter-weight chains into the main block or building the main block through the incremental combination and adhesion (through proof-of-work) of smaller transaction sets may allow parallelisation of transaction combination and block-building. Parallelism could also come from a prioritised set of parallel blockchains, consolidating each block and with duplicate or invalid transactions thrown out accordingly.
-
-Finally, verifiable computation, if made generally available and efficient enough, may provide a route to allow the proof-of-work to be the verification of final state.
 
 \section{Conclusion} \label{ch:conclusion}
 
@@ -1556,7 +1464,7 @@ The source of this paper is maintained at \url{https://github.com/ethereum/yello
 
 \item[Message Call] The act of passing a message from one Account to another. If the destination account is associated with non-empty EVM Code, then the VM will be started with the state of said Object and the Message acted upon. If the message sender is an Autonomous Object, then the Call passes any data returned from the VM operation.
 
-\item[Gas] The fundamental network cost unit. Paid for exclusively by Ether (as of PoC-4), which is converted freely to and from Gas as required. Gas does not exist outside of the internal Ethereum computation engine; its price is set by the Transaction and miners are free to ignore Transactions whose Gas price is too low.
+\item[Gas] The fundamental network cost unit. Paid for exclusively by Ether (as of PoC-4), which is converted freely to and from Gas as required. Gas does not exist outside of the internal Ethereum computation engine; its price is set by the Transaction and validators are free to ignore Transactions whose Gas price is too low.
 
 \item[Contract] Informal term used to mean both a piece of EVM Code that may be associated with an Account or an Autonomous Object.
 
@@ -2197,7 +2105,7 @@ with $C_\text{\tiny CALL}$, $C_\text{\tiny SELFDESTRUCT}$, $C_\text{\tiny SLOAD}
 
 $W_{\mathrm{zero}}$ = \{{\small STOP}, {\small RETURN}, {\small REVERT}\}
 
-$W_{\mathrm{base}}$ = \{{\small ADDRESS}, {\small ORIGIN}, {\small CALLER}, {\small CALLVALUE}, {\small CALLDATASIZE}, {\small CODESIZE}, {\small GASPRICE}, {\small COINBASE},\newline \noindent\hspace*{1cm} {\small TIMESTAMP}, {\small NUMBER}, {\small DIFFICULTY}, {\small GASLIMIT}, {\small CHAINID}, {\small RETURNDATASIZE}, {\small POP}, {\small PC}, {\small MSIZE}, {\small GAS}, \newline \noindent\hspace*{1cm} {\small BASEFEE}\}
+$W_{\mathrm{base}}$ = \{{\small ADDRESS}, {\small ORIGIN}, {\small CALLER}, {\small CALLVALUE}, {\small CALLDATASIZE}, {\small CODESIZE}, {\small GASPRICE}, {\small COINBASE},\newline \noindent\hspace*{1cm} {\small TIMESTAMP}, {\small NUMBER}, {\small PREVRANDAO}, {\small GASLIMIT}, {\small CHAINID}, {\small RETURNDATASIZE}, {\small POP}, {\small PC}, {\small MSIZE}, {\small GAS}, \newline \noindent\hspace*{1cm} {\small BASEFEE}\}
 
 $W_{\mathrm{verylow}}$ = \{{\small ADD}, {\small SUB}, {\small NOT}, {\small LT}, {\small GT}, {\small SLT}, {\small SGT}, {\small EQ}, {\small ISZERO}, {\small AND}, {\small OR}, {\small XOR}, {\small BYTE}, {\small SHL}, {\small SHR}, {\small SAR}, \newline \noindent\hspace*{1cm} {\small CALLDATALOAD}, {\small MLOAD}, {\small MSTORE}, {\small MSTORE8}, {\small PUSH*}, {\small DUP*}, {\small SWAP*}\}
 
@@ -2416,7 +2324,7 @@ Here given are the various exceptions to the state transition rules given in sec
 0x3a & {\small GASPRICE} & 0 & 1 & Get price of gas in current environment. \\
 &&&& This is the \textit{effective gas price} defined in section \ref{ch:transactions}. \\
 &&&& Note that as of the \textit{London} hard fork, this value no longer \\ 
-&&&& represents what is received by the miner, \\
+&&&& represents what is received by the validator, \\
 &&&& but rather just what is paid by the sender. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv I_{\mathrm{p}}$ \\
 \midrule
@@ -2480,8 +2388,8 @@ Here given are the various exceptions to the state transition rules given in sec
 0x43 & {\small NUMBER} & 0 & 1 & Get the current block's number. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{\mathrm{H}}}_{\mathrm{i}}$ \\
 \midrule
-0x44 & {\small DIFFICULTY} & 0 & 1 & Get the current block's difficulty. \\
-&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{\mathrm{H}}}_{\mathrm{d}}$ \\
+0x44 & {\small PREVRANDAO} & 0 & 1 & Get the latest RANDAO mix of the post beacon state of the previous block. \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{\mathrm{H}}}_{\mathrm{a}}$ \\
 \midrule
 0x45 & {\small GASLIMIT} & 0 & 1 & Get the current block's gas limit. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{\mathrm{H}}}_{\mathrm{l}}$ \\
@@ -2826,6 +2734,9 @@ Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $
 The proof-of-concept series include a development premine, making the state root hash some value $stateRoot$. Also $time$ will be set to the initial timestamp of the genesis block. The latest documentation should be consulted for those values.
 
 \section{Ethash}\label{app:ethash}
+\subsection{Deprecation}
+This section is kept for historical purposes, but the Ethash algorithm is no longer used for consensus as of the \textit{Paris} hard fork.
+
 \subsection{Definitions}
 We employ the following definitions:
 
