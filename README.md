@@ -16,7 +16,7 @@ It does **not** contain changes introduced in [Paris](https://github.com/ethereu
 
 An alternative [Python Execution Layer specification](https://ethereum.github.io/execution-specs/) is actively maintained and up to date. 
 
-If you would like to update the Yellow Paper to include missing pre-merge network upgrades, you can apply for a grant [here](https://esp.ethereum.foundation/applicants/project-grants/apply). 
+If you would like to update the Yellow Paper to include missing post-merge network upgrades, you can apply for a grant [here](https://esp.ethereum.foundation/applicants/project-grants/apply). 
 
 ## Usage
 
