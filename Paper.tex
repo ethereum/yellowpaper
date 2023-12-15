@@ -671,7 +671,7 @@ V(H) & \equiv & H_{\mathrm{g}} \le H_{\mathrm{l}}  \quad \wedge \\
 \nonumber& & H_{\mathrm{o}} = \mathtt{KEC}( \mathtt{RLP}([]) ) \quad \wedge \\
 \nonumber& & H_{\mathrm{d}} = 0 \quad \wedge \\
 \nonumber& & H_{\mathrm{n}} = \texttt{0x0000000000000000} \quad \wedge \\
-\nonumber& & H_{\mathrm{a}} = \mathtt{PREVRANDAO}() \\
+\nonumber& & H_{\mathrm{a}} = \mathtt{PREVRANDAO}()
 \end{eqnarray}
 
 Note additionally that \textbf{extraData} must be at most 32 bytes.
@@ -1297,8 +1297,8 @@ However, instructions do typically alter one or several components of these valu
 \section{Transition to Proof of Stake} \label{ch:pos_transition}
 The \textit{Paris} hard fork changed the underlying consensus mechanism of Ethereum from proof of work to proof of stake.
 
-Unlike all previous hard forks of Ethereum, \textit{Paris} was not defined to occur at a particular block height, but rather at a \textit{terminal total difficulty}.
-Total difficulty was used to avoid a scenario in which a minority of hash power could create a malicious fork that could race to satisfy the block height requirement and claim the first proof of stake block.
+Unlike all previous hard forks of Ethereum, \textit{Paris} was not defined to occur at a particular block height, but rather after a specified \textit{terminal total difficulty} was reached.
+Total difficulty was used instead of block height to avoid a scenario in which a minority of hash power could create a malicious fork that could race to satisfy the block height requirement and claim the first proof of stake block.
 
 Thus the \textit{terminal block}, the last proof of work block before the \textit{Paris} fork takes effect, is defined as having:
 \begin{eqnarray}
