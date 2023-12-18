@@ -173,7 +173,13 @@ The execution layer defines the rules for interacting with and updating the stat
 The consensus layer is described in greater detail in the \href{https://github.com/ethereum/consensus-specs}{consensus specifications}.
 How the consensus layer is used to determine the canonical state of Ethereum is discussed in section \ref{ch:blocktree_to_blockchain}.
 
-Sometimes, a path follows a new protocol from a particular height (block number).
+There are many versions of Ethereum, as the protocol has undergone a number of updates.
+These updates can be specified to occur:
+\begin{itemize}
+  \item at a particular block number in the case of pre-\textit{Paris} updates,
+  \item after reaching a \textit{terminal total difficulty} in the case of the \textit{Paris} update, or
+  \item at a particular block timestamp in the case of post-\textit{Paris} updates.
+\end{itemize}
 This document describes the \textit{Paris} version.
 
 In order to follow back the history of a path, one must reference multiple versions of this document.
@@ -196,7 +202,7 @@ $F_{\mathrm{Berlin}}$            & 12244000 \\
 $F_{\mathrm{London}}$            & 12965000 \\
 $F_{\mathrm{Arrow Glacier}}$     & 13773000 \\
 $F_{\mathrm{Gray Glacier}}$      & 15050000 \\
-$F_{\mathrm{Paris}}$      & 15537393 \\
+$F_{\mathrm{Paris}}$             & 15537394 \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -409,13 +415,13 @@ T_{\mathbf{t}} \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_{\mathrm{t}
 
 \subsection{The Block}\linkdest{block}\label{subsec:The_Block}
 
-The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$,\hypertarget{ommerheaders}{} and a now deprecated property $\mathbf{U}$ that prior to the \textit{Paris} hard fork contained headers equal to the present block's parent's parent (such blocks are known as \textit{ommers}\footnote{\textit{ommer} is a gender-neutral term to mean ``sibling of parent''; see \url{https://nonbinary.miraheze.org/wiki/Gender_neutral_language_in_English\#Aunt/Uncle}}). The block header contains several pieces of information:
+The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$,\hypertarget{ommerheaders}{} and a now deprecated property $\mathbf{U}$ that prior to the \textit{Paris} hard fork contained headers of blocks whose parents were equal to the present block's parent's parent (such blocks were known as \textit{ommers}\footnote{\textit{ommer} is a gender-neutral term to mean ``sibling of parent''; see \url{https://nonbinary.miraheze.org/wiki/Gender_neutral_language_in_English\#Aunt/Uncle}}). The block header contains several pieces of information:
 
 %\textit{TODO: Introduce logs}
 
 \begin{description}
 \item[parentHash]\linkdest{parent_Hash_H__p_def_words}{} The Keccak 256-bit hash of the parent block's header, in its entirety; formally $H_{\mathrm{p}}$.
-\item[ommersHash] A 256-bit hash field that is now deprecated due the replacement of proof of work consensus. It is now to a constant, \texttt{Keccak256(RLP([]))}; formally $H_{\mathrm{o}}$.
+\item[ommersHash] A 256-bit hash field that is now deprecated due the replacement of proof of work consensus. It is now to a constant, $\texttt{KEC}(\texttt{RLP}(()))$; formally $H_{\mathrm{o}}$.
 \item[beneficiary]\linkdest{beneficiary_H__c}{}\linkdest{H__c} The 160-bit address to which priority fees from this block are transferred; formally $H_{\mathrm{c}}$.
 \item[stateRoot] The Keccak 256-bit hash of the root node of the state trie, after all transactions are executed and finalisations applied; formally $H_{\mathrm{r}}$.
 \item[transactionsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with each transaction in the transactions list portion of the block; formally $H_{\mathrm{t}}$.
@@ -650,7 +656,7 @@ The \textit{Paris} hard fork changed Ethereum's consensus from proof of work to 
 \textbf{mixHash} has been replaced with a new field \textbf{prevRandao} ($H_{\mathbf{a}}$). The other header fields related to proof of work have been replaced with constants:
 
 \begin{eqnarray}
-  H_{\mathrm{o}} & \equiv & \mathtt{KEC}( \mathtt{RLP}([])) \\
+  H_{\mathrm{o}} & \equiv & \texttt{KEC}(\texttt{RLP}(())) \\
   H_{\mathrm{d}} & \equiv  & 0 \\
   H_{\mathrm{n}}  & \equiv & \texttt{0x0000000000000000}
 \end{eqnarray}
@@ -668,7 +674,7 @@ V(H) & \equiv & H_{\mathrm{g}} \le H_{\mathrm{l}}  \quad \wedge \\
 \nonumber& & H_{\mathrm{i}} = {P(H)_{\mathrm{H}}}_{\mathrm{i}} +1 \quad \wedge \\
 \nonumber& & \lVert H_{\mathrm{x}} \rVert \le 32 \quad \wedge \\
 \nonumber& & H_{\mathrm{f}} = F(H) \wedge \\
-\nonumber& & H_{\mathrm{o}} = \mathtt{KEC}( \mathtt{RLP}([]) ) \quad \wedge \\
+\nonumber& & H_{\mathrm{o}} = \texttt{KEC}(\texttt{RLP}(())) \quad \wedge \\
 \nonumber& & H_{\mathrm{d}} = 0 \quad \wedge \\
 \nonumber& & H_{\mathrm{n}} = \texttt{0x0000000000000000} \quad \wedge \\
 \nonumber& & H_{\mathrm{a}} = \mathtt{PREVRANDAO}()
@@ -1416,7 +1422,7 @@ A data feed contract is one which provides a single service: it gives access to 
 The general pattern involves a single contract within Ethereum which, when given a message call, replies with some timely information concerning an external phenomenon. An example might be the local temperature of New York City. This would be implemented as a contract that returned that value of some known point in storage. Of course this point in storage must be maintained with the correct such temperature, and thus the second part of the pattern would be for an external server to run an Ethereum node, and immediately on discovery of a new block, creates a new valid transaction, sent to the contract, updating said value in storage. The contract's code would accept such updates only from the identity contained on said server.
 
 \subsection{Random Numbers}
-Providing random numbers within a deterministic system is, naturally, an impossible task. However, we can approximate with pseudo-random numbers by utilising data which is generally unknowable at the time of transacting. Such data might include the block's hash, the block's timestamp and the block's beneficiary address. In order to make it hard for malicious validators to control those values, one should use the {\small \hyperlink{blockhash}{BLOCKHASH}} operation in order to use hashes of the previous 256 blocks as pseudo-random numbers. For a series of such numbers, a trivial solution would be to add some constant amount and hashing the result.
+Providing random numbers within a deterministic system is, naturally, an impossible task. However, we can approximate with pseudo-random numbers by utilising data which is generally unknowable at the time of transacting. Such data might include the block's hash and the block's beneficiary address. In order to make it hard for malicious validators to control those values, one should use the {\small \hyperlink{blockhash}{BLOCKHASH}} operation in order to use hashes of the previous 256 blocks as pseudo-random numbers. For a series of such numbers, a trivial solution would be to add some constant amount and hashing the result.
 
 \section{Future Directions} \label{ch:future}
 
