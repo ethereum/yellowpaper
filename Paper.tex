@@ -421,7 +421,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 
 \begin{description}
 \item[parentHash]\linkdest{parent_Hash_H__p_def_words}{} The Keccak 256-bit hash of the parent block's header, in its entirety; formally $H_{\mathrm{p}}$.
-\item[ommersHash] A 256-bit hash field that is now deprecated due the replacement of proof of work consensus. It is now to a constant, $\texttt{KEC}(\texttt{RLP}(()))$; formally $H_{\mathrm{o}}$.
+\item[ommersHash] A 256-bit hash field that is now deprecated due to the replacement of proof of work consensus. It is now to a constant, $\texttt{KEC}(\texttt{RLP}(()))$; formally $H_{\mathrm{o}}$.
 \item[beneficiary]\linkdest{beneficiary_H__c}{}\linkdest{H__c} The 160-bit address to which priority fees from this block are transferred; formally $H_{\mathrm{c}}$.
 \item[stateRoot] The Keccak 256-bit hash of the root node of the state trie, after all transactions are executed and finalisations applied; formally $H_{\mathrm{r}}$.
 \item[transactionsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with each transaction in the transactions list portion of the block; formally $H_{\mathrm{t}}$.
