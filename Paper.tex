@@ -499,10 +499,10 @@ Notably, it treats $\mathbf{x}$ as big-endian (more significant bits will have s
 
 \subsubsection{Holistic Validity}
 
-\linkdest{block_validity}{}We can assert a block's validity if and only if it satisfies several conditions: its ommers field $B_{\mathbf{U}}$ must be an empty array and it must be internally consistent with the given transactions $B_{\mathbf{T}}$ (as specified in sec \ref{ch:finalisation}), when executed in order on the base state $\boldsymbol{\sigma}$ (derived from the final state of the parent block), result in a new state of the identity $H_{\mathrm{r}}$:
+\linkdest{block_validity}{}We can assert a block's validity if and only if it satisfies several conditions: the block's ommers field $B_{\mathbf{U}}$ must be an empty array and the block's header must be consistent with the given transactions $B_{\mathbf{T}}$. For the header to be consistent with the transactions $B_{\mathbf{T}}$, \textbf{stateRoot} ($H_{\mathrm{r}}$) must match the resultant state after executing all transactions in order on the base state $\boldsymbol{\sigma}$ (as specified in section \ref{ch:finalisation}), and \textbf{transactionsRoot} ($H_{\mathrm{t}}$), \textbf{receiptsRoot} ($H_{\mathrm{e}}$), and \textbf{logsBloom} ($H_{\mathrm{b}}$) must be correctly derived from the transactions themselves, the transaction receipts resulting from execution, and the resulting logs, respectively.
 \begin{equation}
 \begin{array}[t]{lclc}
-B_{\mathbf{U}} &\equiv& [] & \wedge \\
+B_{\mathbf{U}} &\equiv& () & \wedge \\
 \linkdest{new_state_H__r}{}H_{\mathrm{r}} &\equiv& \mathtt{TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) & \wedge \\
 \linkdest{tx_block_hash_H__t}{}H_{\mathrm{t}} &\equiv& \mathtt{TRIE}(\{\forall i < \lVert B_{\mathbf{T}} \rVert, i \in \mathbb{N}: &\\&& \quad\quad p_{\mathrm{T}}(i, B_{\mathbf{T}}[i])\}) & \wedge \\
 \linkdest{Receipts_Root_H__e}{}H_{\mathrm{e}} &\equiv& \mathtt{TRIE}(\{\forall i < \lVert B_{\mathbf{R}} \rVert, i \in \mathbb{N}: &\\&& \quad\quad p_{\mathrm{R}}(i, B_{\mathbf{R}}[i])\}) & \wedge \\
