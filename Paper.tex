@@ -1327,9 +1327,9 @@ Upon reaching the terminal block, new blocks are processed by the Beacon Chain.
 
 Prior to the transition to proof of stake at the \textit{Paris} hard fork, the canonical blockchain was defined as the block path with the greatest \textit{total difficulty}, defined in section \ref{ch:pos_transition} as $B_{\mathrm{t}}$.
 
-After reaching the \textit{terminal block} described in section \ref{ch:pos_transition}, the greatest \textit{total difficulty} rule must be removed in favor of a rule known as \textit{LMD Ghost}\footnote{\textit{LMD GHOST} comprises two acronyms, "Latest Message Driven", and "Greedy Heaviest-Observed Sub-Tree".}.
+After reaching the \textit{terminal block} described in section \ref{ch:pos_transition}, the greatest \textit{total difficulty} rule must be removed in favor of a rule known as \textit{LMD Ghost}.\footnote{\textit{LMD GHOST} comprises two acronyms, "Latest Message Driven", and "Greedy Heaviest-Observed Sub-Tree".}
 
-Note that in order to determine what blocks comprise the canonical Ethereum blockchain after \textit{Paris}, one must have additional information from the beacon chain, which is not described herein. We denote events emitted by the beacon chain with the prefix $\mathtt{POS\_}$.
+Note that in order to determine what blocks comprise the canonical Ethereum blockchain after \textit{Paris}, one must have additional information from the Beacon Chain, which is not described herein. We denote events emitted by the Beacon Chain with the prefix $\mathtt{POS\_}$.
 
 On each occurence of a $\mathtt{POS\_FORKCHOICE\_UPDATED}$ event, starting with the first at the \textit{transition block} described in section \ref{ch:pos_transition}, the canonical chain is defined as the chain beginning with the genesis block and ending at the block nominated by the event as the head of the chain.
 
