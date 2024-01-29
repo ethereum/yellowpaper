@@ -44,3 +44,4 @@ The previous protocol versions are listed in [BRANCHES.md](./BRANCHES.md).
 ### Other language versions
 - [Chinese](https://github.com/yuange1024/ethereum_yellowpaper) translated by YuanGe and GaoTianlu.
 - [French](https://github.com/asseth/yellowpaper) translated by Asseth (checkout to branch 'french' ).
+- [Vietnamese](https://github.com/kodyfanz/ethereum_yellowpaper_vn) translated by KodyFanz (checkout to branch 'vietnamese').
