@@ -825,8 +825,12 @@ Evaluating $\boldsymbol{\sigma}_{\mathrm{P}}$ from $\boldsymbol{\sigma}_0$ depen
 where
 \begin{align}
 A^* & \equiv A^0 \quad \text{except} \\
-A^*_{\mathbf{a}} & \equiv A^0_{\mathbf{a}} \cup \{S(T)\} \cup_{E \in T_{\mathbf{A}}} \{ \hyperlink{access_list_entry}{E}_{\mathrm{a}} \} \\
-A^*_{\mathbf{K}} & \equiv \bigcup_{E \in T_{\mathbf{A}}} \big\{ \forall i < \lVert E_{\mathbf{s}} \rVert, i \in \mathbb{N}: \; (E_{\mathrm{a}}, E_{\mathbf{s}}[i]) \big\}
+A^*_{\mathbf{K}} & \equiv \bigcup_{E \in T_{\mathbf{A}}} \big\{ \forall i < \lVert E_{\mathbf{s}} \rVert, i \in \mathbb{N}: \; (E_{\mathrm{a}}, E_{\mathbf{s}}[i]) \big\} \\
+A^*_{\mathbf{a}} & \equiv \begin{cases}
+a \cup T_{\mathrm{t}} & \text{if} \quad T_{\mathrm{t}} \neq \varnothing \\
+a & \text{otherwise}
+\end{cases} \\
+a & \equiv A^0_{\mathbf{a}} \cup \{S(T)\} \cup_{E \in T_{\mathbf{A}}} \{ \hyperlink{access_list_entry}{E}_{\mathrm{a}} \}
 \end{align}
 and $g$ is the amount of gas remaining after deducting the basic amount required to pay for the existence of the transaction:
 \begin{equation}
