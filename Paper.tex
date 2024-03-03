@@ -1335,7 +1335,7 @@ After reaching the \textit{terminal block} described in section \ref{ch:pos_tran
 
 Note that in order to determine what blocks comprise the canonical Ethereum blockchain after \textit{Paris}, one must have additional information from the Beacon Chain, which is not described herein. We denote events emitted by the Beacon Chain with the prefix $\mathtt{POS\_}$.
 
-On each occurence of a $\mathtt{POS\_FORKCHOICE\_UPDATED}$ event, starting with the first at the \textit{transition block} described in section \ref{ch:pos_transition}, the canonical chain is defined as the chain beginning with the genesis block and ending at the block nominated by the event as the head of the chain.
+On each occurrence of a $\mathtt{POS\_FORKCHOICE\_UPDATED}$ event, starting with the first at the \textit{transition block} described in section \ref{ch:pos_transition}, the canonical chain is defined as the chain beginning with the genesis block and ending at the block nominated by the event as the head of the chain.
 
 The head of the chain should be updated if and only if a $\mathtt{POS\_FORKCHOICE\_UPDATED}$ is emitted, in which case the head should set to the block specified by the event.
 No optimistic updates to the head of the chain should be made.
