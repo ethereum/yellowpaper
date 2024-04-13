@@ -2115,9 +2115,9 @@ with $C_\text{\tiny CALL}$, $C_\text{\tiny SELFDESTRUCT}$, $C_\text{\tiny SLOAD}
 
 $W_{\mathrm{zero}}$ = \{{\small STOP}, {\small RETURN}, {\small REVERT}\}
 
-$W_{\mathrm{base}}$ = \{{\small ADDRESS}, {\small ORIGIN}, {\small CALLER}, {\small CALLVALUE}, {\small CALLDATASIZE}, {\small CODESIZE}, {\small GASPRICE}, {\small COINBASE},\newline \noindent\hspace*{1cm} {\small TIMESTAMP}, {\small NUMBER}, {\small PREVRANDAO}, {\small GASLIMIT}, {\small CHAINID}, {\small RETURNDATASIZE}, {\small POP}, {\small PC}, {\small MSIZE}, {\small GAS}, \newline \noindent\hspace*{1cm} {\small BASEFEE}\}
+$W_{\mathrm{base}}$ = \{{\small ADDRESS}, {\small ORIGIN}, {\small CALLER}, {\small CALLVALUE}, {\small CALLDATASIZE}, {\small CODESIZE}, {\small GASPRICE}, {\small COINBASE},\newline \noindent\hspace*{1cm} {\small TIMESTAMP}, {\small NUMBER}, {\small PREVRANDAO}, {\small GASLIMIT}, {\small CHAINID}, {\small RETURNDATASIZE}, {\small POP}, {\small PC}, {\small MSIZE}, {\small GAS}, \newline \noindent\hspace*{1cm} {\small BASEFEE}, {\small PUSH0}\}
 
-$W_{\mathrm{verylow}}$ = \{{\small ADD}, {\small SUB}, {\small NOT}, {\small LT}, {\small GT}, {\small SLT}, {\small SGT}, {\small EQ}, {\small ISZERO}, {\small AND}, {\small OR}, {\small XOR}, {\small BYTE}, {\small SHL}, {\small SHR}, {\small SAR}, \newline \noindent\hspace*{1cm} {\small CALLDATALOAD}, {\small MLOAD}, {\small MSTORE}, {\small MSTORE8}, {\small PUSH*}, {\small DUP*}, {\small SWAP*}\}
+$W_{\mathrm{verylow}}$ = \{{\small ADD}, {\small SUB}, {\small NOT}, {\small LT}, {\small GT}, {\small SLT}, {\small SGT}, {\small EQ}, {\small ISZERO}, {\small AND}, {\small OR}, {\small XOR}, {\small BYTE}, {\small SHL}, {\small SHR}, {\small SAR}, \newline \noindent\hspace*{1cm} {\small CALLDATALOAD}, {\small MLOAD}, {\small MSTORE}, {\small MSTORE8}, {\small PUSH1}, ..., {\small PUSH32}, {\small DUP*}, {\small SWAP*}\}
 
 $W_{\mathrm{low}}$ = \{{\small MUL}, {\small DIV}, {\small SDIV}, {\small MOD}, {\small SMOD}, {\small SIGNEXTEND}, {\small SELFBALANCE}\}
 
@@ -2514,8 +2514,11 @@ G_{\mathrm{sreset}} - G_{\mathrm{warmaccess}} & \text{if} \quad v_0 = v' \; \wed
 
 \begin{tabu}{\usetabu{opcodes}}
 \toprule
-\multicolumn{5}{c}{\textbf{60s \& 70s: Push Operations}} \vspace{5pt} \\
+\multicolumn{5}{c}{\textbf{5f, 60s \& 70s: Push Operations}} \vspace{5pt} \\
 \textbf{Value} & \textbf{Mnemonic} & $\delta$ & $\alpha$ & \textbf{Description} \vspace{5pt} \\
+0x5f & {\small PUSH0} & 0 & 1 & Place 0 on the stack. \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv 0$ \\
+\midrule
 0x60 & {\small PUSH1} & 0 & 1 & Place 1 byte item on stack. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv c(\boldsymbol{\mu}_{\mathrm{pc}} + 1)$ \\
 &&&& $\text{where} \quad c(x) \equiv \begin{cases} I_{\mathbf{b}}[x] & \text{if} \quad x < \lVert I_{\mathbf{b}} \rVert \\ 0 & \text{otherwise} \end{cases}$ \\
