@@ -743,7 +743,7 @@ where $\hyperlink{precompiled_set}{\pi}$ is the set of all precompiled addresses
 \hypertarget{intrinsic_gas_g_0}{}We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
 \begin{align}
 g_0 \equiv {} & \sum_{i \in T_{\mathbf{i}}, T_{\mathbf{d}}} \begin{cases} \hyperlink{G__txdatazero}{G_{\mathrm{txdatazero}}} & \text{if} \quad i = 0 \\ \hyperlink{G__txdatanonzero}{G_{\mathrm{txdatanonzero}}} & \text{otherwise} \end{cases} \\
-\nonumber {} & + \begin{cases} \hyperlink{G__txcreate}{G_{\mathrm{txcreate}}} & \text{if} \quad T_{\mathrm{t}} = \varnothing \\ 0 & \text{otherwise} \end{cases} \\
+\nonumber {} & + \begin{cases} \hyperlink{G__txcreate}{G_{\mathrm{txcreate}}} + \hyperlink{initcode_cost}{N({\lVert T_{\mathbf{i}} \rVert})} & \text{if} \quad T_{\mathrm{t}} = \varnothing \\ 0 & \text{otherwise} \end{cases} \\
 \nonumber {} & + \hyperlink{G__transaction}{G_{\mathrm{transaction}}} \\
 \nonumber {} & + \sum_{j = 0}^{\lVert T_{\mathbf{A}} \rVert - 1} \big( G_{\mathrm{accesslistaddress}} + \lVert T_{\mathbf{A}}[j]_{\mathbf{s}} \rVert G_{\mathrm{accessliststorage}} \big)
 \end{align}
@@ -751,6 +751,12 @@ where $T_{\mathbf{i}},T_{\mathbf{d}}$ means the series of bytes of the transacti
 $G_{\mathrm{txcreate}}$ is added if the transaction is contract-creating, but not if a result of EVM-code.
 $\hyperlink{G__accesslistaddress}{G_{\mathrm{accesslistaddress}}}$ and $\hyperlink{G__accessliststorage}{G_{\mathrm{accessliststorage}}}$ are the costs of warming up account and storage access, respectively.
 $G$ is fully defined in Appendix \ref{app:fees}.
+
+\hypertarget{initcode_cost}{}We define the \textit{initcode cost function}, formally $N$, as the amount of gas that needs to be paid for each word of the initcode prior to executing the creation code of a new contract:
+
+\begin{equation}
+  N(x) \equiv \hyperlink{G__initcodeword}{G_{\mathrm{initcodeword}}} \times \lceil \frac{x}{32} \rceil
+\end{equation}
 
 \hypertarget{effective_gas_price_p}{}We define the \textit{effective gas price}, formally $p$, as the amount of wei the transaction signer will pay per unit of gas consumed during the transaction's execution. It is calculated as follows:
 
@@ -787,6 +793,7 @@ S(T) & \neq & \varnothing \quad \wedge \\
 g_0 & \leqslant & T_{\mathrm{g}} \quad \wedge \\
 v_0 & \leqslant & \boldsymbol{\sigma}[S(T)]_{\mathrm{b}} \quad \wedge \\
 m & \geqslant & H_{\mathrm{f}} \quad \wedge \\
+n & \leqslant & 49152 \quad \wedge \\
 T_{\mathrm{g}} & \leqslant & {B_{\mathrm{H}}}_{\mathrm{l}} - \hyperlink{ell}{\ell}(B_{\mathbf{R}})_{\mathrm{u}}
 \end{array}
 \end{equation}
@@ -797,7 +804,15 @@ where
   T_{\mathrm{m}} & \text{if} \; T_{\mathrm{x}} = 2 \\
   \end{cases}
 \end{equation}
+and
+\begin{equation}
+  n \equiv \begin{cases}
+    \lVert T_{\mathrm{i}} \rVert & \text{if} \; T_{\mathrm{t}} \neq \varnothing \\
+    0 & \text{otherwise}
+  \end{cases}
+\end{equation}
 
+The penultimate condition ensures that, for create transactions, the length of the initcode is no greater than 49152 bytes.
 Note the final condition; the sum of the transaction's gas limit, $T_{\mathrm{g}}$, and the gas utilised in this block prior, given by $\hyperlink{ell}{\ell}(B_{\mathbf{R}})_{\mathrm{u}}$, must be no greater than the block's \textbf{gasLimit}, ${B_{\mathrm{H}}}_{\mathrm{l}}$.
 Also, with a slight abuse of notation, we assume that $\boldsymbol{\sigma}[S(T)]_{\mathrm{c}} = \texttt{KEC}\big( () \big)$, $\boldsymbol{\sigma}[S(T)]_{\mathrm{n}} = 0$, and $\boldsymbol{\sigma}[S(T)]_{\mathrm{b}} = 0$ if $\boldsymbol{\sigma}[S(T)] = \varnothing$.
 
@@ -2030,6 +2045,8 @@ $R_{\mathrm{sclear}}$ & 4800 & Refund given (added into refund counter) when the
 \linkdest{G__selfdestruct}{}$G_{\mathrm{selfdestruct}}$ & 5000 & Amount of gas to pay for a {\small SELFDESTRUCT} operation. \\
 $G_{\mathrm{create}}$ & 32000 & Paid for a {\small CREATE} operation. \\
 \linkdest{G__codedeposit}{}$G_{\mathrm{codedeposit}}$ & 200 & Paid per byte for a {\small CREATE} operation to succeed in placing code into state. \\
+\linkdest{G__initcodeword}{}$G_{\mathrm{initcodeword}}$ & 2 & Paid per word of the initcode at the beginning of a deploy transaction, a {\small CREATE},\\
+&&or a {\small CREATE2} operation. \\
 $G_{\mathrm{callvalue}}$ & 9000 & Paid for a non-zero value transfer as part of the {\small CALL} operation. \\
 \linkdest{G__callstipend}{}$G_{\mathrm{callstipend}}$ & 2300 & A stipend for the called contract subtracted from $G_{\mathrm{callvalue}}$ for a non-zero value transfer. \\
 \linkdest{G__newaccount}{}$G_{\mathrm{newaccount}}$ & 25000 & Paid for a {\small CALL} or {\small SELFDESTRUCT} operation which creates an account. \\
@@ -2079,8 +2096,8 @@ G_{\mathrm{log}}+G_{\mathrm{logdata}}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+3G_{
 G_{\mathrm{log}}+G_{\mathrm{logdata}}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+4G_{\mathrm{logtopic}} & \text{if} \quad w = \text{\small LOG4} \\
 C_\text{\tiny CALL}(\boldsymbol{\sigma}, \boldsymbol{\mu}, A) & \text{if} \quad w \in W_{\mathrm{call}} \\
 C_\text{\tiny SELFDESTRUCT}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SELFDESTRUCT} \\
-G_{\mathrm{create}} & \text{if} \quad w = \text{\small CREATE}\\
-G_{\mathrm{create}}+G_{\mathrm{keccak256word}} \times \lceil \boldsymbol{\mu}_{\mathbf{s}}[2] \div 32 \rceil & \text{if} \quad w = \text{\small \hyperlink{create2}{CREATE2}}\\
+G_{\mathrm{create}} + \hyperlink{initcode_cost}{N(\boldsymbol{\mu}_{\mathbf{s}}[2])} & \text{if} \quad w = \text{\small CREATE}\\
+G_{\mathrm{create}}+G_{\mathrm{keccak256word}} \times \lceil \boldsymbol{\mu}_{\mathbf{s}}[2] \div 32 \rceil + \hyperlink{initcode_cost}{N(\boldsymbol{\mu}_{\mathbf{s}}[2])} & \text{if} \quad w = \text{\small \hyperlink{create2}{CREATE2}}\\
 G_{\mathrm{keccak256}}+G_{\mathrm{keccak256word}} \times \lceil \boldsymbol{\mu}_{\mathbf{s}}[1] \div 32 \rceil & \text{if} \quad w = \text{\small KECCAK256}\\
 G_{\mathrm{jumpdest}} & \text{if} \quad w = \text{\small JUMPDEST}\\
 C_\text{\tiny SLOAD}(\boldsymbol{\mu}, A, I) & \text{if} \quad w = \text{\small SLOAD}\\
@@ -2607,15 +2624,16 @@ G_{\mathrm{sreset}} - G_{\mathrm{warmaccess}} & \text{if} \quad v_0 = v' \; \wed
 &&&& $\mathbf{i} \equiv \boldsymbol{\mu}_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[1] \dots (\boldsymbol{\mu}_{\mathbf{s}}[1] + \boldsymbol{\mu}_{\mathbf{s}}[2] - 1) ]$ \\
 &&&& $\hyperlink{salt}{\zeta} \equiv \varnothing$ \\
 &&&& $(\boldsymbol{\sigma}', g', A', z, \mathbf{o}) \equiv \begin{cases}
-\hyperlink{lambda}{\Lambda}(\boldsymbol{\sigma}^*, A, I_{\mathrm{a}}, I_{\mathrm{o}}, L(\boldsymbol{\mu}_{\mathrm{g}}), I_{\mathrm{p}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \mathbf{i}, I_{\mathrm{e}} + 1, \zeta, I_{\mathrm{w}}) & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[0] \leqslant \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \; \\ \quad &\wedge\; I_{\mathrm{e}} < 1024\\
+\hyperlink{lambda}{\Lambda}(\boldsymbol{\sigma}^*, A, I_{\mathrm{a}}, I_{\mathrm{o}}, L(\boldsymbol{\mu}_{\mathrm{g}}), I_{\mathrm{p}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \mathbf{i}, I_{\mathrm{e}} + 1, \zeta, I_{\mathrm{w}}) & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[0] \leqslant \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \; \wedge \\ \quad &\; I_{\mathrm{e}} < 1024 \wedge \lVert \mathbf{i} \rVert \leqslant 49152\\
 \big(\boldsymbol{\sigma}, L(\boldsymbol{\mu}_{\mathrm{g}}), A, 0, () \big) & \text{otherwise} \end{cases}$ \\
 &&&& $\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except} \quad \boldsymbol{\sigma}^*[I_{\mathrm{a}}]_{\mathrm{n}} = \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{n}} + 1$ \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{g}} \equiv \boldsymbol{\mu}_{\mathrm{g}} - \hyperlink{L_but_64}{L}(\boldsymbol{\mu}_{\mathrm{g}}) + g'$ \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv x$ \\
-&&&& where $x=0$ if $z = 0$, i.e., the \hyperlink{contract_creation_result}{contract creation process failed}, or $I_{\mathrm{e}} = 1024$ \\
-&&&& (the maximum call depth limit is reached) or $\boldsymbol{\mu}_{\mathbf{s}}[0] > \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}}$ (balance of the caller\\
-&&&& is too low to fulfil the value transfer); and otherwise $x=\mathtt{ADDR}(I_{\mathrm{a}}, \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{n}}, \zeta, \mathbf{i} )$, the\\
-&&&& address of the newly created account (\ref{eq:new-address}). \\
+&&&& where $x=0$ if $z = 0$, i.e., the \hyperlink{contract_creation_result}{contract creation process failed},\\
+&&&& or $\lVert \mathbf{i} \rVert > 49152$ (initcode is longer than 49152 bytes),\\
+&&&& or $I_{\mathrm{e}} = 1024$ (the maximum call depth limit is reached),\\
+&&&& or $\boldsymbol{\mu}_{\mathbf{s}}[0] > \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}}$ (balance of the caller is too low to fulfil the value transfer);\\
+&&&& and otherwise $x=\mathtt{ADDR}(I_{\mathrm{a}}, \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{n}}, \zeta, \mathbf{i} )$, the address of the newly created account (\ref{eq:new-address}). \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[1], \boldsymbol{\mu}_{\mathbf{s}}[2])$ \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{o}} \equiv \begin{cases}
 () & \text{if} \quad z = 1 \\
