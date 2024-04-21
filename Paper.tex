@@ -136,7 +136,7 @@ B & \equiv & (..., (T_0, T_1, ...), ...) \\
 \Pi(\boldsymbol{\sigma}, B) & \equiv & \hyperlink{Upsilon}{\Upsilon}(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...
 \end{eqnarray}
 
-Where \hyperlink{block}{$B$} is this block, which includes a series of transactions amongst some other components and $\hyperlink{Pi}{\Pi}$ is the block-level state-transition function.
+Where \hyperlink{block}{$B$} is this block, which includes a series of transactions amongst some other components and $\hyperlink{Pi}{\Pi}$ is the block-level state-transition function for transactions\footnote{Note that since the Shanghai fork, blocks also needs to process \textit{withdrawal operations} in order to reach their final state. Withdrawal operations are defined in sub-section \ref{subsec:The_Withdrawal}, and block final state is discussed in greater detail in section \ref{ch:finalisation}.}.
 
 This is the basis of the blockchain paradigm, a model that forms the backbone of not only Ethereum, but all decentralised consensus-based transaction systems to date.
 
@@ -413,9 +413,37 @@ T_{\mathbf{t}} \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_{\mathrm{t}
 \mathbb{B}_{0} & \text{otherwise}\end{cases}
 \end{equation}
 
+\subsection{The Withdrawal}\linkdest{withdrawal}\label{subsec:The_Withdrawal}
+A withdrawal (formally, \textit{W}) is a tuple of data describing a consensus layer validator's withdrawal of some amount of its staked Ether.
+A withdrawal is created and validated in the consensus layer of the blockchain and then pushed to the execution layer.
+A withdrawal is composed of the following fields:
+
+\begin{description}
+\item[globalIndex] zero based incrementing withdrawal index that acts as a unique identifier for this withdrawal; formally $W_{\mathrm{g}}$.
+\item[validatorIndex] index of consensus layer's validator this withdrawal corresponds to; formally $W_{\mathrm{v}}$.
+\item[recipient] the 20-bytes address that will receives Ether form this withdrawal; formally $W_{\mathrm{r}}$.
+\item[amount] a nonzero amount of Ether denominated in Gwei ($10^9$ Wei); formally $W_{\mathrm{a}}$.
+\end{description}
+
+Withdrawal serialisation is defined as:
+\begin{equation}
+\linkdest{L_Withdrawal} L_{\mathrm{W}}(W) \equiv 
+(W_{\mathrm{g}}, W_{\mathrm{v}}, W_{\mathrm{r}}, T_{\mathrm{a}})
+\end{equation}
+
+Here, we assume all components are interpreted by the RLP as integer values except for $W_\mathbf{r}$ which is a 20-bytes address:
+\begin{equation}
+\begin{array}[t]{lclc}
+W_{\mathrm{g}} \in \mathbb{N}_{64} & \wedge & W_{\mathrm{v}} \in \mathbb{N}_{64} & \wedge \\
+W_{\mathrm{r}} \in \mathbb{B}_{20} & \wedge & W_{\mathrm{a}} \in \mathbb{N}_{64}
+\end{array}
+\end{equation}
+
 \subsection{The Block}\linkdest{block}\label{subsec:The_Block}
 
-The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions, $\mathbf{T}$,\hypertarget{ommerheaders}{} and a now deprecated property $\mathbf{U}$ that prior to the \textit{Paris} hard fork contained headers of blocks whose parents were equal to the present block's parent's parent (such blocks were known as \textit{ommers}\footnote{\textit{ommer} is a gender-neutral term to mean ``sibling of parent''; see \url{https://nonbinary.miraheze.org/wiki/Gender_neutral_language_in_English\#Aunt/Uncle}}). The block header contains several pieces of information:
+The block in Ethereum is the collection of relevant pieces of information (known as the block \textit{header}), $H$, together with information corresponding to the comprised transactions,
+$\mathbf{T}$,\hypertarget{ommerheaders}{} a now deprecated property $\mathbf{U}$ that prior to the \textit{Paris} hard fork contained headers of blocks whose parents were equal to the present block's parent's parent (such blocks were known as \textit{ommers}\footnote{\textit{ommer} is a gender-neutral term to mean ``sibling of parent''; see \url{https://nonbinary.miraheze.org/wiki/Gender_neutral_language_in_English\#Aunt/Uncle}}),
+and, since the \textit{Shanghai} hard fork, $\mathbf{W}$, a collection of validator's withdrawal pushed by the consensus layer. The block header contains several pieces of information:
 
 %\textit{TODO: Introduce logs}
 
@@ -423,7 +451,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[parentHash]\linkdest{parent_Hash_H__p_def_words}{} The Keccak 256-bit hash of the parent block's header, in its entirety; formally $H_{\mathrm{p}}$.
 \item[ommersHash] A 256-bit hash field that is now deprecated due to the replacement of proof of work consensus. It is now to a constant, $\texttt{KEC}(\texttt{RLP}(()))$; formally $H_{\mathrm{o}}$.
 \item[beneficiary]\linkdest{beneficiary_H__c}{}\linkdest{H__c} The 160-bit address to which priority fees from this block are transferred; formally $H_{\mathrm{c}}$.
-\item[stateRoot] The Keccak 256-bit hash of the root node of the state trie, after all transactions are executed and finalisations applied; formally $H_{\mathrm{r}}$.
+\item[stateRoot] The Keccak 256-bit hash of the root node of the state trie, after all transactions and withdrawals are executed and finalisations applied; formally $H_{\mathrm{r}}$.
 \item[transactionsRoot] The Keccak 256-bit hash of the root node of the trie structure populated with each transaction in the transactions list portion of the block; formally $H_{\mathrm{t}}$.
 \item[receiptsRoot]\linkdest{receipts_Root_def_words}{} The Keccak 256-bit hash of the root node of the trie structure populated with the receipts of each transaction in the transactions list portion of the block; formally $H_{\mathrm{e}}$.
 \item[logsBloom]\linkdest{logs_Bloom_def_words}{} The Bloom filter composed from indexable information (logger address and log topics) contained in each log entry from the receipt of each transaction in the transactions list; formally $H_{\mathrm{b}}$.
@@ -436,10 +464,11 @@ The block in Ethereum is the collection of relevant pieces of information (known
 \item[prevRandao]\linkdest{prevRandao_H__a}{}\linkdest{H__a} the latest RANDAO mix\footnote{RANDAO is a pseudorandom value generated by validators on the Ethereum consensus layer. Refer to the consensus layer specs (\url{https://github.com/ethereum/consensus-specs}) for more detail on RANDAO.} of the post beacon state of the previous block; formally $H_{\mathrm{a}}$.
 \item[nonce]\linkdest{block_nonce_H__n}{}\linkdest{block_nonce} A 64-bit value that is now deprecated due to the replacement of proof of work consensus. It is set to \texttt{0x0000000000000000}; formally \hyperlink{H__n}{$H_{\mathrm{n}}$}.
 \item[baseFeePerGas]\linkdest{block_baseFeePerGas_H__f}{} A scalar value equal to the amount of wei that is burned for each unit of gas consumed; formally \hyperlink{H__f}{$H_{\mathrm{f}}$}.
+\item[withdrawalsRoot]\linkdest{withdrawals_root_H__w}{} The Keccak 256-bit hash of the root node of the trie structure populated with each withdrawal operations pushed by the consensus layer for this block; formally \hyperlink{H__w}{$H_{\mathrm{w}}$}.
 \end{description}
-\linkdest{ommer_block_headers_B__U}{}\linkdest{block_B}{}The other two components in the block are a series of transactions, $B_{\mathbf{T}}$, and an empty array which was previously reserved for ommer block headers, $B_{\mathbf{U}}$. Formally, we can refer to a block $B$:
+\linkdest{ommer_block_headers_B__U}{}\linkdest{block_B}{}The other three components in the block are a series of transactions, $B_{\mathbf{T}}$, an empty array which was previously reserved for ommer block headers, $B_{\mathbf{U}}$, and a series of withdrawals, $B_{\mathbf{W}}$. Formally, we can refer to a block $B$:
 \begin{equation}
-B \equiv (B_{\mathrm{H}}, B_{\mathbf{T}}, B_{\mathbf{U}})
+B \equiv (B_{\mathrm{H}}, B_{\mathbf{T}}, B_{\mathbf{U}}, B_{\mathbf{W}})
 \end{equation}
 
 \subsubsection{Transaction Receipt}\linkdest{Transaction_Receipt}{}
@@ -499,17 +528,27 @@ Notably, it treats $\mathbf{x}$ as big-endian (more significant bits will have s
 
 \subsubsection{Holistic Validity}
 
-\linkdest{block_validity}{}We can assert a block's validity if and only if it satisfies several conditions: the block's ommers field $B_{\mathbf{U}}$ must be an empty array and the block's header must be consistent with the given transactions $B_{\mathbf{T}}$. For the header to be consistent with the transactions $B_{\mathbf{T}}$, \textbf{stateRoot} ($H_{\mathrm{r}}$) must match the resultant state after executing all transactions in order on the base state $\boldsymbol{\sigma}$ (as specified in section \ref{ch:finalisation}), and \textbf{transactionsRoot} ($H_{\mathrm{t}}$), \textbf{receiptsRoot} ($H_{\mathrm{e}}$), and \textbf{logsBloom} ($H_{\mathrm{b}}$) must be correctly derived from the transactions themselves, the transaction receipts resulting from execution, and the resulting logs, respectively.
+\linkdest{block_validity}{}We can assert a block's validity if and only if it satisfies several conditions:
+the block's ommers field $B_{\mathbf{U}}$ must be an empty array and the block's header must be consistent with the given transactions $B_{\mathbf{T}}$ and withdrawals $B_{\mathbf{W}}$.
+For the header to be consistent with the transactions $B_{\mathbf{T}}$ and withdrawals $B_{\mathbf{W}}$, \textbf{stateRoot} ($H_{\mathrm{r}}$) must match the resultant state after executing all transactions, then all withdrawals, in order on the base state $\boldsymbol{\sigma}$ (as specified in section \ref{ch:finalisation}),
+and \textbf{transactionsRoot} ($H_{\mathrm{t}}$), \textbf{receiptsRoot} ($H_{\mathrm{e}}$), \textbf{logsBloom} ($H_{\mathrm{b}}$) and \textbf{withdrawalsRoot} ($H_{\mathrm{w}}$) must be correctly derived from the transactions themselves, the transaction receipts resulting from execution, the resulting logs, and the withdrawals, respectively.
 \begin{equation}
 \begin{array}[t]{lclc}
 B_{\mathbf{U}} &\equiv& () & \wedge \\
 \linkdest{new_state_H__r}{}H_{\mathrm{r}} &\equiv& \mathtt{TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) & \wedge \\
 \linkdest{tx_block_hash_H__t}{}H_{\mathrm{t}} &\equiv& \mathtt{TRIE}(\{\forall i < \lVert B_{\mathbf{T}} \rVert, i \in \mathbb{N}: &\\&& \quad\quad p_{\mathrm{T}}(i, B_{\mathbf{T}}[i])\}) & \wedge \\
 \linkdest{Receipts_Root_H__e}{}H_{\mathrm{e}} &\equiv& \mathtt{TRIE}(\{\forall i < \lVert B_{\mathbf{R}} \rVert, i \in \mathbb{N}: &\\&& \quad\quad p_{\mathrm{R}}(i, B_{\mathbf{R}}[i])\}) & \wedge \\
+\linkdest{Withdrawals_Root_H__w}{}H_{\mathrm{w}} &\equiv& \mathtt{TRIE}(\{\forall i < \lVert B_{\mathbf{W}} \rVert, i \in \mathbb{N}: &\\&& \quad\quad p_{\mathrm{W}}(i, B_{\mathbf{W}}[i])\}) & \wedge \\
 \linkdest{logs_Bloom_filter_H__b}{}H_{\mathrm{b}} &\equiv& \bigvee_{\mathbf{r} \in B_{\mathbf{R}}} \big( \mathbf{r}_{\mathrm{b}} \big)
 \end{array}
 \end{equation}
-where $p_{\mathrm{T}}(k, v)$ and $p_{\mathrm{R}}(k, v)$ are pairwise RLP transformations, but with a special treatment for EIP-2718 transactions:
+
+where $p_{\mathrm{W}}(k, v)$ is a pairwise RLP transformation for withdrawals:
+\begin{equation}
+p_{\mathrm{W}}(k, W) \equiv \left( \mathtt{RLP}(k), \mathtt{RLP}(\hyperlink{L_Withdrawal}{L_{\mathrm{W}}}(W)) \right)
+\end{equation}
+
+similarly, $p_{\mathrm{T}}(k, v)$ and $p_{\mathrm{R}}(k, v)$ are pairwise RLP transformations, but with a special treatment for EIP-2718 transactions:
 \begin{equation}
 p_{\mathrm{T}}(k, T) \equiv \left( \mathtt{RLP}(k), \begin{cases}
 \mathtt{RLP}(\hyperlink{L_transaction}{L_{\mathrm{T}}}(T)) & \text{if} \quad T_{\mathrm{x}} = 0 \\
@@ -541,8 +580,8 @@ The values stemming from the computation of transactions, specifically the \hype
 \hypertarget{block_preparation_function_for_RLP_serialization_L__B}{}\linkdest{L__B}\hypertarget{block_preparation_function_for_RLP_serialization_L__H}{}\linkdest{L__B}The function $L_{\mathrm{B}}$ and $L_{\mathrm{H}}$ are the preparation functions for a block and block header respectively.
 We assert the types and order of the structure for when the RLP transformation is required:
 \begin{eqnarray}
-\quad L_{\mathrm{H}}(H) & \equiv & (\begin{array}[t]{l}H_{\mathrm{p}}, H_{\mathrm{o}}, H_{\mathrm{c}}, H_{\mathrm{r}}, H_{\mathrm{t}}, H_{\mathrm{e}}, H_{\mathrm{b}}, H_{\mathrm{d}},\\ H_{\mathrm{i}}, H_{\mathrm{l}}, H_{\mathrm{g}}, H_{\mathrm{s}}, H_{\mathrm{x}}, H_{\mathrm{a}}, H_{\mathrm{n}}, H_{\mathrm{f}} \; )\end{array} \\
-\quad L_{\mathrm{B}}(B) & \equiv & \big( L_{\mathrm{H}}(B_{\mathrm{H}}), \widetilde{L}_{\mathrm{T}}^*(B_{\mathbf{T}}), L_{\mathrm{H}}^*(\hyperlink{ommer_block_headers_B__U}{B_{\mathbf{U}}}) \big)
+\quad L_{\mathrm{H}}(H) & \equiv & (\begin{array}[t]{l}H_{\mathrm{p}}, H_{\mathrm{o}}, H_{\mathrm{c}}, H_{\mathrm{r}}, H_{\mathrm{t}}, H_{\mathrm{e}}, H_{\mathrm{b}}, H_{\mathrm{d}},\\ H_{\mathrm{i}}, H_{\mathrm{l}}, H_{\mathrm{g}}, H_{\mathrm{s}}, H_{\mathrm{x}}, H_{\mathrm{a}}, H_{\mathrm{n}}, H_{\mathrm{f}}, H_{\mathrm{w}} \; )\end{array} \\
+\quad L_{\mathrm{B}}(B) & \equiv & \big( L_{\mathrm{H}}(B_{\mathrm{H}}), \widetilde{L}_{\mathrm{T}}^*(B_{\mathbf{T}}), L_{\mathrm{H}}^*(\hyperlink{ommer_block_headers_B__U}{B_{\mathbf{U}}}), L_{\mathrm{W}}^*(B_{\mathbf{W}}) \big)
 \end{eqnarray}
 where $\widetilde{L}_{\mathrm{T}}$ takes a special care of EIP-2718 transactions:
 \begin{equation}
@@ -551,7 +590,7 @@ where $\widetilde{L}_{\mathrm{T}}$ takes a special care of EIP-2718 transactions
 (T_{\mathrm{x}}) \cdot \mathtt{RLP}(L_{\mathrm{T}}(T)) & \text{otherwise}
 \end{cases}
 \end{equation}
-\hypertarget{general_element_wise_sequence_transformation_f_pow_asterisk}{}with $\widetilde{L}_{\mathrm{T}}^*$ and $L_{\mathrm{H}}^*$ being element-wise sequence transformations, thus:
+\hypertarget{general_element_wise_sequence_transformation_f_pow_asterisk}{}with $\widetilde{L}_{\mathrm{T}}^*$, $L_{\mathrm{H}}^*$, and $L_{\mathrm{W}}^*$, being element-wise sequence transformations, thus:
 \begin{equation}
 f^*\big( (x_0, x_1, ...) \big) \equiv \big( f(x_0), f(x_1), ... \big) \quad \text{for any function} \; f
 \end{equation}
@@ -564,7 +603,7 @@ The component types are defined thus:
 \hyperlink{logs_Bloom_filter_H__b}{H_{\mathrm{b}}} \in \mathbb{B}_{256} & \wedge & H_{\mathrm{d}} \in \mathbb{N} & \wedge & \hyperlink{block_number_H__i}{H_{\mathrm{i}}} \in \mathbb{N} & \wedge \\
 \hyperlink{block_gas_limit_H__l}{H_{\mathrm{l}}} \in \mathbb{N} & \wedge & H_{\mathrm{g}} \in \mathbb{N} & \wedge & \hyperlink{block_timestamp_H__s}{H_{\mathrm{s}}} \in \mathbb{N}_{256} & \wedge \\
 \hyperlink{block_extraData_H__x}{H_{\mathrm{x}}} \in \mathbb{B} & \wedge & H_{\mathrm{a}} \in \mathbb{B}_{32} & \wedge & \hyperlink{block_nonce_H__n}{H_{\mathrm{n}}} \in \mathbb{B}_{8} & \wedge \\
-\hyperlink{block_baseFeePerGas_H__f}{H_{\mathrm{f}}} \in \mathbb{N}
+\hyperlink{block_baseFeePerGas_H__f}{H_{\mathrm{f}}} \in \mathbb{N} & \wedge & \hyperlink{withdrawals_root_H__w}{H_{\mathrm{w}}} \in \mathbb{B}_{32}
 
 \end{array}
 \end{equation}
@@ -1365,9 +1404,26 @@ The canonical blockchain must also contain a block with the hash and number of t
 The process of finalising a block involves two stages:
 
 \begin{enumerate}
+\item executing withdrawals;
 \item validate transactions;
 \item verify state.
 \end{enumerate}
+
+\subsection{Executing Withdrawals}
+After processing the block's transactions, the withdrawals are executed. A withdrawal is simply an increase of the recipient account's balance of the specified amount. No other balances are decreased, a withdrawal is not a transfer but a creation of funds.
+A withdrawal operation cannot fail and has no gas cost. We define the function $P$ as the withdrawal state transition function:
+
+\begin{eqnarray}
+P(\boldsymbol{\sigma}_w, W) & \equiv & \boldsymbol{\sigma}_{w+1} \\
+\boldsymbol{\sigma}_{w+1} & \equiv & \boldsymbol{\sigma}_w \quad \text{except:} \\
+\boldsymbol{\sigma}_{w+1}[W_r]_{\mathrm{b}} & \equiv & \boldsymbol{\sigma}_{w}[W_r]_{\mathrm{b}} + (W_a \times 10^9)
+\end{eqnarray}
+
+\hypertarget{Kappa}{}Finally, we define $K$, the block-level state transition function for withdrawals:
+
+\begin{equation}
+K(\boldsymbol{\sigma}, B) \equiv P(P(\boldsymbol{\sigma}, W_0), W_1) ...
+\end{equation}
 
 \subsection{Transaction Validation}
 
@@ -1393,7 +1449,7 @@ Here, $\mathtt{TRIE}(L_{\mathrm{S}}(\boldsymbol{\sigma}_{\mathrm{i}}))$ means th
 \hypertarget{Phi}{}And finally we define $\Phi$, the block transition function, which maps an incomplete block $B$ to a complete block $B'$:
 \begin{eqnarray}
 \Phi(B) & \equiv & B': \quad B' = B \quad \text{except:} \\
-{B'_{\mathrm{H}}}_{\mathrm{r}} & = & \mathtt{TRIE}(L_{\mathrm{S}}(\hyperlink{Pi}{\Pi}(\Gamma(B), B)))
+{B'_{\mathrm{H}}}_{\mathrm{r}} & = & \mathtt{TRIE}(L_{\mathrm{S}}(\hyperlink{Kappa}{K}(\hyperlink{Pi}{\Pi}(\Gamma(B), B), B)))
 \end{eqnarray}
 
 As specified at the beginning of the present work, \hyperlink{Pi}{$\Pi$} is the state-transition function, which is defined in terms of \hyperlink{Upsilon_state_transition}{$\Upsilon$}, the transaction-evaluation function.
