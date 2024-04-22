@@ -2785,7 +2785,9 @@ G_{\mathrm{newaccount}} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, t) 
 \midrule
 0xfe & {\small INVALID} & $\varnothing$ & $\varnothing$ & Designated invalid instruction. \\
 \midrule
-\linkdest{selfdestruct}{}0xff & {\small SELFDESTRUCT} & 1 & 0 & Halt execution and register account for later deletion. \\
+\linkdest{selfdestruct}{}0xff & {\small SELFDESTRUCT} & 1 & 0 & Halt execution and register account for later deletion. Readers should be warned, \\
+&&&& since the \textit{Shanghai} update, this opcode has been marked as deprecated. \\
+&&&& Its behavior might be subject to change in an upcoming update. \\
 &&&& $A'_{\mathbf{s}} \equiv A_{\mathbf{s}} \cup \{ I_{\mathrm{a}} \}$ \\
 &&&& $A'_{\mathbf{a}} \equiv A_{\mathbf{a}} \cup \{ r \}$ \\
 &&&& $\boldsymbol{\sigma}'[r] \equiv \begin{cases}
