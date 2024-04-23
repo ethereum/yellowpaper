@@ -64,7 +64,7 @@
 \newcommand*\ie{i.e.\@\xspace}
 %\renewcommand{\itemhook}{\setlength{\topsep}{0pt}  \setlength{\itemsep}{0pt}\setlength{\leftmargin}{15pt}}
 
-\title[Ethereum: A Secure Decentralised Generalised Transaction Ledger\\ \smaller \textbf{{Paris version}}]{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ \smaller \textbf{{Paris version \YellowPaperVersionNumber}}}
+\title[Ethereum: A Secure Decentralised Generalised Transaction Ledger\\ \smaller \textbf{{Shanghai version}}]{Ethereum: A Secure Decentralised Generalised Transaction Ledger \\ \smaller \textbf{{Shanghai version \YellowPaperVersionNumber}}}
 \author{
     Dr. Gavin Wood\\
     Founder, Ethereum \& Parity\\
@@ -180,10 +180,10 @@ These updates can be specified to occur:
   \item after reaching a \textit{terminal total difficulty} in the case of the \textit{Paris} update, or
   \item at a particular block timestamp in the case of post-\textit{Paris} updates.
 \end{itemize}
-This document describes the \textit{Paris} version.
+This document describes the \textit{Shanghai} version.
 
 In order to follow back the history of a path, one must reference multiple versions of this document.
-Here are the block numbers of protocol updates on the Ethereum main network:\footnote{Note that while the Paris fork activated at block 15,537,394, the trigger was not the block number, but rather reaching a specified \textit{total difficulty}. The trigger for the \textit{Paris} hard fork is discussed in greater detail in section \ref{ch:pos_transition}.}
+Here are the block numbers of protocol updates on the Ethereum main network:\footnote{Note that while the Paris, Shanghai, and every upcoming forks activated at a given block number (e.g. 15,537,394 for Paris), the trigger was not the block number, but rather reaching a specified \textit{timestamp} (or \textit{total difficulty} for Paris). The trigger for the \textit{Paris} and subsequent hard fork are discussed in greater detail in section \ref{ch:pos_transition}.}
 \par
 \begin{center}
 \begin{tabular}{lr}
@@ -203,6 +203,7 @@ $F_{\mathrm{London}}$            & 12965000 \\
 $F_{\mathrm{Arrow Glacier}}$     & 13773000 \\
 $F_{\mathrm{Gray Glacier}}$      & 15050000 \\
 $F_{\mathrm{Paris}}$             & 15537394 \\
+$F_{\mathrm{Shanghai}}$          & 17034870 \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -1380,6 +1381,12 @@ B_{\mathrm{t}} & \equiv & P(B_{\mathrm{H}})_{\mathrm{t}} + H_{\mathrm{d}}
 where $H_{\mathrm{d}}$ is the difficulty of the current block $B$.
 
 Upon reaching the terminal block, new blocks are processed by the Beacon Chain.
+
+\subsection{Post-Paris Updates}
+Because the Beacon Chain generate a new slot every 12 seconds, post-\textit{Paris} updates can be scheduled to occur at a specific timestamp.
+At the execution layer, the update will then happen in the first produced block after the scheduled timestamp.
+For example the \textit{Shanghai} hard fork was scheduled to occur at 2023-04-12 10:27:35 UTC, on Epoch 194,048.
+Validators failed to propose a block during the two first slots of this Epoch, but at slot 6,209,538 a validator finally proposed a the block 17,034,870, marking the transition to \textit{Shanghai} on the execution layer.
 
 \section{Blocktree to Blockchain} \label{ch:blocktree_to_blockchain}
 
