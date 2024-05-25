@@ -783,7 +783,7 @@ where $\hyperlink{precompiled_set}{\pi}$ is the set of all precompiled addresses
 \hypertarget{intrinsic_gas_g_0}{}We define intrinsic gas $g_0$, the amount of gas this transaction requires to be paid prior to execution, as follows:
 \begin{align}
 g_0 \equiv {} & \sum_{i \in T_{\mathbf{i}}, T_{\mathbf{d}}} \begin{cases} \hyperlink{G__txdatazero}{G_{\mathrm{txdatazero}}} & \text{if} \quad i = 0 \\ \hyperlink{G__txdatanonzero}{G_{\mathrm{txdatanonzero}}} & \text{otherwise} \end{cases} \\
-\nonumber {} & + \begin{cases} \hyperlink{G__txcreate}{G_{\mathrm{txcreate}}} + \hyperlink{initcode_cost}{N({\lVert T_{\mathbf{i}} \rVert})} & \text{if} \quad T_{\mathrm{t}} = \varnothing \\ 0 & \text{otherwise} \end{cases} \\
+\nonumber {} & + \begin{cases} \hyperlink{G__txcreate}{G_{\mathrm{txcreate}}} + \hyperlink{initcode_cost}{R({\lVert T_{\mathbf{i}} \rVert})} & \text{if} \quad T_{\mathrm{t}} = \varnothing \\ 0 & \text{otherwise} \end{cases} \\
 \nonumber {} & + \hyperlink{G__transaction}{G_{\mathrm{transaction}}} \\
 \nonumber {} & + \sum_{j = 0}^{\lVert T_{\mathbf{A}} \rVert - 1} \big( G_{\mathrm{accesslistaddress}} + \lVert T_{\mathbf{A}}[j]_{\mathbf{s}} \rVert G_{\mathrm{accessliststorage}} \big)
 \end{align}
@@ -792,10 +792,10 @@ $G_{\mathrm{txcreate}}$ is added if the transaction is contract-creating, but no
 $\hyperlink{G__accesslistaddress}{G_{\mathrm{accesslistaddress}}}$ and $\hyperlink{G__accessliststorage}{G_{\mathrm{accessliststorage}}}$ are the costs of warming up account and storage access, respectively.
 $G$ is fully defined in Appendix \ref{app:fees}.
 
-\hypertarget{initcode_cost}{}We define the \textit{initcode cost function}, formally $N$, as the amount of gas that needs to be paid for each word of the initcode prior to executing the creation code of a new contract:
+\hypertarget{initcode_cost}{}We define the \textit{initcode cost function}, formally $R$, as the amount of gas that needs to be paid for each word of the initcode prior to executing the creation code of a new contract:
 
 \begin{equation}
-  N(x) \equiv \hyperlink{G__initcodeword}{G_{\mathrm{initcodeword}}} \times \lceil \frac{x}{32} \rceil
+  R(x) \equiv \hyperlink{G__initcodeword}{G_{\mathrm{initcodeword}}} \times \lceil \frac{x}{32} \rceil
 \end{equation}
 
 \hypertarget{effective_gas_price_p}{}We define the \textit{effective gas price}, formally $p$, as the amount of wei the transaction signer will pay per unit of gas consumed during the transaction's execution. It is calculated as follows:
@@ -2159,8 +2159,8 @@ G_{\mathrm{log}}+G_{\mathrm{logdata}}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+3G_{
 G_{\mathrm{log}}+G_{\mathrm{logdata}}\times\boldsymbol{\mu}_{\mathbf{s}}[1]+4G_{\mathrm{logtopic}} & \text{if} \quad w = \text{\small LOG4} \\
 C_\text{\tiny CALL}(\boldsymbol{\sigma}, \boldsymbol{\mu}, A) & \text{if} \quad w \in W_{\mathrm{call}} \\
 C_\text{\tiny SELFDESTRUCT}(\boldsymbol{\sigma}, \boldsymbol{\mu}) & \text{if} \quad w = \text{\small SELFDESTRUCT} \\
-G_{\mathrm{create}} + \hyperlink{initcode_cost}{N(\boldsymbol{\mu}_{\mathbf{s}}[2])} & \text{if} \quad w = \text{\small CREATE}\\
-G_{\mathrm{create}}+G_{\mathrm{keccak256word}} \times \lceil \boldsymbol{\mu}_{\mathbf{s}}[2] \div 32 \rceil + \hyperlink{initcode_cost}{N(\boldsymbol{\mu}_{\mathbf{s}}[2])} & \text{if} \quad w = \text{\small \hyperlink{create2}{CREATE2}}\\
+G_{\mathrm{create}} + \hyperlink{initcode_cost}{R(\boldsymbol{\mu}_{\mathbf{s}}[2])} & \text{if} \quad w = \text{\small CREATE}\\
+G_{\mathrm{create}}+G_{\mathrm{keccak256word}} \times \lceil \boldsymbol{\mu}_{\mathbf{s}}[2] \div 32 \rceil + \hyperlink{initcode_cost}{R(\boldsymbol{\mu}_{\mathbf{s}}[2])} & \text{if} \quad w = \text{\small \hyperlink{create2}{CREATE2}}\\
 G_{\mathrm{keccak256}}+G_{\mathrm{keccak256word}} \times \lceil \boldsymbol{\mu}_{\mathbf{s}}[1] \div 32 \rceil & \text{if} \quad w = \text{\small KECCAK256}\\
 G_{\mathrm{jumpdest}} & \text{if} \quad w = \text{\small JUMPDEST}\\
 C_\text{\tiny SLOAD}(\boldsymbol{\mu}, A, I) & \text{if} \quad w = \text{\small SLOAD}\\
