@@ -150,6 +150,7 @@ In order to incentivise computation within the network, there needs to be an agr
 Multiplier & Name \\
 \midrule
 $10^0$ & Wei \\
+$10^9$ & Gwei \\
 $10^{12}$ & Szabo \\
 $10^{15}$ & Finney \\
 $10^{18}$ & Ether \\
@@ -1408,7 +1409,7 @@ The canonical blockchain must also contain a block with the hash and number of t
 
 \section{Block Finalisation} \label{ch:finalisation}
 
-The process of finalising a block involves two stages:
+The process of finalising a block involves three stages:
 
 \begin{enumerate}
 \item executing withdrawals;
@@ -1417,11 +1418,11 @@ The process of finalising a block involves two stages:
 \end{enumerate}
 
 \subsection{Executing Withdrawals}
-After processing the block's transactions, the withdrawals are executed. A withdrawal is simply an increase of the recipient account's balance of the specified amount. No other balances are decreased, a withdrawal is not a transfer but a creation of funds.
-A withdrawal operation cannot fail and has no gas cost. We define the function $P$ as the withdrawal state transition function:
+After processing the block's transactions, the withdrawals are executed. A withdrawal is simply an increase of the recipient account's balance of the specified Gwei amount. No other balances are decreased, a withdrawal is not a transfer but a creation of funds.
+A withdrawal operation cannot fail and has no gas cost. We define the function $E$ as the withdrawal state transition function:
 
 \begin{eqnarray}
-P(\boldsymbol{\sigma}_w, W) & \equiv & \boldsymbol{\sigma}_{w+1} \\
+E(\boldsymbol{\sigma}_w, W) & \equiv & \boldsymbol{\sigma}_{w+1} \\
 \boldsymbol{\sigma}_{w+1} & \equiv & \boldsymbol{\sigma}_w \quad \text{except:} \\
 \boldsymbol{\sigma}_{w+1}[W_r]_{\mathrm{b}} & \equiv & \boldsymbol{\sigma}_{w}[W_r]_{\mathrm{b}} + (W_a \times 10^9)
 \end{eqnarray}
@@ -1429,7 +1430,7 @@ P(\boldsymbol{\sigma}_w, W) & \equiv & \boldsymbol{\sigma}_{w+1} \\
 \hypertarget{Kappa}{}Finally, we define $K$, the block-level state transition function for withdrawals:
 
 \begin{equation}
-K(\boldsymbol{\sigma}, B) \equiv P(P(\boldsymbol{\sigma}, W_0), W_1) ...
+K(\boldsymbol{\sigma}, B) \equiv E(E(\boldsymbol{\sigma}, W_0), W_1) ...
 \end{equation}
 
 \subsection{Transaction Validation}
