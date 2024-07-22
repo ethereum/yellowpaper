@@ -2214,7 +2214,7 @@ $W_{\mathrm{extaccount}}$ = \{{\small BALANCE}, {\small EXTCODESIZE}, {\small EX
 
 Note the memory cost component, given as the product of $G_{\mathrm{memory}}$ and the maximum of 0 \& the ceiling of the number of words in size that the memory must be over the current number of words, $\boldsymbol{\mu}_{\mathrm{i}}$ in order that all accesses reference valid memory whether for read or write. Such accesses must be for non-zero number of bytes.
 
-Referencing a zero length range (e.g. by attempting to pass it as the input range to a CALL) does not require memory to be extended to the beginning of the range. $\boldsymbol{\mu}'_{\mathrm{i}}$ is defined as this new maximum number of words of active memory; special-cases are given where these two are not equal.
+Referencing a zero length range (e.g. by attempting to pass it as the input range to a CALL) does not require memory to be extended to the beginning of the range. $\boldsymbol{\mu}'_{\mathrm{i}}$ is defined as this new maximum number of words of active memory; special cases are given where these two are not equal.
 
 Note also that $C_{\mathrm{mem}}$ is the memory cost function (the expansion function being the difference between the cost before and after). It is a polynomial, with the higher-order coefficient divided and floored, and thus linear up to 704B of memory used, after which it costs substantially more.
 
@@ -2957,7 +2957,7 @@ E_\text{\tiny FNV}\big(\mathbf{m}, \mathbf{c}[E_\text{\tiny FNV}(i \oplus p, \ma
 \subsection{Proof-of-work function}
 Essentially, we maintain a ``mix'' $J_{\mathrm{mixbytes}}$ bytes wide, and repeatedly sequentially fetch $J_{\mathrm{mixbytes}}$ bytes from the full dataset and use the $E_\text{\tiny FNV}$ function to combine it with the mix. $J_{\mathrm{mixbytes}}$ bytes of sequential access are used so that each round of the algorithm always fetches a full page from RAM, minimizing translation lookaside buffer misses which ASICs would theoretically be able to avoid.
 
-If the output of this algorithm is below the desired target, then the nonce is valid. Note that the extra application of \texttt{KEC} at the end ensures that there exists an intermediate nonce which can be provided to prove that at least a small amount of work was done; this quick outer PoW verification can be used for anti-DDoS purposes. It also serves to provide statistical assurance that the result is an unbiased, 256 bit number.
+If the output of this algorithm is below the desired target, then the nonce is valid. Note that the extra application of \texttt{KEC} at the end ensures that there exists an intermediate nonce which can be provided to prove that at least a small amount of work was done; this quick outer PoW verification can be used for anti-DDoS purposes. It also serves to provide statistical assurance that the result is an unbiased, 256-bit number.
 
 The PoW-function returns an array with the compressed mix as its first item and the Keccak-256 hash of the concatenation of the compressed mix with the seed hash as the second item:
 \begin{equation}
