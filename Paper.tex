@@ -423,7 +423,7 @@ A withdrawal is composed of the following fields:
 \begin{description}
 \item[globalIndex] zero based incrementing withdrawal index that acts as a unique identifier for this withdrawal; formally $W_{\mathrm{g}}$.
 \item[validatorIndex] index of consensus layer's validator this withdrawal corresponds to; formally $W_{\mathrm{v}}$.
-\item[recipient] the 20-bytes address that will receives Ether form this withdrawal; formally $W_{\mathrm{r}}$.
+\item[recipient] the 20-byte address that will receives Ether form this withdrawal; formally $W_{\mathrm{r}}$.
 \item[amount] a nonzero amount of Ether denominated in Gwei ($10^9$ Wei); formally $W_{\mathrm{a}}$.
 \end{description}
 
@@ -433,7 +433,7 @@ Withdrawal serialisation is defined as:
 (W_{\mathrm{g}}, W_{\mathrm{v}}, W_{\mathrm{r}}, T_{\mathrm{a}})
 \end{equation}
 
-Here, we assume all components are interpreted by the RLP as integer values except for $W_\mathbf{r}$ which is a 20-bytes address:
+Here, we assume all components are interpreted by the RLP as integer values except for $W_\mathbf{r}$ which is a 20-byte address:
 \begin{equation}
 \begin{array}[t]{lclc}
 W_{\mathrm{g}} \in \mathbb{N}_{64} & \wedge & W_{\mathrm{v}} \in \mathbb{N}_{64} & \wedge \\
