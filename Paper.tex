@@ -789,7 +789,7 @@ g_0 \equiv {} & \sum_{i \in T_{\mathbf{i}}, T_{\mathbf{d}}} \begin{cases} \hyper
 \nonumber {} & + \sum_{j = 0}^{\lVert T_{\mathbf{A}} \rVert - 1} \big( G_{\mathrm{accesslistaddress}} + \lVert T_{\mathbf{A}}[j]_{\mathbf{s}} \rVert G_{\mathrm{accessliststorage}} \big)
 \end{align}
 where $T_{\mathbf{i}},T_{\mathbf{d}}$ means the series of bytes of the transaction's associated data and initialisation EVM-code, depending on whether the transaction is for contract-creation or message-call.
-$G_{\mathrm{txcreate}}$ is added if the transaction is contract-creating, but not if a result of EVM-code.
+$G_{\mathrm{txcreate}}$ is added if the transaction is contract-creating, but not if it is a result of EVM-code.
 $\hyperlink{G__accesslistaddress}{G_{\mathrm{accesslistaddress}}}$ and $\hyperlink{G__accessliststorage}{G_{\mathrm{accessliststorage}}}$ are the costs of warming up account and storage access, respectively.
 $G$ is fully defined in Appendix \ref{app:fees}.
 
