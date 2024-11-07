@@ -1292,7 +1292,7 @@ Also, the execution is in an exceptional halting state if the gas left prior to 
 
 We previously used $D$ as the function to determine the set of valid jump destinations given the code that is being run. We define this as any position in the code occupied by a {\small JUMPDEST} instruction.
 
-All such positions must be on valid instruction boundaries, rather than sitting in the data portion of {\small PUSH} operations and must appear within the explicitly defined portion of the code (rather than in the implicitly defined \hyperlink{stop}{{\small STOP}} operations that trail it).
+All such positions must be on valid instruction boundaries, rather than sitting in the data portion of {\small PUSH} operations and must appear within the explicitly defined portion of the code (rather than in the implicitly defined \hyperlink{stop}{{\small STOP}} operations that trail it), where code denotes any executable code or data (non-reachable by Program Counter) between {\small PUSH} operations. Jump destinations must be validated prior to execution.
 
 Formally:
 \begin{equation}
