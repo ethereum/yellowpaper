@@ -781,8 +781,8 @@ A^0 \equiv (\varnothing, (), \varnothing, 0, \pi, \varnothing)
 where $\hyperlink{precompiled_set}{\pi}$ is the set of all precompiled addresses.
 
 \subsection{Transient Storage}
-Introduced by EIP-1153 (\cite{EIP-1153}) during the Cancun update, the transient storage, formally $\boldsymbol{\theta}$, is a volatile version of the world state account storage $\boldsymbol{\sigma}[a]_s$.
-It's a mapping between addresses (160-bit identifiers) and storage (another mapping between 256-bit integer values).
+Formally defined as $\boldsymbol{\theta}$, the transient storage (EIP-1153: \cite{EIP-1153}), is a volatile version of the world state account storage $\boldsymbol{\sigma}[a]_s$.
+It's a bi-dimensional mapping between addresses and storage (i.e. a mapping of mappings between addresses, storage keys, and storage values).
 
 \begin{equation}
 \forall a, \forall k: \boldsymbol{\theta}[a][k] = v
