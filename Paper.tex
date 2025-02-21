@@ -2130,7 +2130,6 @@ $G_{\mathrm{verylow}}$ & 3 & Amount of gas to pay for operations of the set {\sm
 $G_{\mathrm{low}}$ & 5 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{low}}$}. \\
 $G_{\mathrm{mid}}$ & 8 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{mid}}$}. \\
 $G_{\mathrm{high}}$ & 10 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{high}}$}. \\
-$G_{\mathrm{transientaccess}}$ & 100 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{transient}}$}. \\
 $G_{\mathrm{warmaccess}}$ & 100 & Cost of a warm account or storage access. \\
 \linkdest{G__accesslistaddress}{}$G_{\mathrm{accesslistaddress}}$ & 2400 & Cost of warming up an account with the access list. \\
 \linkdest{G__accessliststorage}{}$G_{\mathrm{accessliststorage}}$ & 1900 & Cost of warming up a storage with the access list. \\
@@ -2207,7 +2206,7 @@ G_{\mathrm{low}} & \text{if} \quad w \in W_{\mathrm{low}}\\
 G_{\mathrm{mid}} & \text{if} \quad w \in W_{\mathrm{mid}}\\
 G_{\mathrm{high}} & \text{if} \quad w \in W_{\mathrm{high}}\\
 G_{\mathrm{blockhash}} & \text{if} \quad w = \text{\small \hyperlink{blockhash}{BLOCKHASH}}\\
-G_{\mathrm{transientaccess}} & \text{if} \quad w \in W_{\mathrm{transient}}\\
+G_{\mathrm{warmaccess}} & \text{if} \quad w \in W_{\mathrm{transient}}\\
 \end{cases}
 \end{equation}
 \begin{equation}
