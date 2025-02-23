@@ -1009,9 +1009,10 @@ Code execution can effect several events that are not internal to the execution 
 As such, the code execution function $\hyperlink{xi_def}{\Xi}$ evaluates to a tuple of the resultant state $\boldsymbol{\sigma}^{**}$, resultant transient storage $\boldsymbol{\theta}^{**}$, available gas remaining $g^{**}$, the resultant accrued substate $A^{**}$ and the body code of the account $\mathbf{o}$.
 
 \begin{equation}
-(\boldsymbol{\sigma}^{**}, \boldsymbol{\theta}^{**}, g^{**}, A^{**}, \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}^*, \boldsymbol{\theta}^*, g, A^*, I) \\
+(\boldsymbol{\sigma}^{**}, g^{**}, A^{**}, \mathbf{o}, \boldsymbol{\theta}^{**}) \equiv \Xi(\boldsymbol{\sigma}^*, \boldsymbol{\theta}^*, g, A^*, I) \\
 \end{equation}
-\pagebreak[1]where $I$ contains the parameters of the \hyperlink{exec_env}{execution environment}, that is:\pagebreak[1]
+
+where $I$ contains the parameters of the \hyperlink{exec_env}{execution environment}, that is:
 \begin{eqnarray}
 I_{\mathrm{a}} & \equiv & a \\
 I_{\mathrm{o}} & \equiv & o \\
@@ -1151,7 +1152,7 @@ z & \equiv & \begin{cases}
 \end{eqnarray}
 \begin{equation}
 \hypertarget{code_execution_result}{}
-(\boldsymbol{\sigma}^{**}, \boldsymbol{\theta}^{**}, g^{**}, A^{**}, \mathbf{o}) \equiv \Xi
+(\boldsymbol{\sigma}^{**}, g^{**}, A^{**}, \mathbf{o}, \boldsymbol{\theta}^{**}) \equiv \Xi
 \end{equation}
 \begin{eqnarray}
 I_{\mathrm{a}} & \equiv & r \\
@@ -1234,7 +1235,7 @@ there are several pieces of important information used in the execution environm
 The execution model defines the function $\Xi$, which can compute the resultant state $\boldsymbol{\sigma}'$, the resultant transient storage $\boldsymbol{\theta}'$, the remaining gas $g'$, the resultant accrued substate $A'$ and the resultant output, $\mathbf{o}$, given these definitions.
 For the present context, we will define it as:
 \begin{equation}
-(\boldsymbol{\sigma}', \boldsymbol{\theta}', g', A', \mathbf{o}) \equiv \Xi(\boldsymbol{\sigma}, \boldsymbol{\theta}, g, A, I)
+(\boldsymbol{\sigma}', g', A', \mathbf{o}, \boldsymbol{\theta}') \equiv \Xi(\boldsymbol{\sigma}, \boldsymbol{\theta}, g, A, I)
 \end{equation}
 where we will remember that $A$, the accrued substate, is defined in section \ref{ch:substate}.
 
@@ -1245,8 +1246,8 @@ We must now define the $\Xi$ function. In most practical implementations this wi
 
 \hypertarget{empty_sequence_vs_empty_set}{}The empty sequence, denoted $()$, is not equal to the empty set, denoted $\varnothing$; this is important when interpreting the output of $H$, which evaluates to $\varnothing$ when execution is to continue but a series (potentially empty) when execution should halt.
 \begin{eqnarray}
-\Xi(\boldsymbol{\sigma}, \boldsymbol{\theta}, g, A, I) & \equiv & (\boldsymbol{\sigma}'\!, \boldsymbol{\theta}', \boldsymbol{\mu}'_{\mathrm{g}}, A', \mathbf{o}) \\
-(\boldsymbol{\sigma}', \boldsymbol{\theta}', \boldsymbol{\mu}'\!, A', ..., \mathbf{o}) & \equiv & X\big((\boldsymbol{\sigma}, \boldsymbol{\theta}, \boldsymbol{\mu}, A, I)\big) \\
+\Xi(\boldsymbol{\sigma}, \boldsymbol{\theta}, g, A, I) & \equiv & (\boldsymbol{\sigma}'\!, \boldsymbol{\mu}'_{\mathrm{g}}, A', \mathbf{o}, \boldsymbol{\theta}') \\
+(\boldsymbol{\sigma}', \boldsymbol{\mu}'\!, A', ..., \mathbf{o}, \boldsymbol{\theta}') & \equiv & X\big((\boldsymbol{\sigma}, \boldsymbol{\theta}, \boldsymbol{\mu}, A, I)\big) \\
 \boldsymbol{\mu}_{\mathrm{g}} & \equiv & g \\
 \boldsymbol{\mu}_{\mathrm{pc}} & \equiv & 0 \\
 \boldsymbol{\mu}_{\mathbf{m}} & \equiv & (0, 0, ...) \\
@@ -1256,8 +1257,8 @@ We must now define the $\Xi$ function. In most practical implementations this wi
 \end{eqnarray}
 \begin{equation} \label{eq:X-def}
 X\big( (\boldsymbol{\sigma}, \boldsymbol{\theta}, \boldsymbol{\mu}, A, I) \big) \equiv \begin{cases}
-\big(\varnothing, \boldsymbol{\theta}, \boldsymbol{\mu}, A, I, \varnothing\big) & \text{if} \quad Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \\
-\big(\varnothing, \boldsymbol{\theta}, \boldsymbol{\mu}', A, I, \mathbf{o}\big) & \text{if} \quad w = \text{\small REVERT} \\
+\big(\varnothing, \boldsymbol{\mu}, A, I, \varnothing, \boldsymbol{\theta}\big) & \text{if} \quad Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \\
+\big(\varnothing, \boldsymbol{\mu}', A, I, \mathbf{o}, \boldsymbol{\theta}\big) & \text{if} \quad w = \text{\small REVERT} \\
 O(\boldsymbol{\sigma}, \boldsymbol{\theta}, \boldsymbol{\mu}, A, I) \cdot \mathbf{o} & \text{if} \quad \mathbf{o} \neq \varnothing \\
 X\big(O(\boldsymbol{\sigma}, \boldsymbol{\theta}, \boldsymbol{\mu}, A, I)\big) & \text{otherwise} \\
 \end{cases}
@@ -1367,7 +1368,7 @@ The data-returning halt operations, \hyperlink{RETURN}{\text{\small RETURN}} and
 
 Stack items are added or removed from the left-most, lower-indexed portion of the series; all other items remain unchanged:
 \begin{eqnarray}
-O\big((\boldsymbol{\sigma}, \boldsymbol{\theta}, \boldsymbol{\mu}, A, I)\big) & \equiv & (\boldsymbol{\sigma}', \boldsymbol{\theta}', \boldsymbol{\mu}', A', I) \\
+O\big((\boldsymbol{\sigma}, \boldsymbol{\theta}, \boldsymbol{\mu}, A, I)\big) & \equiv & (\boldsymbol{\sigma}', \boldsymbol{\mu}', A', I, \boldsymbol{\theta}') \\
 \Delta & \equiv & \mathbf{\alpha}_{w} - \mathbf{\delta}_{w} \\
 \lVert\boldsymbol{\mu}'_{\mathbf{s}}\rVert & \equiv & \lVert\boldsymbol{\mu}_{\mathbf{s}}\rVert + \Delta \\
 \quad \forall x \in [\mathbf{\alpha}_{w}, \lVert\boldsymbol{\mu}'_{\mathbf{s}}\rVert): \boldsymbol{\mu}'_{\mathbf{s}}[x] & \equiv & \boldsymbol{\mu}_{\mathbf{s}}[x-\Delta]
@@ -1768,8 +1769,8 @@ A reasonable implementation will maintain a database of nodes determined from th
 For each precompiled contract, we make use of a template function, $\Xi_{\mathtt{PRE}}$, which implements the out-of-gas checking.
 \begin{equation} \label{eq:pre}
 \Xi_{\mathtt{PRE}}(\boldsymbol{\sigma}, \boldsymbol{\theta}, g, A, I) \equiv \begin{cases}
-(\varnothing, \boldsymbol{\theta}, 0, A, ()) & \text{if} \quad g < g_{\mathrm{r}} \\
-(\boldsymbol\sigma, \boldsymbol{\theta}, g - g_{\mathrm{r}}, A, \mathbf{o}) & \text{otherwise}\end{cases}
+(\varnothing, 0, A, (), \boldsymbol{\theta}) & \text{if} \quad g < g_{\mathrm{r}} \\
+(\boldsymbol\sigma, g - g_{\mathrm{r}}, A, \mathbf{o}, \boldsymbol{\theta}) & \text{otherwise}\end{cases}
 \end{equation}
 
 The precompiled contracts each use these definitions and provide specifications for the $\mathbf{o}$ (the output data) and $g_{\mathrm{r}}$, the gas requirements.
