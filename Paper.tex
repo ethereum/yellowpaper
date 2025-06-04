@@ -2089,7 +2089,6 @@ The fee schedule $G$ is a tuple of scalar values corresponding to the relative c
 \toprule
 Name & Value & Description \\
 \midrule
-$G_{\mathrm{zero}}$ & 0 & Nothing paid for operations of the set {\small $W_{\mathrm{zero}}$}. \\
 $G_{\mathrm{jumpdest}}$ & 1 & Amount of gas to pay for a {\small JUMPDEST} operation. \\
 $G_{\mathrm{base}}$ & 2 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{base}}$}. \\
 $G_{\mathrm{verylow}}$ & 3 & Amount of gas to pay for operations of the set {\small $W_{\mathrm{verylow}}$}. \\
@@ -2165,7 +2164,7 @@ G_{\mathrm{create}}+G_{\mathrm{keccak256word}} \times \lceil \boldsymbol{\mu}_{\
 G_{\mathrm{keccak256}}+G_{\mathrm{keccak256word}} \times \lceil \boldsymbol{\mu}_{\mathbf{s}}[1] \div 32 \rceil & \text{if} \quad w = \text{\small KECCAK256}\\
 G_{\mathrm{jumpdest}} & \text{if} \quad w = \text{\small JUMPDEST}\\
 C_\text{\tiny SLOAD}(\boldsymbol{\mu}, A, I) & \text{if} \quad w = \text{\small SLOAD}\\
-G_{\mathrm{zero}} & \text{if} \quad w \in W_{\mathrm{zero}}\\
+0 & \text{if} \quad w \in W_{\mathrm{zero}}\\
 G_{\mathrm{base}} & \text{if} \quad w \in W_{\mathrm{base}}\\
 G_{\mathrm{verylow}} & \text{if} \quad w \in W_{\mathrm{verylow}}\\
 G_{\mathrm{low}} & \text{if} \quad w \in W_{\mathrm{low}}\\
