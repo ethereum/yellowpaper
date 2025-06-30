@@ -2174,13 +2174,13 @@ G_{\mathrm{high}} & \text{if} \quad w \in W_{\mathrm{high}}\\
 G_{\mathrm{blockhash}} & \text{if} \quad w = \text{\small \hyperlink{blockhash}{BLOCKHASH}}\\
 \end{cases}
 \end{equation}
+
+where:
 \begin{equation}
 w \equiv \begin{cases} I_{\mathbf{b}}[\boldsymbol{\mu}_{\mathrm{pc}}] & \text{if} \quad \boldsymbol{\mu}_{\mathrm{pc}} < \lVert I_{\mathbf{b}} \rVert\\
 \text{\small STOP} & \text{otherwise}
 \end{cases}
 \end{equation}
-
-where:
 \begin{equation}
 C_{\mathrm{mem}}(a) \equiv G_{\mathrm{memory}} \cdot a + \left\lfloor \dfrac{a^2}{512} \right\rfloor
 \end{equation}
@@ -2842,7 +2842,7 @@ We employ the following definitions:
 \toprule
 Name & Value & Description \\
 \midrule
-\linkdest{J__wordbytes}{}$J_{\mathrm{wordbytes}}$ & 4  & Bytes in word. \\
+\linkdest{J__wordbytes}{}$J_{\mathrm{wordbytes}}$ & 32 & Bytes in word. \\
 \linkdest{J__datasetinit}{}$J_{\mathrm{datasetinit}}$ & $2^{30}$ & Bytes in dataset at genesis. \\
 \linkdest{J__datasetgrowth}{}$J_{\mathrm{datasetgrowth}}$ & $2^{23}$ & Dataset growth per epoch. \\
 \linkdest{J__cacheinit}{}$J_{\mathrm{cacheinit}}$ & $2^{24}$ & Bytes in cache at genesis. \\
