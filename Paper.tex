@@ -133,8 +133,9 @@ Formally, we expand to:
 \begin{eqnarray}
 \boldsymbol{\sigma}_{t+1} & \equiv & \hyperlink{Pi}{\Pi}(\boldsymbol{\sigma}_{t}, B) \\
 B & \equiv & (..., (T_0, T_1, ...), ...) \\
-\Pi(\boldsymbol{\sigma}, B) & \equiv & \hyperlink{Upsilon}{\Upsilon}(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...
+\Pi(\boldsymbol{\sigma}, B) & \equiv & \hyperlink{Upsilon}{\Upsilon}(\Upsilon(\boldsymbol{\sigma}, T_0), T_1) ...\footnotemark
 \end{eqnarray}
+\footnotetext{Note that since the Cancun fork, blocks also need to process \textit{system-level transactions} before processing regular transactions. System-level transactions are defined in sub-section \ref{subsec:System_Level_Transactions}.}
 
 Where \hyperlink{block}{$B$} is this block, which includes a series of transactions amongst some other components and $\hyperlink{Pi}{\Pi}$ is the block-level state-transition function for transactions\footnote{Note that since the Shanghai fork, blocks also needs to process \textit{withdrawal operations} in order to reach their final state. Withdrawal operations are defined in sub-section \ref{subsec:The_Withdrawal}, and block final state is discussed in greater detail in section \ref{ch:finalisation}.}.
 
@@ -467,6 +468,7 @@ and, since the \textit{Shanghai} hard fork, $\mathbf{W}$, a collection of valida
 \item[nonce]\linkdest{block_nonce_H__n}{}\linkdest{block_nonce} A 64-bit value that is now deprecated due to the replacement of proof of work consensus. It is set to \texttt{0x0000000000000000}; formally \hyperlink{H__n}{$H_{\mathrm{n}}$}.
 \item[baseFeePerGas]\linkdest{block_baseFeePerGas_H__f}{} A scalar value equal to the amount of wei that is burned for each unit of gas consumed; formally \hyperlink{H__f}{$H_{\mathrm{f}}$}.
 \item[withdrawalsRoot]\linkdest{withdrawals_root_H__w}{} The Keccak 256-bit hash of the root node of the trie structure populated with each withdrawal operations pushed by the consensus layer for this block; formally \hyperlink{H__w}{$H_{\mathrm{w}}$}.
+\item[parentBeaconBlockRoot]\linkdest{parent_beacon_block_root_H__br}{} The hash tree root of the consensus layer block corresponding to this execution layer block; formally \hyperlink{H__br}{$H_{\mathrm{br}}$}.
 \end{description}
 \linkdest{ommer_block_headers_B__U}{}\linkdest{block_B}{}The other three components in the block are a series of transactions, $B_{\mathbf{T}}$, an empty array which was previously reserved for ommer block headers, $B_{\mathbf{U}}$, and a series of withdrawals, $B_{\mathbf{W}}$. Formally, we can refer to a block $B$:
 \begin{equation}
@@ -582,7 +584,7 @@ The values stemming from the computation of transactions, specifically the \hype
 \hypertarget{block_preparation_function_for_RLP_serialization_L__B}{}\linkdest{L__B}\hypertarget{block_preparation_function_for_RLP_serialization_L__H}{}\linkdest{L__B}The function $L_{\mathrm{B}}$ and $L_{\mathrm{H}}$ are the preparation functions for a block and block header respectively.
 We assert the types and order of the structure for when the RLP transformation is required:
 \begin{eqnarray}
-\quad L_{\mathrm{H}}(H) & \equiv & (\begin{array}[t]{l}H_{\mathrm{p}}, H_{\mathrm{o}}, H_{\mathrm{c}}, H_{\mathrm{r}}, H_{\mathrm{t}}, H_{\mathrm{e}}, H_{\mathrm{b}}, H_{\mathrm{d}},\\ H_{\mathrm{i}}, H_{\mathrm{l}}, H_{\mathrm{g}}, H_{\mathrm{s}}, H_{\mathrm{x}}, H_{\mathrm{a}}, H_{\mathrm{n}}, H_{\mathrm{f}}, H_{\mathrm{w}} \; )\end{array} \\
+\quad L_{\mathrm{H}}(H) & \equiv & (\begin{array}[t]{l}H_{\mathrm{p}}, H_{\mathrm{o}}, H_{\mathrm{c}}, H_{\mathrm{r}}, H_{\mathrm{t}}, H_{\mathrm{e}},\\ H_{\mathrm{b}}, H_{\mathrm{d}}, H_{\mathrm{i}}, H_{\mathrm{l}}, H_{\mathrm{g}}, H_{\mathrm{s}},\\ H_{\mathrm{x}}, H_{\mathrm{a}}, H_{\mathrm{n}}, H_{\mathrm{f}}, H_{\mathrm{w}}, H_{\mathrm{br}} \; )\end{array} \\
 \quad L_{\mathrm{B}}(B) & \equiv & \big( L_{\mathrm{H}}(B_{\mathrm{H}}), \widetilde{L}_{\mathrm{T}}^*(B_{\mathbf{T}}), L_{\mathrm{H}}^*(\hyperlink{ommer_block_headers_B__U}{B_{\mathbf{U}}}), L_{\mathrm{W}}^*(B_{\mathbf{W}}) \big)
 \end{eqnarray}
 where $\widetilde{L}_{\mathrm{T}}$ takes a special care of EIP-2718 transactions:
@@ -605,7 +607,7 @@ The component types are defined thus:
 \hyperlink{logs_Bloom_filter_H__b}{H_{\mathrm{b}}} \in \mathbb{B}_{256} & \wedge & H_{\mathrm{d}} \in \mathbb{N} & \wedge & \hyperlink{block_number_H__i}{H_{\mathrm{i}}} \in \mathbb{N} & \wedge \\
 \hyperlink{block_gas_limit_H__l}{H_{\mathrm{l}}} \in \mathbb{N} & \wedge & H_{\mathrm{g}} \in \mathbb{N} & \wedge & \hyperlink{block_timestamp_H__s}{H_{\mathrm{s}}} \in \mathbb{N}_{256} & \wedge \\
 \hyperlink{block_extraData_H__x}{H_{\mathrm{x}}} \in \mathbb{B} & \wedge & H_{\mathrm{a}} \in \mathbb{B}_{32} & \wedge & \hyperlink{block_nonce_H__n}{H_{\mathrm{n}}} \in \mathbb{B}_{8} & \wedge \\
-\hyperlink{block_baseFeePerGas_H__f}{H_{\mathrm{f}}} \in \mathbb{N} & \wedge & \hyperlink{withdrawals_root_H__w}{H_{\mathrm{w}}} \in \mathbb{B}_{32}
+\hyperlink{block_baseFeePerGas_H__f}{H_{\mathrm{f}}} \in \mathbb{N} & \wedge & \hyperlink{withdrawals_root_H__w}{H_{\mathrm{w}}} \in \mathbb{B}_{32} & \wedge & \hyperlink{parent_beacon_block_root_H__br}{H_{\mathrm{br}}} \in \mathbb{B}_{32}
 
 \end{array}
 \end{equation}
@@ -704,6 +706,7 @@ The \textit{Paris} hard fork changed Ethereum's consensus from proof of work to 
 
 The value of \textbf{prevRandao} must be determined using information from the Beacon Chain.
 While the details of generating the \textit{RANDAO} value on the Beacon Chain is beyond the scope of this paper, we refer to the expected \textit{RANDAO} value for the previous block as $\mathtt{PREVRANDAO}()$.
+Similarly, the value of \textbf{parentBeaconBlockRoot} ($H_{\mathrm{br}}$) must be determined using information from the Beacon Chain, we refer to the expected value as $\mathtt{PARENT\_BEACON\_BLOCK\_ROOT}()$.
 
 \hypertarget{block_header_validity_function}{}Thus we are able to define the block header validity function $V(H)$:
 \begin{eqnarray}
@@ -718,10 +721,45 @@ V(H) & \equiv & H_{\mathrm{g}} \le H_{\mathrm{l}}  \quad \wedge \\
 \nonumber& & H_{\mathrm{o}} = \texttt{KEC}(\texttt{RLP}(())) \quad \wedge \\
 \nonumber& & H_{\mathrm{d}} = 0 \quad \wedge \\
 \nonumber& & H_{\mathrm{n}} = \texttt{0x0000000000000000} \quad \wedge \\
-\nonumber& & H_{\mathrm{a}} = \mathtt{PREVRANDAO}()
+\nonumber& & H_{\mathrm{a}} = \mathtt{PREVRANDAO}() \wedge \\
+\nonumber& & H_{\mathrm{br}} = \mathtt{PARENT\_BEACON\_BLOCK\_ROOT}()
 \end{eqnarray}
 
 Note additionally that \textbf{extraData} must be at most 32 bytes.
+
+\subsection{System-level Transactions}\label{subsec:System_Level_Transactions}
+Introduced by the Cancun update, each block now begins with the execution of a predefined set of system-level transactions $T_{sys}$.
+System-level transactions are executed before any other regular transactions,
+and are not included in the block's transaction list $B_{\mathbf{T}}$.
+Those transactions behave like regular transactions but with some caveats:
+they always target predefined system contracts,
+they do not incur any gas fee, reward or burn, and their gas usage do not count towards the block's gas limit.
+The signature and nonce checks are also ignored for those transactions,
+the sender address $S(T)$ is always set to be the system account $a_{sys}$ \eqref{eq:system_address}.
+
+A system-level transaction contains the same fields as a regular transaction $\textit{T}$.
+
+The set of system-level transactions $T_{sys}$ is defined as:
+
+\begin{equation}
+  T_{sys} \equiv \{T_{beacon\_root}\}
+\end{equation}
+
+where
+\begin{eqnarray}
+  T_{beacon\_root} \equiv \begin{cases}
+    T_{\mathrm{x}} = 0 \\
+    T_{\mathrm{n}} = \sigma[\hyperlink{beacon_root_address}{a_{beacon\_root}}]_n \\
+    T_{\mathrm{p}} = 0 \\
+    T_{\mathrm{g}} = 30,000,000 \\
+    T_{\mathrm{t}} = \hyperlink{beacon_root_address}{a_{beacon\_root}} \\
+    T_{\mathrm{v}} = 0 \\
+    T_{\mathrm{d}} = \hyperlink{parent_beacon_block_root_H__br}{H_{\mathrm{br}}} \\
+    T_{\mathrm{w}} = 0 \\
+    T_{\mathrm{r}} = 0 \\
+    T_{\mathrm{s}} = 0 \\
+  \end{cases}
+\end{eqnarray}
 
 \section{Gas and Payment} \label{ch:payment}
 
@@ -2027,6 +2065,34 @@ and $\mathtt{LE}_k$ is the $k$-byte little-endian representation:
 \begin{equation}
   \mathtt{LE}_k(x) \equiv (b_0, b_1, ..., b_{k-1}): x = \sum_{n = 0}^{k-1} b_n \cdot 256^n
 \end{equation}
+
+\section{System Contracts}\label{app:system_contracts}
+
+The Cancun update started the introduction of system contracts.
+These are regular-smart contracts that exist at pre-defined addresses.
+They differ from precompiled contracts in that they are implemented in EVM bytecode and can be interacted with like any other contract.
+They are called directly by execution client using a special $a_\mathtt{SYSTEM}$ address at the beginning of block execution,
+and are used to publish system-level information directly to the world state $\boldsymbol{\sigma}$ so that it can be used by any other smart-contracts.
+
+\begin{equation} \label{eq:system_address}
+  a_{sys} \equiv 0xfffffffffffffffffffffffffffffffffffffffe
+\end{equation}
+
+\subsection{Beacon Block Root Contract}
+
+Publish the parent consensus beacon block root \hyperlink{parent_beacon_block_root_H__br}{$H_{\mathrm{br}}$}
+to the world state $\boldsymbol{\sigma}$.
+
+We define the address and deployed bytecode of the beacon block root contract to be:
+\begin{eqnarray}
+  \hypertarget{beacon_root_address}{a_{beacon\_root}} \equiv 0x000F3df6D732807Ef1319fB7B8bB8522d0Beac02 \\
+  \mathbf{b}_{beacon\_root} \equiv 0x3373fffffffffffffffffffffffffffffffffffffffe \\
+  \nonumber 14604d57602036146024575f5ffd5b5f35801560495762001fff \\
+  \nonumber 810690815414603c575f5ffd5b62001fff01545f5260205ff35b \\
+  \nonumber 5f5ffd5b62001fff42064281555f359062001fff015500 \\
+  \boldsymbol{\sigma}[a_{beacon\_root}]_{\mathbf{c}} \equiv \texttt{KEC}(\mathbf{b}_{beacon\_root})
+\end{eqnarray}
+
 
 \section{Signing Transactions}\label{app:signing}
 
