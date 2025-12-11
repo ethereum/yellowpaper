@@ -324,7 +324,7 @@ While it is assumed that the ultimate external actor will be human in nature, so
 such `tools' could ultimately become so causally removed from their human-based initiation---or humans may become so causally-neutral---that there could be a point at which they rightly be considered autonomous agents.
 \eg contracts may offer bounties to humans for being sent transactions to initiate their execution.}.
 EIP-2718 by \cite{EIP-2718} introduced the notion of different transaction types.
-As of the \textit{London} version of the protocol, there are three transaction types: 0 (legacy), 1 (EIP-2930 by \cite{EIP-2930}), and 2 (EIP-1559 by \cite{EIP-1559}).
+As of the \textit{Cancun} version of the protocol, there are four transaction types: 0 (legacy), 1 (EIP-2930 by \cite{EIP-2930}), 2 (EIP-1559 by \cite{EIP-1559}), and 3 (EIP-4844 by \cite{EIP-4844}).
 Further, there are two subtypes of transactions: those which result in message calls and those which result in the creation of new accounts with associated code (known informally as `contract creation').
 All transaction types specify a number of common fields:
 
@@ -351,17 +351,22 @@ Legacy transactions do not have an \textbf{accessList} ($T_{\mathbf{A}}=()$), wh
 $T_{\mathrm{w}} = 27 + T_{\mathrm{y}}$ or $T_{\mathrm{w}} = 2\beta + 35 + T_{\mathrm{y}}$ (see EIP-155 by \cite{EIP-155}).
 \end{description}
 
-There are differences in how one's acceptable gas price is specified in type 2 transactions versus type 0 and type 1 transactions. Type 2 transactions take better advantage of the gas market improvements introduced in EIP-1559 by explicitly limiting the \textit{priority fee}\footnote{The \textit{priority fee} is discussed in greater detail in sections \ref{ch:payment} and \ref{ch:transactions}.} that is paid. Type 2 transactions have the following two fields related to gas:
+There are differences in how one's acceptable gas price is specified in type 0 and type 1 transactions versus other types.
+Type 0 and type 1 transactions specify gas price as a single value:
+\begin{description}
+  \item[gasPrice]\linkdest{tx_gas_price_T__p}{} A scalar value equal to the number of Wei to be paid per unit of \textit{gas} for all computation costs incurred as a result of the execution of this transaction; formally $T_{\mathrm{p}}$.\footnote{Type 0 and type 1 transactions will get the same gas price behavior as a type 2 transaction with $T_{\mathrm{m}}$ and $T_{\mathrm{f}}$ set to the value of $T_{\mathrm{p}}$.}
+\end{description}
 
+In contrast, type 2 and above transactions take better advantage of the gas market improvements introduced in EIP-1559 by explicitly limiting the \textit{priority fee}\footnote{The \textit{priority fee} is discussed in greater detail in sections \ref{ch:payment} and \ref{ch:transactions}.} that is paid. Type 2 and above transactions have the following two fields related to gas:
 \begin{description}
   \item[maxFeePerGas]\linkdest{max_fee_per_gas}{} A scalar value equal to the maximum number of Wei to be paid per unit of \textit{gas} for all computation costs incurred as a result of the execution of this transaction; formally $T_{\mathrm{m}}$.
   \item[maxPriorityFeePerGas]\linkdest{max_priority_fee_per_gas}{} A scalar value equal to the maximum number of Wei to be paid to the block's fee recipient as an incentive to include the transaction; formally $T_{\mathrm{f}}$.
 \end{description}
 
-In contrast, type 0 and type 1 transactions specify gas price as a single value:
-
+Type 3 transactions introduce the following two fields related to blob-carrying transactions:
 \begin{description}
-  \item[gasPrice]\linkdest{tx_gas_price_T__p}{} A scalar value equal to the number of Wei to be paid per unit of \textit{gas} for all computation costs incurred as a result of the execution of this transaction; formally $T_{\mathrm{p}}$.\footnote{Type 0 and type 1 transactions will get the same gas price behavior as a type 2 transaction with $T_{\mathrm{m}}$ and $T_{\mathrm{f}}$ set to the value of $T_{\mathrm{p}}$.}
+  \item[maxFeePerBlobGas]\linkdest{max_fee_per_blob_gas}{} A scalar value equal to the maximum number of Wei to be paid per unit of \textit{blob gas} for all blob data costs incurred as a result of the execution of this transaction; formally $T_{\mathrm{b}}$.
+  \item[blobVersionedHashes]\linkdest{blob_versioned_hashes}{} A list of versioned hashes of the blobs that are being committed with this transaction; formally $T_{\mathbf{B}}$. Each element of that list is a 32-byte versioned hash matching blobs committed in the corresponding consensus beacon block. The first (leftmost) byte of each hash should be equal to the current version byte $V_{blob}$.
 \end{description}
 
 Additionally, a contract creation transaction (regardless of transaction type) contains:
@@ -378,6 +383,12 @@ In contrast, a message call transaction contains:
 \item[data] An unlimited size byte array specifying the input data of the message call, formally $T_{\mathbf{d}}$.
 \end{description}
 
+As of the Cancun version of the protocol, the blob version is defined as:
+\begin{eqnarray}
+  V_{blob} & \in & \mathbb{B}_{1} \\
+  V_{blob} & \equiv & 1
+\end{eqnarray}
+
 Appendix \ref{app:signing} specifies the function, $S$, which maps transactions to the sender, and happens through the ECDSA of the SECP-256k1 curve, using the hash of the transaction (excepting the latter three signature fields) as the datum to sign. For the present we simply assert that the sender of a given transaction $T$ can be represented with $S(T)$.
 
 \begin{equation}
@@ -385,6 +396,8 @@ Appendix \ref{app:signing} specifies the function, $S$, which maps transactions 
 (T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, T_{\mathrm{w}}, T_{\mathrm{r}}, T_{\mathrm{s}}) & \text{if} \; T_{\mathrm{x}} = 0 \\
 (T_{\mathrm{c}}, T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, T_{\mathbf{A}}, T_{\mathrm{y}}, T_{\mathrm{r}}, T_{\mathrm{s}}) & \text{if} \; T_{\mathrm{x}} = 1 \\
 (T_{\mathrm{c}}, T_{\mathrm{n}}, T_{\mathrm{f}}, T_{\mathrm{m}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, T_{\mathbf{A}}, T_{\mathrm{y}}, T_{\mathrm{r}}, T_{\mathrm{s}}) & \text{if} \; T_{\mathrm{x}} = 2 \\
+(T_{\mathrm{c}}, T_{\mathrm{n}}, T_{\mathrm{f}}, T_{\mathrm{m}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, T_{\mathrm{d}}, T_{\mathbf{A}}, T_{\mathbf{b}}, T_{\mathbf{B}}, \\
+T_{\mathrm{y}}, T_{\mathrm{r}}, T_{\mathrm{s}}) & \text{if} \; T_{\mathrm{x}} = 3 \\
 \end{cases}
 \end{equation}
 where
@@ -395,14 +408,14 @@ T_{\mathbf{d}} & \text{otherwise}
 \end{cases}
 \end{equation}
 
-Here, we assume all components are interpreted by the RLP as integer values, with the exception of the access list $T_{\mathbf{A}}$ and the arbitrary length byte arrays $T_{\mathbf{i}}$ and $T_{\mathbf{d}}$.
+Here, we assume all components are interpreted by the RLP as integer values, with the exception of the access list $T_{\mathbf{A}}$, the blob versioned hashes $T_{\mathbf{B}}$ and the arbitrary length byte arrays $T_{\mathbf{i}}$ and $T_{\mathbf{d}}$.
 \begin{equation}
 \begin{array}[t]{lclclc}
-T_{\mathrm{x}} \in \{0, 1, 2\} & \wedge & T_{\mathrm{c}} = \beta & \wedge & T_{\mathrm{n}} \in \mathbb{N}_{256} & \wedge \\
+T_{\mathrm{x}} \in \{0, 1, 2, 3\} & \wedge & T_{\mathrm{c}} = \beta & \wedge & T_{\mathrm{n}} \in \mathbb{N}_{256} & \wedge \\
 T_{\mathrm{p}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{g}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{v}} \in \mathbb{N}_{256} & \wedge \\
 T_{\mathrm{w}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{r}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{s}} \in \mathbb{N}_{256} & \wedge \\
 T_{\mathrm{y}} \in \mathbb{N}_{1} & \wedge & T_{\mathbf{d}} \in \mathbb{B} & \wedge & T_{\mathbf{i}} \in \mathbb{B} & \wedge \\
-T_{\mathrm{m}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{f}} \in \mathbb{N}_{256}
+T_{\mathrm{m}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{f}} \in \mathbb{N}_{256} & \wedge & T_{\mathrm{b}} \in \mathbb{N}_{256}
 \end{array}
 \end{equation}
 where
@@ -410,9 +423,14 @@ where
 \mathbb{N}_{\mathrm{n}} = \{ P: P \in \mathbb{N} \wedge P < 2^n \}
 \end{equation}
 
-The address hash $T_{\mathbf{t}}$ is slightly different: it is either a 20-byte address hash or, in the case of being a contract-creation transaction (and thus formally equal to $\varnothing$), it is the RLP empty byte sequence and thus the member of $\mathbb{B}_0$:
+The address hash $T_{\mathbf{t}}$ is slightly different: it is either a 20-byte address hash or,
+in the case of being a contract-creation transaction (and thus formally equal to $\varnothing$),
+it is the RLP empty byte sequence and thus the member of $\mathbb{B}_0$.
+Type 3 transaction cannot create contracts, so in that case $T_{\mathbf{t}}$ must always be a 20-byte address hash.
+
 \begin{equation}
-T_{\mathbf{t}} \in \begin{cases} \mathbb{B}_{20} & \text{if} \quad T_{\mathrm{t}} \neq \varnothing \\
+T_{\mathbf{t}} \in \begin{cases}
+  \mathbb{B}_{20} & \text{if} \quad T_{\mathrm{x}} = 3 \lor T_{\mathrm{t}} \neq \varnothing \\
 \mathbb{B}_{0} & \text{otherwise}\end{cases}
 \end{equation}
 
@@ -468,6 +486,8 @@ and, since the \textit{Shanghai} hard fork, $\mathbf{W}$, a collection of valida
 \item[nonce]\linkdest{block_nonce_H__n}{}\linkdest{block_nonce} A 64-bit value that is now deprecated due to the replacement of proof of work consensus. It is set to \texttt{0x0000000000000000}; formally \hyperlink{H__n}{$H_{\mathrm{n}}$}.
 \item[baseFeePerGas]\linkdest{block_baseFeePerGas_H__f}{} A scalar value equal to the amount of wei that is burned for each unit of gas consumed; formally \hyperlink{H__f}{$H_{\mathrm{f}}$}.
 \item[withdrawalsRoot]\linkdest{withdrawals_root_H__w}{} The Keccak 256-bit hash of the root node of the trie structure populated with each withdrawal operations pushed by the consensus layer for this block; formally \hyperlink{H__w}{$H_{\mathrm{w}}$}.
+\item[blobGasUsed]\linkdest{blob_gas_used_H__bg}{} A scalar value equal to the total blob gas used in blob-carrying transactions in this block; formally \hyperlink{H__bg}{$H_{\mathrm{bg}}$}.
+\item[excessBlobGas]\linkdest{excess_blob_gas_H__ebg}{} A scalar value equal to the total excess blob gas in this block; formally \hyperlink{H__ebg}{$H_{\mathrm{ebg}}$}.
 \item[parentBeaconBlockRoot]\linkdest{parent_beacon_block_root_H__br}{} The hash tree root of the consensus layer block corresponding to this execution layer block; formally \hyperlink{H__br}{$H_{\mathrm{br}}$}.
 \end{description}
 \linkdest{ommer_block_headers_B__U}{}\linkdest{block_B}{}The other three components in the block are a series of transactions, $B_{\mathbf{T}}$, an empty array which was previously reserved for ommer block headers, $B_{\mathbf{U}}$, and a series of withdrawals, $B_{\mathbf{W}}$. Formally, we can refer to a block $B$:
@@ -584,7 +604,7 @@ The values stemming from the computation of transactions, specifically the \hype
 \hypertarget{block_preparation_function_for_RLP_serialization_L__B}{}\linkdest{L__B}\hypertarget{block_preparation_function_for_RLP_serialization_L__H}{}\linkdest{L__B}The function $L_{\mathrm{B}}$ and $L_{\mathrm{H}}$ are the preparation functions for a block and block header respectively.
 We assert the types and order of the structure for when the RLP transformation is required:
 \begin{eqnarray}
-\quad L_{\mathrm{H}}(H) & \equiv & (\begin{array}[t]{l}H_{\mathrm{p}}, H_{\mathrm{o}}, H_{\mathrm{c}}, H_{\mathrm{r}}, H_{\mathrm{t}}, H_{\mathrm{e}},\\ H_{\mathrm{b}}, H_{\mathrm{d}}, H_{\mathrm{i}}, H_{\mathrm{l}}, H_{\mathrm{g}}, H_{\mathrm{s}},\\ H_{\mathrm{x}}, H_{\mathrm{a}}, H_{\mathrm{n}}, H_{\mathrm{f}}, H_{\mathrm{w}}, H_{\mathrm{br}} \; )\end{array} \\
+\quad L_{\mathrm{H}}(H) & \equiv & (\begin{array}[t]{l}H_{\mathrm{p}}, H_{\mathrm{o}}, H_{\mathrm{c}}, H_{\mathrm{r}}, H_{\mathrm{t}}, H_{\mathrm{e}},\\ H_{\mathrm{b}}, H_{\mathrm{d}}, H_{\mathrm{i}}, H_{\mathrm{l}}, H_{\mathrm{g}}, H_{\mathrm{s}},\\ H_{\mathrm{x}}, H_{\mathrm{a}}, H_{\mathrm{n}}, H_{\mathrm{f}}, H_{\mathrm{w}}, H_{\mathrm{bg}}, H_{\mathrm{ebg}}, H_{\mathrm{br}} \; )\end{array} \\
 \quad L_{\mathrm{B}}(B) & \equiv & \big( L_{\mathrm{H}}(B_{\mathrm{H}}), \widetilde{L}_{\mathrm{T}}^*(B_{\mathbf{T}}), L_{\mathrm{H}}^*(\hyperlink{ommer_block_headers_B__U}{B_{\mathbf{U}}}), L_{\mathrm{W}}^*(B_{\mathbf{W}}) \big)
 \end{eqnarray}
 where $\widetilde{L}_{\mathrm{T}}$ takes a special care of EIP-2718 transactions:
@@ -607,7 +627,8 @@ The component types are defined thus:
 \hyperlink{logs_Bloom_filter_H__b}{H_{\mathrm{b}}} \in \mathbb{B}_{256} & \wedge & H_{\mathrm{d}} \in \mathbb{N} & \wedge & \hyperlink{block_number_H__i}{H_{\mathrm{i}}} \in \mathbb{N} & \wedge \\
 \hyperlink{block_gas_limit_H__l}{H_{\mathrm{l}}} \in \mathbb{N} & \wedge & H_{\mathrm{g}} \in \mathbb{N} & \wedge & \hyperlink{block_timestamp_H__s}{H_{\mathrm{s}}} \in \mathbb{N}_{256} & \wedge \\
 \hyperlink{block_extraData_H__x}{H_{\mathrm{x}}} \in \mathbb{B} & \wedge & H_{\mathrm{a}} \in \mathbb{B}_{32} & \wedge & \hyperlink{block_nonce_H__n}{H_{\mathrm{n}}} \in \mathbb{B}_{8} & \wedge \\
-\hyperlink{block_baseFeePerGas_H__f}{H_{\mathrm{f}}} \in \mathbb{N} & \wedge & \hyperlink{withdrawals_root_H__w}{H_{\mathrm{w}}} \in \mathbb{B}_{32} & \wedge & \hyperlink{parent_beacon_block_root_H__br}{H_{\mathrm{br}}} \in \mathbb{B}_{32}
+\hyperlink{block_baseFeePerGas_H__f}{H_{\mathrm{f}}} \in \mathbb{N} & \wedge & \hyperlink{withdrawals_root_H__w}{H_{\mathrm{w}}} \in \mathbb{B}_{32} & \wedge & \hyperlink{blob_gas_used_H__bg}{H_{\mathrm{bg}}} \in \mathbb{N} & \wedge \\
+\hyperlink{excess_blob_gas_H__ebg}{H_{\mathrm{ebg}}} \in \mathbb{N} & \wedge & \hyperlink{parent_beacon_block_root_H__br}{H_{\mathrm{br}}} \in \mathbb{B}_{32}
 
 \end{array}
 \end{equation}
@@ -694,6 +715,43 @@ To avoid a discontinuity in gas usage, the value of the parent block gas limit f
 H_{\mathrm{s}} > {P(H)_{\mathrm{H}}}_{\mathrm{s}}
 \end{equation}
 
+The Cancun update introduced a different type of gas, called blob-gas, used only to pay for blob hash data in type 3 transactions.
+We define a block blob-gas target $\tau_{blob}$, contrary to the dynamic block gas target $\tau$, this target is fixed and defined as:
+
+\begin{equation}
+  \tau_{blob} = 393,216
+\end{equation}
+
+The maximum amount of blob-gas that can be used in a block is defined as:
+\begin{equation}
+  \mathrm{bg}_{max} \equiv 789,432
+\end{equation}
+
+The current header's excess blob gas, $H_{\mathrm{ebg}}$, represents the amount by which the parent overshot the target blob-gas.
+It is calculated from the parent's header, $P(H)_{\mathrm{H}}$, using the following function:
+
+\begin{equation}
+  E(H) \equiv \begin{cases}
+    0 & \text{if} \quad (P(H)_{\mathrm{ebg}} + \\
+    & P(H)_{\mathrm{bg}}) < \tau_{blob} \\
+    P(H)_{\mathrm{ebg}} + P(H)_{\mathrm{bg}} - \tau_{blob} & \text{otherwise}
+  \end{cases}
+\end{equation}
+
+The total blob-gas used in the current block is calculated like this:
+\begin{equation}
+  HG_{blob}(H) \equiv \sum_{T \in B_{\mathbf{T}}} TG_{blob}(T)
+\end{equation}
+
+Each block also compute a base-fee per blob-gas, this fee is computed as the Taylor approximation of the exponential function:
+\begin{eqnarray}
+  f_{blob}(H) & \equiv & \left\lfloor \frac{1}{A_1} \sum_{i=1}^{k} A_i \right\rfloor \\
+  A_1 & \equiv & 3,338,477 \\
+  A_{i+1} & \equiv & \left\lfloor \frac{A_i \times H_{\mathrm{ebg}}}{A_1} \times i \right\rfloor \\
+  k & \equiv & \max \{ i \in \mathbb{N} \mid A_i > 0 \}
+\end{eqnarray}
+
+
 The \textit{Paris} hard fork changed Ethereum's consensus from proof of work to proof of stake, and thus deprecated many block header properties related to proof of work. These deprecated properties include \textbf{nonce} ($H_{\mathbf{n}}$), \textbf{ommersHash} ($H_{\mathbf{o}}$), \textbf{difficulty} ($H_{\mathbf{d}}$), and \textbf{mixHash} ($H_{\mathbf{m}}$).
 
 \textbf{mixHash} has been replaced with a new field \textbf{prevRandao} ($H_{\mathbf{a}}$). The other header fields related to proof of work have been replaced with constants:
@@ -722,6 +780,9 @@ V(H) & \equiv & H_{\mathrm{g}} \le H_{\mathrm{l}}  \quad \wedge \\
 \nonumber& & H_{\mathrm{d}} = 0 \quad \wedge \\
 \nonumber& & H_{\mathrm{n}} = \texttt{0x0000000000000000} \quad \wedge \\
 \nonumber& & H_{\mathrm{a}} = \mathtt{PREVRANDAO}() \wedge \\
+\nonumber& & H_{\mathrm{bg}} \leq \mathrm{bg}_{max} \quad \wedge \\
+\nonumber& & H_{\mathrm{bg}} = HG_{blob}(H) \wedge \\
+\nonumber& & H_{\mathrm{ebg}} = E(H) \wedge \\
 \nonumber& & H_{\mathrm{br}} = \mathtt{PARENT\_BEACON\_BLOCK\_ROOT}()
 \end{eqnarray}
 
@@ -790,6 +851,7 @@ The execution of a transaction is the most complex part of the Ethereum protocol
 \item the sender account balance contains at least the cost, $v_0$, required in up-front payment;
 \item the \textbf{maxFeePerGas}, $T_m$, in the case of type 2 transactions, or \textbf{gasPrice}, $T_p$, in the case of type 0 and type 1 transactions, is greater than or equal to the block's base fee, $H_{\mathrm{f}}$; and
 \item for type 2 transactions, \textbf{maxPriorityFeePerGas}, $T_f$, must be no larger than \textbf{maxFeePerGas}, $T_m$.
+\item for type 3 transactions, $T_{\mathrm{t}}$ cannot be $\varnothing$ and must always be a 20-byte address.
 \end{enumerate}
 
 Formally, we consider the function \hyperlink{Upsilon_state_transition}{$\Upsilon$}, with $T$ being a transaction and $\boldsymbol{\sigma}$ the state:
@@ -876,11 +938,17 @@ $G$ is fully defined in Appendix \ref{app:fees}.
   \end{cases}
 \end{equation}
 
+The total blob-gas of the transaction is calculated as:
+\begin{equation}
+  TG_{blob}(T) \equiv \lVert T_{\mathrm{B}} \rVert \times G_{\mathrm{blob}}
+\end{equation}
+
 The up-front cost $v_0$ is calculated as:
 \begin{equation}
   v_0 \equiv \begin{cases}
   \hyperlink{tx_gas_limit_T__g}{T_{\mathrm{g}}}T_{\mathrm{p}} + \hyperlink{tx_value_T__v}{T_{\mathrm{v}}} & \text{if} \; T_{\mathrm{x}} = 0 \lor T_{\mathrm{x}} = 1 \\
   \hyperlink{tx_gas_limit_T__g}{T_{\mathrm{g}}}T_{\mathrm{m}} + \hyperlink{tx_value_T__v}{T_{\mathrm{v}}} & \text{if} \; T_{\mathrm{x}} = 2 \\
+  \hyperlink{tx_gas_limit_T__g}{T_{\mathrm{g}}}T_{\mathrm{m}} + \hyperlink{tx_value_T__v}{T_{\mathrm{v}}} + TG_{blob}(T) \times T_{\mathrm{b}} & \text{if} \; T_{\mathrm{x}} = 3 \\
   \end{cases}
 \end{equation}
 
@@ -916,10 +984,18 @@ The penultimate condition ensures that, for create transactions, the length of t
 Note the final condition; the sum of the transaction's gas limit, $T_{\mathrm{g}}$, and the gas utilised in this block prior, given by $\hyperlink{ell}{\ell}(B_{\mathbf{R}})_{\mathrm{u}}$, must be no greater than the block's \textbf{gasLimit}, ${B_{\mathrm{H}}}_{\mathrm{l}}$.
 Also, with a slight abuse of notation, we assume that $\boldsymbol{\sigma}[S(T)]_{\mathrm{c}} = \texttt{KEC}\big( () \big)$, $\boldsymbol{\sigma}[S(T)]_{\mathrm{n}} = 0$, and $\boldsymbol{\sigma}[S(T)]_{\mathrm{b}} = 0$ if $\boldsymbol{\sigma}[S(T)] = \varnothing$.
 
-For type 2 transactions, we add an additional check that \textbf{maxPriorityFeePerGas} is no larger than \textbf{maxFeePerGas}:
+For transactions of type 2 and above, we add an additional check that \textbf{maxPriorityFeePerGas} is no larger than \textbf{maxFeePerGas}:
 \begin{equation}
   T_{\mathrm{m}} \geqslant T_{\mathrm{f}}
 \end{equation}
+
+For type 3 transactions, we add the following additional checks:
+\begin{eqnarray}
+  T_{\mathrm{t}} & \neq & \varnothing \quad \wedge \\
+  \lVert T_{\mathrm{B}} \rVert & \geqslant & 1 \quad \wedge \\
+  \forall \mathrm{b} \in T_{\mathrm{B}} : \mathrm{b}[0] & = & V_{blob} \quad \wedge \\
+  T_{\mathrm{b}}  & \geqslant & f_{blob}(B_{\mathrm{H}})
+\end{eqnarray}
 
 The execution of a valid transaction begins with an irrevocable change made to the state: the \hyperlink{account_nonce}{nonce of the account of the sender}, $S(T)$, is incremented by one and the balance is reduced by part of the up-front cost, $T_{\mathrm{g}} p$. The gas available for the proceeding computation, $g$, is defined as $T_{\mathrm{g}} - g_0$. The computation, whether contract creation or a message call, results in an eventual state (which may legally be equivalent to the current state), the change to which is deterministic and never invalid: there can be no invalid transactions from this point.
 
@@ -1214,6 +1290,7 @@ I_{\mathrm{w}} & \equiv & w
 \Xi_{\mathtt{BN\_MUL}}  (\boldsymbol{\sigma}_1, \boldsymbol{\theta}, g, A, I) & \text{if} \quad c = 7 \\
 \Xi_{\mathtt{SNARKV}}   (\boldsymbol{\sigma}_1, \boldsymbol{\theta}, g, A, I) & \text{if} \quad c = 8 \\
 \Xi_{\mathtt{BLAKE2\_F}}(\boldsymbol{\sigma}_1, \boldsymbol{\theta}, g, A, I) & \text{if} \quad c = 9 \\
+\Xi_{\mathtt{KZG\_PROOF}}(\boldsymbol{\sigma}_1, \boldsymbol{\theta}, g, A, I) & \text{if} \quad c = 10 \\
 \Xi                     (\boldsymbol{\sigma}_1, \boldsymbol{\theta}, g, A, I) & \text{otherwise} \end{cases}
 \end{equation}
 and
@@ -2066,6 +2143,33 @@ and $\mathtt{LE}_k$ is the $k$-byte little-endian representation:
   \mathtt{LE}_k(x) \equiv (b_0, b_1, ..., b_{k-1}): x = \sum_{n = 0}^{k-1} b_n \cdot 256^n
 \end{equation}
 
+\subsection{Verify KZG Proof Precompiled Contract}
+EIP-4844 by \cite{EIP-4844} defines $\Xi_{\mathtt{KZG\_PROOF}}$ as a precompiled contract implementing the verification of KZG proofs claiming that a blob commitment evaluates to a given value at a given point.
+We define the number of field elements per blob $E$ as 4096 represented as a 32-byte big-endian integer:
+\begin{equation}
+  E = 0x000000000000000000000000000000000000000000000000000000000001000
+\end{equation}
+
+We define the BLS modulus $B$, also represented as a 32-byte big-endian integer:
+\begin{equation}
+  B = 0x73eda753299d7d483339d80809a1d8055d23bda000000000000000000000001
+\end{equation}
+
+The proof verifying function $\mathtt{VERIFY\_KZG\_PROOF}$ is defined in the \href{https://github.com/ethereum/consensus-specs/blob/86fb82b221474cc89387fa6436806507b3849d88/specs/deneb/polynomial-commitments.md#verify_kzg_proof}{consensus layer specification}.
+
+\begin{eqnarray}
+  \Xi_{\mathtt{KZG\_PROOF}} &\equiv& \Xi_{\mathtt{PRE}}\quad\text{except:} \\
+  v &\equiv& I_{\mathbf{d}}[0..32] \\
+  z &\equiv& I_{\mathbf{d}}[32..64] \\
+  y &\equiv& I_{\mathbf{d}}[64..96] \\
+  c &\equiv& I_{\mathbf{d}}[96..144] \\
+  p &\equiv& I_{\mathbf{d}}[144..192] \\
+  \Xi_{\mathtt{KZG\_PROOF}}(\boldsymbol\sigma,g,A,I) &=& \left(\varnothing,0,A,()\right) \quad \text{if}\ F \\
+  F &\equiv& (\lVert I_{\mathbf{d}} \rVert \neq 192 \lor (V_{blob} \cdot \mathtt{KEC}(c)[1..32]) \neq v \lor \neg \mathtt{VERIFY\_KZG\_PROOF}(c, z, y, p)) \\
+  % h_{kzg}(c) &\equiv& V_{blob} \cdot \mathtt{KEC}(c)[1..32] \\
+  \mathbf{o} &\equiv& E \cdot B
+\end{eqnarray}
+
 \section{System Contracts}\label{app:system_contracts}
 
 The Cancun update started the introduction of system contracts.
@@ -2133,13 +2237,14 @@ For a given private key, $p_{\mathrm{r}}$, the Ethereum address $A(p_{\mathrm{r}
 A(p_{\mathrm{r}}) = \mathcal{B}_{96..255}\big(\mathtt{KEC}\big( \mathtt{ECDSAPUBKEY}(p_{\mathrm{r}}) \big) \big)
 \end{equation}
 
-\hypertarget{h_of_T}{}The message hash, $h(T)$, to be signed is the Keccak-256 hash of the transaction. Four different flavours of signing schemes are available:
+\hypertarget{h_of_T}{}The message hash, $h(T)$, to be signed is the Keccak-256 hash of the transaction. Five different flavours of signing schemes are available:
 \begin{eqnarray}
 L_{\mathrm{X}}(T) & \equiv & \begin{cases}
 (T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}) & \text{if} \; T_{\mathrm{x}} = 0 \land T_{\mathrm{w}} \in \{27, 28\} \\
 (T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, \beta, (), ()) & \text{if} \; T_{\mathrm{x}} = 0 \land T_{\mathrm{w}} \in \{2\beta + 35, 2\beta + 36\} \\
 (T_{\mathrm{c}}, T_{\mathrm{n}}, T_{\mathrm{p}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, T_{\mathbf{A}}) & \text{if} \; T_{\mathrm{x}} = 1 \\
-(T_{\mathrm{c}}, T_{\mathrm{n}}, T_{\mathrm{f}}, T_{\mathrm{m}},  T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, T_{\mathbf{A}}) & \text{if} \; T_{\mathrm{x}} = 2
+(T_{\mathrm{c}}, T_{\mathrm{n}}, T_{\mathrm{f}}, T_{\mathrm{m}},  T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, \mathbf{p}, T_{\mathbf{A}}) & \text{if} \; T_{\mathrm{x}} = 2 \\
+(T_{\mathrm{c}}, T_{\mathrm{n}}, T_{\mathrm{f}}, T_{\mathrm{m}}, T_{\mathrm{g}}, T_{\mathrm{t}}, T_{\mathrm{v}}, T_{\mathrm{d}}, T_{\mathbf{A}}, T_{\mathbf{b}}, T_{\mathbf{B}}) & \text{if} \; T_{\mathrm{x}} = 3 \\
 \end{cases} \\
 \nonumber \text{where} \\
 \nonumber \mathbf{p} & \equiv & \begin{cases}
@@ -2229,6 +2334,7 @@ $G_{\mathrm{keccak256}}$ & 30 & Paid for each {\small KECCAK256} operation. \\
 $G_{\mathrm{keccak256word}}$ & 6 & Paid for each word (rounded up) for input data to a {\small KECCAK256} operation. \\
 $G_{\mathrm{copy}}$ & 3 & Partial payment for {\small *COPY} operations, multiplied by words copied, rounded up. \\
 $G_{\mathrm{blockhash}}$ & 20 & Payment for each {\small BLOCKHASH} operation. \\
+$G_{\mathrm{blob}}$ & 131,072 & Cost for each blobl of a type-3 transaction. \\
 
 %extern u256 const c_{\mathrm{copyGas}};			///< Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
 \bottomrule
@@ -2300,7 +2406,7 @@ $W_{\mathrm{zero}}$ = \{{\small STOP}, {\small RETURN}, {\small REVERT}\}
 
 $W_{\mathrm{base}}$ = \{{\small ADDRESS}, {\small ORIGIN}, {\small CALLER}, {\small CALLVALUE}, {\small CALLDATASIZE}, {\small CODESIZE}, {\small GASPRICE}, {\small COINBASE},\newline \noindent\hspace*{1cm} {\small TIMESTAMP}, {\small NUMBER}, {\small PREVRANDAO}, {\small GASLIMIT}, {\small CHAINID}, {\small RETURNDATASIZE}, {\small POP}, {\small PC}, {\small MSIZE}, {\small GAS}, \newline \noindent\hspace*{1cm} {\small BASEFEE}, {\small PUSH0}\}
 
-$W_{\mathrm{verylow}}$ = \{{\small ADD}, {\small SUB}, {\small NOT}, {\small LT}, {\small GT}, {\small SLT}, {\small SGT}, {\small EQ}, {\small ISZERO}, {\small AND}, {\small OR}, {\small XOR}, {\small BYTE}, {\small SHL}, {\small SHR}, {\small SAR}, \newline \noindent\hspace*{1cm} {\small CALLDATALOAD}, {\small MLOAD}, {\small MSTORE}, {\small MSTORE8}, {\small PUSH1}, ..., {\small PUSH32}, {\small DUP*}, {\small SWAP*}\}
+$W_{\mathrm{verylow}}$ = \{{\small ADD}, {\small SUB}, {\small NOT}, {\small LT}, {\small GT}, {\small SLT}, {\small SGT}, {\small EQ}, {\small ISZERO}, {\small AND}, {\small OR}, {\small XOR}, {\small BYTE}, {\small SHL}, {\small SHR}, {\small SAR}, \newline \noindent\hspace*{1cm} {\small CALLDATALOAD}, {\small BLOBHASH}, {\small MLOAD}, {\small MSTORE}, {\small MSTORE8}, {\small PUSH1}, ..., {\small PUSH32}, {\small DUP*}, {\small SWAP*}\}
 
 $W_{\mathrm{low}}$ = \{{\small MUL}, {\small DIV}, {\small SDIV}, {\small MOD}, {\small SMOD}, {\small SIGNEXTEND}, {\small SELFBALANCE}\}
 
@@ -2597,6 +2703,12 @@ Here given are the various exceptions to the state transition rules given in sec
 \midrule
 0x48 & {\small BASEFEE} & 0 & 1 & Get the current block's base fee. \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv {I_{\mathrm{H}}}_{\mathrm{f}}$ \\
+\midrule
+0x49 & {\small BLOBHASH} & 1 & 1 & Get one of the blob hashes of the current transaction. \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \begin{cases}
+  T_{\mathbf{B}}[\boldsymbol{\mu}_{\mathbf{s}}[0]] & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[0] < \lVert T_{\mathbf{B}} \rVert \\
+  0 & \text{otherwise}
+\end{cases}$ \\
 \bottomrule
 \end{tabu}
 
