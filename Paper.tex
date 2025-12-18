@@ -864,19 +864,20 @@ Thus $\boldsymbol{\sigma}'$ is the post-transactional state. We also define \hyp
 \subsection{Substate} \label{ch:substate}
 Throughout transaction execution, we accrue certain information that is acted upon immediately following the transaction. We call this the \textit{accrued transaction substate}, or \textit{accrued substate} for short, and represent it as $A$, which is a tuple:
 \begin{equation}
-A \equiv (A_{\mathbf{s}}, A_{\mathbf{l}}, A_{\mathbf{t}}, A_{\mathrm{r}}, A_{\mathbf{a}}, A_{\mathbf{K}})
+A \equiv (A_{\mathbf{s}}, A_{\mathbf{l}}, A_{\mathbf{t}}, A_{\mathrm{r}}, A_{\mathbf{a}}, A_{\mathbf{K}}, A_{\mathbf{c}})
 \end{equation}
 
 \hypertarget{self_destruct_set_wordy_defn_A__s}{}The tuple contents include $A_{\mathbf{s}}$, the self-destruct set: a set of accounts that will be discarded following the transaction's completion.
 \hypertarget{tx_log_series_wordy_defn_A__l}{} $A_{\mathbf{l}}$ is the log series: this is a series of archived and indexable `checkpoints' in VM code execution that allow for contract-calls to be easily tracked by onlookers external to the Ethereum world (such as decentralised application front-ends).
 \hypertarget{tx_touched_accounts_wordy_defn_A__t}{} $A_{\mathbf{t}}$ is the set of touched accounts, of which the empty ones are deleted at the end of a transaction.
 \hypertarget{refund_balance_defn_words_A__r}{}$A_{\mathrm{r}}$ is the refund balance, increased through using the \hyperlink{SSTORE}{{\small SSTORE}} instruction in order to reset contract storage to zero from some non-zero value. Though not immediately refunded, it is allowed to partially offset the total execution costs.
-Finally, EIP-2929 by \cite{EIP-2929} introduced \hypertarget{accessed_addresses_defn_words_A__a}{}$A_{\mathbf{a}}$, the set of accessed account addresses, and \hypertarget{accessed_storage_keys_defn_words_A__k}{}$A_{\mathbf{K}}$, the set of accessed storage keys
+On top of that, EIP-2929 by \cite{EIP-2929} introduced \hypertarget{accessed_addresses_defn_words_A__a}{}$A_{\mathbf{a}}$, the set of accessed account addresses, and \hypertarget{accessed_storage_keys_defn_words_A__k}{}$A_{\mathbf{K}}$, the set of accessed storage keys
 (more accurately, each element of $A_{\mathbf{K}}$ is a tuple of a 20-byte account address and a 32-byte storage slot).
+Finally, \hypertarget{refund_balance_defn_words_A__r}{}$A_{\mathrm{c}}$ is the set of contract addresses created during the transaction.
 
-We define the empty accrued substate $A^0$ to have no self-destructs, no logs, no touched accounts, zero refund balance, all precompiled contracts in the accessed addresses, and no accessed storage:
+We define the empty accrued substate $A^0$ to have no self-destructs, no logs, no touched accounts, zero refund balance, all precompiled contracts in the accessed addresses, no accessed storage and no created contracts:
 \begin{equation}
-A^0 \equiv (\varnothing, (), \varnothing, 0, \pi, \varnothing)
+A^0 \equiv (\varnothing, (), \varnothing, 0, \pi, \varnothing, \varnothing)
 \end{equation}
 where $\hyperlink{precompiled_set}{\pi}$ is the set of all precompiled addresses.
 
@@ -1090,10 +1091,12 @@ L_{\mathrm{A}}(s, n, \zeta, \mathbf{i}) & \equiv \begin{cases}
 \end{align}
 where $\cdot$ is the concatenation of byte arrays, $\mathcal{B}_{a..b}(X)$ evaluates to a binary value containing the bits of indices in the range $[a, b]$ of the binary data $X$, and $\boldsymbol{\sigma}[x]$ is the address state of $x$, or $\varnothing$ if none exists. Note we use one fewer than the sender's nonce value; we assert that we have incremented the sender account's nonce prior to this call, and so the value used is the sender's nonce at the beginning of the responsible transaction or VM operation.
 
-The address of the new account is added to the set of accessed accounts:
-\begin{equation}
-A^* \equiv A \quad \text{except} \quad A^*_{\mathbf{a}} \equiv A_{\mathbf{a}} \cup \{a\}
-\end{equation}
+The address of the new account is added to the set of accessed accounts and the set of created contracts:
+\begin{eqnarray}
+  A^* & \equiv & A \quad \text{except} \\
+  \quad A^*_{\mathbf{a}} & \equiv & A_{\mathbf{a}} \cup \{a\} \\
+  \quad A^*_{\mathbf{c}} & \equiv & A_{\mathbf{c}} \cup \{a\}
+\end{eqnarray}
 
 The account's nonce is initially defined as one, the balance as the value passed, the storage as empty and the code hash as the Keccak 256-bit hash of the empty string; the sender's balance is also reduced by the value passed. Thus the mutated state becomes $\boldsymbol{\sigma}^*$:
 \begin{equation}
@@ -3019,14 +3022,18 @@ G_{\mathrm{newaccount}} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, t) 
 0xfe & {\small INVALID} & $\varnothing$ & $\varnothing$ & Designated invalid instruction. \\
 \midrule
 \linkdest{selfdestruct}{}0xff & {\small SELFDESTRUCT} & 1 & 0 & Halt execution and register account for later deletion. Readers should be warned, \\
-&&&& since the \textit{Shanghai} update, this opcode has been marked as deprecated. \\
-&&&& Its behavior might be subject to breaking change in an upcoming update. \\
-&&&& $A'_{\mathbf{s}} \equiv A_{\mathbf{s}} \cup \{ I_{\mathrm{a}} \}$ \\
+&&&& since the \textit{Shanghai} update, this opcode has been marked as deprecated, \\
+&&&& any use in newly deployed contracts is strongly discouraged. \\
+&&&& $A'_{\mathbf{s}} \equiv \begin{cases}
+  A_{\mathbf{s}} \cup \{ I_{\mathrm{a}} \} \ & \text{if}\quad I_{\mathrm{a}} \in A_{\mathbf{c}} \\
+  A_{\mathbf{s}} & \text{otherwise}
+\end{cases}$ \\
 &&&& $A'_{\mathbf{a}} \equiv A_{\mathbf{a}} \cup \{ r \}$ \\
 &&&& $\boldsymbol{\sigma}'[r] \equiv \begin{cases}
 \varnothing &\text{if}\quad \boldsymbol{\sigma}[r] = \varnothing\ \wedge\ \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} = 0\\
 (\boldsymbol{\sigma}[r]_{\mathrm{n}}, \boldsymbol{\sigma}[r]_{\mathrm{b}} + \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}}, \boldsymbol{\sigma}[r]_{\mathbf{s}}, \boldsymbol{\sigma}[r]_{\mathrm{c}}) & \text{if}\quad r \neq I_{\mathrm{a}} \\
-(\boldsymbol{\sigma}[r]_{\mathrm{n}}, 0, \boldsymbol{\sigma}[r]_{\mathbf{s}}, \boldsymbol{\sigma}[r]_{\mathrm{c}}) & \text{otherwise}
+(\boldsymbol{\sigma}[r]_{\mathrm{n}}, 0, \boldsymbol{\sigma}[r]_{\mathbf{s}}, \boldsymbol{\sigma}[r]_{\mathrm{c}}) & \text{if}\quad r = I_{\mathrm{a}} \wedge I_{\mathrm{a}} \in A_{\mathbf{c}} \\
+\boldsymbol{\sigma}[r] & \text{otherwise}
 \end{cases}$\\ \\
 &&&& where $r = \boldsymbol{\mu}_{\mathbf{s}}[0] \bmod 2^{160}$\\ \\
 &&&& $\boldsymbol{\sigma}'[I_{\mathrm{a}}]_{\mathrm{b}} = 0$ \\
