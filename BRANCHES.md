@@ -4,10 +4,11 @@ Each protocol version is specified in `Paper.tex` found in a branch of this repo
 
 | Branch            | Version                                                           | Applicable Block Numbers        |
 |-------------------|-------------------------------------------------------------------------------------------------------------------|-----------------------------------|
-| master               | [Shanghai](https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/shanghai.md)    | 17,034,870 until 19,426,586
-| paris               | [Paris](https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/paris.md)    | 15,537,394 until 17,034,869
-| london            | [Gray Glacier](https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/gray-glacier.md) <br> [Arrow Glacier](https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/arrow-glacier.md) <br> [London](https://github.com/ethereum/eth1.0-specs/blob/master/network-upgrades/mainnet-upgrades/london.md)    |   Since 15,050,000 until 15,537,393 <br> Since 13,773,000 until 15,049,999 <br> Since 12,965,000 until 13,772,999 |
-| berlin            | [Berlin](https://github.com/ethereum/eth1.0-specs/blob/master/network-upgrades/mainnet-upgrades/berlin.md)        | Since 12,244,000 until 12,964,999 |
+| master            | [Cancun](https://eips.ethereum.org/EIPS/eip-7569)    | 19,426,587 until 22,431,084
+| shanghai          | [Shanghai](https://github.com/ethereum/execution-specs/blob/mainnet/src/ethereum/forks/shanghai/__init__.py)    | 17,034,870 until 19,426,586
+| paris             | [Paris](https://github.com/ethereum/execution-specs/blob/mainnet/src/ethereum/forks/paris/__init__.py)    | 15,537,394 until 17,034,869
+| london            | [Gray Glacier](https://eips.ethereum.org/EIPS/eip-5133) <br> [Arrow Glacier](https://eips.ethereum.org/EIPS/eip-4345) <br> [London](https://github.com/ethereum/execution-specs/blob/mainnet/src/ethereum/forks/london/__init__.py)    |   Since 15,050,000 until 15,537,393 <br> Since 13,773,000 until 15,049,999 <br> Since 12,965,000 until 13,772,999 |
+| berlin            | [Berlin](https://github.com/ethereum/execution-specs/blob/mainnet/src/ethereum/forks/berlin/__init__.py)        | Since 12,244,000 until 12,964,999 |
 | istanbul          | [Muir Glacier](https://eips.ethereum.org/EIPS/eip-2387) <br> [Istanbul](https://eips.ethereum.org/EIPS/eip-1679)  | Since 9,200,000 until 12,243,999 <br> Since 9,069,000 until 9,199,999 |
 | petersburg        | [Constantinople](https://eips.ethereum.org/EIPS/eip-1013) + [Petersburg](https://eips.ethereum.org/EIPS/eip-1716) | Since 7,280,000 until 9,068,999   |
 | byzantium         | [Byzantium](https://eips.ethereum.org/EIPS/eip-609)               | Since 4,370,000 until 7,279,999 |
