@@ -743,7 +743,7 @@ The total blob-gas used in the current block is calculated like this:
   HG_{blob}(H) \equiv \sum_{T \in B_{\mathbf{T}}} TG_{blob}(T)
 \end{equation}
 
-Each block also compute a base-fee per blob-gas, this fee is computed as the Taylor approximation of the exponential function:
+\hypertarget{base_fee_per_blob_gas}{}Each block also compute a base-fee per blob-gas, this fee is computed as the Taylor approximation of the exponential function:
 \begin{eqnarray}
   f_{blob}(H) & \equiv & \left\lfloor \frac{1}{A_1} \sum_{i=1}^{k} A_i \right\rfloor \\
   A_1 & \equiv & 3,338,477 \\
@@ -2407,7 +2407,7 @@ with $C_\text{\tiny CALL}$, $C_\text{\tiny SELFDESTRUCT}$, $C_\text{\tiny SLOAD}
 
 $W_{\mathrm{zero}}$ = \{{\small STOP}, {\small RETURN}, {\small REVERT}\}
 
-$W_{\mathrm{base}}$ = \{{\small ADDRESS}, {\small ORIGIN}, {\small CALLER}, {\small CALLVALUE}, {\small CALLDATASIZE}, {\small CODESIZE}, {\small GASPRICE}, {\small COINBASE},\newline \noindent\hspace*{1cm} {\small TIMESTAMP}, {\small NUMBER}, {\small PREVRANDAO}, {\small GASLIMIT}, {\small CHAINID}, {\small RETURNDATASIZE}, {\small POP}, {\small PC}, {\small MSIZE}, {\small GAS}, \newline \noindent\hspace*{1cm} {\small BASEFEE}, {\small PUSH0}\}
+$W_{\mathrm{base}}$ = \{{\small ADDRESS}, {\small ORIGIN}, {\small CALLER}, {\small CALLVALUE}, {\small CALLDATASIZE}, {\small CODESIZE}, {\small GASPRICE}, {\small COINBASE},\newline \noindent\hspace*{1cm} {\small TIMESTAMP}, {\small NUMBER}, {\small PREVRANDAO}, {\small GASLIMIT}, {\small CHAINID}, {\small RETURNDATASIZE}, {\small POP}, {\small PC}, {\small MSIZE}, {\small GAS}, \newline \noindent\hspace*{1cm} {\small BASEFEE}, {\small PUSH0}, {\small BLOBBASEFEE}\}
 
 $W_{\mathrm{verylow}}$ = \{{\small ADD}, {\small SUB}, {\small NOT}, {\small LT}, {\small GT}, {\small SLT}, {\small SGT}, {\small EQ}, {\small ISZERO}, {\small AND}, {\small OR}, {\small XOR}, {\small BYTE}, {\small SHL}, {\small SHR}, {\small SAR}, \newline \noindent\hspace*{1cm} {\small CALLDATALOAD}, {\small BLOBHASH}, {\small MLOAD}, {\small MSTORE}, {\small MSTORE8}, {\small PUSH1}, ..., {\small PUSH32}, {\small DUP*}, {\small SWAP*}\}
 
@@ -2712,6 +2712,9 @@ Here given are the various exceptions to the state transition rules given in sec
   T_{\mathbf{B}}[\boldsymbol{\mu}_{\mathbf{s}}[0]] & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[0] < \lVert T_{\mathbf{B}} \rVert \\
   0 & \text{otherwise}
 \end{cases}$ \\
+\midrule
+0x4a & {\small BLOBBASEFEE} & 0 & 1 & Get base fee per blob-gas of the current block. \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv \hyperlink{base_fee_per_blob_gas}{f_{blob}(I_{\mathrm{H}})}$ \\
 \bottomrule
 \end{tabu}
 
