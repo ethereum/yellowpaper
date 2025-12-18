@@ -2414,7 +2414,7 @@ $W_{\mathrm{mid}}$ = \{{\small ADDMOD}, {\small MULMOD}, {\small JUMP}\}
 
 $W_{\mathrm{high}}$ = \{{\small JUMPI}\}
 
-$W_{\mathrm{copy}}$ = \{{\small CALLDATACOPY}, {\small CODECOPY}, {\small RETURNDATACOPY}\}
+$W_{\mathrm{copy}}$ = \{{\small CALLDATACOPY}, {\small CODECOPY}, {\small RETURNDATACOPY}, {\small MCOPY}\}
 
 $W_{\mathrm{call}}$ = \{{\small CALL}, {\small CALLCODE}, {\small DELEGATECALL}, {\small STATICCALL}\}
 
@@ -2812,6 +2812,9 @@ G_{\mathrm{sreset}} - G_{\mathrm{warmaccess}} & \text{if} \quad v_0 = v' \; \wed
 \midrule
 0x5d & {\small TSTORE} & 2 & 0 & Save word to transient storage. \\
 &&&& $\boldsymbol{\theta}'[I_{\mathrm{a}}]_{\mathbf{s}}[ \boldsymbol{\mu}_{\mathbf{s}}[0] ] \equiv \boldsymbol{\mu}_{\mathbf{s}}[1] $ \\
+\midrule
+0x5e & {\small MCOPY} & 3 & 0 & Copy arbitrary bytes sequence from one location of the memory to another location. \\
+&&&& $\boldsymbol{\mu}'_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[0] \dots (\boldsymbol{\mu}_{\mathbf{s}}[0] + \boldsymbol{\mu}_{\mathbf{s}}[2]) ] \equiv \boldsymbol{\mu}_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[1] \dots (\boldsymbol{\mu}_{\mathbf{s}}[1] + \boldsymbol{\mu}_{\mathbf{s}}[2]) ]$ \\
 \bottomrule
 \end{tabu}
 
