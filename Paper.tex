@@ -960,6 +960,16 @@ The address of the new account is added to the set of accessed accounts:
 A^* \equiv A \quad \text{except} \quad A^*_{\mathbf{a}} \equiv A_{\mathbf{a}} \cup \{a\}
 \end{equation}
 
+The address $a$ is then tested for collision with an already-deployed account, that is one carrying code or a non-zero nonce:
+\begin{equation}
+\label{eq:create-collision} F_{\text{\tiny COLLISION}} \equiv \boldsymbol{\sigma}[a] \neq \varnothing \ \wedge\ \big(\boldsymbol{\sigma}[a]_{\mathrm{c}} \neq \texttt{\small KEC}\big(()\big) \vee \boldsymbol{\sigma}[a]_{\mathrm{n}} \neq 0 \big)
+\end{equation}
+If $F_{\text{\tiny COLLISION}}$ holds, the creation fails immediately:
+\begin{equation}
+(\boldsymbol{\sigma}', g', A', z, \mathbf{o}) \equiv (\boldsymbol{\sigma}, 0, A^*, 0, ())
+\end{equation}
+No state is mutated, the initialising code is not executed and the whole of the gas $g$ is consumed. The remainder of this section applies only when $F_{\text{\tiny COLLISION}}$ is false; in particular neither $\boldsymbol{\sigma}^*$ nor $\Xi$ is evaluated when it holds.
+
 The account's nonce is initially defined as one, the balance as the value passed, the storage as empty and the code hash as the Keccak 256-bit hash of the empty string; the sender's balance is also reduced by the value passed. Thus the mutated state becomes $\boldsymbol{\sigma}^*$:
 \begin{equation}
 \boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except:}
@@ -1039,8 +1049,7 @@ A^{**} & \text{otherwise} \\
 1 & \text{otherwise}
 \end{cases} \\
 \nonumber \text{where} \\
-F \equiv  & \big( \boldsymbol{\sigma}[a] \neq \varnothing \ \wedge\ \big(\boldsymbol{\sigma}[a]_c \neq \texttt{\small KEC}\big(()\big) \vee \boldsymbol{\sigma}[a]_n \neq 0 \big) \big) \quad \vee \\
-\nonumber &(\boldsymbol{\sigma}^{**} = \varnothing \ \wedge\ \mathbf{o} = \varnothing) \quad \vee \\
+F \equiv  & (\boldsymbol{\sigma}^{**} = \varnothing \ \wedge\ \mathbf{o} = \varnothing) \quad \vee \\
 \nonumber &g^{**} < c \quad \vee \\
 \nonumber &\lVert \mathbf{o} \rVert > 24576 \quad \vee \\
 \nonumber &\mathbf{o}[0] = \texttt{0xef}
