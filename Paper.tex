@@ -937,10 +937,11 @@ The salt \linkdest{salt}{$\zeta$} might be missing ($\zeta = \varnothing$); form
 \end{equation}
 If the creation was caused by {\small \hyperlink{create2}{CREATE2}}, then $\zeta \neq \varnothing$.
 
-We define the creation function formally as the function \linkdest{lambda}{$\Lambda$}, which evaluates from these values, together with the state $\boldsymbol{\sigma}$ and the accrued substate $A$, to the tuple containing the new state, remaining gas, new accrued substate, status code and output $(\boldsymbol{\sigma}', g', A', z, \mathbf{o})$:
+We define the creation function formally as the function \linkdest{lambda}{$\Lambda$}, which evaluates from these values, together with the state $\boldsymbol{\sigma}$ and the accrued substate $A$, to the tuple containing the new state, remaining gas, new accrued substate, status code and output $(\boldsymbol{\sigma}', g', A', z, \mathbf{o}')$:
 \begin{equation}
-(\boldsymbol{\sigma}', g', A', z, \mathbf{o}) \equiv \Lambda(\boldsymbol{\sigma}, A, s, o, g, p, v, \mathbf{i}, e, \zeta, w)
+(\boldsymbol{\sigma}', g', A', z, \mathbf{o}') \equiv \Lambda(\boldsymbol{\sigma}, A, s, o, g, p, v, \mathbf{i}, e, \zeta, w)
 \end{equation}
+Note that $\mathbf{o}'$, the output of $\Lambda$, is distinct from $\mathbf{o}$, the output of the initialising code's execution $\hyperlink{xi_def}{\Xi}$ defined below: $\mathbf{o}$ is a candidate body code, and is propagated as an output only when the initialising code \hyperlink{REVERT}{reverts}.
 
 The address of the new account is defined as being the rightmost 160 bits of the Keccak-256 hash of the \hyperlink{rlp}{RLP} encoding of the structure containing only the sender and the \hyperlink{account_nonce}{account nonce}.
 For {\small \hyperlink{create2}{CREATE2}} the rule is different and is described in EIP-1014 by \cite{EIP-1014}.
@@ -1016,7 +1017,7 @@ If there is not enough gas remaining to pay this, \ie $g^{**} < c$, then we also
 
 The gas remaining will be zero in any such exceptional condition, \ie if the creation was conducted as the reception of a transaction, then this doesn't affect payment of the intrinsic cost of contract creation; it is paid regardless. However, the value of the transaction is not transferred to the aborted contract's address when we are out-of-gas, thus the contract's code is not stored.
 
-If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persist. Thus formally, we may specify the resultant state, gas, accrued substate and status code as $(\boldsymbol{\sigma}', g', A', z)$ where:
+If such an exception does not occur, then the remaining gas is refunded to the originator and the now-altered state is allowed to persist. Thus formally, we may specify the resultant state, gas, accrued substate, status code and output as $(\boldsymbol{\sigma}', g', A', z, \mathbf{o}')$ where:
 
 \begin{align}
 \quad g' \equiv & \begin{cases}
@@ -1038,6 +1039,10 @@ A^{**} & \text{otherwise} \\
 0 & \text{if} \quad F \ \lor\ \boldsymbol{\sigma}^{**} = \varnothing \\
 1 & \text{otherwise}
 \end{cases} \\
+\quad \mathbf{o}' \equiv & \begin{cases}
+\mathbf{o} & \text{if} \quad \boldsymbol{\sigma}^{**} = \varnothing \ \wedge\ \mathbf{o} \neq \varnothing \\
+() & \text{otherwise}
+\end{cases} \\
 \nonumber \text{where} \\
 F \equiv  & \big( \boldsymbol{\sigma}[a] \neq \varnothing \ \wedge\ \big(\boldsymbol{\sigma}[a]_c \neq \texttt{\small KEC}\big(()\big) \vee \boldsymbol{\sigma}[a]_n \neq 0 \big) \big) \quad \vee \\
 \nonumber &(\boldsymbol{\sigma}^{**} = \varnothing \ \wedge\ \mathbf{o} = \varnothing) \quad \vee \\
@@ -1053,6 +1058,7 @@ The exception in the determination of $\boldsymbol{\sigma}'$ dictates that $\mat
 
 Note that intention is that the result is either a successfully created new contract with its endowment, or no new contract with no transfer of value.
 In addition, observe that if the execution of the initialising code \hyperlink{REVERT}{reverts} ($\boldsymbol{\sigma}^{**} = \varnothing \ \wedge\ \mathbf{o} \neq \varnothing$), the resultant gas $g'$ is not depleted (provided there was no other exception), but no new account is created.
+The revert case is also the only one in which $\Lambda$ propagates an output: $\mathbf{o}'$ carries the revert data, and is empty otherwise. In particular, when the deposit of the body code is rejected --- because $g^{**} < c$, because $\lVert \mathbf{o} \rVert > 24576$, or because $\mathbf{o}[0] = \texttt{0xef}$ --- the candidate body code $\mathbf{o}$ is discarded rather than returned to the caller, and is therefore not observable through {\small RETURNDATASIZE} or {\small RETURNDATACOPY}.
 
 \subsection{Subtleties}
 Note that while the initialisation code is executing, the newly created address exists but with no intrinsic body code\footnote{During initialization code execution, \texttt{EXTCODESIZE} on the address should return zero, which is the length of the code of the account while \texttt{CODESIZE} should return the length of the initialization code (as defined in \ref{subsec:instruction-set}).}. Thus any message call received by it during this time causes no code to be executed. If the initialisation execution ends with a {\small SELFDESTRUCT} instruction, the matter is moot since the account will be deleted before the transaction is completed. For a normal {\small STOP} code, or if the code returned is otherwise empty, then the state is left with a zombie account, and any remaining balance will be locked into the account forever.
