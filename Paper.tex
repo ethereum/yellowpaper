@@ -2718,6 +2718,8 @@ G_{\mathrm{sreset}} - G_{\mathrm{warmaccess}} & \text{if} \quad v_0 = v' \; \wed
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv x$ \\
 &&&& $A^* \equiv A \quad \text{except} \quad A^*_{\mathbf{a}} \equiv A_{\mathbf{a}} \cup \{t\}$ \\
 &&&& $t \equiv \boldsymbol{\mu}_{\mathbf{s}}[1] \bmod 2^{160}$ \\
+&&&& $r \equiv t$, the recipient of the call, i.e. the account whose balance is credited \\
+&&&& and which may therefore have to be created; the parameter $r$ of $\hyperlink{theta}{\Theta}$. \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{i}} \equiv M(M(\boldsymbol{\mu}_{\mathrm{i}}, \boldsymbol{\mu}_{\mathbf{s}}[3], \boldsymbol{\mu}_{\mathbf{s}}[4]), \boldsymbol{\mu}_{\mathbf{s}}[5], \boldsymbol{\mu}_{\mathbf{s}}[6])$ \\
 &&&& where $x=0$ if the \hyperlink{code_execution_result}{code execution for this operation failed}, or if \\
 &&&& $\boldsymbol{\mu}_{\mathbf{s}}[2] > \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}}$ (not enough funds) or $I_{\mathrm{e}} = 1024$ (call depth limit reached); $x=1$ \\
@@ -2738,7 +2740,7 @@ G_{\mathrm{callvalue}} & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0
 0 & \text{otherwise}
 \end{cases}$ \\
 &&&& $C_{\text{\tiny NEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) \equiv \begin{cases}
-G_{\mathrm{newaccount}} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, t) \wedge \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0 \\
+G_{\mathrm{newaccount}} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, r) \wedge \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0 \\
 0 & \text{otherwise}
 \end{cases}$ \\
 \midrule
@@ -2747,9 +2749,13 @@ G_{\mathrm{newaccount}} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, t) 
 &&&& $(\boldsymbol{\sigma}', g', A', x, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}, A^*, I_{\mathrm{a}}, I_{\mathrm{o}}, I_{\mathrm{a}}, t, C_{\text{\tiny CALLGAS}}(\boldsymbol{\sigma},\boldsymbol{\mu},A), \\ \quad I_{\mathrm{p}}, \boldsymbol{\mu}_{\mathbf{s}}[2], \boldsymbol{\mu}_{\mathbf{s}}[2], \mathbf{i}, I_{\mathrm{e}} + 1, I_{\mathrm{w}})\end{array}
   & \begin{array}{l}\text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[2] \leqslant \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \;\wedge\\ \quad\quad{}I_{\mathrm{e}} < 1024\end{array} \\
   (\boldsymbol{\sigma}, C_{\text{\tiny CALLGAS}}(\boldsymbol{\sigma},\boldsymbol{\mu},A), A^*, 0, ()) & \text{otherwise} \end{cases}$ \\
+&&&& $r \equiv I_{\mathrm{a}}$ \\
 &&&& Note the change in the fourth parameter to the call $\hyperlink{theta}{\Theta}$ from the 2nd stack value \\
 &&&& $\boldsymbol{\mu}_{\mathbf{s}}[1]$ (as in {\small CALL}) to the present address $I_{\mathrm{a}}$. This means that the recipient is in\\
 &&&& fact the same account as at present, simply that the code is overwritten.\\
+&&&& Since the recipient $r$ is the presently executing account, it is never $\mathtt{DEAD}$ and\\
+&&&& therefore $C_{\text{\tiny NEW}}(\boldsymbol{\sigma}, \boldsymbol{\mu}) = 0$; only the code address $t$ is accessed, at cost \\
+&&&& $\hyperlink{C_aaccess}{C_{\mathrm{aaccess}}}(t, A)$.\\
 \midrule
 \linkdest{RETURN}{}0xf3 & {\small RETURN} & 2 & 0 & Halt execution returning output data. \\
 &&&& $H_{\text{\tiny RETURN}}(\boldsymbol{\mu}) \equiv \boldsymbol{\mu}_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[0] \dots ( \boldsymbol{\mu}_{\mathbf{s}}[0] + \boldsymbol{\mu}_{\mathbf{s}}[1] - 1 ) ]$ \\
@@ -2769,6 +2775,7 @@ G_{\mathrm{newaccount}} & \text{if} \quad \mathtt{DEAD}(\boldsymbol{\sigma}, t) 
 &&&& $(\boldsymbol{\sigma}', g', A', x, \mathbf{o}) \equiv \begin{cases}\begin{array}{l}\Theta(\boldsymbol{\sigma}, A^*, I_{\mathrm{s}}, I_{\mathrm{o}}, I_{\mathrm{a}}, t, C_{\text{\tiny CALLGAS}}(\boldsymbol{\sigma},\boldsymbol{\mu},A), \\\quad I_{\mathrm{p}}, 0, I_{\mathrm{v}}, \mathbf{i}, I_{\mathrm{e}} + 1, I_{\mathrm{w}})\end{array}
   & \text{if} \quad I_{\mathrm{e}} < 1024 \\
   (\boldsymbol{\sigma}, C_{\text{\tiny CALLGAS}}(\boldsymbol{\sigma},\boldsymbol{\mu},A), A^*, 0, ()) & \text{otherwise} \end{cases}$ \\
+&&&& $r \equiv I_{\mathrm{a}}$ \\
 &&&& Note the changes (in addition to that of the fourth parameter) to the second \\
 &&&& and ninth parameters to the call $\hyperlink{theta}{\Theta}$.\\
 &&&& This means that the recipient is in fact the same account as at present, simply\\
