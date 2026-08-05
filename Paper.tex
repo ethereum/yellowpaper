@@ -1269,6 +1269,7 @@ Z(\boldsymbol{\sigma}, \boldsymbol{\mu}, A, I) \equiv
 ( w = \text{\small JUMPI} \; \wedge \; \boldsymbol{\mu}_\mathbf{s}[1] \neq 0 \; \wedge \\
 \quad \boldsymbol{\mu}_\mathbf{s}[0] \notin D(I_\mathbf{b}) ) \quad \vee \\
 ( w = \text{\small RETURNDATACOPY} \; \wedge \\ \quad \boldsymbol{\mu}_{\mathbf{s}}[1] + \boldsymbol{\mu}_{\mathbf{s}}[2] > \lVert\boldsymbol{\mu}_{\mathbf{o}}\rVert) \quad \vee \\
+( w \in \{\text{\small CREATE}, \text{\small CREATE2}\} \; \wedge \\ \quad \boldsymbol{\mu}_{\mathbf{s}}[2] > 49152 ) \quad \vee \\
 \lVert\boldsymbol{\mu}_\mathbf{s}\rVert - \mathbf{\delta}_w + \mathbf{\alpha}_w > 1024 \quad \vee \\
 ( \neg I_{\mathrm{w}} \; \wedge \; W(w, \boldsymbol{\mu}) ) \quad \vee \\
 ( w = \text{\small SSTORE} \; \wedge \; \boldsymbol{\mu}_g \leqslant G_{\mathrm{callstipend}} )
@@ -1287,6 +1288,8 @@ w = \text{\small CALL} \; \wedge \; \boldsymbol{\mu}_{\mathbf{s}}[2] \neq 0
 This states that the execution is in an exceptional halting state if there is insufficient gas, if the instruction is invalid (and therefore its $\delta$ subscript is undefined), if there are insufficient stack items, if a {\small JUMP}/{\small JUMPI} destination is invalid, the new stack size would be larger than 1024 or state modification is attempted during a static call. The astute reader will realise that this implies that no instruction can, through its execution, cause an exceptional halt.
 Also, the execution is in an exceptional halting state if the gas left prior to executing an \hyperlink{SSTORE}{{\small SSTORE}} instruction is less than or equal to the call stipend $\hyperlink{G__callstipend}{G_{\mathrm{callstipend}}}$
 -- see EIP-2200 by \cite{EIP-2200} for more information.
+Finally, the execution is in an exceptional halting state if a {\small CREATE} or {\small CREATE2} instruction is given an initcode longer than 49152 bytes ($\boldsymbol{\mu}_{\mathbf{s}}[2] = \lVert \mathbf{i} \rVert$ for both instructions)
+-- see EIP-3860 by \cite{EIP-3860} for more information. Note that this is an exceptional halt of the executing frame, consuming all of its remaining gas; it is not the recoverable $x = 0$ outcome that an insufficient balance or an exhausted call-depth produces.
 
 \subsubsection{Jump Destination Validity}
 
@@ -2688,13 +2691,12 @@ G_{\mathrm{sreset}} - G_{\mathrm{warmaccess}} & \text{if} \quad v_0 = v' \; \wed
 &&&& $\mathbf{i} \equiv \boldsymbol{\mu}_{\mathbf{m}}[ \boldsymbol{\mu}_{\mathbf{s}}[1] \dots (\boldsymbol{\mu}_{\mathbf{s}}[1] + \boldsymbol{\mu}_{\mathbf{s}}[2] - 1) ]$ \\
 &&&& $\hyperlink{salt}{\zeta} \equiv \varnothing$ \\
 &&&& $(\boldsymbol{\sigma}', g', A', z, \mathbf{o}) \equiv \begin{cases}
-\hyperlink{lambda}{\Lambda}(\boldsymbol{\sigma}^*, A, I_{\mathrm{a}}, I_{\mathrm{o}}, L(\boldsymbol{\mu}_{\mathrm{g}}), I_{\mathrm{p}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \mathbf{i}, I_{\mathrm{e}} + 1, \zeta, I_{\mathrm{w}}) & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[0] \leqslant \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \; \wedge \\ \quad &\; I_{\mathrm{e}} < 1024 \wedge \lVert \mathbf{i} \rVert \leqslant 49152\\
+\hyperlink{lambda}{\Lambda}(\boldsymbol{\sigma}^*, A, I_{\mathrm{a}}, I_{\mathrm{o}}, L(\boldsymbol{\mu}_{\mathrm{g}}), I_{\mathrm{p}}, \boldsymbol{\mu}_{\mathbf{s}}[0], \mathbf{i}, I_{\mathrm{e}} + 1, \zeta, I_{\mathrm{w}}) & \text{if} \quad \boldsymbol{\mu}_{\mathbf{s}}[0] \leqslant \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}} \; \wedge \\ \quad &\; I_{\mathrm{e}} < 1024\\
 \big(\boldsymbol{\sigma}, L(\boldsymbol{\mu}_{\mathrm{g}}), A, 0, () \big) & \text{otherwise} \end{cases}$ \\
 &&&& $\boldsymbol{\sigma}^* \equiv \boldsymbol{\sigma} \quad \text{except} \quad \boldsymbol{\sigma}^*[I_{\mathrm{a}}]_{\mathrm{n}} = \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{n}} + 1$ \\
 &&&& $\boldsymbol{\mu}'_{\mathrm{g}} \equiv \boldsymbol{\mu}_{\mathrm{g}} - \hyperlink{L_but_64}{L}(\boldsymbol{\mu}_{\mathrm{g}}) + g'$ \\
 &&&& $\boldsymbol{\mu}'_{\mathbf{s}}[0] \equiv x$ \\
 &&&& where $x=0$ if $z = 0$, i.e., the \hyperlink{contract_creation_result}{contract creation process failed},\\
-&&&& or $\lVert \mathbf{i} \rVert > 49152$ (initcode is longer than 49152 bytes),\\
 &&&& or $I_{\mathrm{e}} = 1024$ (the maximum call depth limit is reached),\\
 &&&& or $\boldsymbol{\mu}_{\mathbf{s}}[0] > \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{b}}$ (balance of the caller is too low to fulfil the value transfer);\\
 &&&& and otherwise $x=\mathtt{ADDR}(I_{\mathrm{a}}, \boldsymbol{\sigma}[I_{\mathrm{a}}]_{\mathrm{n}}, \zeta, \mathbf{i} )$, the address of the newly created account (\ref{eq:new-address}). \\
