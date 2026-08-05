@@ -537,7 +537,7 @@ and \textbf{transactionsRoot} ($H_{\mathrm{t}}$), \textbf{receiptsRoot} ($H_{\ma
 \begin{equation}
 \begin{array}[t]{lclc}
 B_{\mathbf{U}} &\equiv& () & \wedge \\
-\linkdest{new_state_H__r}{}H_{\mathrm{r}} &\equiv& \mathtt{TRIE}(L_S(\Pi(\boldsymbol{\sigma}, B))) & \wedge \\
+\linkdest{new_state_H__r}{}H_{\mathrm{r}} &\equiv& \mathtt{TRIE}(L_S(\hyperlink{Kappa}{K}(\Pi(\boldsymbol{\sigma}, B), B))) & \wedge \\
 \linkdest{tx_block_hash_H__t}{}H_{\mathrm{t}} &\equiv& \mathtt{TRIE}(\{\forall i < \lVert B_{\mathbf{T}} \rVert, i \in \mathbb{N}: &\\&& \quad\quad p_{\mathrm{T}}(i, B_{\mathbf{T}}[i])\}) & \wedge \\
 \linkdest{Receipts_Root_H__e}{}H_{\mathrm{e}} &\equiv& \mathtt{TRIE}(\{\forall i < \lVert B_{\mathbf{R}} \rVert, i \in \mathbb{N}: &\\&& \quad\quad p_{\mathrm{R}}(i, B_{\mathbf{R}}[i])\}) & \wedge \\
 \linkdest{Withdrawals_Root_H__w}{}H_{\mathrm{w}} &\equiv& \mathtt{TRIE}(\{\forall i < \lVert B_{\mathbf{W}} \rVert, i \in \mathbb{N}: &\\&& \quad\quad p_{\mathrm{W}}(i, B_{\mathbf{W}}[i])\}) & \wedge \\
