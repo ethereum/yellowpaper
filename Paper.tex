@@ -2965,7 +2965,7 @@ The PoW-function returns an array with the compressed mix as its first item and 
 \end{equation}
 With $H_{\hcancel{n}}$ being the hash of the header without the nonce. The compressed mix $\mathbf{m}_{\mathrm{c}}$ is obtained as follows:
 \begin{equation}
- \mathbf{m}_{\mathrm{c}}(\mathbf{h}, \mathbf{n}, \mathbf{d}) = E_{\mathrm{compress}}(E_{\mathrm{accesses}}(\mathbf{d}, \sum_{i = 0}^{n_{\mathrm{mix}}} \mathbf{s}_{\mathrm{h}}(\mathbf{h}, \mathbf{n}), \mathbf{s}_{\mathrm{h}}(\mathbf{h}, \mathbf{n}), -1), -4)
+ \mathbf{m}_{\mathrm{c}}(\mathbf{h}, \mathbf{n}, \mathbf{d}) = E_{\mathrm{compress}}(E_{\mathrm{accesses}}(\mathbf{d}, \sum_{i = 0}^{n_{\mathrm{mix}}} \mathbf{s}_{\mathrm{h}}(\mathbf{h}, \mathbf{n}), \mathbf{s}_{\mathrm{h}}(\mathbf{h}, \mathbf{n}), -1))
 \end{equation}
 
 The seed hash being:
@@ -3000,10 +3000,7 @@ $E_{\mathrm{newdata}}$ returns an array with $n_{\mathrm{mix}}$ elements:
 \end{equation}
 The mix is compressed as follows:
 \begin{equation}
- E_{\mathrm{compress}}(\mathbf{m}, i) = \begin{cases}
-\mathbf{m} & \text{if} \quad i \geqslant \lVert \mathbf{m} \rVert - 8 \\
-E_{\mathrm{compress}}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(\mathbf{m}[i + 4], \mathbf{m}[i + 5]), \mathbf{m}[i + 6]), \mathbf{m}[i + 7]), i + 8) & \text{otherwise}
-\end{cases}
+ E_{\mathrm{compress}}(\mathbf{m})[k] = E_\text{\tiny FNV}(E_\text{\tiny FNV}(E_\text{\tiny FNV}(\mathbf{m}[4k], \mathbf{m}[4k + 1]), \mathbf{m}[4k + 2]), \mathbf{m}[4k + 3]) \quad \forall \quad k < \lVert \mathbf{m} \rVert / 4
 \end{equation}
 
 \section{Anomalies on the Main Network}
