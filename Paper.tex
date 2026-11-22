@@ -282,6 +282,8 @@ where:
 k \in \mathbb{B}_{32} \quad \wedge \quad v \in \mathbb{N}
 \end{equation}
 
+The collapse leaves out every pair whose value $v$ is zero, so a storage location that holds zero has no entry in the trie, just as one never written.
+
 It shall be understood that $\boldsymbol{\sigma}[a]_{\mathbf{s}}$ is not a `physical' member of the account and does not contribute to its later serialisation.
 
 If the \textbf{codeHash} field is the Keccak-256 hash of the empty string, i.e. $\boldsymbol{\sigma}[a]_{\mathrm{c}} = \texttt{KEC}\big(()\big)$, then the node represents a simple account, sometimes referred to as a ``non-contract'' account.
