@@ -2935,7 +2935,7 @@ Essentially, we combine data from $J_{\mathrm{parents}}$ pseudorandomly selected
 \end{equation}
 In order to calculate the single item we use an algorithm inspired by the FNV hash (\cite{FowlerNollVo1991FNVHash}) in some cases as a non-associative substitute for XOR.
 \begin{equation}
- E_\text{\tiny FNV}(\mathbf{x}, \mathbf{y}) = (\mathbf{x} \cdot (\mathrm{0x01000193} \oplus \mathbf{y})) \bmod 2^{32}
+ E_\text{\tiny FNV}(\mathbf{x}, \mathbf{y}) = ((\mathbf{x} \cdot \mathrm{0x01000193}) \bmod 2^{32}) \oplus \mathbf{y}
 \end{equation}
 The single item of the dataset can now be calculated as:
 \begin{equation}
