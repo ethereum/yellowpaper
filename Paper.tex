@@ -2823,7 +2823,7 @@ G_{\mathrm{newaccount}} & \text{if}\quad \mathtt{DEAD}(\boldsymbol{\sigma}, r) \
 
 The genesis block is 15 items, and is specified thus:
 \begin{equation}
-\big( \big( 0_{256}, \mathtt{KEC}\big(\mathtt{RLP}\big( () \big)\big), 0_{160}, stateRoot, 0, 0, 0_{2048}, 2^{34}, 0, 0, 3141592, time, 0, 0_{256},  \mathtt{KEC}\big( (42) \big) \big), (), () \big)
+\big( \big( 0_{256}, \mathtt{KEC}\big(\mathtt{RLP}\big( () \big)\big), 0_{160}, stateRoot, 0, 0, 0_{2048}, 2^{34}, 0, 3141592, 0, time, 0, 0_{256},  \mathtt{KEC}\big( (42) \big) \big), (), () \big)
 \end{equation}
 
 Where $0_{256}$ refers to the parent hash, a 256-bit hash which is all zeroes; $0_{160}$ refers to the beneficiary address, a 160-bit hash which is all zeroes; $0_{2048}$ refers to the log bloom, 2048-bit of all zeros; $2^{34}$ refers to the difficulty; the transaction trie root, receipt trie root, gas used, block number and extradata are both $0$, being equivalent to the empty byte array. The sequences of both ommers and transactions are empty and represented by $()$. $\mathtt{KEC}\big( (42) \big)$ refers to the Keccak-256 hash of a byte array of length one whose first and only byte is of value 42, used for the nonce. $\mathtt{KEC}\big(\mathtt{RLP}\big( () \big)\big)$ value refers to the hash of the ommer list in RLP, both empty lists.
